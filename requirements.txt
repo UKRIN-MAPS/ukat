@@ -1,0 +1,11 @@
+numpy
+nibabel
+pydicom
+matplotlib
+scipy
+lmfit
+scikit-image
+scikit-learn
+fslpy
+dipy
+xnat
