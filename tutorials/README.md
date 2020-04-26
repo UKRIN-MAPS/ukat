@@ -1,0 +1,1 @@
+This directory should contain jupyter notebooks (`.ipynb` files) providing tutorials on how to use code from the `methods` directory.

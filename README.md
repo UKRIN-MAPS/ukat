@@ -1,5 +1,5 @@
 <h2 align="center"><img src="images/logo.png" height="128"></h2>
-<p align="center"><strong>Repository for renal MRI analysis code</strong></p>
+<p align="center"><strong>Repository of software for renal MRI analysis</strong></p>
 
 ## Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
