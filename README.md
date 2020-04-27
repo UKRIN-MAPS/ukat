@@ -20,5 +20,9 @@ Now the upstream repository should be set:
     > upstream   https://github.com/UKRIN-MAPS/UKRIN-MAPS.git (fetch)
     > upstream   https://github.com/UKRIN-MAPS/UKRIN-MAPS.git (push)
 
+Now you can suggest changes (e.g. suggest new code) to be added to the repository via [pull](https://help.github.com/en/github/getting-started-with-github/github-glossary#pull-request) [requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork). Don't forget to keep your fork [in sync](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with the upstream repository (i.e. the UKRIN-MAPS repository in the UKRIN-MAPS organisation).
+
+If you are new to git/GitHub you may find the following cheat sheets handy ([web](https://github.github.com/training-kit/downloads/github-git-cheat-sheet/), [pdf](https://github.github.com/training-kit/downloads/github-git-cheat-sheet.pdf)).
+
 # Contributing guidelines
 Please read our [contributing guidelines (*work-in-progress*)](https://github.com/UKRIN-MAPS/UKRIN-MAPS/blob/master/CONTRIBUTING.md).
