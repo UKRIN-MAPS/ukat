@@ -1,7 +1,7 @@
 <h2 align="center"><img src="images/logo.png" height="128"></h2>
 <p align="center"><strong>Repository of software for renal MRI analysis</strong></p>
 
-## Getting started
+# Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
 
     $ git remote -v
@@ -19,3 +19,6 @@ Now the upstream repository should be set:
     > origin     https://github.com/<YOUR-GITHUB-USERNAME>/UKRIN-MAPS.git (push)
     > upstream   https://github.com/UKRIN-MAPS/UKRIN-MAPS.git (fetch)
     > upstream   https://github.com/UKRIN-MAPS/UKRIN-MAPS.git (push)
+
+# Contributing guidelines
+Please read our [contributing guidelines (*work-in-progress*)](https://github.com/UKRIN-MAPS/UKRIN-MAPS/blob/master/CONTRIBUTING.md).
