@@ -101,8 +101,8 @@ class T2Star():
                                 s_wy = s_wy + weight * sig
                                 s_wxy = s_wxy + weight * te_tmp * sig
                             delta = (s_w * s_wx2) - (s_wx ** 2)
-                            if (delta == 0.0) or (np.isinf(delta)) or
-                            (np.isnan(delta)):
+                            if ((delta == 0.0) or (np.isinf(delta))
+                               or (np.isnan(delta))):
                                 t2star[x, y, s] = 0
                                 r2star[x, y, s] = 0
                                 m0[x, y, s] = 0
