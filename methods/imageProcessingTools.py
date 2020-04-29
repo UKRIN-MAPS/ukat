@@ -62,6 +62,7 @@ def resizePixelArray(pixelArray, pixelSpacing, reconstPixel=None):
                                          pixelArray.shape[2],
                                          pixelArray.shape[3],
                                          pixelArray.shape[4] // fraction,
-                                         pixelArray.shape[5] // fraction), anti_aliasing=True)
+                                         pixelArray.shape[5] // fraction),
+                            anti_aliasing=True)
 
     return pixelArray
