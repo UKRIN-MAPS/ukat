@@ -6,6 +6,10 @@ from skimage.restoration import unwrap_phase
 # This is a script containing different methods that are auxiliary in
 # Image Analysis and might be used by multiple algorithms.
 
+# Joao Sousa wrote these simple methods (11/05/2020) to demonstrate
+# what this file should look like. Feel free to write and include
+# more complex methods that involve for example thresholding, filtering, etc.
+
 
 def unwrap_phase_image(pixel_array):
     # Wrapping of the phase image according to
@@ -36,10 +40,6 @@ def invert(pixel_array):
 
 def square(pixel_array):
     return np.square(pixel_array)
-
-# I wrote these 3 very simple methods to demonstrate what this file should
-# look like. Feel free to write and include more complex methods
-# that involve for example thresholding, filtering, etc.
 
 
 def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):

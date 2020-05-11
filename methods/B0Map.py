@@ -33,8 +33,8 @@ def B0Map(pixel_array, echo_list):
     try:
         # Convert to [-pi, pi] if not in that range already
         radians_array = convert_to_pi_range(pixel_array)
+        # Is the given array already a Phase Difference or not?
         if len(echo_list) > 1:
-            # Is the given array already a Phase Difference or not?
             # Unwrap each phase image
             phase0 = unwrap_phase_image(np.squeeze(radians_array[..., 0]))
             phase1 = unwrap_phase_image(np.squeeze(radians_array[..., 1]))
@@ -44,8 +44,7 @@ def B0Map(pixel_array, echo_list):
             # in the future: eg. return phase0, phase1, phase_diff, ...
             del phase0, phase1
         else:
-            # If it's a Phase Difference / B0 Map, it just unwraps
-            # the image and returns the output
+            # If it's a Phase Difference / B0 Map, it just unwraps the image
             phase_diff = unwrap_phase_image(radians_array)
             # Sometimes, there is no EchoTime tag <=> No echo values parsed
             try:
