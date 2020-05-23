@@ -1,0 +1,6 @@
+For GE, I suggest the following series:
+
+B0 mapping: subject 04, session 005 (08/30/2019) series 8 (2D) and 9 (3D). These contain magnitude, real and imaginary images.
+R2* mapping: subject 02, session 010 (09/10/2019) series 16 (no fatsat) and 17 (with fatsat). These contain magnitude, real and imaginary images. Separated Magnitude and my calculated phase images are in series 1620/1621 and 1720/1721 for reference but I'd suggest working mostly with series 16 and/or 17.
+DWI: subject 04, session 005 (08/30/2019) series 14.  Will need registration!
+T1 mapping (IR SE-EPI): subject 04, session 005 (08/30/2019) series 23-42. Will need registration!
