@@ -112,7 +112,7 @@ class T2Star():
                                 t2stars_temp = np.real(-1 / b)
                                 r2stars_temp = np.real(-b)
                                 m0_temp = np.real(np.exp(a))
-                                if (t2stars_temp < 0) or (t2stars_temp > 500):
+                                if (t2stars_temp < 0) or (t2stars_temp > 5000):
                                     t2star[x, y, s] = 0
                                     r2star[x, y, s] = 0
                                     m0[x, y, s] = 0
@@ -152,8 +152,8 @@ class T2Star():
             matrix_ones = np.ones(np.shape(
                 np.squeeze(self.pixel_array[..., 0])))
             with np.errstate(invalid='ignore', over='ignore'):
-                noise = np.sum(self.pixel_array, axis=3) /
-                (number_echoes * matrix_ones)
+                noise = (np.sum(self.pixel_array, axis=3) /
+                         (number_echoes * matrix_ones))
                 sd = (np.absolute(np.sum(np.square(self.pixel_array), axis=3)
                       / (number_echoes * matrix_ones) - np.square(noise)))
                 s_w = s_wx = s_wx2 = np.zeros(np.shape(matrix_ones))
@@ -184,8 +184,8 @@ class T2Star():
                 delta = (s_w * s_wx2) - (np.square(s_wx))
                 b = (matrix_ones / delta) * (s_w * s_wxy - s_wx * s_wy)
                 t2star = np.real(-matrix_ones / b)
-                conditions = (np.isinf(t2star)) | (np.isnan(t2star)) |
-                (t2star < 0.0) | (t2star > 500.0)
+                conditions = ((np.isinf(t2star)) | (np.isnan(t2star)) |
+                              (t2star < 0.0) | (t2star > 500.0))
                 t2star = np.where(conditions, 0.0, t2star)
             return t2star
         except Exception as e:
