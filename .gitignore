@@ -1,1 +1,9 @@
+# Visual Studio Code editor
 .vscode/settings.json
+
+# Python
+__pycache__/
+
+# Jupyter notebooks
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
