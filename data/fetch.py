@@ -7,6 +7,7 @@ import nibabel as nib
 
 DIR_DATA = os.path.dirname(os.path.realpath(__file__))
 
+
 def r2star_ge():
     """Fetches r2star/ge dataset
 
