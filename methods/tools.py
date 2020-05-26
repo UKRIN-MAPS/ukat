@@ -1,14 +1,11 @@
+"""
+This module contains multiple auxiliary functions that might be used by
+multiple algorithms
+
+"""
 import numpy as np
-import pydicom
 from skimage.transform import resize
 from skimage.restoration import unwrap_phase
-
-# This is a script containing different methods that are auxiliary in
-# Image Analysis and might be used by multiple algorithms.
-
-# Joao Sousa wrote these simple methods (11/05/2020) to demonstrate
-# what this file should look like. Feel free to write and include
-# more complex methods that involve for example thresholding, filtering, etc.
 
 
 def unwrap_phase_image(pixel_array):
@@ -32,14 +29,6 @@ def convert_to_pi_range(pixel_array):
         # It means it's already on the interval [-pi, pi]
         radians_array = pixel_array
     return radians_array
-
-
-def invert(pixel_array):
-    return np.invert(pixel_array)
-
-
-def square(pixel_array):
-    return np.square(pixel_array)
 
 
 def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):
@@ -86,3 +75,69 @@ def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):
                              anti_aliasing=True)
 
     return pixel_array
+
+
+def mask_slices(shape, slices, mask=None):
+    """Get mask to limit processing to specific slices
+
+    This function allows to quickly get a mask of Trues of the right shape to
+    limit processing to specific slices. If `mask` is provided it outputs a new
+    mask corresponding to the input mask but only on the specified slices.
+
+    Parameters
+    ----------
+    shape : tuple
+        shape of mask to be created
+    slices : int or list (of ints)
+        slice indices where mask is to be True
+    mask : np.ndarray (of booleans)
+        original mask, if provided this function will return a mask of Falses
+        in all elements except at the locations of the True elements of this
+        `mask` in the slices given by `slices`
+
+    Returns
+    -------
+    np.ndarray (of booleans)
+
+    """
+    # Input type checks
+    if not isinstance(shape, tuple):
+        raise ValueError("`shape` must be a tuple")
+
+    if not isinstance(slices, (int, list)):
+        raise ValueError("`slices` must be an integer or a list of integers")
+
+    # Check elements of `slices` are ints
+    if (isinstance(slices, list) and
+       not all(isinstance(x, int) for x in slices)):
+        raise ValueError("Every element of `slices` must be an integer")
+
+    # Check elements of `slices` within range defined by `shape`
+    if isinstance(slices, int):
+        s_min = slices
+        s_max = slices
+    elif isinstance(slices, list):
+        s_min = min(slices)
+        s_max = max(slices)
+
+    if not(s_min >= 0 and s_max+1 <= shape[2]):
+        msg = f"The elements of `slices` must be > 0 and <= {shape[2]-1}"
+        raise ValueError(msg)
+
+    # Ensure shape and the dimensions of mask match
+    if mask is not None:
+        assert isinstance(mask, np.ndarray), "`mask` must be a numpy"
+        assert mask.dtype == "bool", "The elements of `mask` must be bool"
+        assert (shape == mask.shape), "The shape of `mask` must match `shape`"
+
+    # Make mask of Trues at the specified slices
+    template = np.full(shape, False)
+    template[:, :, slices] = True
+
+    # If `mask` provided, apply it to the template
+    if mask is None:
+        final_mask = template
+    else:
+        final_mask = np.logical_and(mask, template)
+
+    return final_mask
