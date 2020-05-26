@@ -43,13 +43,13 @@ def square(pixel_array):
 
 
 def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):
-    """Resizes the given pixel_array, using reconstPixel as the reference
+    """Resizes the given pixel_array, using reconst_pixel as the reference
         of the resizing operation. This method assumes that the dimension
         axes=0 of pixel_array is the number of slices for np.shape > 2."""
     # This is so that data shares the same resolution and size
 
-    if reconstPixel is not None:
-        fraction = reconstPixel / pixelSpacing
+    if reconst_pixel is not None:
+        fraction = reconst_pixel / pixel_spacing
     else:
         fraction = 1
 
