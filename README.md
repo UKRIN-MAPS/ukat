@@ -29,4 +29,4 @@ For development, it is recommended that you have Python >= 3.6 installed in your
     > pip install -r requirements.txt
 
 # Contributing guidelines
-Please read our [contributing guidelines (*work-in-progress*)](https://github.com/UKRIN-MAPS/UKRIN-MAPS/blob/master/CONTRIBUTING.md).
+Please read our [contributing guidelines (*work-in-progress*)](.github/CONTRIBUTING.md).
