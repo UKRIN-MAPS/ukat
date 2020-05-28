@@ -24,7 +24,7 @@ Now you can suggest changes (e.g. suggest new code) to be added to the repositor
 
 If you are new to git/GitHub you may find the following cheat sheets handy ([web](https://github.github.com/training-kit/downloads/github-git-cheat-sheet/), [pdf](https://github.github.com/training-kit/downloads/github-git-cheat-sheet.pdf)).
 
-# Requirements
+# Installation
 To run the code from this repository you need Python >= 3.6 as well as several additional python libraries installed in your machine. In order to install all dependencies, please run the following command in your terminal:
 
     pip install -r requirements.txt
