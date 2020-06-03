@@ -1,6 +1,0 @@
-Chris Rorden's dcm2niiX version v1.0.20200331  (JP2:OpenJPEG) (JP-LS:CharLS) GCC5.5.0 (64-bit Linux)
-Found 96 DICOM file(s)
-Slices not stacked: echo varies (TE 1.476, 4.476; echo 1, 2). Use 'merge 2D slices' option to force stacking
-Convert 48 DICOM as GE/00009__3D_B0_map_VOL_e1 (256x256x16x3)
-Convert 48 DICOM as GE/00009__3D_B0_map_VOL_e2 (256x256x16x3)
-Conversion required 1.416961 seconds (1.234375 for core code).
