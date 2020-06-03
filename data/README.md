@@ -6,6 +6,9 @@ Currently, all test data is from the travelling kidney pilot study 2019.
 
 ## BOLD R2*
 * `r2star/ge`: subject 02, session 010, series 16. Contains magnitude, real and imaginary images. (**ANP checked**)
+* `r2star/Philips`: subject 02, session 002, series 14. Contains magnitude and phase images and scanner calculated map
+* `r2star/Siemens`: subject 02, session 008, series 24. Contains magnitude and phase images and scanner calculated map
+
 
 ## DWI
 * `dwi/ge`: subject 04, session 005, series 14. (**ANP checked**)
