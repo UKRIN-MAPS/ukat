@@ -2,17 +2,28 @@
 
 This document keeps track of the origin of the test data and other information relevant for analysis.
 
-Currently, all test data is from the travelling kidney pilot study 2019.
+With the exception of datasets marked with :star:, all test data is from the travelling kidney pilot study 2019.
 
 ## BOLD R2*
+
 * `r2star/ge`: subject 02, session 010, series 16. Contains magnitude, real and imaginary images. (**ANP checked**)
+* `r2star/philips`: subject 02, session 002, series 14. Contains magnitude and phase images and scanner calculated map
+* `r2star/siemens`: subject 02, session 008, series 24. Contains magnitude and phase images and scanner calculated map
 
 ## DWI
+
 * `dwi/ge`: subject 04, session 005, series 14. (**ANP checked**)
 * `dwi/philips`: subject 04, session 011, series 3901. (**Chosen to match subject from GE test data**)
 * `dwi/siemens`<sup>[[1]](#siemens_bval_issue)</sup>: subject 04, session 009, series 42. (**Chosen to match subject from GE test data**)
 
+## B0
+
+* `b0/ge`: subject 004, session 005, series 9.
+* `b0/philips_1`: subject 002, session 002, series 8. Contains scanner calculated B0 map, 1 phase and 1 magnitude image (from a single echo)
+* :star: `b0/philips_2`: Data acquired with phase and magnitude data saved for both echoes
+
 ## Notes
+
 <a name="siemens_bval_issue"><sup>[1]</sup></a> There is a limitation in Siemens `*.bval` and `*.bvec` files: b-values are rounded to multiples of 50. This is an issue for us because we use several low b-values which are not multiples of 50. Furthermore, if the result of the rounding is a b-value of 0, the corresponding b-vector becomes [0, 0, 0] (see table below). Inspecting the data does suggest that the prescribed b-values are indeed used for the measurements. Therefore, it seems we can use the low b-value measurements in the analysis provided that the `.bval` file is corrected to account for this issue.
 
 | Measurement # | Prescribed b-value | b-value on `*.bval` file | Corresponding b-vector is affected |
