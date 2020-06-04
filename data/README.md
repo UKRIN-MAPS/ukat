@@ -15,6 +15,13 @@ Currently, all test data is from the travelling kidney pilot study 2019.
 * `dwi/philips`: subject 04, session 011, series 3901. (**Chosen to match subject from GE test data**)
 * `dwi/siemens`<sup>[[1]](#siemens_bval_issue)</sup>: subject 04, session 009, series 42. (**Chosen to match subject from GE test data**)
 
+## B0 mapping data 
+* `B0map/GE`: subject 004, session 005, series 9.
+* `B0map/Philips_travelling_kidney`: subject 002, session 002, series 8. Contains scanner calculated B0 map, 1 phase and 1 magnitude image
+* `B0map/Philips`: Data acquired with phase and magnitude data saved 
+
+
+
 ## Notes
 <a name="siemens_bval_issue"><sup>[1]</sup></a> There is a limitation in Siemens `*.bval` and `*.bvec` files: b-values are rounded to multiples of 50. This is an issue for us because we use several low b-values which are not multiples of 50. Furthermore, if the result of the rounding is a b-value of 0, the corresponding b-vector becomes [0, 0, 0] (see table below). Inspecting the data does suggest that the prescribed b-values are indeed used for the measurements. Therefore, it seems we can use the low b-value measurements in the analysis provided that the `.bval` file is corrected to account for this issue.
 
