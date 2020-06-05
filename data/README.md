@@ -8,7 +8,7 @@ With the exception of datasets marked with :star:, all test data is from the tra
 
 * `r2star/ge`: subject 02, session 010, series 16. Contains magnitude, real and imaginary images. (**ANP checked**)
 * `r2star/philips`: subject 02, session 002, series 14. Contains magnitude and phase images and scanner calculated map
-* `r2star/siemens`: subject 02, session 008, series 24. Contains magnitude and phase images and scanner calculated map
+* `r2star/siemens`: subject 02, session 007, series 24/25/26/27: magnitude/magnitude(intensity normalised)/phase/scanner calculated map
 
 ## DWI
 

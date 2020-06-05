@@ -5,6 +5,7 @@
 - Ensure code follows [PEP8](https://www.python.org/dev/peps/pep-0008/).
 - Provide tests.
 - Ideally, provide examples and/or tutorials.
+- Make sure you follow the checklists on the [pull request template](PULL_REQUEST_TEMPLATE.md)
 
 # Documentation
 Code with bad/non-existent documentation will become useless sooner or later. All modules/classes/functions should be documented following the `numpy` docstring guide ([format](https://numpydoc.readthedocs.io/en/latest/format.html), [example](https://numpydoc.readthedocs.io/en/latest/example.html#example)). Note that adopting good naming practices (e.g. descriptively naming variables, functions, classes, etc...), helps self-documenting the code and reduces the amount of explicit documentation needed.
@@ -17,8 +18,9 @@ This repository will contain code written primarily in [Python](https://www.pyth
 
 Code duplication should be avoided (i.e. [don't repeat yourself](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)), unless there is a strong reason to do so (e.g. performance, comprehensibility).
 
-And don't forget about [The Zen of Python](https://www.python.org/dev/peps/pep-0020/) (`>>> import this`):
+And don't forget about [The Zen of Python](https://www.python.org/dev/peps/pep-0020/):
 
+    >> import this
     The Zen of Python, by Tim Peters
 
     Beautiful is better than ugly.
@@ -49,7 +51,7 @@ Use the [semver](https://semver.org/) convention for milestones, releases...
 *To do*
 
 # Examples/tutorials
-We should strive to have examples/tutorials for the main methods implemented in this repository. Ideally in jupyter notebook format (`.ipynb` files) in the `tutorials` directory.
+We should strive to have examples/tutorials for the main methods implemented in this repository. Ideally in jupyter notebook format (`.ipynb` files) in the `tutorials` directory. See [here](/tutorials/t2star_calculation.ipynb) for an example.
 
 # Misc
 - If you are looking for ideas for contributing, look for any open issues.
