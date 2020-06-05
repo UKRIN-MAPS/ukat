@@ -1,4 +1,11 @@
+"""Tools relying on Simple ITK
+
+The tools in this module should be general enough to be useful in the
+preprocessing of multiple types of MR data (e.g. diffusion, ASL, etc...)
+
+"""
 import SimpleITK as sitk
+
 
 def get3D_from4D(img, idx):
     """Extract a 3D image from the 4th dimension of a 4D image
