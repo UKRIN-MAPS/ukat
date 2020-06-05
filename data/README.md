@@ -20,7 +20,9 @@ With the exception of datasets marked with :star:, all test data is from the tra
 
 * `b0/ge`: subject 004, session 005, series 9.
 * `b0/philips_1`: subject 002, session 002, series 8. Contains scanner calculated B0 map, 1 phase and 1 magnitude image (from a single echo)
-* :star: `b0/philips_2`: Data acquired with phase and magnitude data saved for both echoes
+* :star: `b0/philips_2`: data acquired with phase and magnitude data saved for both echoes
+* `b0/siemens_1`: subject 004, session 009, series 010/011:magnitude/phase, 1 echo per NIfTI file, strong left/right asymmetry
+* :star: `b0/siemens_2`: data acquired after GOSH Prisma upgrade to VE11E (20200305_0281), not a travelling kidney subject, 2D readout, series 044/045:magnitude/phase, 1 echo per NIfTI file
 
 ## Notes
 
