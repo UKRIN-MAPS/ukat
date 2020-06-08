@@ -19,7 +19,7 @@ def B0Map(pixel_array, echo_list, unwrap=True):
         raw data.
     unwrap : boolean
         Optional input argument. By default, this script applies the
-        scipy phase unwrapping for each phase echo image. 
+        scipy phase unwrapping for each phase echo image.
 
     Returns
     -------
