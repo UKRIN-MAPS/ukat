@@ -293,10 +293,13 @@ def b0_siemens_1():
 
             # Load NIfTI
             data = nib.load(filepath)
-            if "00010" in filepath:
+            json_path = filepath.replace(".nii.gz", ".json")
+            with open(json_path, 'r') as json_file:
+                hdr = json.load(json_file)
+            if ("M" in hdr['ImageType']) or ("MAGNITUDE" in hdr['ImageType']):
                 # Save the magnitude data
                 magnitude.append(data.get_fdata())
-            elif "00011" in filepath:
+            elif ("P" in hdr['ImageType']) or ("PHASE" in hdr['ImageType']):
                 # Save the phase data
                 phase.append(data.get_fdata())
 
@@ -308,9 +311,11 @@ def b0_siemens_1():
             echo_list.append(hdr['EchoTime'])
 
     # Move echo dimension to 4th dimension
-    magnitude = np.swapaxes(np.array(magnitude), 0, -1)
-    phase = np.swapaxes(np.array(phase), 0, -1)
-    echo_list = np.unique(np.array(echo_list))
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+    # The next 2 lines get the unique values and preserve the order of the echo
+    echo_list, idxs = np.unique(np.array(echo_list), return_index=True)
+    echo_list = echo_list[np.sort(idxs)]
 
     # Sort by increasing echo time
     sort_idxs = np.argsort(echo_list)
@@ -367,10 +372,14 @@ def b0_siemens_2():
 
             # Load NIfTI
             data = nib.load(filepath)
-            if "00044" in filepath:
+            json_path = filepath.replace(".nii.gz", ".json")
+            with open(json_path, 'r') as json_file:
+                hdr = json.load(json_file)
+            print(hdr['ImageType'])
+            if ("M" in hdr['ImageType']) or ("MAGNITUDE" in hdr['ImageType']):
                 # Save the magnitude data
                 magnitude.append(data.get_fdata())
-            elif "00045" in filepath:
+            elif ("P" in hdr['ImageType']) or ("PHASE" in hdr['ImageType']):
                 # Save the phase data
                 phase.append(data.get_fdata())
 
@@ -384,7 +393,9 @@ def b0_siemens_2():
     # Move echo dimension to 4th dimension
     magnitude = np.moveaxis(np.array(magnitude), 0, -1)
     phase = np.moveaxis(np.array(phase), 0, -1)
-    echo_list = np.unique(np.array(echo_list))
+    # The next 2 lines get the unique values and preserve the order of the echo
+    echo_list, idxs = np.unique(np.array(echo_list), return_index=True)
+    echo_list = echo_list[np.sort(idxs)]
 
     # Sort by increasing echo time
     sort_idxs = np.argsort(echo_list)
