@@ -375,7 +375,6 @@ def b0_siemens_2():
             json_path = filepath.replace(".nii.gz", ".json")
             with open(json_path, 'r') as json_file:
                 hdr = json.load(json_file)
-            print(hdr['ImageType'])
             if ("M" in hdr['ImageType']) or ("MAGNITUDE" in hdr['ImageType']):
                 # Save the magnitude data
                 magnitude.append(data.get_fdata())
