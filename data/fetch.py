@@ -10,7 +10,7 @@ import os
 import json
 import numpy as np
 import nibabel as nib
-from dipy.io import read_bvals_bvecs
+#from dipy.io import read_bvals_bvecsgit
 
 DIR_DATA = os.path.dirname(os.path.realpath(__file__))
 
@@ -176,7 +176,7 @@ def r2star_ge():
 
 
 def r2star_siemens():
-    """Fetches r2star/ge dataset
+    """Fetches r2star/siemens dataset
 
     Returns
     -------
@@ -194,30 +194,30 @@ def r2star_siemens():
     # this list this means that the test dataset has been corrupted.
     # Note that these file names are sorted alphabetically and not sorted by
     # increasing echo time. The sort by echo time will be done later below.
-    expected_filenames = ['00024__bh3x_r2star_inphase_volume_e1.json',
-                          '00024__bh3x_r2star_inphase_volume_e1.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e10.json',
-                          '00024__bh3x_r2star_inphase_volume_e10.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e11.json',
-                          '00024__bh3x_r2star_inphase_volume_e11.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e12.json',
-                          '00024__bh3x_r2star_inphase_volume_e12.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e2.json',
-                          '00024__bh3x_r2star_inphase_volume_e2.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e3.json',
-                          '00024__bh3x_r2star_inphase_volume_e3.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e4.json',
-                          '00024__bh3x_r2star_inphase_volume_e4.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e5.json',
-                          '00024__bh3x_r2star_inphase_volume_e5.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e6.json',
-                          '00024__bh3x_r2star_inphase_volume_e6.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e7.json',
-                          '00024__bh3x_r2star_inphase_volume_e7.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e8.json',
-                          '00024__bh3x_r2star_inphase_volume_e8.nii.gz',
-                          '00024__bh3x_r2star_inphase_volume_e9.json',
-                          '00024__bh3x_r2star_inphase_volume_e9.nii.gz']
+    expected_filenames = ['00025__bh3x_r2star_inphase_volume_e1.json',
+                          '00025__bh3x_r2star_inphase_volume_e1.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e10.json',
+                          '00025__bh3x_r2star_inphase_volume_e10.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e11.json',
+                          '00025__bh3x_r2star_inphase_volume_e11.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e12.json',
+                          '00025__bh3x_r2star_inphase_volume_e12.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e2.json',
+                          '00025__bh3x_r2star_inphase_volume_e2.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e3.json',
+                          '00025__bh3x_r2star_inphase_volume_e3.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e4.json',
+                          '00025__bh3x_r2star_inphase_volume_e4.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e5.json',
+                          '00025__bh3x_r2star_inphase_volume_e5.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e6.json',
+                          '00025__bh3x_r2star_inphase_volume_e6.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e7.json',
+                          '00025__bh3x_r2star_inphase_volume_e7.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e8.json',
+                          '00025__bh3x_r2star_inphase_volume_e8.nii.gz',
+                          '00025__bh3x_r2star_inphase_volume_e9.json',
+                          '00025__bh3x_r2star_inphase_volume_e9.nii.gz']
 
     # Initialise path to r2star/siemens
     dir_r2star_siemens = os.path.join(DIR_DATA, "r2star", "siemens")
@@ -234,7 +234,7 @@ def r2star_siemens():
 
             # Load NIfTI and only save the magnitude data (index 0)
             data = nib.load(filepath)
-            image.append(data.get_fdata()[..., 0])
+            image.append(data.get_fdata())
 
         elif filepath.endswith(".json"):
 
@@ -285,8 +285,6 @@ def r2star_philips():
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.nii.gz',
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.json',
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e2.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e2.nii.gz',
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.json',
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.nii.gz',
                           '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.json',
@@ -317,18 +315,23 @@ def r2star_philips():
 
             # Load NIfTI and only save the magnitude data (index 0)
             data = nib.load(filepath)
-            image.append(data.get_fdata()[..., 0])
+
+            image.append(data.get_fdata())
 
         elif filepath.endswith(".json"):
 
             # Retrieve list of echo times in the original order
             with open(filepath, 'r') as json_file:
+
                 hdr = json.load(json_file)
-            echo_list.append(hdr['EchoTime'])
+
+
+            echo_list.append(hdr["EchoTime"])
 
     # Move echo dimension to 4th dimension
     image = np.moveaxis(np.array(image), 0, -1)
     echo_list = np.array(echo_list)
+
 
     # Sort by increasing echo time
     sort_idxs = np.argsort(echo_list)

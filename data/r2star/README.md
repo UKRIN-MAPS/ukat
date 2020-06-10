@@ -4,12 +4,12 @@
 
 ## GE-specific information
 
-Contains magnitude, real and imaginary images.
+The scanner outputs magnitude, real and imaginary images. There is only magnitude images in this repository.
 
 ## Philips-specific information
 
-Contains magnitude, phase images and scanner calculated map.
+The scanner outputs magnitude and phase images and a scanner calculated map. There is only magnitude images in this repository.
 
 ## Siemens-specific information
 
-Separate series (n=4) correspond to magnitude, magnitude(intensity normalised), phase and a scanner calculated map.
+The scanner outputs magnitude, magnitude(intensity normalised) and phase images, and a scanner calculated map. There is only magnitude images in this repository.
