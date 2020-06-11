@@ -1,6 +1,9 @@
 # Visual Studio Code editor
 .vscode/settings.json
 
+# Pycharm
+.idea/
+
 # Python
 __pycache__/
 
