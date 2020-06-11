@@ -314,16 +314,13 @@ def r2star_philips():
 
             # Load NIfTI and only save the magnitude data (index 0)
             data = nib.load(filepath)
-
             image.append(data.get_fdata())
 
         elif filepath.endswith(".json"):
 
             # Retrieve list of echo times in the original order
             with open(filepath, 'r') as json_file:
-
                 hdr = json.load(json_file)
-
             echo_list.append(hdr["EchoTime"])
 
     # Move echo dimension to 4th dimension
