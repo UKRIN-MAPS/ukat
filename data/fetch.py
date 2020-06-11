@@ -172,7 +172,8 @@ def r2star_ge():
     image = image[..., sort_idxs]
 
     return image, data.affine, echo_list
-    
+
+
 def r2star_siemens():
     """Fetches r2star/siemens dataset
 
@@ -323,13 +324,11 @@ def r2star_philips():
 
                 hdr = json.load(json_file)
 
-
             echo_list.append(hdr["EchoTime"])
 
     # Move echo dimension to 4th dimension
     image = np.moveaxis(np.array(image), 0, -1)
     echo_list = np.array(echo_list)
-
 
     # Sort by increasing echo time
     sort_idxs = np.argsort(echo_list)
@@ -410,7 +409,7 @@ def b0_ge():
     phase = phase[..., sort_idxs]
 
     return magnitude, phase, data.affine, echo_list
-    
+
 
 def _load_b0_siemens(filepaths):
     """General function to retrieve siemens b0 data from list of filepaths
@@ -473,7 +472,7 @@ def _load_b0_siemens(filepaths):
     if echo_times_are_equal:
         echo_times = echo_times_magnitude
     else:
-        raise ValueError("Echo times of magnitude and phase images must be equal")
+        raise ValueError("Magnitude and phase echo times must be equal")
 
     # If all affines are equal, initialise the affine for output
     affines_are_equal = (np.array([i == affines[0] for i in affines])).all()
