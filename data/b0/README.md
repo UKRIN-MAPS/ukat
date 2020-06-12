@@ -3,6 +3,8 @@
 ## Information common to all vendors
 
 ## GE-specific information
+ * magnitude, real and imaginary data, respectively, saved for both echoes
+ * 1 echo per NIfTI file
 
 ## Philips-specific information
 
