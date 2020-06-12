@@ -395,6 +395,9 @@ def b0_ge():
     magnitude = np.moveaxis(np.array(magnitude), 0, -1)
     real = np.moveaxis(np.array(real), 0, -1)
     imaginary = np.moveaxis(np.array(imaginary), 0, -1)
+
+    # Calculate Phase image => tan-1(Im/Re)
+    # np.negative is used to change the sign - as discussed with Andy Priest
     phase = np.negative(np.arctan2(imaginary, real))
 
     echo_list = np.array(echo_list)
