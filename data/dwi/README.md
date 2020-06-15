@@ -6,7 +6,7 @@
 We all need to discuss and agree on the preprocessing approach for `dwi` data. The current preprocessing approach (_work-in-progress_) uses "box" masks but this may change in the future.
 :warning:
 
-"Box" masks are used to specify the regions-of-interest to undergo intrasubject registrations, separate for right and left kidneys, for motion correction of time series data. These masks are stored in two files (one for each kidney) called `box_01.nii.gz` and `box_02.nii.gz`. This document provides some info about how @fnery generates these masks. A `box_check.png` image is also available for each `dwi` test dataset to quickly visualize these masks.
+"Box" masks are used to specify the regions-of-interest to undergo intrasubject registrations, separate for right and left kidneys, for motion correction of time series data. These masks are stored in two files (one for each kidney) called `box_01.nii.gz` and `box_02.nii.gz`. This document provides some info about how @fnery generates these masks. A `box_check.png` image is also available for each `dwi` test dataset to quickly visualize these masks (see [here](https://github.com/UKRIN-MAPS/UKRIN-MAPS/blob/master/data/dwi/siemens/box_check.png) for an example).
 
 ### Drawing box masks
 
