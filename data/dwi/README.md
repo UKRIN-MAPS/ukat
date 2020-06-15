@@ -46,6 +46,8 @@ All data lives on a single 4D NIfTI file. Diffusion gradients information is sto
 
 ### Limitation in `*.bval` and `*.bvec` files
 
+(_**Update 15th June 2020**: having a look through some older siemens datasets (internal code: 20190228_0249) @fnery found some where the below is not an issue. Why this is the case can't be answered right now as tests at the scanner are needed. Just mentioning this here as this may get sorted before the next data acquisition round_)
+
 b-values are rounded to multiples of 50. This affects us because we use several low b-values which are not multiples of 50. Furthermore, if the result of the rounding is a b-value of 0, the corresponding b-vector becomes [0, 0, 0] (see table below). Inspecting the data does suggest that the prescribed b-values are indeed used for the measurements. Therefore, it seems we can use the low b-value measurements in the analysis provided that the `.bval` file is corrected to account for this issue.
 
 | Measurement # | Prescribed b-value | b-value on `*.bval` file | Corresponding b-vector is affected |
