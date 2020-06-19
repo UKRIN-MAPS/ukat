@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class T2Star():
+class T2Star(object):
     """Package containing algorithms that calculate parameter maps
     of the MRI scans acquired during the UKRIN-MAPS project.
 
@@ -28,18 +28,18 @@ class T2Star():
         self.echo_list = echo_list
 
     # Consider splitting these methods into SubClasses at some point.
-    # Could create a Diffusion Toolbox where BValues are an atribute.
+    # Could create a Diffusion Toolbox where BValues are an attribute.
     # Or Fitting, where Inversion Time and Echo Time are attributes.
     # https://www.youtube.com/watch?v=RSl87lqOXDE
 
-    def T2Star_Nottingham(self):
+    def t2star_nottingham(self):
         """
         Generates a T2* map from a series of volumes collected with different
         echo times.
 
         Parameters
         ----------
-        See class atributes in __init__
+        See class attributes in __init__
 
         Returns
         -------
@@ -123,17 +123,17 @@ class T2Star():
             del t2stars_temp, r2stars_temp, m0_temp, delta
             return t2star, r2star, m0
         except Exception as e:
-            print('Error in function T2Star.T2Star_Nottingham: ' + str(e))
+            print('Error in function T2Star.t2star_nottingham: ' + str(e))
 
-    def T2Star_Joao(self):
+    def t2star_joao(self):
         """
         Generates a T2* map from a series of volumes
         collected with different echo times.
-        It's a rewritten version of T2Star_Nottingham with a few modifications.
+        It's a rewritten version of t2star_nottingham with a few modifications.
 
         Parameters
         ----------
-        See class atributes in __init__
+        See class attributes in __init__
 
         Returns
         -------
@@ -189,16 +189,16 @@ class T2Star():
                 t2star = np.where(conditions, 0.0, t2star)
             return t2star
         except Exception as e:
-            print('Error in function T2Star.T2Star_Joao: ' + str(e))
+            print('Error in function T2Star.t2star_joao: ' + str(e))
 
-    def R2Star(self):
+    def r2star(self):
         """
         Generates a R2* map from a series of volumes collected
-        with different echo times. It calls T2Star_Joao().
+        with different echo times. It calls t2star_joao().
 
         Parameters
         ----------
-        See class atributes in __init__
+        See class attributes in __init__
 
         Returns
         -------
@@ -207,7 +207,7 @@ class T2Star():
             by the function with R2* measured in seconds.
         """
         try:
-            r2Star = np.ones(np.shape(self.pixel_array))/self.T2Star_Joao()
-            return r2Star
+            r2star = np.ones(np.shape(self.pixel_array))/self.t2star_joao()
+            return r2star
         except Exception as e:
-            print('Error in function T2Star.R2Star: ' + str(e))
+            print('Error in function T2Star.r2star: ' + str(e))
