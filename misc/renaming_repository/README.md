@@ -35,7 +35,7 @@ Done on GitHub on the browser (inside [`origin`](https://github.com/fnery/UKRIN-
 
 Renamed worked. Look at forks again to confirm:
 
-![2_forks_after_renaming_fnerys_fork.JPG](images/2_forks_after_renaming_fnerys_fork.JPG.JPG)
+![2_forks_after_renaming_fnerys_fork.JPG](images/2_forks_after_renaming_fnerys_fork.JPG)
 
 ### 5. Update remotes of local clone of `origin`
 
