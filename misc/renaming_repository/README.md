@@ -1,7 +1,7 @@
 # Renaming `UKRIN-MAPS` repository to `ukat`
 
 ## What is this?
-This documents the steps @fnery took when renaming the UKRIN-MAPS repository (now named `ukat`) while trying to avoid breaking stuff :smile:.
+This documents the steps **@fnery** took when renaming the UKRIN-MAPS repository (now named `ukat`) while trying to avoid breaking stuff :smile:.
 
 Users are encouraged to rename their own forks to reflect the rename of the `upstream` repository. To do this, follow steps 1, 2, 4, 5 below. 6 is optional, but recommended. Step 7 was to confirm all of the below is correct and worked, but is not necessary.
 
@@ -82,3 +82,5 @@ So rename it and go back into it:
 To check all worked, make a local commit, push it to `origin` (now updated to https://github.com/fnery/ukat) and then submit it as a PR to `upstream` (now updated to https://github.com/UKRIN-MAPS/ukat).
 
 The commit will contain a new `misc` directory placed in the root of the repository which will contain this document.
+
+Update after doing the above and merging the corresponding PR (https://github.com/UKRIN-MAPS/ukat/pull/48). All seems to have worked!
