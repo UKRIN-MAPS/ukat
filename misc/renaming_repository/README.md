@@ -83,4 +83,6 @@ To check all worked, make a local commit, push it to `origin` (now updated to ht
 
 The commit will contain a new `misc` directory placed in the root of the repository which will contain this document.
 
-Update after doing the above and merging the corresponding PR (https://github.com/UKRIN-MAPS/ukat/pull/48). All seems to have worked!
+---
+
+_Update (after doing step 7 ([`PR#48`](https://github.com/UKRIN-MAPS/ukat/pull/48)))_: All seems to have worked!
