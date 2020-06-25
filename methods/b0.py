@@ -1,6 +1,6 @@
 import numpy as np
-from methods.tools import unwrap_phase_image, 
-    convert_to_radians, convert_to_pi_range
+from methods.tools import (unwrap_phase_image, 
+    convert_to_radians, convert_to_pi_range)
 
 
 def b0map(pixel_array, echo_list, unwrap=True):
