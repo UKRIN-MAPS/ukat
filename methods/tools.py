@@ -15,8 +15,8 @@ def unwrap_phase_image(pixel_array):
     return unwrap_phase(wrapped_phase)
 
 
-def convert_to_pi_range(pixel_array):
-    """Set the image values to the interval [-pi, pi]."""
+def convert_to_radians(pixel_array):
+    """Set the image units to radians"""
     if (np.amax(pixel_array) > 3.2) and (np.amin(pixel_array) < -3.2):
         # The value 3.2 was chosen instead of np.pi in order
         # to give some margin.
@@ -26,9 +26,15 @@ def convert_to_pi_range(pixel_array):
         radians_array = (2.0 * pi_array * (pixel_array - min_array) /
                          (max_array - min_array)) - pi_array
     else:
-        # It means it's already on the interval [-pi, pi]
+        # It means it's already in radians
         radians_array = pixel_array
     return radians_array
+
+
+def convert_to_pi_range(pixel_array):
+    """Set the image values to the interval [-pi, pi]"""
+    pi_array = np.pi * np.ones(np.shape(pixel_array))
+    return ((pixel_array + pi_array) % (2 * pi_array)) - pi_array
 
 
 def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):
