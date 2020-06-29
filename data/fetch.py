@@ -411,7 +411,7 @@ def b0_ge():
     return magnitude, phase, data.affine, echo_list
 
 
-def _load_b0_siemens(filepaths):
+def _load_b0_siemens_philips(filepaths):
     """General function to retrieve siemens b0 data from list of filepaths
 
     Returns
@@ -494,7 +494,7 @@ def b0_siemens(dataset_id):
 
     Returns
     -------
-    See outputs of _load_b0_siemens
+    See outputs of _load_b0_siemens_philips
 
     """
 
@@ -534,6 +534,62 @@ def b0_siemens(dataset_id):
     filepaths = get_filepaths(dir_b0_siemens, expected_filenames)
 
     # Load data
-    magnitude, phase, affine, echo_times = _load_b0_siemens(filepaths)
+    magnitude, phase, affine, echo_times = _load_b0_siemens_philips(filepaths)
+
+    return magnitude, phase, affine, echo_times
+
+
+def b0_philips(dataset_id):
+    """Fetches b0/philips_{dataset_id} dataset
+
+    dataset_id : int
+        Number of the dataset to load:
+        - dataset_id = 1 to load "b0\philips_1"
+        - dataset_id = 2 to load "b0\philips_2"
+
+    Returns
+    -------
+    See outputs of _load_b0_siemens_philips
+
+    """
+
+    POSSIBLE_DATASET_IDS = [1, 2]
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in the test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    # Note these file names are sorted alphabetically and may not be sorted
+    # by increasing echo time. The sort by echo time will be done later below.
+    if dataset_id == 1:
+        expected_filenames = ['00801__B0_map_expiration_default_e1.json',
+                              '00801__B0_map_expiration_default_e1.nii.gz',
+                              '00801__B0_map_expiration_default_e2_real.json',
+                              '00801__B0_map_expiration_default_e2_real.nii.gz']
+    elif dataset_id == 2:
+        expected_filenames = ['01401__B0_map_expiration_volume_2DMS_product_e1.json',
+                              '01401__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
+                              '01401__B0_map_expiration_volume_2DMS_product_e1_ph.json',
+                              '01401__B0_map_expiration_volume_2DMS_product_e1_ph.nii.gz',
+                              '01401__B0_map_expiration_volume_2DMS_product_e2.json',
+                              '01401__B0_map_expiration_volume_2DMS_product_e2.nii.gz',
+                              '01401__B0_map_expiration_volume_2DMS_product_e2_ph.json',
+                              '01401__B0_map_expiration_volume_2DMS_product_e2_ph.nii.gz']
+    else:
+        error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
+        raise ValueError(error_msg)
+
+    # Initialise path to b0/philips_{dataset_id}
+    dir_b0_philips = os.path.join(DIR_DATA, "b0", "philips" + f"_{dataset_id}")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_b0_philips, expected_filenames)
+
+    # Load data
+    if dataset_id == 2:
+        magnitude, phase, affine, echo_times = _load_b0_siemens_philips(filepaths)
+    else:
+        # We don't have a way to read the Philips dataset in dataset_id == 1 yet
+        error_msg = f"Not possible to read Philips datasets that don't contain the different phase echoes at the moment."
+        raise ValueError(error_msg)
 
     return magnitude, phase, affine, echo_times
