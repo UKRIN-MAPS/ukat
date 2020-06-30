@@ -588,10 +588,9 @@ def b0_philips(dataset_id):
     if dataset_id == 2:
         magnitude, phase, affine, echo_times = _load_b0_siemens_philips(
             filepaths)
-    else:
-        # We don't have a way to read the dataset_id == 1 yet
-        error_msg = f"Not possible to read Philips datasets that don't
-        contain the different phase echoes at the moment."
+    elif dataset_id == 1:
+        error_msg = ("Functionality to read datasets where phase data was not "
+                     "saved for both echoes separately is not implemented")
         raise ValueError(error_msg)
 
     return magnitude, phase, affine, echo_times
