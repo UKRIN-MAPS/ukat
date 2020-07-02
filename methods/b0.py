@@ -29,7 +29,7 @@ def b0map(pixel_array, echo_list, unwrap=True):
         If pixel_array is 3D, then B0 map will be 2D.
     """
 
-    # Convert and scale to [-pi, pi] if not in that range already
+    # Rescale to [-pi, pi] if not in that range already
     radians_array = convert_to_pi_range(pixel_array)
     if unwrap:
         # Extract and unwrap each phase image
