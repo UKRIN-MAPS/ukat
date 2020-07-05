@@ -541,7 +541,3 @@ def b0_siemens(dataset_id):
     magnitude, phase, affine, echo_times = _load_b0_siemens(filepaths)
 
     return magnitude, phase, affine, echo_times
-
-
-
-b0_ge()
