@@ -45,6 +45,3 @@ def b0map(pixel_array, echo_list, unwrap=True):
     b0 = phase_diff / (2 * np.pi * delta_te)
     del phase_diff, delta_te, phase0, phase1
     return b0
-
-
-a = 1
