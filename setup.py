@@ -17,7 +17,7 @@ setup(
     install_requires=requirements,
 
     package_data={
-        # If any package contains *.txt or *.rst files, include them:
+        # If any package contains any files with the extensions below, include them:
         "": ["*.json", "*.nii.gz", "*.bval", "*.bval_before_manual_correction", "*.bvec", "*.png"],
     },
 )
