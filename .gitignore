@@ -7,6 +7,14 @@
 # Python
 __pycache__/
 
+.pytest_cache/*
+
+.coverage
+
 # Jupyter notebooks
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+
+# Eggs
+ukat.egg-info/
+.eggs/
