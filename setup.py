@@ -4,10 +4,15 @@ from setuptools import setup, find_packages
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
+# Use README.md as the long description
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name="ukat",
     version="0.1.0",
     description="UKRIN Kidney Analysis Toolbox",
+    long_description = long_description,
     url="https://github.com/UKRIN-MAPS/ukat",
     license="GPL-3.0",
 
