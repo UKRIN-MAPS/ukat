@@ -76,7 +76,10 @@ def dwi_ge():
     expected_filenames = ['00014__Cor_DWI_RT.bval',
                           '00014__Cor_DWI_RT.bvec',
                           '00014__Cor_DWI_RT.json',
-                          '00014__Cor_DWI_RT.nii.gz']
+                          '00014__Cor_DWI_RT.nii.gz',
+                          'box_01.nii.gz',
+                          'box_02.nii.gz',
+                          'box_check.png']
 
     # Initialise path to dwi/ge
     dir_dwi_ge = os.path.join(DIR_DATA, "dwi", "ge")
