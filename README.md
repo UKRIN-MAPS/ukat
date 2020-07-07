@@ -1,5 +1,5 @@
 <h2 align="center"><img src="images/logo.png" height="128"></h2>
-<p align="center"><strong>UKRIN Kidney Analysis Toolbox</strong></p>
+<p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
 
 # Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
@@ -24,12 +24,15 @@ Now you can suggest changes (e.g. suggest new code) to be added to the repositor
 
 If you are new to git/GitHub you may find the following cheat sheets handy ([web](https://github.github.com/training-kit/downloads/github-git-cheat-sheet/), [pdf](https://github.github.com/training-kit/downloads/github-git-cheat-sheet.pdf)).
 
-# Installation
-To run the code from this repository you need Python >= 3.6 as well as several additional python libraries installed in your machine. In order to install dependencies for the majority of the repository (exception: `preproc` directory - see below), please run the following command in your terminal:
+# Installing `ukat`
 
-    pip install -r requirements.txt
+`ukat` is a python-based library so start by ensuring you have Python (>=3.6) installed. Assuming the repository has been cloned to your machine as described above, the following steps should install `ukat`.
 
-To run code from the `preproc` directory you also need to have [SimpleElastix](https://simpleelastix.github.io/) installed. Installation instructions are [here](https://simpleelastix.readthedocs.io/GettingStarted.html).
+1. Change to the `ukat` root directory (the one containing a file named `setup.py`).
+2. Run the following command in your terminal: `pip install -e . `
+3. Install [SimpleElastix](https://simpleelastix.github.io/) ([instructions](https://simpleelastix.readthedocs.io/GettingStarted.html)).
+
+If you run into any problems or find any issues with the installation process please raise an [issue](https://github.com/UKRIN-MAPS/ukat/issues).
 
 # Contributing guidelines
 Please read our [contributing guidelines (*work-in-progress*)](.github/CONTRIBUTING.md).
