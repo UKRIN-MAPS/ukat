@@ -17,7 +17,7 @@ def unwrap_phase_image(pixel_array):
 
 def convert_to_pi_range(pixel_array):
     """Rescale the image values to the interval [-pi, pi]."""
-    if (np.amax(pixel_array) > 3.2) and (np.amin(pixel_array) < -3.2):
+    if (np.amax(pixel_array) > 3.2) or (np.amin(pixel_array) < -3.2):
         # The value 3.2 was chosen instead of np.pi in order
         # to give some margin.
         pi_array = np.pi * np.ones(np.shape(pixel_array))
