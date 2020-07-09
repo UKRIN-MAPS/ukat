@@ -198,6 +198,5 @@ class T2Star(object):
         r2Star : 3D array
             An array containing the R2* map generated
             by the function with R2* measured in seconds.
-        """
-        r2star = np.ones(np.shape(self.pixel_array))/self.t2star_joao()
-        return r2star
+        """ 
+        return np.ones(np.shape(self.t2star_joao()))/self.t2star_joao()
