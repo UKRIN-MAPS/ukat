@@ -159,28 +159,25 @@ class TestImageStats:
 
     # Gold Standard = [mean, std, minimum, maximum]
     # Input: {np.arange(-5, 6)}
-    gold_standard = [12.56637061435917, 6.324555320336759,
-                     2.566370614359173, 22.566370614359172]
+    gold_standard = [0.0, 3.162278, -5.0,  5.0]
 
     # Create array for testing
     array = np.arange(-5, 6)
 
     def test_stats_result(self):
         np.testing.assert_allclose(tools.image_stats(self.array),
-                                   self.gold_standard, rtol=1e-7, atol=1e-9)
+                                   self.gold_standard, rtol=1e-3, atol=1e-9)
 
     def test_stats_shape(self):
         assert len(tools.image_stats(self.array)) == 4
 
     def test_stats_input_type(self):
-        with pytest.raises(ValueError):
-            # Empty array
-            tools.image_stats(np.array([]))
         with pytest.raises(TypeError):
-            # No input argument
-            tools.image_stats(None)
             # Other errors and types
             tools.image_stats("abcdef")
+        with pytest.raises(AttributeError):
+            # No input argument
+            tools.image_stats(None)
 
 
 if __name__ == '__main__':
