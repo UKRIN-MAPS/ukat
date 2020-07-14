@@ -1,0 +1,14 @@
+language: python
+python:
+  - 3.6
+  - 3.7
+cache: pip
+before_install:
+  - pip install -U pytest
+  - pip install codecov
+install: pip install -e ukat
+script:
+  - pytest
+  - coverage report -m
+after_success:
+  - codecov
