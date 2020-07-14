@@ -1,16 +1,12 @@
 language: python
 python:
-  - 3.5
   - 3.6
   - 3.7
 cache: pip
 before_install:
-  - pip install pytest
-  - pip install coverage
-  - pip install codecov
+  - pip install pytest==4.5.0
+  - pip install codecov==2.0.15
+  - pip install pytest-cov==2.7.1
 install: pip install -e .
-script:
-  - pytest
-  - coverage report -m
-after_success:
-  - codecov
+script: pytest --cov-report term-missing --cov=ukat
+after_success: codecov
