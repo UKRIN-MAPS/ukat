@@ -48,7 +48,7 @@ And don't forget about [The Zen of Python](https://www.python.org/dev/peps/pep-0
 Use the [semver](https://semver.org/) convention for milestones, releases...
 
 # Tests
-*To do*
+*To do* @JSousa-UoL
 
 # Examples/tutorials
 We should strive to have examples/tutorials for the main methods implemented in this repository. Ideally in jupyter notebook format (`.ipynb` files) in the `tutorials` directory. See [here](/tutorials/t2star_calculation.ipynb) for an example.
