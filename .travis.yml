@@ -6,7 +6,7 @@ cache: pip
 before_install:
   - pip install -U pytest
   - pip install codecov
-install: pip install -e ukat
+install: pip install -e .
 script:
   - pytest
   - coverage report -m
