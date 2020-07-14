@@ -15,7 +15,6 @@ class TestUnwrapPhaseImage:
 
     def test_unwrap_result(self):
         unwrap_calculated = tools.unwrap_phase_image(self.array)
-        print(tools.image_stats(unwrap_calculated))
         np.testing.assert_allclose(tools.image_stats(unwrap_calculated),
                                    self.gold_standard, rtol=1e-7, atol=1e-9)
 
@@ -56,7 +55,6 @@ class TestConvertToPiRange:
 
     def test_pi_range_result(self):
         pi_range_calculated = tools.convert_to_pi_range(self.array)
-        print(tools.image_stats(pi_range_calculated))
         np.testing.assert_allclose(tools.image_stats(pi_range_calculated),
                                    self.gold_standard, rtol=1e-7, atol=1e-9)
 
@@ -155,6 +153,34 @@ class TestMaskSlices:
         wrong_dtype_mask = np.full(self.shape, 2)
         with pytest.raises(AssertionError):
             tools.mask_slices(self.shape, 1, wrong_dtype_mask)
+
+
+class TestImageStats:
+
+    # Gold Standard = [mean, std, minimum, maximum]
+    # Input: {np.arange(-5, 6)}
+    gold_standard = [12.56637061435917, 6.324555320336759,
+                     2.566370614359173, 22.566370614359172]
+
+    # Create array for testing
+    array = np.arange(-5, 6)
+
+    def test_stats_result(self):
+        np.testing.assert_allclose(tools.image_stats(self.array),
+                                   self.gold_standard, rtol=1e-7, atol=1e-9)
+
+    def test_stats_shape(self):
+        assert len(tools.image_stats(self.array)) == 4
+
+    def test_stats_input_type(self):
+        with pytest.raises(ValueError):
+            # Empty array
+            tools.image_stats(np.array([]))
+        with pytest.raises(TypeError):
+            # No input argument
+            tools.image_stats(None)
+            # Other errors and types
+            tools.image_stats("abcdef")
 
 
 if __name__ == '__main__':
