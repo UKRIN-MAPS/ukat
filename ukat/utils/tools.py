@@ -141,3 +141,14 @@ def mask_slices(shape, slices, mask=None):
         final_mask = np.logical_and(mask, template)
 
     return final_mask
+
+
+def image_stats(pixel_array):
+    """This functions takes an image and calculates its mean, std, min and max.
+       It is used in the unit tests, but it can also be used for other
+        image processing tasks."""
+    mean = np.nanmean(pixel_array)
+    std = np.nanstd(pixel_array)
+    minimum = np.nanmin(pixel_array)
+    maximum = np.nanmax(pixel_array)
+    return [mean, std, minimum, maximum]

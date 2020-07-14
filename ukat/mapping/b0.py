@@ -30,7 +30,8 @@ def b0map(pixel_array, echo_list, unwrap=True):
     """
 
     # Rescale to [-pi, pi] if not in that range already
-    radians_array = convert_to_pi_range(pixel_array)
+    # B0 Map accepts inputs with more than 2 echo times
+    radians_array = convert_to_pi_range(pixel_array[..., 0:2])
     if unwrap:
         # Extract and unwrap each phase image
         phase0 = unwrap_phase_image(np.squeeze(radians_array[..., 0]))
