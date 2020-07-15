@@ -62,7 +62,9 @@ def test_array_ndims():
 def test_one_echo_errors():
     with pytest.raises(IndexError):
         b0map(correct_array, one_echo_list)
+    with pytest.raises(IndexError):
         b0map(one_echo_array, correct_echo_list)
+    with pytest.raises(IndexError):
         b0map(one_echo_array, one_echo_list)
 
 
@@ -70,12 +72,13 @@ def test_pixel_array_type_assertion():
     # Empty array
     with pytest.raises(ValueError):
         b0map(np.array([]), correct_echo_list)
+    # No input argument
     with pytest.raises(TypeError):
-        # No input argument
         b0map(None, correct_echo_list)
-        # Other type
+    # List
+    with pytest.raises(TypeError):
         b0map(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]), correct_echo_list)
-    # Other type
+    # String
     with pytest.raises(TypeError):
         b0map("abcdef", correct_echo_list)
 
@@ -87,11 +90,9 @@ def test_echo_list_type_assertion():
     # No input argument
     with pytest.raises(TypeError):
         b0map(correct_array, None)
-    # Other types
+    # Float
     with pytest.raises(TypeError):
         b0map(correct_array, 3.2)
+    # String
+    with pytest.raises(TypeError):
         b0map(correct_array, "abcdef")
-
-
-if __name__ == '__main__':
-    pytest.main()

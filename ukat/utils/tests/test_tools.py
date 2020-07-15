@@ -32,11 +32,14 @@ class TestUnwrapPhaseImage:
         assert (zeros == np.zeros(np.shape(self.array))).all()
 
     def test_input_array_type_assertion(self):
+        # No input argument
         with pytest.raises(TypeError):
-            # No input argument
             tools.unwrap_phase_image(None)
-            # Other types
+        # List
+        with pytest.raises(TypeError):
             tools.unwrap_phase_image(list([-5, -4, -3, -2, -1, 0, 1, 2, 3]))
+        # String
+        with pytest.raises(TypeError):
             tools.unwrap_phase_image("abcdef")
 
 
@@ -75,13 +78,14 @@ class TestConvertToPiRange:
         assert (result == self.array_pi_range).all()
 
     def test_input_array_type_assertion(self):
+        # Empty array
         with pytest.raises(ValueError):
-            # Empty array
             tools.convert_to_pi_range(np.array([]))
+        # No input argument
         with pytest.raises(TypeError):
-            # No input argument
             tools.convert_to_pi_range(None)
-            # Other errors and types
+        # String
+        with pytest.raises(TypeError):
             tools.convert_to_pi_range("abcdef")
 
 
@@ -129,17 +133,20 @@ class TestMaskSlices:
             tools.mask_slices(self.shape, 1, mismatched_mask)
 
     def test_slices_type_assertion(self):
+        # Wrong type `slices`
         with pytest.raises(ValueError):
-            # Wrong type `slices`
             tools.mask_slices(self.shape, np.array([1, 2]))
-            # Not all elements of slices are `ints`
+        # Not all elements of slices are `ints`
+        with pytest.raises(ValueError):
             tools.mask_slices(self.shape, [1, 2.2])
+        with pytest.raises(ValueError):
             tools.mask_slices(self.shape, 2.2)
 
     def test_slice_ranges_assertion(self):
+        # Slices out of range tests
         with pytest.raises(ValueError):
-            # Slices out of range tests
             tools.mask_slices(self.shape, [0, 3])
+        with pytest.raises(ValueError):
             tools.mask_slices(self.shape, 3)
 
     def test_mask_type_assertion(self):
@@ -172,13 +179,9 @@ class TestImageStats:
         assert len(tools.image_stats(self.array)) == 4
 
     def test_stats_input_type(self):
-        with pytest.raises(TypeError):
-            # Other errors and types
-            tools.image_stats("abcdef")
+        # No input argument
         with pytest.raises(AttributeError):
-            # No input argument
             tools.image_stats(None)
-
-
-if __name__ == '__main__':
-    pytest.main()
+        # String
+        with pytest.raises(TypeError):
+            tools.image_stats("abcdef")
