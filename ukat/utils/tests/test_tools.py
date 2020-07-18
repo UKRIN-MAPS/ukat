@@ -89,6 +89,48 @@ class TestConvertToPiRange:
             tools.convert_to_pi_range("abcdef")
 
 
+class TestResizeArray:
+
+    # Create arrays for testing
+    array_2d = np.arange(100).reshape((10, 10))
+    array_3d = np.arange(500).reshape((10, 10, 5))
+    array_4d = np.arange(5000).reshape((10, 10, 5, 10))
+
+    def test_no_resize(self):
+        resized_array_2d = tools.resize_array(self.array_2d)
+        resized_array_3d = tools.resize_array(self.array_3d, factor=1)
+        resized_array_4d = tools.resize_array(self.array_4d, target_size=10)
+        assert (resized_array_2d == self.array_2d).all()
+        assert (resized_array_3d == self.array_3d).all()
+        assert (resized_array_4d == self.array_4d).all()
+
+    def test_output_shapes(self):
+        resized_array_1 = tools.resize_array(self.array_3d, factor=2)
+        resized_array_2 = tools.resize_array(self.array_4d, target_size=20)
+        assert np.shape(resized_array_1)[0] != 10
+        assert np.shape(resized_array_1)[0] == 20
+        assert np.shape(resized_array_1)[0] == np.shape(resized_array_1)[1]
+        assert np.shape(resized_array_2)[0] != 10
+        assert np.shape(resized_array_2)[0] == 20
+        assert np.shape(resized_array_1)[0] == np.shape(resized_array_2)[0]
+        assert np.shape(resized_array_1)[1] == np.shape(resized_array_2)[1]
+        assert np.shape(resized_array_1)[2] != 10
+        assert np.shape(resized_array_1)[2] == np.shape(self.array_3d)[2]
+        assert np.shape(resized_array_2)[3] != 20
+        assert np.shape(resized_array_2)[3] == np.shape(self.array_4d)[3]
+
+    def test_input_array_type_assertion(self):
+        # Empty array
+        with pytest.raises(IndexError):
+            tools.resize_array(np.array([]))
+        # No input argument
+        with pytest.raises(IndexError):
+            tools.resize_array(None)
+        # String
+        with pytest.raises(IndexError):
+            tools.resize_array("abcdef")
+
+
 class TestMaskSlices:
 
     shape = (2, 2, 3)

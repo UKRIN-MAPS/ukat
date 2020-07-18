@@ -5,11 +5,13 @@ import ukat.utils.tools as tools
 
 # Gold Standard = [mean, std, minimum, maximum]
 # B0 inputs: {np.arange(200).reshape((10, 10, 2))} and {[4, 7]}
-gold_standard = [336.68341708542715, 4.721768995590352e-14,
-                 336.6834170854271, 336.68341708542715]
+#            with the value in position [5, 5, :] = 100
+gold_standard = [-0.033670033670033545, 0.33501260508640285,
+                 -3.367003367003355, 0.0]
 
 # Create arrays for testing
 correct_array = np.arange(200).reshape((10, 10, 2))
+correct_array[5, 5, :] = 100  # This is to "break" the step "1" in np.arange()
 one_echo_array = np.arange(100).reshape((10, 10, 1))
 multiple_echoes_array = (np.concatenate((correct_array,
                          np.arange(300).reshape((10, 10, 3))), axis=2))
@@ -70,7 +72,7 @@ def test_one_echo_errors():
 
 def test_pixel_array_type_assertion():
     # Empty array
-    with pytest.raises(ValueError):
+    with pytest.raises(IndexError):
         b0map(np.array([]), correct_echo_list)
     # No input argument
     with pytest.raises(TypeError):

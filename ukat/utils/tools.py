@@ -4,19 +4,44 @@ multiple algorithms
 
 """
 import numpy as np
-from skimage.transform import resize
+from scipy.ndimage import zoom
 from skimage.restoration import unwrap_phase
 
 
-def unwrap_phase_image(pixel_array):
-    # Wrapping of the phase image according to
-    # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+def unwrap_phase_image(pixel_array, wrap_around=False):
+    """
+    From an image wrapped to lie in the interval [-pi, pi],
+    this function recovers the original, unwrapped image.
+    Read references in
+    https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+        A 2D/3D array containing the phase image.
+
+    Returns
+    -------
+    np.ndarray with the phase of pixel_array unwrapped.
+    """
     wrapped_phase = np.angle(np.exp(2j * pixel_array))
-    return unwrap_phase(wrapped_phase)
+    return unwrap_phase(wrapped_phase, wrap_around=wrap_around)
 
 
 def convert_to_pi_range(pixel_array):
-    """Rescale the image values to the interval [-pi, pi]."""
+    """
+    Rescale the image values to the interval [-pi, pi].
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    radians_array : np.ndarray
+        An array containing with the same shape as pixel_array
+        scaled to the range [-pi, pi].
+    """
     if (np.amax(pixel_array) > 3.2) or (np.amin(pixel_array) < -3.2):
         # The value 3.2 was chosen instead of np.pi in order
         # to give some margin.
@@ -31,54 +56,39 @@ def convert_to_pi_range(pixel_array):
     return radians_array
 
 
-def resize_array(pixel_array, pixel_spacing, reconst_pixel=None):
-    """Resizes the given pixel_array, using reconst_pixel as the reference
-        of the resizing operation. This method assumes that the dimension
-        axes=0 of pixel_array is the number of slices for np.shape > 2."""
-    # This is so that data shares the same resolution and size
+def resize_array(pixel_array, factor=1, target_size=None):
+    """
+    Resizes the given pixel_array, using target_size as the reference
+    of the resizing operation (if None, then there's no resizing).
+    This method applies a resize_factor to the first 2 axes of the input array.
+    The remaining axes are left unchanged.
+    Example 1: (10, 10, 2) => (5, 5, 2) with resize_factor = 0.5
+    Example 2: (10, 10, 10, 2) => (20, 20, 10, 2) with resize_factor = 2
 
-    if reconst_pixel is not None:
-        fraction = reconst_pixel / pixel_spacing
-    else:
-        fraction = 1
+    Parameters
+    ----------
+    pixel_array : np.ndarray
 
-    if len(np.shape(pixel_array)) == 2:
-        pixel_array = resize(
-            pixel_array, (pixel_array.shape[0] // fraction,
-                          pixel_array.shape[1] // fraction),
-            anti_aliasing=True)
-    elif len(np.shape(pixel_array)) == 3:
-        pixel_array = resize(pixel_array, (pixel_array.shape[0],
-                                           pixel_array.shape[1] // fraction,
-                                           pixel_array.shape[2] // fraction),
-                             anti_aliasing=True)
-    elif len(np.shape(pixel_array)) == 4:
-        pixel_array = resize(pixel_array, (pixel_array.shape[0],
-                                           pixel_array.shape[1],
-                                           pixel_array.shape[2] // fraction,
-                                           pixel_array.shape[3] // fraction),
-                             anti_aliasing=True)
-    elif len(np.shape(pixel_array)) == 5:
-        pixel_array = resize(pixel_array, (pixel_array.shape[0],
-                                           pixel_array.shape[1],
-                                           pixel_array.shape[2],
-                                           pixel_array.shape[3] // fraction,
-                                           pixel_array.shape[4] // fraction),
-                             anti_aliasing=True)
-    elif len(np.shape(pixel_array)) == 6:
-        pixel_array = resize(pixel_array, (pixel_array.shape[0],
-                                           pixel_array.shape[1],
-                                           pixel_array.shape[2],
-                                           pixel_array.shape[3],
-                                           pixel_array.shape[4] // fraction,
-                                           pixel_array.shape[5] // fraction),
-                             anti_aliasing=True)
+    Returns
+    -------
+    resized_array : np.ndarray where the size of the first 2 dimensions
+        is np.shape(pixel_array) * factor. The remaining dimensions (or axes)
+        will have a the same size as in pixel_array.
+    """
+    if target_size is not None:
+        factor = target_size / np.shape(pixel_array)[0]
 
-    return pixel_array
+    resize_factor = np.ones(len(np.shape(pixel_array)))
+    resize_factor[0] = factor
+    resize_factor[1] = factor
+    resized_array = zoom(pixel_array, resize_factor)
+
+    return resized_array
 
 
 def mask_slices(shape, slices, mask=None):
-    """Get mask to limit processing to specific slices
+    """
+    Get mask to limit processing to specific slices.
 
     This function allows to quickly get a mask of Trues of the right shape to
     limit processing to specific slices. If `mask` is provided it outputs a new
@@ -98,7 +108,6 @@ def mask_slices(shape, slices, mask=None):
     Returns
     -------
     np.ndarray (of booleans)
-
     """
     # Input type checks
     if not isinstance(shape, tuple):
@@ -144,9 +153,20 @@ def mask_slices(shape, slices, mask=None):
 
 
 def image_stats(pixel_array):
-    """This functions takes an image and calculates its mean, std, min and max.
-       It is used in the unit tests, but it can also be used for other
-        image processing tasks."""
+    """
+    This functions takes an image and calculates its mean, std, min and max.
+    It is used in the unit tests, but it can also be used for other
+    image processing tasks.
+
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+
+    Returns
+    -------
+    list() with 4 values calculated from pixel_array:
+        [mean, standard deviation, minimum, maximum]
+    """
     mean = np.nanmean(pixel_array)
     std = np.nanstd(pixel_array)
     minimum = np.nanmin(pixel_array)
