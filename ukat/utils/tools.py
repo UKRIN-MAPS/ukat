@@ -76,7 +76,7 @@ def resize_array(pixel_array, factor=1, target_size=None):
     factor : boolean
         Optional input argument. This is the resize factor defined by the user
         and it is applied in the scipy.ndimage.zoom
-    
+
     target_size : boolean
         Optional input argument. By default, this script does not apply the
         scipy wrap_around in the input image.
