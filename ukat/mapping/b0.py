@@ -2,7 +2,7 @@ import numpy as np
 from ukat.utils.tools import unwrap_phase_image, convert_to_pi_range
 
 
-def b0map(pixel_array, echo_list, unwrap=True):
+def b0map(pixel_array, echo_list, unwrap=True, wrap_around=False):
     """
     Generates a B0 map from a series of volumes collected
     with 2 different echo times. It can also generate B0 map
@@ -20,6 +20,9 @@ def b0map(pixel_array, echo_list, unwrap=True):
     unwrap : boolean
         Optional input argument. By default, this script applies the
         scipy phase unwrapping for each phase echo image.
+    wrap_around : boolean
+        Optional input argument. By default, this script does not apply the
+        scipy wrap_around in the phase unwrapping for each phase echo image.
 
     Returns
     -------
@@ -28,18 +31,14 @@ def b0map(pixel_array, echo_list, unwrap=True):
         If pixel_array is 4D, then B0 map will be 3D.
         If pixel_array is 3D, then B0 map will be 2D.
     """
-
-    # Rescale to [-pi, pi] if not in that range already
     # B0 Map accepts inputs with more than 2 echo times
-    radians_array = convert_to_pi_range(pixel_array[..., 0:2])
+    # Extract each phase image and rescale to [-pi, pi] if not in that range.
+    phase0 = convert_to_pi_range(np.squeeze(pixel_array[..., 0]))
+    phase1 = convert_to_pi_range(np.squeeze(pixel_array[..., 1]))
     if unwrap:
-        # Extract and unwrap each phase image
-        phase0 = unwrap_phase_image(np.squeeze(radians_array[..., 0]))
-        phase1 = unwrap_phase_image(np.squeeze(radians_array[..., 1]))
-    else:
-        # Extract each phase image
-        phase0 = np.squeeze(radians_array[..., 0])
-        phase1 = np.squeeze(radians_array[..., 1])
+        # Unwrap each phase image
+        phase0 = unwrap_phase_image(phase0, wrap_around=wrap_around)
+        phase1 = unwrap_phase_image(phase1, wrap_around=wrap_around)
     phase_diff = phase1 - phase0
     delta_te = np.absolute(echo_list[1] - echo_list[0]) * 0.001
     # B0 Map calculation
