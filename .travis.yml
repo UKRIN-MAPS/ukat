@@ -9,4 +9,4 @@ before_install:
   - pip install pytest-cov==2.7.1
 install: pip install -e .
 script: pytest --cov-report term-missing --cov=ukat
-after_success: codecov --token=$CODECOV_TOKEN
+after_success: codecov -t $CODECOV_TOKEN
