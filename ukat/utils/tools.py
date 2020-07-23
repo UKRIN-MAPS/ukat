@@ -20,6 +20,10 @@ def unwrap_phase_image(pixel_array, wrap_around=False):
     pixel_array : np.ndarray
         A 2D/3D array containing the phase image.
 
+    wrap_around : boolean
+        Optional input argument. By default, this script does not apply the
+        scipy wrap_around in the input image.
+
     Returns
     -------
     np.ndarray with the phase of pixel_array unwrapped.
@@ -68,6 +72,14 @@ def resize_array(pixel_array, factor=1, target_size=None):
     Parameters
     ----------
     pixel_array : np.ndarray
+
+    factor : boolean
+        Optional input argument. This is the resize factor defined by the user
+        and it is applied in the scipy.ndimage.zoom
+    
+    target_size : boolean
+        Optional input argument. By default, this script does not apply the
+        scipy wrap_around in the input image.
 
     Returns
     -------

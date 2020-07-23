@@ -11,7 +11,13 @@ gold_standard = [-0.033670033670033545, 0.33501260508640285,
 
 # Create arrays for testing
 correct_array = np.arange(200).reshape((10, 10, 2))
-correct_array[5, 5, :] = 100  # This is to "break" the step "1" in np.arange()
+correct_array[5, 5, :] = 100
+# So correct_array is basically a sequential list like [0, 1, 2, 3, ... , 200]
+# In the unwrapping test I'm trying to prove that unwrap != wrapped. However,
+# unwrap([0, 1, 2, 3, ... , 200]) = wrap([0, 1, 2, 3, ... , 200]), which means
+# that unwrapping does nothing in this array. In order to make the unwrapping
+# do something in correct_array, I inserted the values 100 in the middle of
+# the sequence with the objective to "break" that sequence.
 one_echo_array = np.arange(100).reshape((10, 10, 1))
 multiple_echoes_array = (np.concatenate((correct_array,
                          np.arange(300).reshape((10, 10, 3))), axis=2))

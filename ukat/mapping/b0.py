@@ -22,7 +22,7 @@ def b0map(pixel_array, echo_list, unwrap=True, wrap_around=False):
         scipy phase unwrapping for each phase echo image.
     wrap_around : boolean
         Optional input argument. By default, this script does not apply the
-        scipy wrap_around in thr phase unwrapping for each phase echo image.
+        scipy wrap_around in the phase unwrapping for each phase echo image.
 
     Returns
     -------
