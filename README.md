@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.com/UKRIN-MAPS/ukat.svg?token=7aU73aCyDpzGTeY9Af2j&branch=master)](https://travis-ci.com/UKRIN-MAPS/ukat)
-
 <h2 align="center"><img src="images/logo.png" height="128"></h2>
 <p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
+
+[![Build Status](https://travis-ci.com/UKRIN-MAPS/ukat.svg?token=7aU73aCyDpzGTeY9Af2j&branch=master)](https://travis-ci.com/UKRIN-MAPS/ukat)
 
 # Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
