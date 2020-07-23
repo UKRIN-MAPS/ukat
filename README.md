@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/UKRIN-MAPS/ukat.svg?token=7aU73aCyDpzGTeY9Af2j&branch=master)](https://travis-ci.com/UKRIN-MAPS/ukat)
+
 <h2 align="center"><img src="images/logo.png" height="128"></h2>
 <p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
 
