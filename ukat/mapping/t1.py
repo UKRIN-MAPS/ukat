@@ -1,4 +1,8 @@
 import numpy as np
+from multiprocessing import Pool, cpu_count
+from functools import partial
+from tqdm import tqdm
+from scipy.optimize import curve_fit
 
 
 class T1(object):
@@ -11,21 +15,147 @@ class T1(object):
 
     """
 
-    def __init__(self, pixel_array, inversion_list):
+    def __init__(self, pixel_array, inversion_list, mask=None, parameters=2,
+                 multithread=True, chunksize=500):
         """Initialise a T1 class instance.
 
         Parameters
         ----------
-        pixel_array : 4D/3D array
-            A 4D/3D array containing the signal from each voxel at each
-            inversion time i.e. the dimensions of the array are [x, y, z, TI].
+        pixel_array : np.ndarray
+            A array containing the signal from each voxel at each inversion
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T1 map would have dimensions [x, y, z, TI].
         inversion_list : list()
             An array of the inversion times used for the last dimension of the
             raw data.
+        mask : np.ndarray
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T1 map rather than the raw data i.e. omit the time
+            dimension.
+        parameters : int (2 or 3)
+            The number of parameters to fit the data to. A two parameter fit
+            will estimate S0 and T1 while a three parameter fit will also
+            estimate the inversion efficiency.
+        multithread : bool
+            If True, fitting will be distributed over all cores available on
+            the node. If False, fitting will be carried out on a single thread.
+            Useful when fitting very small amounts of data e.g. a mean T1
+            decay over an ROI when the overheads of multi-threading are more
+            of a hindrance than the increase in speed distributing the
+            calculation would generate.
         """
 
+        # Some sanity checks
+        assert (pixel_array.shape[-1]
+                == len(inversion_list)), 'Number of inversions does not ' \
+                                         'match the number of time frames ' \
+                                         'on the last axis of pixel_array'
         self.pixel_array = pixel_array
+        self.shape = pixel_array.shape[:-1]
+        self.n_ti = pixel_array.shape[-1]
+        if mask is None:
+            self.mask = np.ones(self.shape, dtype=bool)
+        else:
+            self.mask = mask
         self.inversion_list = inversion_list
+        self.parameters = parameters
+        self.multithread = multithread
+        self.chunksize = chunksize
+        if self.parameters == 2:
+            self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
+        elif self.parameters == 3:
+            self.t1_map, self.t1_err, self.m0_map, self.m0_err, \
+             self.eff, self.eff_err = self.__fit__()
+        else:
+            raise ValueError('Parameters can be 2 or 3 only. You specified '
+                             '{}'.format(self.parameters))
+        self.r1_map = np.reciprocal(self.t1_map)
+
+    def __fit__(self):
+        n_vox = np.prod(self.shape)
+        t1_map = np.zeros(n_vox)
+        mask = self.mask.flatten()
+        signal = self.pixel_array.reshape(-1, self.n_ti)
+        idx = np.argwhere(mask).squeeze()
+
+        fit_partial = partial(self.__fit_wrapper__, signal,
+                              self.inversion_list,
+                              self.parameters)
+        with Pool() as pool:
+            res = list(tqdm(
+                pool.imap(fit_partial, idx, self.chunksize),
+                total=idx.size, leave=False))
+        res_array = np.array(res)
+        t1_map[idx] = res_array[:, 0]
+        t1_map = t1_map.reshape(self.shape)
+        t1_err, m0_map, m0_err, eff, eff_err = 0, 0, 0, 0, 0
+        if self.parameters == 2:
+            return t1_map, t1_err, m0_map, m0_err
+        elif self.parameters == 3:
+            return t1_map, t1_err, m0_map, m0_err, eff, eff_err
+
+    @staticmethod
+    def __two_param_abs_eq__(t, t1, m0):
+        return np.abs(m0 * 1 - 2 * np.exp(-t / t1))
+
+    @staticmethod
+    def __two_param_eq__(t, t1, m0):
+        return m0 * 1 - 2 * np.exp(-t / t1)
+
+    @staticmethod
+    def __three_param_abs_eq__(t, t1, m0, eff):
+        return np.abs(m0 * (1 - eff * np.exp(-t / t1)))
+
+    @staticmethod
+    def __three_param_eq__(t, t1, m0, eff):
+        return m0 * (1 - eff * np.exp(-t / t1))
+
+    def __fit_wrapper__(self, idx, signal, ti, parameters):
+        return self.__fit_signal__(signal[idx, :], ti, parameters)
+
+    def __fit_signal__(self, sig, t, parameters):
+        if parameters == 2:
+            bounds = ([0, 0], [4000, 1000000])
+            initial_guess = [1000, 30000]
+            if sig.min() > 0:
+                eq = self.__two_param_abs_eq__
+            else:
+                eq = self.__two_param_eq__
+        elif parameters == 3:
+            bounds = ([0, 0, 0], [4000, 1000000, 2])
+            initial_guess = [1000, 30000, 2]
+            if sig.min() > 0:
+                eq = self.__three_param_abs_eq__
+            else:
+                eq = self.__three_param_eq__
+
+        try:
+            popt, pcov = curve_fit(eq, t, sig,
+                                   p0=initial_guess,  bounds=bounds)
+        except RuntimeError:
+            popt = np.zeros(self.parameters)
+            pcov = np.zeros((self.parameters, self.parameters))
+
+        if popt[0] < bounds[1][0]:
+            t1 = popt[0]
+            m0 = popt[1]
+            err = np.sqrt(np.diag(pcov))
+            t1_err = err[0]
+            m0_err = err[1]
+            output_tuple = tuple([t1, m0, t1_err, m0_err])
+            if self.parameters == 3:
+                eff = popt[2]
+                eff_err = err[2]
+                output_tuple = tuple([t1, m0, eff,
+                                      t1_err, m0_err, eff_err])
+        else:
+            t1, m0, t1_err, m0_err = 0, 0, 0, 0
+            output_tuple = tuple([t1, m0, t1_err, m0_err])
+            if self.parameters == 3:
+                eff, eff_err = 0, 0
+                output_tuple = tuple([t1, m0, eff,
+                                      t1_err, m0_err, eff_err])
+        return output_tuple
 
 
 def magnitude_correct(pixel_array):

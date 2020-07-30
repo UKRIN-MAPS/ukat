@@ -1,8 +1,60 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
-from ukat.mapping.t1 import magnitude_correct
+from ukat.mapping.t1 import T1, magnitude_correct
 import ukat.utils.tools as tools
+
+# T1 Class Testing
+
+# TODO e2e test with scanner data
+
+
+def test_two_param_eq():
+    correct_signal = np.array([-0.63746151, -0.48163644, -0.34064009,
+                               -0.21306132, -0.09762327, 0.00682939,
+                               0.10134207,  0.18686068,  0.26424112])
+    t = np.linspace(200, 1000, 9)
+    t1 = 1000
+    m0 = 1
+    signal = T1.__two_param_eq__(t, t1, m0)
+    npt.assert_allclose(signal, correct_signal, rtol=1e-6, atol=1e-8)
+
+
+def test_two_param_fit():
+    correct_signal = np.array([-0.63746151, -0.48163644, -0.34064009,
+                               -0.21306132, -0.09762327, 0.00682939,
+                               0.10134207, 0.18686068, 0.26424112])
+    signal_array = np.tile(correct_signal, (128, 128, 5, 1))
+    ti = np.linspace(200, 1000, 9)
+    t1_map = T1(signal_array, ti)
+    assert t1_map.t1_map.mean() - 1000 < 1
+
+
+def test_missmatched_raw_data_and_inversion_lengths():
+
+    with pytest.raises(AssertionError):
+        mapper = T1(pixel_array=np.zeros((5, 5, 4)),
+                    inversion_list=np.linspace(0, 2000, 5))
+
+    with pytest.raises(AssertionError):
+        mapper = T1(pixel_array=np.zeros((5, 5, 5)),
+                    inversion_list=np.linspace(0, 2000, 4))
+
+
+def test_parameters():
+
+    # One parameter fit
+    with pytest.raises(ValueError):
+        mapper = T1(pixel_array=np.zeros((5, 5, 5)),
+                    inversion_list=np.linspace(0, 2000, 5),
+                    parameters=1)
+
+    # Four parameter fit
+    with pytest.raises(ValueError):
+        mapper = T1(pixel_array=np.zeros((5, 5, 5)),
+                    inversion_list=np.linspace(0, 2000, 5),
+                    parameters=4)
+
 
 # Magnitude Correction Testing
 
