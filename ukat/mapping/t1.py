@@ -74,24 +74,46 @@ class T1(object):
     def __fit__(self):
         n_vox = np.prod(self.shape)
         t1_map = np.zeros(n_vox)
+        m0_map = np.zeros(n_vox)
+        t1_err = np.zeros(n_vox)
+        m0_err = np.zeros(n_vox)
+        if self.parameters == 3:
+            eff_map = np.zeros(n_vox)
+            eff_err = np.zeros(n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_ti)
         idx = np.argwhere(mask).squeeze()
-
-        fit_partial = partial(self.__fit_wrapper__, signal,
-                              self.inversion_list,
-                              self.parameters)
-        with Pool() as pool:
-            res = list(tqdm(
-                pool.imap(fit_partial, idx, self.chunksize),
+        
+        if self.multithread:
+            fit_partial = partial(self.__fit_wrapper__, signal,
+                                  self.inversion_list,
+                                  self.parameters)
+            with Pool() as pool:
+                res = list(tqdm(pool.imap(fit_partial, idx, self.chunksize),
                 total=idx.size, leave=False))
-        res_array = np.array(res)
-        t1_map[idx] = res_array[:, 0]
+            res_array = np.array(res)
+            t1_map[idx] = res_array[:, 0]
+        else:
+            for ind in idx:
+                sig = signal[ind, :]
+                output_tuple = self.__fit_signal__(sig, self.inversion_list, self.parameters)
+                t1_map[ind] = output_tuple[0]
+                m0_map[ind] = output_tuple[1]
+                t1_err[ind] = output_tuple[2]
+                m0_err[ind] = output_tuple[3]
+                if self.parameters == 3:
+                    eff_map = output_tuple[4]
+                    eff_err = output_tuple[5]
+        
         t1_map = t1_map.reshape(self.shape)
-        t1_err, m0_map, m0_err, eff, eff_err = 0, 0, 0, 0, 0
+        m0_map = m0_map.reshape(self.shape)
+        t1_err = t1_err.reshape(self.shape)
+        m0_err = m0_err.reshape(self.shape)
         if self.parameters == 2:
             return t1_map, t1_err, m0_map, m0_err
         elif self.parameters == 3:
+            eff_map = eff_map.reshape(self.shape)
+            eff_err = eff_err.reshape(self.shape)
             return t1_map, t1_err, m0_map, m0_err, eff, eff_err
 
     @staticmethod
@@ -111,7 +133,9 @@ class T1(object):
         return m0 * (1 - eff * np.exp(-t / t1))
 
     def __fit_wrapper__(self, idx, signal, ti, parameters):
-        return self.__fit_signal__(signal[idx, :], ti, parameters)
+        signal_selected  = signal[idx.astype(np.int8)] # This should be something like [idx, :] but that seems to be causing problems so has been removed for now
+        output_tuple = self.__fit_signal__(signal_selected, ti, parameters)
+        return output_tuple
 
     def __fit_signal__(self, sig, t, parameters):
         if parameters == 2:
@@ -142,19 +166,17 @@ class T1(object):
             err = np.sqrt(np.diag(pcov))
             t1_err = err[0]
             m0_err = err[1]
-            output_tuple = tuple([t1, m0, t1_err, m0_err])
+            output_tuple = tuple([t1, t1_err, m0, m0_err])
             if self.parameters == 3:
                 eff = popt[2]
                 eff_err = err[2]
-                output_tuple = tuple([t1, m0, eff,
-                                      t1_err, m0_err, eff_err])
+                output_tuple = tuple([t1, t1_err, m0, m0_err, eff, eff_err])
         else:
             t1, m0, t1_err, m0_err = 0, 0, 0, 0
-            output_tuple = tuple([t1, m0, t1_err, m0_err])
+            output_tuple = tuple([t1, t1_err, m0, m0_err])
             if self.parameters == 3:
                 eff, eff_err = 0, 0
-                output_tuple = tuple([t1, m0, eff,
-                                      t1_err, m0_err, eff_err])
+                output_tuple = tuple([t1, t1_err, m0, m0_err, eff, eff_err])
         return output_tuple
 
 
