@@ -9,4 +9,4 @@ before_install:
   - pip install pytest-cov==2.7.1
 install: pip install -e .
 script: pytest --cov-report=xml --cov=ukat
-after_success: codecov
+after_success: codecov --token=79d35a7a-cca0-4770-b1f4-3ff622604c64
