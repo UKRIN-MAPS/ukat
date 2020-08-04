@@ -1,0 +1,5 @@
+codecov:
+  token: 79d35a7a-cca0-4770-b1f4-3ff622604c64
+  bot: "codecov-io"
+  ci: "travis-ci.com"
+  require_ci_to_pass: yes
