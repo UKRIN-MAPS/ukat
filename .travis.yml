@@ -10,5 +10,5 @@ before_install:
 install: pip install -e .
 script: pytest --cov-report=xml --cov=ukat
 after_success: 
-  - cd ukat
-  - codecov --token="79d35a7a-cca0-4770-b1f4-3ff622604c64"
+  - cd ukat/
+  - codecov -t 79d35a7a-cca0-4770-b1f4-3ff622604c64
