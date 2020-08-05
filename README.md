@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.com/UKRIN-MAPS/ukat.svg?token=7aU73aCyDpzGTeY9Af2j&branch=master)](https://travis-ci.com/UKRIN-MAPS/ukat)
 [![codecov](https://codecov.io/gh/UKRIN-MAPS/ukat/branch/master/graph/badge.svg?token=QJ9DQONJBP)](https://codecov.io/gh/UKRIN-MAPS/ukat)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
