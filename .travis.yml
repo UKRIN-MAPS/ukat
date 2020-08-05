@@ -11,4 +11,4 @@ install: pip install -e .
 script: pytest --cov-report=xml --cov=ukat
 after_success: 
   - cd ukat
-  - codecov -t $CODECOV_TOKEN
+  - codecov -t ${{ secrets.CODECOV_TOKEN }}
