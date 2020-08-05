@@ -9,4 +9,6 @@ before_install:
   - pip install pytest-cov
 install: pip install -e .
 script: pytest --cov-report=xml --cov=ukat
-after_success: codecov -t $CODECOV_TOKEN
+after_success: 
+  - cd ukat
+  - codecov -t $CODECOV_TOKEN
