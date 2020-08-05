@@ -3,7 +3,8 @@ python:
   - 3.6
   - 3.7
 cache: pip
-before_install: pip install pytest codecov coverage coveralls pytest-cov
+before_install: pip install pytest codecov pytest-cov
 install: pip install -e .
 script: pytest --cov-report=xml --cov=ukat
-after_success: codecov
+# When we switch ukat repository to public, we can remove the token -t
+after_success: codecov -t 79d35a7a-cca0-4770-b1f4-3ff622604c64
