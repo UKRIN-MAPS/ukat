@@ -418,6 +418,152 @@ def b0_ge():
     return magnitude, phase, data.affine, echo_list
 
 
+def b0_philips_phantom():
+    """Fetches b0/philips phantom dataset
+
+    Returns
+    -------
+    numpy.ndarray
+        image data - Magnitude
+    numpy.ndarray
+        image data - Phase Original
+    numpy.ndarray
+        image data - Phase Calculated
+    numpy.ndarray
+        image data - Real
+    numpy.ndarray
+        image data - Imaginary
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of echo times, in seconds
+
+    """
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    # Note that these file names are sorted alphabetically and not sorted by
+    # increasing echo time. The sort by echo time will be done later below.
+    expected_filenames = ['01401__B0_map_expiration_volume_2DMS_product_e1.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_imaginary.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_imaginary.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_ph.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_ph.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_real.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e1_real.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_imaginary.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_imaginary.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_ph.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_ph.nii.gz',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_real.json',
+                          '01401__B0_map_expiration_volume_2DMS_product_e2_real.nii.gz']
+
+    # Initialise path to b0/ge
+    dir_b0_philips_phantom = os.path.join(DIR_DATA, "b0", "philips_phantom")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_b0_philips_phantom, expected_filenames)
+
+    # Load magnitude, real and imaginary data and corresponding echo times
+    magnitude = []
+    phase_original = []
+    real = []
+    imaginary = []
+    echo_list = []
+    for filepath in filepaths:
+
+        if filepath.endswith(".nii.gz"):
+
+            # Load NIfTI and save the magnitude data (index 0)
+            data = nib.load(filepath)
+            if "_imaginary." in filepath:
+                imaginary.append(data.get_fdata())
+            elif "_real." in filepath:
+                real.append(data.get_fdata())
+            elif "_ph." in filepath:
+                phase_original.append(data.get_fdata())
+            else:
+                magnitude.append(data.get_fdata())
+
+        elif filepath.endswith(".json"):
+            # Retrieve list of echo times in the original order
+            with open(filepath, 'r') as json_file:
+                hdr = json.load(json_file)
+            if (("_imaginary." in filepath) or ("_real." in filepath) or
+               ("_ph." in filepath)):
+                continue
+            else:
+                echo_list.append(hdr['EchoTime'])
+
+    # Move echo dimension to 4th dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase_original = np.moveaxis(np.array(phase_original), 0, -1)
+    real = np.moveaxis(np.array(real), 0, -1)
+    imaginary = np.moveaxis(np.array(imaginary), 0, -1)
+    # Calculate Phase image => tan-1(Im/Re)
+    # No np.negative used in this case
+    phase_calculated = np.arctan2(imaginary, real)
+
+    echo_list = np.array(echo_list)
+    # Sort by increasing echo time
+    sort_idxs = np.argsort(echo_list)
+    echo_list = echo_list[sort_idxs]
+    magnitude = magnitude[..., sort_idxs]
+    phase_original = phase_original[..., sort_idxs]
+    real = real[..., sort_idxs]
+    imaginary = imaginary[..., sort_idxs]
+
+    return (magnitude, phase_original, phase_calculated, real, imaginary,
+            data.affine, echo_list)
+
+
+def b0_product_philips_phantom():
+    """Fetches b0/philips phantom dataset
+
+    Returns
+    -------
+    numpy.ndarray
+        image data - Magnitude
+    numpy.ndarray
+        image data - Phase
+    """
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    # Note that these file names are sorted alphabetically and not sorted by
+    # increasing echo time. The sort by echo time will be done later below.
+    expected_filenames = ['01501__B0_map_expiration_volume_2DMS_product_e1.json',
+                          '01501__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
+                          '01501__B0_map_expiration_volume_2DMS_product_e1a.json',
+                          '01501__B0_map_expiration_volume_2DMS_product_e1a.nii.gz']
+
+    # Initialise path to b0/ge
+    dir_b0_product_philips_phantom = os.path.join(DIR_DATA, "b0", "philips_phantom_productb0map")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_b0_product_philips_phantom, expected_filenames)
+
+    magnitude = []
+    phase = []
+    affine = []
+    for filepath in filepaths:
+        if filepath.endswith("e1.nii.gz"):
+            data = nib.load(filepath)
+            magnitude = data.get_fdata()
+            affine.append(data.affine)
+        elif filepath.endswith("e1a.nii.gz"):
+            data = nib.load(filepath)
+            phase = data.get_fdata()
+            affine.append(data.affine)
+
+    return magnitude, phase, affine
+
+
 def _load_b0_siemens_philips(filepaths):
     """General function to retrieve siemens b0 data from list of filepaths
 
