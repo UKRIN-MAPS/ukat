@@ -542,7 +542,7 @@ def b0_product_philips_phantom():
                           '01501__B0_map_expiration_volume_2DMS_product_e1a.json',
                           '01501__B0_map_expiration_volume_2DMS_product_e1a.nii.gz']
 
-    # Initialise path to b0/ge
+    # Initialise path to b0/philips_phantom_productb0map
     dir_b0_product_philips_phantom = os.path.join(DIR_DATA, "b0", "philips_phantom_productb0map")
 
     # Get filepaths in directory and check their names match expected_filenames
@@ -550,18 +550,15 @@ def b0_product_philips_phantom():
 
     magnitude = []
     phase = []
-    affine = []
     for filepath in filepaths:
         if filepath.endswith("e1.nii.gz"):
             data = nib.load(filepath)
             magnitude = data.get_fdata()
-            affine.append(data.affine)
         elif filepath.endswith("e1a.nii.gz"):
             data = nib.load(filepath)
             phase = data.get_fdata()
-            affine.append(data.affine)
 
-    return magnitude, phase, affine
+    return magnitude, phase
 
 
 def _load_b0_siemens_philips(filepaths):
