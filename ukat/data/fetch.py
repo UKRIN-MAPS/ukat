@@ -463,7 +463,7 @@ def b0_philips_phantom():
                           '01401__B0_map_expiration_volume_2DMS_product_e2_real.nii.gz']
 
     # Initialise path to b0/ge
-    dir_b0_philips_phantom= os.path.join(DIR_DATA, "b0", "philips_phantom")
+    dir_b0_philips_phantom = os.path.join(DIR_DATA, "b0", "philips_phantom")
 
     # Get filepaths in directory and check their names match expected_filenames
     filepaths = get_filepaths(dir_b0_philips_phantom, expected_filenames)
