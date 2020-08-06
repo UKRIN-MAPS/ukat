@@ -488,9 +488,8 @@ def b0_philips_phantom():
                 phase_original.append(data.get_fdata())
             else:
                 magnitude.append(data.get_fdata())
-            
-        elif filepath.endswith(".json"):
 
+        elif filepath.endswith(".json"):
             # Retrieve list of echo times in the original order
             with open(filepath, 'r') as json_file:
                 hdr = json.load(json_file)
@@ -519,8 +518,8 @@ def b0_philips_phantom():
     imaginary = imaginary[..., sort_idxs]
 
     return (magnitude, phase_original, phase_calculated, real, imaginary,
-        data.affine, echo_list)
-		
+            data.affine, echo_list)
+
 
 def b0_product_philips_phantom():
     """Fetches b0/philips phantom dataset
@@ -530,7 +529,7 @@ def b0_product_philips_phantom():
     numpy.ndarray
         image data - Magnitude
     numpy.ndarray
-        image data - Phase 
+        image data - Phase
     """
 
     # Initialise hard-coded list of file names that are the expected files
@@ -544,7 +543,7 @@ def b0_product_philips_phantom():
                           '01501__B0_map_expiration_volume_2DMS_product_e1a.nii.gz']
 
     # Initialise path to b0/ge
-    dir_b0_product_philips_phantom= os.path.join(DIR_DATA, "b0", "philips_phantom_productb0map")
+    dir_b0_product_philips_phantom = os.path.join(DIR_DATA, "b0", "philips_phantom_productb0map")
 
     # Get filepaths in directory and check their names match expected_filenames
     filepaths = get_filepaths(dir_b0_product_philips_phantom, expected_filenames)
