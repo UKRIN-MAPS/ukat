@@ -27,5 +27,7 @@ With the exception of datasets marked with :star:, all test data is from the tra
 * `b0/ge`: subject 004, session 005, series 9
 * `b0/philips_1`: subject 002, session 002, series 8
 * :star: `b0/philips_2`: not part of travelling kidney pilot study 2019
+* :star: `b0/philips_phantom`: not part of travelling kidney pilot study 2019, data acquired on the 29th July 2020
+* :star: `b0/philips_phantom_productb0map`: not part of travelling kidney pilot study 2019, data acquired on the 29th July 2020
 * `b0/siemens_1`: subject 004, session 009, series 010/011
 * :star: `b0/siemens_2`: not part of travelling kidney pilot study 2019, data acquired after GOSH Prisma upgrade to VE11E (20200305_0281)
