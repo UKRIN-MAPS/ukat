@@ -1,5 +1,8 @@
 # Information about B<sub>0</sub> mapping (`b0`) data
 
+## Information common to all vendors
+TBC
+
 ## GE-specific information
  * magnitude, real and imaginary data, respectively, saved for both echoes
  * 1 echo per NIfTI file
