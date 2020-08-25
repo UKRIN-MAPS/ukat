@@ -26,7 +26,7 @@
         - Note that each dataset contains two scans (i.e. two breath-holds): one to generate the magnitude & phase images and another to generate the scanner-calculated map.
         - _Note for @fnery: These files are a subset of dataset 20200820 (see log:20200825)_.
     - Details on the full file tree below (excluding .json files):
-    ```bash
+        ```bash
         ├── ge_1
         │   ├── 00720__Magnitude_ims__B0_map_dual_echo_e1.nii.gz  # echo 1 magnitude
         │   ├── 00720__Magnitude_ims__B0_map_dual_echo_e2.nii.gz  # echo 2 magnitude
