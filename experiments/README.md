@@ -48,17 +48,11 @@
         │   ├── 01101__B0_map_expiration_volume_2DMS_product_auto_e2.nii.gz     # echo 2 magnitude
         │   └── 01101__B0_map_expiration_volume_2DMS_product_auto_e2_ph.nii.gz  # echo 2 phase
         └── philips_3
-
             ├── 01201__B0_map_expiration_volume_2DMS_product_auto_e1.nii.gz     # (won't be used) magnitude corresponding to series with scanner-calculated b0 map
-
             ├── 01201__B0_map_expiration_volume_2DMS_product_auto_e1a.nii.gz    # scanner-calculated B0 map
-
             ├── 01301__B0_map_expiration_volume_2DMS_product_auto_e1.nii.gz     # echo 1 magnitude
-
             ├── 01301__B0_map_expiration_volume_2DMS_product_auto_e1_ph.nii.gz  # echo 1 phase
-
             ├── 01301__B0_map_expiration_volume_2DMS_product_auto_e2.nii.gz     # echo 2 magnitude
-
             └── 01301__B0_map_expiration_volume_2DMS_product_auto_e2_ph.nii.gz  # echo 2 phase
         ```
 
