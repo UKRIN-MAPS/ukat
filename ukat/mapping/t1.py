@@ -1,6 +1,6 @@
 import numpy as np
-from multiprocessing import Pool, cpu_count
-from functools import partial
+from multiprocessing import cpu_count
+import concurrent.futures
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
@@ -85,36 +85,63 @@ class T1(object):
         idx = np.argwhere(mask).squeeze()
         
         if self.multithread:
-            fit_partial = partial(self.__fit_wrapper__, signal,
-                                  self.inversion_list,
-                                  self.parameters)
-            with Pool() as pool:
-                res = list(tqdm(pool.imap(fit_partial, idx, self.chunksize),
-                total=idx.size, leave=False))
-            res_array = np.array(res)
-            t1_map[idx] = res_array[:, 0]
+            cores = cpu_count()
+            with concurrent.futures.ProcessPoolExecutor(cores) as pool:
+                with tqdm(total=idx.size) as progress:
+                    futures = []
+
+                    for ind in idx:
+                        future = pool.submit(self.__fit_signal__,
+                                             signal[ind, :],
+                                             self.inversion_list,
+                                             self.parameters)
+                        future.add_done_callback(lambda p: progress.update())
+                        futures.append(future)
+
+                    results = []
+                    for future in futures:
+                        result = future.result()
+                        results.append(result)
+
+            if self.parameters == 2:
+                t1_map[idx], t1_err[idx], \
+                m0_map[idx], m0_err[idx] = [np.array(row)
+                                            for row in zip(*results)]
+            elif self.parameters == 3:
+                t1_map[idx], t1_err[idx], \
+                m0_map[idx], m0_err[idx], \
+                eff_map[idx], eff_err[idx] = [np.array(row)
+                                              for row in zip( *results)]
+
         else:
             for ind in idx:
                 sig = signal[ind, :]
-                output_tuple = self.__fit_signal__(sig, self.inversion_list, self.parameters)
-                t1_map[ind] = output_tuple[0]
-                m0_map[ind] = output_tuple[1]
-                t1_err[ind] = output_tuple[2]
-                m0_err[ind] = output_tuple[3]
-                if self.parameters == 3:
-                    eff_map = output_tuple[4]
-                    eff_err = output_tuple[5]
+                if self.parameters == 2:
+                    t1_map[ind], t1_err[ind], \
+                    m0_map[ind], m0_err[ind] = \
+                        self.__fit_signal__(sig,
+                                            self.inversion_list,
+                                            self.parameters)
+                elif self.parameters == 3:
+                    t1_map[ind], t1_err[ind], \
+                    m0_map[ind], m0_err[ind], \
+                    eff_map[ind], eff_err[ind] = \
+                        self.__fit_signal__(sig,
+                                            self.inversion_list,
+                                            self.parameters)
         
         t1_map = t1_map.reshape(self.shape)
         m0_map = m0_map.reshape(self.shape)
         t1_err = t1_err.reshape(self.shape)
         m0_err = m0_err.reshape(self.shape)
+
         if self.parameters == 2:
             return t1_map, t1_err, m0_map, m0_err
+
         elif self.parameters == 3:
             eff_map = eff_map.reshape(self.shape)
             eff_err = eff_err.reshape(self.shape)
-            return t1_map, t1_err, m0_map, m0_err, eff, eff_err
+            return t1_map, t1_err, m0_map, m0_err, eff_map, eff_err
 
     @staticmethod
     def __two_param_abs_eq__(t, t1, m0):
@@ -131,11 +158,6 @@ class T1(object):
     @staticmethod
     def __three_param_eq__(t, t1, m0, eff):
         return m0 * (1 - eff * np.exp(-t / t1))
-
-    def __fit_wrapper__(self, idx, signal, ti, parameters):
-        signal_selected  = signal[idx.astype(np.int8)] # This should be something like [idx, :] but that seems to be causing problems so has been removed for now
-        output_tuple = self.__fit_signal__(signal_selected, ti, parameters)
-        return output_tuple
 
     def __fit_signal__(self, sig, t, parameters):
         if parameters == 2:
@@ -166,18 +188,18 @@ class T1(object):
             err = np.sqrt(np.diag(pcov))
             t1_err = err[0]
             m0_err = err[1]
-            output_tuple = tuple([t1, t1_err, m0, m0_err])
             if self.parameters == 3:
                 eff = popt[2]
                 eff_err = err[2]
-                output_tuple = tuple([t1, t1_err, m0, m0_err, eff, eff_err])
         else:
             t1, m0, t1_err, m0_err = 0, 0, 0, 0
-            output_tuple = tuple([t1, t1_err, m0, m0_err])
             if self.parameters == 3:
                 eff, eff_err = 0, 0
-                output_tuple = tuple([t1, t1_err, m0, m0_err, eff, eff_err])
-        return output_tuple
+
+        if self.parameters == 2:
+            return t1, t1_err, m0, m0_err
+        elif self.parameters == 3:
+            return t1, t1_err, m0, m0_err, eff, eff_err
 
 
 def magnitude_correct(pixel_array):

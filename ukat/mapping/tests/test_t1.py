@@ -26,7 +26,7 @@ def test_two_param_fit():
                                0.10134207, 0.18686068, 0.26424112])
     signal_array = np.tile(correct_signal, (20, 20, 5, 1))
     ti = np.linspace(200, 1000, 9)
-    t1_map = T1(signal_array, ti, multithread=False)
+    t1_map = T1(signal_array, ti, multithread=True)
     assert t1_map.shape == signal_array.shape[:-1]
     assert t1_map.t1_map.mean() - 1000 < 1
 
