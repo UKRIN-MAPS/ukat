@@ -16,7 +16,7 @@ class T1(object):
     """
 
     def __init__(self, pixel_array, inversion_list, mask=None, parameters=2,
-                 multithread=True, chunksize=500):
+                 multithread=True):
         """Initialise a T1 class instance.
 
         Parameters
@@ -53,15 +53,18 @@ class T1(object):
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_ti = pixel_array.shape[-1]
+        # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
             self.mask = mask
+        # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.parameters = parameters
         self.multithread = multithread
-        self.chunksize = chunksize
+
+        # Fit data
         if self.parameters == 2:
             self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
         elif self.parameters == 3:
@@ -70,10 +73,12 @@ class T1(object):
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
+        # Generate r1 map
         self.r1_map = np.reciprocal(self.t1_map)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
+        # Initialise maps
         t1_map = np.zeros(n_vox)
         m0_map = np.zeros(n_vox)
         t1_err = np.zeros(n_vox)
@@ -83,8 +88,10 @@ class T1(object):
             eff_err = np.zeros(n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_ti)
+        # Get indices of voxels to process
         idx = np.argwhere(mask).squeeze()
-        
+
+        # Multithreaded method
         if self.multithread:
             cores = cpu_count()
             with concurrent.futures.ProcessPoolExecutor(cores) as pool:
@@ -112,8 +119,9 @@ class T1(object):
                 t1_map[idx], t1_err[idx], \
                 m0_map[idx], m0_err[idx], \
                 eff_map[idx], eff_err[idx] = [np.array(row)
-                                              for row in zip( *results)]
+                                              for row in zip(*results)]
 
+        # Single threaded method
         else:
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
@@ -132,7 +140,8 @@ class T1(object):
                                                 self.inversion_list,
                                                 self.parameters)
                     progress.update(1)
-        
+
+        # Reshape results to raw data shape
         t1_map = t1_map.reshape(self.shape)
         m0_map = m0_map.reshape(self.shape)
         t1_err = t1_err.reshape(self.shape)
@@ -163,6 +172,8 @@ class T1(object):
         return m0 * (1 - eff * np.exp(-t / t1))
 
     def __fit_signal__(self, sig, t, parameters):
+
+        # Initialise parameters and specify equation to fit to
         if parameters == 2:
             bounds = ([0, 0], [4000, 1000000])
             initial_guess = [1000, 30000]
@@ -178,6 +189,7 @@ class T1(object):
             else:
                 eq = self.__three_param_eq__
 
+        # Fit data to equation
         try:
             popt, pcov = curve_fit(eq, t, sig,
                                    p0=initial_guess,  bounds=bounds)
@@ -185,6 +197,7 @@ class T1(object):
             popt = np.zeros(self.parameters)
             pcov = np.zeros((self.parameters, self.parameters))
 
+        # Extract fits and errors from result variable
         if popt[0] < bounds[1][0]:
             t1 = popt[0]
             m0 = popt[1]
