@@ -57,6 +57,7 @@ class T1(object):
             self.mask = np.ones(self.shape, dtype=bool)
         else:
             self.mask = mask
+        self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.parameters = parameters
         self.multithread = multithread
@@ -114,21 +115,23 @@ class T1(object):
                                               for row in zip( *results)]
 
         else:
-            for ind in idx:
-                sig = signal[ind, :]
-                if self.parameters == 2:
-                    t1_map[ind], t1_err[ind], \
-                    m0_map[ind], m0_err[ind] = \
-                        self.__fit_signal__(sig,
-                                            self.inversion_list,
-                                            self.parameters)
-                elif self.parameters == 3:
-                    t1_map[ind], t1_err[ind], \
-                    m0_map[ind], m0_err[ind], \
-                    eff_map[ind], eff_err[ind] = \
-                        self.__fit_signal__(sig,
-                                            self.inversion_list,
-                                            self.parameters)
+            with tqdm(total=idx.size) as progress:
+                for ind in idx:
+                    sig = signal[ind, :]
+                    if self.parameters == 2:
+                        t1_map[ind], t1_err[ind], \
+                        m0_map[ind], m0_err[ind] = \
+                            self.__fit_signal__(sig,
+                                                self.inversion_list,
+                                                self.parameters)
+                    elif self.parameters == 3:
+                        t1_map[ind], t1_err[ind], \
+                        m0_map[ind], m0_err[ind], \
+                        eff_map[ind], eff_err[ind] = \
+                            self.__fit_signal__(sig,
+                                                self.inversion_list,
+                                                self.parameters)
+                    progress.update(1)
         
         t1_map = t1_map.reshape(self.shape)
         m0_map = m0_map.reshape(self.shape)
