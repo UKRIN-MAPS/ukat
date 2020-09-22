@@ -601,3 +601,100 @@ def b0_philips(dataset_id):
         raise ValueError(error_msg)
 
     return magnitude, phase, affine, echo_times
+
+
+def t1_philips():
+    """Fetches t1/philips dataset
+
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of inversion times, in seconds
+
+    """
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    # Note that these file names are sorted alphabetically and not sorted by
+    # increasing echo time. The sort by echo time will be done later below.
+
+    expected_filenames = ['01901__WIP_Ti100_UoN_IREPI_SENSE.json',
+                          '01901__WIP_Ti100_UoN_IREPI_SENSE.nii.gz',
+                          '02001__WIP_Ti200_UoN_IREPI_SENSE.json',
+                          '02001__WIP_Ti200_UoN_IREPI_SENSE.nii.gz',
+                          '02101__WIP_Ti300_UoN_IREPI_SENSE.json',
+                          '02101__WIP_Ti300_UoN_IREPI_SENSE.nii.gz',
+                          '02201__WIP_Ti400_UoN_IREPI_SENSE.json',
+                          '02201__WIP_Ti400_UoN_IREPI_SENSE.nii.gz',
+                          '02301__WIP_Ti500_UoN_IREPI_SENSE.json',
+                          '02301__WIP_Ti500_UoN_IREPI_SENSE.nii.gz',
+                          '02401__WIP_Ti600_UoN_IREPI_SENSE.json',
+                          '02401__WIP_Ti600_UoN_IREPI_SENSE.nii.gz',
+                          '02501__WIP_Ti700_UoN_IREPI_SENSE.json',
+                          '02501__WIP_Ti700_UoN_IREPI_SENSE.nii.gz',
+                          '02601__WIP_Ti800_UoN_IREPI_SENSE.json',
+                          '02601__WIP_Ti800_UoN_IREPI_SENSE.nii.gz',
+                          '02701__WIP_Ti900_UoN_IREPI_SENSE.json',
+                          '02701__WIP_Ti900_UoN_IREPI_SENSE.nii.gz',
+                          '02801__WIP_Ti1000_UoN_IREPI_SENSE.json',
+                          '02801__WIP_Ti1000_UoN_IREPI_SENSE.nii.gz',
+                          '02901__WIP_Ti1100_UoN_IREPI_SENSE.json',
+                          '02901__WIP_Ti1100_UoN_IREPI_SENSE.nii.gz',
+                          '03001__WIP_Ti1200_UoN_IREPI_SENSE.json',
+                          '03001__WIP_Ti1200_UoN_IREPI_SENSE.nii.gz',
+                          '03101__WIP_Ti1300_UoN_IREPI_SENSE.json',
+                          '03101__WIP_Ti1300_UoN_IREPI_SENSE.nii.gz',
+                          '03201__WIP_Ti1400_UoN_IREPI_SENSE.json',
+                          '03201__WIP_Ti1400_UoN_IREPI_SENSE.nii.gz',
+                          '03301__WIP_Ti1500_UoN_IREPI_SENSE.json',
+                          '03301__WIP_Ti1500_UoN_IREPI_SENSE.nii.gz',
+                          '03401__WIP_Ti1600_UoN_IREPI_SENSE.json',
+                          '03401__WIP_Ti1600_UoN_IREPI_SENSE.nii.gz',
+                          '03501__WIP_Ti1700_UoN_IREPI_SENSE.json',
+                          '03501__WIP_Ti1700_UoN_IREPI_SENSE.nii.gz',
+                          '03601__WIP_Ti1800_UoN_IREPI_SENSE.json',
+                          '03601__WIP_Ti1800_UoN_IREPI_SENSE.nii.gz',
+                          '03701__WIP_Ti2000_UoN_IREPI_SENSE.json',
+                          '03701__WIP_Ti2000_UoN_IREPI_SENSE.nii.gz',
+                          '03801__WIP_Ti2500_UoN_IREPI_SENSE_ph.json',
+                          '03801__WIP_Ti2500_UoN_IREPI_SENSE_ph.nii.gz']
+
+    # Initialise path to r2star/philips
+    dir_t1_philips = os.path.join(DIR_DATA, "t1", "philips")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_t1_philips, expected_filenames)
+
+    # Load magnitude data and corresponding echo times (in the orig)
+    image = []
+    inversion_list = []
+    for filepath in filepaths:
+
+        if filepath.endswith(".nii.gz"):
+
+            # Load NIfTI and only save the magnitude data (index 0)
+            data = nib.load(filepath)
+            image.append(data.get_fdata())
+
+        elif filepath.endswith(".json"):
+
+            # Retrieve list of echo times in the original order
+            with open(filepath, 'r') as json_file:
+                hdr = json.load(json_file)
+            inversion_list.append(hdr["InversionTime"])
+
+    # Move inversion dimension to 4th dimension
+    image = np.moveaxis(np.array(image), 0, -1)
+    inversion_list = np.array(inversion_list)
+
+    # Sort by increasing inversion time
+    sort_idxs = np.argsort(inversion_list)
+    inversion_list = inversion_list[sort_idxs]
+    image = image[:, :, :, sort_idxs]
+
+    return image, data.affine, inversion_list
