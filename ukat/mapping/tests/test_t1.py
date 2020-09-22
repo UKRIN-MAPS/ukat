@@ -176,7 +176,7 @@ def test_complex_conversion_shape():
 
 
 def test_input_dimensions():
-    
+
     # Tile existing data to increase dimensions
     # Comp tested up to 4D i.e. [x, y, z, TI]
     comp_2d = np.tile(comp, (4, 1))
@@ -186,7 +186,7 @@ def test_input_dimensions():
     simp_3d = np.tile(simple, (4, 1, 1))
     simp_4d = np.tile(simple, (4, 4, 1, 1))
     simp_5d = np.tile(simple, (4, 4, 4, 1, 1))
-    
+
     corrected = magnitude_correct(comp_2d)
     assert corrected.shape == (4, 5)
     npt.assert_allclose(corrected, np.tile(correct_array, (4, 1)),

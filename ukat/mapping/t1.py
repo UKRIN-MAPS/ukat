@@ -69,7 +69,7 @@ class T1(object):
             self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
         elif self.parameters == 3:
             self.t1_map, self.t1_err, self.m0_map, self.m0_err, \
-             self.eff_map, self.eff_err = self.__fit__()
+            self.eff_map, self.eff_err = self.__fit__()
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
@@ -113,13 +113,13 @@ class T1(object):
 
             if self.parameters == 2:
                 t1_map[idx], t1_err[idx], \
-                m0_map[idx], m0_err[idx] = [np.array(row)
-                                            for row in zip(*results)]
+                    m0_map[idx], m0_err[idx] = [np.array(row)
+                                                for row in zip(*results)]
             elif self.parameters == 3:
                 t1_map[idx], t1_err[idx], \
-                m0_map[idx], m0_err[idx], \
-                eff_map[idx], eff_err[idx] = [np.array(row)
-                                              for row in zip(*results)]
+                    m0_map[idx], m0_err[idx], \
+                        eff_map[idx], eff_err[idx] = [np.array(row)
+                                                      for row in zip(*results)]
 
         # Single threaded method
         else:
@@ -128,17 +128,17 @@ class T1(object):
                     sig = signal[ind, :]
                     if self.parameters == 2:
                         t1_map[ind], t1_err[ind], \
-                        m0_map[ind], m0_err[ind] = \
-                            self.__fit_signal__(sig,
-                                                self.inversion_list,
-                                                self.parameters)
+                            m0_map[ind], m0_err[ind] = \
+                                self.__fit_signal__(sig,
+                                                    self.inversion_list,
+                                                    self.parameters)
                     elif self.parameters == 3:
                         t1_map[ind], t1_err[ind], \
-                        m0_map[ind], m0_err[ind], \
-                        eff_map[ind], eff_err[ind] = \
-                            self.__fit_signal__(sig,
-                                                self.inversion_list,
-                                                self.parameters)
+                            m0_map[ind], m0_err[ind], \
+                                eff_map[ind], eff_err[ind] = \
+                                    self.__fit_signal__(sig,
+                                                        self.inversion_list,
+                                                        self.parameters)
                     progress.update(1)
 
         # Reshape results to raw data shape
@@ -192,7 +192,7 @@ class T1(object):
         # Fit data to equation
         try:
             popt, pcov = curve_fit(eq, t, sig,
-                                   p0=initial_guess,  bounds=bounds)
+                                   p0=initial_guess, bounds=bounds)
         except RuntimeError:
             popt = np.zeros(self.parameters)
             pcov = np.zeros((self.parameters, self.parameters))
