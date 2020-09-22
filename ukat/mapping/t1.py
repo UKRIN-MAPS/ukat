@@ -69,7 +69,7 @@ class T1(object):
             self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
         elif self.parameters == 3:
             self.t1_map, self.t1_err, self.m0_map, self.m0_err, \
-             self.eff, self.eff_err = self.__fit__()
+             self.eff_map, self.eff_err = self.__fit__()
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
@@ -157,11 +157,11 @@ class T1(object):
 
     @staticmethod
     def __two_param_abs_eq__(t, t1, m0):
-        return np.abs(m0 * 1 - 2 * np.exp(-t / t1))
+        return np.abs(m0 * (1 - 2 * np.exp(-t / t1)))
 
     @staticmethod
     def __two_param_eq__(t, t1, m0):
-        return m0 * 1 - 2 * np.exp(-t / t1)
+        return m0 * (1 - 2 * np.exp(-t / t1))
 
     @staticmethod
     def __three_param_abs_eq__(t, t1, m0, eff):
