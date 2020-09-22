@@ -10,25 +10,74 @@ import ukat.utils.tools as tools
 
 
 def test_two_param_eq():
-    correct_signal = np.array([-0.63746151, -0.48163644, -0.34064009,
-                               -0.21306132, -0.09762327, 0.00682939,
-                               0.10134207,  0.18686068,  0.26424112])
+    correct_signal = np.array([-3187.30753078, -2408.18220682, -1703.20046036,
+                               -1065.30659713, -488.11636094,    34.14696209,
+                               506.71035883,   934.30340259, 1321.20558829])
     t = np.linspace(200, 1000, 9)
     t1 = 1000
-    m0 = 1
+    m0 = 5000
+    # Without abs
     signal = T1.__two_param_eq__(t, t1, m0)
     npt.assert_allclose(signal, correct_signal, rtol=1e-6, atol=1e-8)
+    # With abs
+    signal = T1.__two_param_abs_eq__(t, t1, m0)
+    npt.assert_allclose(signal, np.abs(correct_signal), rtol=1e-6, atol=1e-8)
+
+
+def test_three_param_eq():
+    correct_signal = np.array([-2368.5767777, -1667.36398614, -1032.88041432,
+                               -458.77593741, 60.69527515, 530.73226588,
+                               956.03932295, 1340.87306233, 1689.08502946])
+    t = np.linspace(200, 1000, 9)
+    t1 = 1000
+    m0 = 5000
+    eff = 1.8
+    # Without abs
+    signal = T1.__three_param_eq__(t, t1, m0, eff)
+    npt.assert_allclose(signal, correct_signal, rtol=1e-6, atol=1e-8)
+    # With abs
+    signal = T1.__three_param_abs_eq__(t, t1, m0, eff)
+    npt.assert_allclose(signal, np.abs(correct_signal), rtol=1e-6, atol=1e-8)
 
 
 def test_two_param_fit():
-    correct_signal = np.array([-0.63746151, -0.48163644, -0.34064009,
-                               -0.21306132, -0.09762327, 0.00682939,
-                               0.10134207, 0.18686068, 0.26424112])
-    signal_array = np.tile(correct_signal, (20, 20, 5, 1))
+    correct_signal = np.array([-3187.30753078, -2408.18220682, -1703.20046036,
+                               -1065.30659713, -488.11636094, 34.14696209,
+                               506.71035883, 934.30340259, 1321.20558829])
+    signal_array = np.tile(correct_signal, (10, 10, 3, 1))
     ti = np.linspace(200, 1000, 9)
-    t1_map = T1(signal_array, ti, multithread=True)
-    assert t1_map.shape == signal_array.shape[:-1]
-    assert t1_map.t1_map.mean() - 1000 < 1
+    # Multithread
+    mapper = T1(signal_array, ti, multithread=True)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() - 1000 < 0.1
+    assert mapper.m0_map.mean() - 5000 < 0.1
+
+    # Single Threaded
+    mapper = T1(signal_array, ti, multithread=False)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() - 1000 < 0.1
+    assert mapper.m0_map.mean() - 5000 < 0.1
+
+
+def test_three_param_fit():
+    correct_signal = np.array([-2368.5767777, -1667.36398614, -1032.88041432,
+                               -458.77593741, 60.69527515, 530.73226588,
+                               956.03932295, 1340.87306233, 1689.08502946])
+    signal_array = np.tile(correct_signal, (10, 10, 3, 1))
+    ti = np.linspace(200, 1000, 9)
+    # Multithread
+    mapper = T1(signal_array, ti, parameters=3, multithread=True)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() - 1000 < 0.1
+    assert mapper.m0_map.mean() - 5000 < 0.1
+    assert mapper.eff_map.mean() - 1.8 < 0.05
+
+    # Single Threaded
+    mapper = T1(signal_array, ti, parameters=3, multithread=False)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() - 1000 < 0.1
+    assert mapper.m0_map.mean() - 5000 < 0.1
+    assert mapper.eff_map.mean() - 1.8 < 0.05
 
 
 def test_missmatched_raw_data_and_inversion_lengths():
