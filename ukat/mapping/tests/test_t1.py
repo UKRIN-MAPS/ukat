@@ -58,6 +58,11 @@ def test_two_param_fit():
     assert mapper.t1_map.mean() - 1000 < 0.1
     assert mapper.m0_map.mean() - 5000 < 0.1
 
+    # Fail to fit
+    mapper = T1(signal_array[..., ::-1], ti, multithread=True)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() == 0.0
+
 
 def test_three_param_fit():
     correct_signal = np.array([-2368.5767777, -1667.36398614, -1032.88041432,
@@ -78,6 +83,36 @@ def test_three_param_fit():
     assert mapper.t1_map.mean() - 1000 < 0.1
     assert mapper.m0_map.mean() - 5000 < 0.1
     assert mapper.eff_map.mean() - 1.8 < 0.05
+
+    # Fail to fit
+    mapper = T1(signal_array[..., ::-1], ti,
+                parameters=3, multithread=True)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map.mean() == 0.0
+
+
+def test_mask():
+    correct_signal = np.array([-3187.30753078, -2408.18220682, -1703.20046036,
+                               -1065.30659713, -488.11636094, 34.14696209,
+                               506.71035883, 934.30340259, 1321.20558829])
+    signal_array = np.tile(correct_signal, (10, 10, 3, 1))
+    ti = np.linspace(200, 1000, 9)
+
+    # Bool mask
+    mask = np.ones(signal_array.shape[:-1], dtype=bool)
+    mask[:5, :, :] = False
+    mapper = T1(signal_array, ti, mask=mask)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map[5:, :, :].mean() - 1000 < 0.1
+    assert mapper.t1_map[:5, :, :].mean() < 0.1
+
+    # Int mask
+    mask = np.ones(signal_array.shape[:-1])
+    mask[:5, :, :] = 0
+    mapper = T1(signal_array, ti, mask=mask)
+    assert mapper.shape == signal_array.shape[:-1]
+    assert mapper.t1_map[5:, :, :].mean() - 1000 < 0.1
+    assert mapper.t1_map[:5, :, :].mean() < 0.1
 
 
 def test_missmatched_raw_data_and_inversion_lengths():

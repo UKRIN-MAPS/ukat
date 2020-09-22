@@ -198,7 +198,7 @@ class T1(object):
             pcov = np.zeros((self.parameters, self.parameters))
 
         # Extract fits and errors from result variable
-        if popt[0] < bounds[1][0]:
+        if popt[0] < bounds[1][0] - 1:
             t1 = popt[0]
             m0 = popt[1]
             err = np.sqrt(np.diag(pcov))
