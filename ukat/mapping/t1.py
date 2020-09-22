@@ -27,7 +27,7 @@ class T1(object):
             generate a 3D T1 map would have dimensions [x, y, z, TI].
         inversion_list : list()
             An array of the inversion times used for the last dimension of the
-            raw data.
+            raw data. In milliseconds.
         mask : np.ndarray
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time

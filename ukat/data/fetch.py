@@ -660,9 +660,7 @@ def t1_philips():
                           '03601__WIP_Ti1800_UoN_IREPI_SENSE.json',
                           '03601__WIP_Ti1800_UoN_IREPI_SENSE.nii.gz',
                           '03701__WIP_Ti2000_UoN_IREPI_SENSE.json',
-                          '03701__WIP_Ti2000_UoN_IREPI_SENSE.nii.gz',
-                          '03801__WIP_Ti2500_UoN_IREPI_SENSE_ph.json',
-                          '03801__WIP_Ti2500_UoN_IREPI_SENSE_ph.nii.gz']
+                          '03701__WIP_Ti2000_UoN_IREPI_SENSE.nii.gz']
 
     # Initialise path to r2star/philips
     dir_t1_philips = os.path.join(DIR_DATA, "t1", "philips")
