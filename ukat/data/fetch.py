@@ -604,7 +604,7 @@ def b0_philips(dataset_id):
 
 
 def t1_philips():
-    """Fetches t1/philips dataset
+    """Fetches t1/philips_1 dataset
 
     Returns
     -------
@@ -662,8 +662,8 @@ def t1_philips():
                           '03701__WIP_Ti2000_UoN_IREPI_SENSE.json',
                           '03701__WIP_Ti2000_UoN_IREPI_SENSE.nii.gz']
 
-    # Initialise path to r2star/philips
-    dir_t1_philips = os.path.join(DIR_DATA, "t1", "philips")
+    # Initialise path to r2star/philips_1
+    dir_t1_philips = os.path.join(DIR_DATA, "t1", "philips_1")
 
     # Get filepaths in directory and check their names match expected_filenames
     filepaths = get_filepaths(dir_t1_philips, expected_filenames)
