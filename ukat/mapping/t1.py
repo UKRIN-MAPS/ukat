@@ -11,8 +11,25 @@ class T1(object):
 
     Attributes
     ----------
-    See parameters of __init__ class
-
+    t1_map : np.ndarray
+        The estimated T1 values in ms
+    t1_err : np.ndarray
+        The certainty in the fit of `t1` in ms
+    m0_map : np.ndarray
+        The estimated M0 values
+    m0_err : np.ndarray
+        The certainty in the fit of `m0`
+    eff_map : np.ndarray
+        The estimated inversion efficiency where 0 represents no inversion
+        pulse and 2 represents a 180* inversion
+    eff_err : np.ndarray
+        The certianty in the fit of `eff`
+    r1_map : np.ndarray
+        The estimated R1 map in ms^-1
+    shape : tuple
+        The shape of the T1 map
+    n_ti : int
+        The number of TI used to calculate the map
     """
 
     def __init__(self, pixel_array, inversion_list, mask=None, parameters=2,
@@ -32,7 +49,7 @@ class T1(object):
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time
             dimension.
-        parameters : int (2 or 3)
+        parameters : {1, 2}
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
@@ -63,6 +80,15 @@ class T1(object):
         self.inversion_list = inversion_list
         self.parameters = parameters
         self.multithread = multithread
+
+        # Initialise output attributes
+        self.t1_map = np.zeros(self.shape)
+        self.t1_err = np.zeros(self.shape)
+        self.m0_map = np.zeros(self.shape)
+        self.m0_err = np.zeros(self.shape)
+        self.eff_map = np.zeros(self.shape)
+        self.eff_err = np.zeros(self.shape)
+        self.r1_map = np.zeros(self.shape)
 
         # Fit data
         if self.parameters == 2:
