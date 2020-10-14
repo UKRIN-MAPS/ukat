@@ -21,7 +21,7 @@ class T1(object):
         The certainty in the fit of `m0`
     eff_map : np.ndarray
         The estimated inversion efficiency where 0 represents no inversion
-        pulse and 2 represents a 180* inversion
+        pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
         The certianty in the fit of `eff`
     r1_map : np.ndarray
@@ -49,17 +49,20 @@ class T1(object):
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time
             dimension.
-        parameters : {1, 2}
+        parameters : {2, 3}
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
-        multithread : bool
+        multithread : bool, optional
+            Default True.
             If True, fitting will be distributed over all cores available on
             the node. If False, fitting will be carried out on a single thread.
-            Useful when fitting very small amounts of data e.g. a mean T1
-            decay over an ROI when the overheads of multi-threading are more
-            of a hindrance than the increase in speed distributing the
-            calculation would generate.
+            Multithreading is useful when calculating the T1 for a large
+            number of voxels e.g. generating a multi-slice abdominal T1 map.
+            Turning off multithreading can be useful when fitting very small
+            amounts of data e.g. a mean T1 signal decay over an ROI when the
+            overheads of multi-threading are more of a hindrance than the
+            increase in speed distributing the calculation would generate.
         """
 
         # Some sanity checks
