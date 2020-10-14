@@ -24,8 +24,6 @@ class T1(object):
         pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
         The certianty in the fit of `eff`
-    r1_map : np.ndarray
-        The estimated R1 map in ms^-1
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -45,11 +43,12 @@ class T1(object):
         inversion_list : list()
             An array of the inversion times used for the last dimension of the
             raw data. In milliseconds.
-        mask : np.ndarray
+        mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time
             dimension.
-        parameters : {2, 3}
+        parameters : {2, 3}, optional
+            Default `2`
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
