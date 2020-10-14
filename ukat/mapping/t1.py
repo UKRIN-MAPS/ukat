@@ -91,7 +91,6 @@ class T1(object):
         self.m0_err = np.zeros(self.shape)
         self.eff_map = np.zeros(self.shape)
         self.eff_err = np.zeros(self.shape)
-        self.r1_map = np.zeros(self.shape)
 
         # Fit data
         if self.parameters == 2:
@@ -102,8 +101,6 @@ class T1(object):
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
-        # Generate r1 map
-        self.r1_map = np.reciprocal(self.t1_map)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
@@ -229,6 +226,10 @@ class T1(object):
             return t1, t1_err, m0, m0_err
         elif self.parameters == 3:
             return t1, t1_err, m0, m0_err, eff, eff_err
+
+    def r1_map(self):
+        r1_map = np.reciprocal(self.t1_map)
+        return r1_map
 
 
 def two_param_abs_eq(t, t1, m0):

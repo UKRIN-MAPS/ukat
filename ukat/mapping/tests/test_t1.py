@@ -57,12 +57,14 @@ class TestT1:
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
         # Single Threaded
         mapper = T1(signal_array, self.t, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
         # Fail to fit
         mapper = T1(signal_array[..., ::-1], self.t, multithread=True)
@@ -80,6 +82,7 @@ class TestT1:
         assert mapper.t1_map.mean() - self.t1 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.eff_map.mean() - self.eff < 0.05
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
         # Single Threaded
         mapper = T1(signal_array, self.t, parameters=3, multithread=False)
@@ -87,6 +90,7 @@ class TestT1:
         assert mapper.t1_map.mean() - self.t1 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.eff_map.mean() - self.eff < 0.05
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
         # Fail to fit
         mapper = T1(signal_array[..., ::-1], self.t,
