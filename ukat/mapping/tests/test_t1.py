@@ -3,7 +3,6 @@ import numpy.testing as npt
 import pytest
 from ukat.mapping.t1 import T1, magnitude_correct, two_param_eq, \
     two_param_abs_eq, three_param_eq, three_param_abs_eq
-import ukat.utils.tools as tools
 
 
 class TestT1:
@@ -12,14 +11,14 @@ class TestT1:
     eff = 1.8
     t = np.linspace(200, 1000, 9)
 
-    # The ideal signal produced by the equation m0 * (1 - 2 * exp(-t / t1))
-    # where m0 = 5000 and t1 = 1000 at 9 t between 200 and 1000 ms
+    # The ideal signal produced by the equation M0 * (1 - 2 * exp(-t / T1))
+    # where M0 = 5000 and T1 = 1000 at 9 t between 200 and 1000 ms
     correct_signal_two_param = np.array([-3187.30753078, -2408.18220682,
                                          -1703.20046036, -1065.30659713,
                                          -488.11636094, 34.14696209,
                                          506.71035883, 934.30340259,
                                          1321.20558829])
-    # The idea signal produced by the equation M0 * (1 - eff * exp(-t /
+    # The ideal signal produced by the equation M0 * (1 - eff * exp(-t /
     # T1)) where M0 = 5000, eff = 1.8 and T1 = 1000 at 9 t between 200
     # and 1000 ms
     correct_signal_three_param = np.array([-2368.5767777, -1667.36398614,
