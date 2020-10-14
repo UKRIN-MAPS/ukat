@@ -97,7 +97,7 @@ class T1(object):
             self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
         elif self.parameters == 3:
             self.t1_map, self.t1_err, self.m0_map, self.m0_err, \
-            self.eff_map, self.eff_err = self.__fit__()
+                self.eff_map, self.eff_err = self.__fit__()
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
