@@ -1,7 +1,8 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
-from ukat.mapping.t1 import T1, magnitude_correct
+from ukat.mapping.t1 import T1, magnitude_correct, two_param_eq, \
+    two_param_abs_eq, three_param_eq, three_param_abs_eq
 import ukat.utils.tools as tools
 
 
@@ -29,21 +30,21 @@ class TestT1:
 
     def test_two_param_eq(self):
         # Without abs
-        signal = T1.__two_param_eq__(self.t, self.t1, self.m0)
+        signal = two_param_eq(self.t, self.t1, self.m0)
         npt.assert_allclose(signal, self.correct_signal_two_param,
                             rtol=1e-6, atol=1e-8)
         # With abs
-        signal = T1.__two_param_abs_eq__(self.t, self.t1, self.m0)
+        signal = two_param_abs_eq(self.t, self.t1, self.m0)
         npt.assert_allclose(signal, np.abs(self.correct_signal_two_param),
                             rtol=1e-6, atol=1e-8)
 
     def test_three_param_eq(self):
         # Without abs
-        signal = T1.__three_param_eq__(self.t, self.t1, self.m0, self.eff)
+        signal = three_param_eq(self.t, self.t1, self.m0, self.eff)
         npt.assert_allclose(signal, self.correct_signal_three_param,
                             rtol=1e-6, atol=1e-8)
         # With abs
-        signal = T1.__three_param_abs_eq__(self.t, self.t1, self.m0, self.eff)
+        signal = three_param_abs_eq(self.t, self.t1, self.m0, self.eff)
         npt.assert_allclose(signal, np.abs(self.correct_signal_three_param),
                             rtol=1e-6, atol=1e-8)
 

@@ -181,22 +181,6 @@ class T1(object):
             eff_err = eff_err.reshape(self.shape)
             return t1_map, t1_err, m0_map, m0_err, eff_map, eff_err
 
-    @staticmethod
-    def __two_param_abs_eq__(t, t1, m0):
-        return np.abs(m0 * (1 - 2 * np.exp(-t / t1)))
-
-    @staticmethod
-    def __two_param_eq__(t, t1, m0):
-        return m0 * (1 - 2 * np.exp(-t / t1))
-
-    @staticmethod
-    def __three_param_abs_eq__(t, t1, m0, eff):
-        return np.abs(m0 * (1 - eff * np.exp(-t / t1)))
-
-    @staticmethod
-    def __three_param_eq__(t, t1, m0, eff):
-        return m0 * (1 - eff * np.exp(-t / t1))
-
     def __fit_signal__(self, sig, t, parameters):
 
         # Initialise parameters and specify equation to fit to
@@ -204,16 +188,16 @@ class T1(object):
             bounds = ([0, 0], [4000, 1000000])
             initial_guess = [1000, 30000]
             if sig.min() > 0:
-                eq = self.__two_param_abs_eq__
+                eq = two_param_abs_eq
             else:
-                eq = self.__two_param_eq__
+                eq = two_param_eq
         elif parameters == 3:
             bounds = ([0, 0, 0], [4000, 1000000, 2])
             initial_guess = [1000, 30000, 2]
             if sig.min() > 0:
-                eq = self.__three_param_abs_eq__
+                eq = three_param_abs_eq
             else:
-                eq = self.__three_param_eq__
+                eq = three_param_eq
 
         # Fit data to equation
         try:
@@ -242,6 +226,96 @@ class T1(object):
             return t1, t1_err, m0, m0_err
         elif self.parameters == 3:
             return t1, t1_err, m0, m0_err, eff, eff_err
+
+
+def two_param_abs_eq(t, t1, m0):
+    """
+    Calculate the expected signal from the equation signal = abs(M0 * (1 -
+    2 * exp(-t / T1)))
+
+    Parameters
+    ----------
+    t: list
+        The times the signal will be calculated at
+    t1: float
+        The T1 of the signal
+    m0: float
+        The M0 of the signal
+
+    Returns
+    -------
+    signal: ndarray
+    """
+    return np.abs(m0 * (1 - 2 * np.exp(-t / t1)))
+
+
+def two_param_eq(t, t1, m0):
+    """
+    Calculate the expected signal from the equation signal = M0 * (1 - 2 *
+    exp(-t / T1))
+
+    Parameters
+    ----------
+    t: list
+        The times the signal will be calculated at
+    t1: float
+        The T1 of the signal
+    m0: float
+        The M0 of the signal
+
+    Returns
+    -------
+    signal: ndarray
+    """
+    return m0 * (1 - 2 * np.exp(-t / t1))
+
+
+def three_param_abs_eq(t, t1, m0, eff):
+    """
+    Calculate the expected signal from the equation signal = abs(M0 * (1 -
+    eff * exp(-t / T1)))
+
+    Parameters
+    ----------
+    t: list
+        The times the signal will be calculated at
+    t1: float
+        The T1 of the signal
+    m0: float
+        The M0 of the signal
+    eff: float
+        The inversion efficiency (where 0 is no inversion and 2 is a 180
+        degree inversion)
+
+    Returns
+    -------
+    signal: ndarray
+    """
+    return np.abs(m0 * (1 - eff * np.exp(-t / t1)))
+
+
+def three_param_eq(t, t1, m0, eff):
+    """
+    Calculate the expected signal from the equation signal = M0 * (1 - eff *
+    exp(-t / T1)))
+
+    Parameters
+    ----------
+    t: list
+        The times the signal will be calculated at
+    t1: float
+        The T1 of the signal
+    m0: float
+        The M0 of the signal
+    eff: float
+        The inversion efficiency (where 0 is no inversion and 2 is a 180
+        degree inversion)
+
+    Returns
+    -------
+    signal: ndarray
+    """
+    return m0 * (1 - eff * np.exp(-t / t1))
 
 
 def magnitude_correct(pixel_array):
