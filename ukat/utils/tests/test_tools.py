@@ -3,46 +3,6 @@ import numpy as np
 import ukat.utils.tools as tools
 
 
-class TestUnwrapPhaseImage:
-
-    # Gold Standard = [mean, std, minimum, maximum]
-    # Input: {np.arange(-5, 6)}
-    gold_standard = [12.56637061435917, 6.324555320336759,
-                     2.566370614359173, 22.566370614359172]
-
-    # Create array for testing
-    array = np.arange(-5, 6)
-
-    def test_unwrap_result(self):
-        unwrap_calculated = tools.unwrap_phase_image(self.array)
-        np.testing.assert_allclose(tools.image_stats(unwrap_calculated),
-                                   self.gold_standard, rtol=1e-7, atol=1e-9)
-
-    def test_unwrap_phase_quality(self):
-        # Input array different than the output array
-        result = tools.unwrap_phase_image(self.array)
-        assert (result != self.array).any()
-
-    def test_ones_and_zeros(self):
-        # Create arrays of ones and zeros and unwrap
-        ones = tools.unwrap_phase_image(np.ones(np.shape(self.array)))
-        zeros = tools.unwrap_phase_image(np.zeros(np.shape(self.array)))
-        # Check that zero arrays stay the same and that ones array is doubled
-        assert (ones == 2 * np.ones(np.shape(self.array))).all()
-        assert (zeros == np.zeros(np.shape(self.array))).all()
-
-    def test_input_array_type_assertion(self):
-        # No input argument
-        with pytest.raises(TypeError):
-            tools.unwrap_phase_image(None)
-        # List
-        with pytest.raises(TypeError):
-            tools.unwrap_phase_image(list([-5, -4, -3, -2, -1, 0, 1, 2, 3]))
-        # String
-        with pytest.raises(TypeError):
-            tools.unwrap_phase_image("abcdef")
-
-
 class TestConvertToPiRange:
 
     # Gold Standard = [mean, std, minimum, maximum]
