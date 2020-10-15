@@ -6,8 +6,8 @@ import ukat.utils.tools as tools
 # Gold Standard = [mean, std, minimum, maximum]
 # B0 inputs: {np.arange(200).reshape((10, 10, 2))} and {[4, 7]}
 #            with the value in position [5, 5, :] = 100
-gold_standard = [-0.033670033670033545, 0.33501260508640285,
-                 -3.367003367003355, 0.0]
+gold_standard = [-0.016835016835016772, 0.16750630254320142,
+                 -1.6835016835016774, 0.0]
 
 # Create arrays for testing
 correct_array = np.arange(200).reshape((10, 10, 2))
