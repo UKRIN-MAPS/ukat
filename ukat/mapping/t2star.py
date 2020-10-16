@@ -60,8 +60,11 @@ class T2Star(object):
                 == len(echo_list)), 'Number of echoes does not match the ' \
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
-        assert method == ('loglin' or '2p_exp'), 'method must be  ' \
-                                                 '\'loglin\' or \'2p_exp\''
+        assert method == 'loglin' or method == '2p_exp', 'method must be ' \
+                                                         'loglin or ' \
+                                                         '2p_exp. You ' \
+                                                         'entered {' \
+                                                         '}'.format(method)
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
@@ -128,7 +131,7 @@ class T2Star(object):
 
     def __fit_signal__(self, sig, te, method):
 
-        self.pixel_array[self.pixel_array == 0] = 1E-10
+        sig[sig == 0] = 1E-10
 
         if method == 'loglin':
             with np.errstate(invalid='ignore', over='ignore'):
@@ -155,8 +158,8 @@ class T2Star(object):
                         if sig[t] > sd:
                             sigma = np.log(sig[t] / (sig[t] - sd))
                         else:
-                            sigma = np.loc(sig[t] / 0.0001)
-                        logsig = np.log(sig)
+                            sigma = np.log(sig[t] / 0.0001)
+                        logsig = np.log(sig[t])
                         weight = 1 / sigma ** 2
 
                         s_w += weight
@@ -170,10 +173,11 @@ class T2Star(object):
                 b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
                 t2star = np.real(-1 / b)
                 m0 = np.real(np.exp(a))
+
         elif method == '2p_exp':
             # Initialise parameters
-            bounds = ([0, 0], [700, 10])
-            initial_guess = [20, 1]
+            bounds = ([0, 0], [700, 1000000])
+            initial_guess = [20, 10000]
 
             # Fit data to equation
             try:
@@ -195,7 +199,7 @@ class T2Star(object):
 
         return t2star, m0
 
-    def r2star(self):
+    def r2star_map(self):
         """
         Generates the R2* map from the T2* map output by initialising this
         class.
