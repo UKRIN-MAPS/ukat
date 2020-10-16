@@ -1,1 +1,1 @@
-from . import test_b0, test_dwi, test_t2star
+from . import test_b0, test_dwi, test_t2star, test_t1
