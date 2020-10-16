@@ -171,8 +171,28 @@ class T2Star(object):
                 t2star = np.real(-1 / b)
                 m0 = np.real(np.exp(a))
         elif method == '2p_exp':
-            t2star = 0
-            m0 = 0
+            # Initialise parameters
+            bounds = ([0, 0], [700, 10])
+            initial_guess = [20, 1]
+
+            # Fit data to equation
+            try:
+                popt, pcov = curve_fit(two_param_eq, te, sig,
+                                       p0=initial_guess, bounds=bounds)
+            except RuntimeError:
+                popt = np.zeros(2)
+                pcov = np.zeros((2, 2))
+
+            # Extract fits and errors from result variables
+            if popt[0] < bounds[1][0] - 1:
+                t2star = popt[0]
+                m0 = popt[1]
+                err = np.sqrt(np.diag(pcov))
+                t2star_err = err[0]
+                m0_err = err[1]
+            else:
+                t2star, m0, t2star_err, m0_err = 0, 0, 0, 0
+
         return t2star, m0
 
     def r2star(self):
@@ -192,3 +212,24 @@ class T2Star(object):
         """
         r2star = np.reciprocal(self.t2star_map)
         return r2star
+
+
+def two_param_eq(t, t2star, m0):
+    """
+        Calculate the expected signal from the equation
+        signal = M0 * exp(-t / T2*)
+
+        Parameters
+        ----------
+        t: list
+            The times the signal will be calculated at
+        t2star: float
+            The T2* of the signal
+        m0: float
+            The M0 of the signal
+
+        Returns
+        -------
+        signal: ndarray
+        """
+    return np.sqrt(np.square(m0 * np.exp(-t / t2star)))
