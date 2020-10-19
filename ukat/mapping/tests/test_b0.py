@@ -3,21 +3,16 @@ import pytest
 from ukat.mapping.b0 import b0map
 import ukat.utils.tools as tools
 
-# Gold Standard = [mean, std, minimum, maximum]
-# B0 inputs: {np.arange(200).reshape((10, 10, 2))} and {[4, 7]}
-#            with the value in position [5, 5, :] = 100
-gold_standard = [-0.033670033670033545, 0.33501260508640285,
-                 -3.367003367003355, 0.0]
+# Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
+# if correct_array is wrapped
+# gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972]
+gold_standard = [0.0, 0.0, 0.0, 0.0]
 
 # Create arrays for testing
+# `correct_array` is wrapped using the algorithm used to generate test data in
+# https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
 correct_array = np.arange(200).reshape((10, 10, 2))
-correct_array[5, 5, :] = 100
-# So correct_array is basically a sequential list like [0, 1, 2, 3, ... , 200]
-# In the unwrapping test I'm trying to prove that unwrap != wrapped. However,
-# unwrap([0, 1, 2, 3, ... , 200]) = wrap([0, 1, 2, 3, ... , 200]), which means
-# that unwrapping does nothing in this array. In order to make the unwrapping
-# do something in correct_array, I inserted the values 100 in the middle of
-# the sequence with the objective to "break" that sequence.
+
 one_echo_array = np.arange(100).reshape((10, 10, 1))
 multiple_echoes_array = (np.concatenate((correct_array,
                          np.arange(300).reshape((10, 10, 3))), axis=2))
@@ -56,8 +51,9 @@ def test_b0map_difference():
 
 
 def test_unwrap_phase_flag():
-    unwrapped = b0map(correct_array, correct_echo_list)
-    wrapped = b0map(correct_array, correct_echo_list,
+    wrapped_array = np.angle(np.exp(1j * correct_array))
+    unwrapped = b0map(wrapped_array, correct_echo_list)
+    wrapped = b0map(wrapped_array, correct_echo_list,
                     unwrap=False)
     assert (unwrapped != wrapped).any()
 
