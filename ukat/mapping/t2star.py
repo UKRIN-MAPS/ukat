@@ -69,9 +69,11 @@ class T2Star(object):
                                                          '2p_exp. You ' \
                                                          'entered {' \
                                                          '}'.format(method)
-        assert multithread is True or multithread is False or multithread == \
-               'auto', 'multithreaded must be True, False or auto. You ' \
-                       'entered {}'.format(multithread)
+        assert multithread is True \
+            or multithread is False \
+            or multithread == 'auto', 'multithreaded must be True, False or ' \
+                                      'auto. You entered {}'\
+                                      .format(multithread)
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
@@ -100,7 +102,7 @@ class T2Star(object):
         # proportion of T2* < 20 ms i.e. where loglin isn't as accurate.
         if self.method == 'loglin':
             proportion_less_than_20 = np.sum((self.t2star_map > 0) &
-                                             (self.t2star_map < 20))\
+                                             (self.t2star_map < 20)) \
                                       / np.prod(self.n_vox)
             warn_thresh = 0.3
             if proportion_less_than_20 > warn_thresh:

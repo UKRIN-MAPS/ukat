@@ -167,4 +167,3 @@ class TestT2Star:
         mapper = T2Star(image, te, method='2p_exp')
         np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
                                    gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
-
