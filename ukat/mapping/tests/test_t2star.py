@@ -153,10 +153,10 @@ class TestT2Star:
         # loglin method
         mapper = T2Star(image, te, method='loglin')
         np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
-                                   gold_standard_loglin, rtol=1e-7, atol=1e-9)
+                                   gold_standard_loglin, rtol=1e-6, atol=1e-4)
 
         # 2p_exp method
         mapper = T2Star(image, te, method='2p_exp')
         np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
-                                   gold_standard_2p_exp, rtol=1e-7, atol=1e-9)
+                                   gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
 
