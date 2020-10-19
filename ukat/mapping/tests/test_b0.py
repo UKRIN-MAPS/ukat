@@ -4,13 +4,13 @@ from ukat.mapping.b0 import b0map
 import ukat.utils.tools as tools
 
 # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
-gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972]
+# gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972] # if correct_array is wrapped
+gold_standard = [0.0, 0.0, 0.0, 0.0]
 
 # Create arrays for testing
 # `correct_array` is wrapped using the algorithm used to generate test data in
 # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
 correct_array = np.arange(200).reshape((10, 10, 2))
-correct_array = np.angle(np.exp(1j * correct_array))
 
 one_echo_array = np.arange(100).reshape((10, 10, 1))
 multiple_echoes_array = (np.concatenate((correct_array,
@@ -50,8 +50,9 @@ def test_b0map_difference():
 
 
 def test_unwrap_phase_flag():
-    unwrapped = b0map(correct_array, correct_echo_list)
-    wrapped = b0map(correct_array, correct_echo_list,
+    wrapped_array = np.angle(np.exp(1j * correct_array))
+    unwrapped = b0map(wrapped_array, correct_echo_list)
+    wrapped = b0map(wrapped_array, correct_echo_list,
                     unwrap=False)
     assert (unwrapped != wrapped).any()
 
