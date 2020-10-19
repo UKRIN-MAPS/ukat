@@ -187,11 +187,15 @@ class T2Star(object):
                         s_wxy += weight * te_tmp * logsig
 
                 delta = (s_w * s_wx2) - (s_wx ** 2)
-                a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
-                b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
-                t2star = np.real(-1 / b)
-                m0 = np.real(np.exp(a))
-                if t2star < 0 or t2star > 700 or np.isnan(t2star):
+                if delta > 1e-5:
+                    a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
+                    b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
+                    t2star = np.real(-1 / b)
+                    m0 = np.real(np.exp(a))
+                    if t2star < 0 or t2star > 700 or np.isnan(t2star):
+                        t2star = 0
+                        m0 = 0
+                else:
                     t2star = 0
                     m0 = 0
             else:
