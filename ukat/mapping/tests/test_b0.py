@@ -4,7 +4,8 @@ from ukat.mapping.b0 import b0map
 import ukat.utils.tools as tools
 
 # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
-# gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972] # if correct_array is wrapped
+# if correct_array is wrapped
+# gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972]
 gold_standard = [0.0, 0.0, 0.0, 0.0]
 
 # Create arrays for testing
