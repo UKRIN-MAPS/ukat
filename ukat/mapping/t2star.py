@@ -187,6 +187,9 @@ class T2Star(object):
                 b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
                 t2star = np.real(-1 / b)
                 m0 = np.real(np.exp(a))
+                if t2star < 0 or t2star > 700 or np.isnan(t2star):
+                    t2star = 0
+                    m0 = 0
 
         elif method == '2p_exp':
             # Initialise parameters

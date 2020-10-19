@@ -1,6 +1,8 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+import ukat.utils.tools as tools
+from ukat.data import fetch
 from ukat.mapping.t2star import T2Star, two_param_eq
 
 
@@ -134,4 +136,27 @@ class TestT2Star:
                             echo_list=np.linspace(0, 2000, 5),
                             multithread='cloud')
 
-    # TODO e2e test
+    def test_real_data(self):
+
+        # Get test data
+        image, affine, te = fetch.r2star_philips()
+        te *= 1000
+        # Crop to reduce runtime
+        image = image[30:60, 50:90, 2, :]
+
+        # Gold standard statistics for each method
+        gold_standard_loglin = [32.27653642569055, 18.575429441844047,
+                                0.0, 239.07407841896983]
+        gold_standard_2p_exp = [30.724443852557155, 22.156366883080896,
+                                0.0, 529.8640757093401]
+
+        # loglin method
+        mapper = T2Star(image, te, method='loglin')
+        np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
+                                   gold_standard_loglin, rtol=1e-7, atol=1e-9)
+
+        # 2p_exp method
+        mapper = T2Star(image, te, method='2p_exp')
+        np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
+                                   gold_standard_2p_exp, rtol=1e-7, atol=1e-9)
+
