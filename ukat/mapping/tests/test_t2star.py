@@ -136,6 +136,14 @@ class TestT2Star:
                             echo_list=np.linspace(0, 2000, 5),
                             multithread='cloud')
 
+    def test_loglin_warning(self):
+
+        # Generate test data with T2* < 20 ms
+        signal = two_param_eq(self.t, 10, self.m0)
+        signal_array = np.tile(signal, (10, 10, 3, 1))
+        with pytest.warns(UserWarning):
+            mapper = T2Star(signal_array, self.t, method='loglin')
+
     def test_real_data(self):
 
         # Get test data

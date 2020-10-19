@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from multiprocessing import cpu_count
 import concurrent.futures
@@ -94,6 +95,20 @@ class T2Star(object):
 
         # Fit data
         self.t2star_map, self.m0_map = self.__fit__()
+
+        # Warn if using loglin method to produce a map with a large
+        # proportion of T2* < 20 ms i.e. where loglin isn't as accurate.
+        if self.method == 'loglin':
+            proportion_less_than_20 = np.sum((self.t2star_map > 0) &
+                                             (self.t2star_map < 20))\
+                                      / np.prod(self.n_vox)
+            warn_thresh = 0.3
+            if proportion_less_than_20 > warn_thresh:
+                warnings.warn('{:%} of voxels in this map have a T2* less '
+                              'than 20 ms. The loglin method is not accurate '
+                              'in this regime. If these voxels are of '
+                              'interest, consider using the 2p_exp fitting'
+                              ' method'.format(proportion_less_than_20))
 
     def __fit__(self):
 
