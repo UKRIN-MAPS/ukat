@@ -159,28 +159,17 @@ class T2Star(object):
 
     @staticmethod
     def __fit_signal__(sig, te, method):
-
-        sig[sig == 0] = 1E-10
-
         if method == 'loglin':
-            with np.errstate(invalid='ignore', over='ignore'):
-                noise = 0.0
-                sd = 0.0
-                s_w = 0.0
-                s_wx = 0.0
-                s_wx2 = 0.0
-                s_wy = 0.0
-                s_wxy = 0.0
-                n_te = len(sig)
+            s_w = 0.0
+            s_wx = 0.0
+            s_wx2 = 0.0
+            s_wy = 0.0
+            s_wxy = 0.0
+            n_te = len(sig)
 
-                for t in range(n_te):
-                    noise = noise + sig[t]
-                    sd = sd + sig[t] ** 2
-                noise = noise / n_te
-                sd = sd / n_te - noise ** 2
-                sd = sd ** 2
-                sd = np.sqrt(sd)
-
+            noise = sig.sum() / n_te
+            sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
+            if sd > 1e-10:
                 for t in range(n_te):
                     if sig[t] > 0:
                         te_tmp = te[t]
@@ -205,6 +194,9 @@ class T2Star(object):
                 if t2star < 0 or t2star > 700 or np.isnan(t2star):
                     t2star = 0
                     m0 = 0
+            else:
+                t2star = 0
+                m0 = 0
 
         elif method == '2p_exp':
             # Initialise parameters

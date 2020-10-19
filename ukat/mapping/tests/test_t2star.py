@@ -153,7 +153,7 @@ class TestT2Star:
         image = image[30:60, 50:90, 2, :]
 
         # Gold standard statistics for each method
-        gold_standard_loglin = [32.27653642569055, 18.575429441844047,
+        gold_standard_loglin = [32.2660346964308, 18.499243841743308,
                                 0.0, 239.07407841896983]
         gold_standard_2p_exp = [30.724443852557155, 22.156366883080896,
                                 0.0, 529.8640757093401]
