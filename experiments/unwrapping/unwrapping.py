@@ -1,6 +1,7 @@
 # Part of standard library or ukat
 import os
 import nibabel as nib
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.restoration import unwrap_phase
@@ -14,139 +15,25 @@ from fsl.wrappers import LOAD
 from arraystats import ArrayStats
 from roi import RegionOfInterest
 
-# Stuff for debugging (not needed, ask Fabio)
-# from wip.vis import Formatter, pixelinfo
-
-# CONSTANTS
-DIR_ROOT = os.getcwd()
-DIR_DATA = os.path.join(DIR_ROOT, "data")
-
-# DATASETS correspond to the name of each subdir with each dataset
-DATASETS = ['ge_01',
-            'philips_01',
-            'philips_02',
-            'philips_03',
-            'siemens_01',
-            'philips_04',
-            'philips_05',
-            'philips_06',
-            'philips_07',
-            'philips_08',
-            'philips_09',
-            'philips_10']
-
-# Don't change slices to show as some datasets only have ROIs drawn for this
-# particular slice
-SLICES_TO_SHOW = [8, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
-
-FILENAMES_ALL = []
-FILENAMES_ALL.append(['00720__Magnitude_ims__B0_map_dual_echo_e1.nii.gz',
-                      '00721__Phase_ims__B0_map_dual_echo_e1.nii.gz',
-                      '00720__Magnitude_ims__B0_map_dual_echo_e2.nii.gz',
-                      '00721__Phase_ims__B0_map_dual_echo_e2.nii.gz',
-                      '00720__Magnitude_ims__B0_map_dual_echo_e1_roi-R.nii.gz',
-                      '00720__Magnitude_ims__B0_map_dual_echo_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['01001__B0_map_expiration_volume_2DMS_product_auto_e1.nii.gz',
-                      '01001__B0_map_expiration_volume_2DMS_product_auto_e1_ph.nii.gz',
-                      '01001__B0_map_expiration_volume_2DMS_product_auto_e2.nii.gz',
-                      '01001__B0_map_expiration_volume_2DMS_product_auto_e2_ph.nii.gz',
-                      '01001__B0_map_expiration_volume_2DMS_product_auto_e1_roi-R.nii.gz',
-                      '01001__B0_map_expiration_volume_2DMS_product_auto_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['01101__B0_map_expiration_volume_2DMS_product_auto_e1.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_product_auto_e1_ph.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_product_auto_e2.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_product_auto_e2_ph.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_product_auto_e1_roi-R.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_product_auto_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['01301__B0_map_expiration_volume_2DMS_product_auto_e1.nii.gz',
-                      '01301__B0_map_expiration_volume_2DMS_product_auto_e1_ph.nii.gz',
-                      '01301__B0_map_expiration_volume_2DMS_product_auto_e2.nii.gz',
-                      '01301__B0_map_expiration_volume_2DMS_product_auto_e2_ph.nii.gz',
-                      '01301__B0_map_expiration_volume_2DMS_product_auto_e1_roi-R.nii.gz',
-                      '01301__B0_map_expiration_volume_2DMS_product_auto_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['0044_bh_b0map_fa3_default_bh_b0map_fa3_default_e1.nii.gz',
-                      '0045_bh_b0map_fa3_default_bh_b0map_fa3_default_e1_ph.nii.gz',
-                      '0044_bh_b0map_fa3_default_bh_b0map_fa3_default_e2.nii.gz',
-                      '0045_bh_b0map_fa3_default_bh_b0map_fa3_default_e2_ph.nii.gz',
-                      '0044_bh_b0map_fa3_default_bh_b0map_fa3_default_e1_roi-R.nii.gz',
-                      '0044_bh_b0map_fa3_default_bh_b0map_fa3_default_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['00501__B0_map_expiration_volume_2DMS_delTE2.3_e1.nii.gz',
-                      '00501__B0_map_expiration_volume_2DMS_delTE2.3_e1_ph.nii.gz',
-                      '00501__B0_map_expiration_volume_2DMS_delTE2.3_e2.nii.gz',
-                      '00501__B0_map_expiration_volume_2DMS_delTE2.3_e2_ph.nii.gz',
-                      '00501__B0_map_expiration_volume_2DMS_delTE2.3_e1_roi-R.nii.gz',
-                      '00501__B0_map_expiration_volume_2DMS_delTE2.3_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['00601__B0_map_expiration_volume_2DMS_delTE2.2_e1.nii.gz',
-                      '00601__B0_map_expiration_volume_2DMS_delTE2.2_e1_ph.nii.gz',
-                      '00601__B0_map_expiration_volume_2DMS_delTE2.2_e2.nii.gz',
-                      '00601__B0_map_expiration_volume_2DMS_delTE2.2_e2_ph.nii.gz',
-                      '00601__B0_map_expiration_volume_2DMS_delTE2.2_e1_roi-R.nii.gz',
-                      '00601__B0_map_expiration_volume_2DMS_delTE2.2_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['00701__B0_map_expiration_volume_2DMS_delTE2.46_e1.nii.gz',
-                      '00701__B0_map_expiration_volume_2DMS_delTE2.46_e1_ph.nii.gz',
-                      '00701__B0_map_expiration_volume_2DMS_delTE2.46_e2.nii.gz',
-                      '00701__B0_map_expiration_volume_2DMS_delTE2.46_e2_ph.nii.gz',
-                      '00701__B0_map_expiration_volume_2DMS_delTE2.46_e1_roi-R.nii.gz',
-                      '00701__B0_map_expiration_volume_2DMS_delTE2.46_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['00801__B0_map_expiration_volume_2DMS_delTE3_e1.nii.gz',
-                      '00801__B0_map_expiration_volume_2DMS_delTE3_e1_ph.nii.gz',
-                      '00801__B0_map_expiration_volume_2DMS_delTE3_e2.nii.gz',
-                      '00801__B0_map_expiration_volume_2DMS_delTE3_e2_ph.nii.gz',
-                      '00801__B0_map_expiration_volume_2DMS_delTE3_e1_roi-R.nii.gz',
-                      '00801__B0_map_expiration_volume_2DMS_delTE3_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['00901__B0_map_expiration_volume_2DMS_delTE3.45_e1.nii.gz',
-                      '00901__B0_map_expiration_volume_2DMS_delTE3.45_e1_ph.nii.gz',
-                      '00901__B0_map_expiration_volume_2DMS_delTE3.45_e2.nii.gz',
-                      '00901__B0_map_expiration_volume_2DMS_delTE3.45_e2_ph.nii.gz',
-                      '00901__B0_map_expiration_volume_2DMS_delTE3.45_e1_roi-R.nii.gz',
-                      '00901__B0_map_expiration_volume_2DMS_delTE3.45_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['01101__B0_map_expiration_volume_2DMS_delTEinphase_e1.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_delTEinphase_e1_ph.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_delTEinphase_e2.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_delTEinphase_e2_ph.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_delTEinphase_e1_roi-R.nii.gz',
-                      '01101__B0_map_expiration_volume_2DMS_delTEinphase_e1_roi-L.nii.gz'])
-FILENAMES_ALL.append(['01201__B0_map_expiration_volume_2DMS_delTEoutphase_e1.nii.gz',
-                      '01201__B0_map_expiration_volume_2DMS_delTEoutphase_e1_ph.nii.gz',
-                      '01201__B0_map_expiration_volume_2DMS_delTEoutphase_e2.nii.gz',
-                      '01201__B0_map_expiration_volume_2DMS_delTEoutphase_e2_ph.nii.gz',
-                      '01201__B0_map_expiration_volume_2DMS_delTEoutphase_e1_roi-R.nii.gz',
-                      '01201__B0_map_expiration_volume_2DMS_delTEoutphase_e1_roi-L.nii.gz'])
-
-# Define the main titles for the figure showing the unwrapping results for each dataset
-SUPTITLES = []
-SUPTITLES.append('ge_01 - 00720__Magnitude_ims__B0_map_dual_echo_e1: TEs (ms): [2.216, 5.136]')
-SUPTITLES.append('philips_01 - 01001__B0_map_expiration_volume_2DMS_product_auto_e1 - default shim: TEs (ms): [4.001, 6.46]')
-SUPTITLES.append('philips_02 - 01101__B0_map_expiration_volume_2DMS_product_auto_e1 - volume shim over kidneys: TEs (ms): [4.001, 6.46]')
-SUPTITLES.append('philips_03 - 01301__B0_map_expiration_volume_2DMS_product_auto_e1 - volume shim over lungs: TEs (ms): [4.001, 6.46]')
-SUPTITLES.append('siemens_01 - 0044_bh_b0map_fa3_default_bh_b0map_fa3_default_e1: TEs (ms): [4.000, 6.46]')
-SUPTITLES.append('philips_04 - 00501__B0_map_expiration_volume_2DMS_delTE2.3: TEs (ms): [4.001, 6.3]')
-SUPTITLES.append('philips_05 - 00601__B0_map_expiration_volume_2DMS_delTE2.2: TEs (ms): [4.001, 6.2]')
-SUPTITLES.append('philips_06 - 00701__B0_map_expiration_volume_2DMS_delTE2.46: TEs (ms): [4.001, 6.46]')
-SUPTITLES.append('philips_07 - 00801__B0_map_expiration_volume_2DMS_delTE3: TEs (ms): [4.001, 7.0]')
-SUPTITLES.append('philips_08 - 00901__B0_map_expiration_volume_2DMS_delTE3.45: TEs (ms): [4.001, 7.45]')
-SUPTITLES.append('philips_09 - 01101__B0_map_expiration_volume_2DMS_delTEinphase: TEs (ms): [4.001, 6.907]')
-SUPTITLES.append('philips_10 - 01201__B0_map_expiration_volume_2DMS_delTEoutphase: TEs (ms): [4.001, 5.756]')
-
-SLICE_SPECIFIC_INTENSITY_RANGES = False  # not implemented, has to be False
-
 
 class CompareUnwrapping():
     """Experimental class to perform unwrapping with several methods and plot
     the results in a figure montage"""
 
-    def __init__(self, dir_dataset, filenames):
+    def __init__(self, filepaths, te_diff):
         """Constructor for CompareUnwrapping class"""
-
-        filepaths = [os.path.join(dir_dataset, filename) for filename in filenames]
 
         [self.magnitude_e1_path, self.phase_e1_path,
          self.magnitude_e2_path, self.phase_e2_path,
-         self.roir_path, self.roil_path] = filepaths
+         self.roir_path, self.roil_path, self.b0_scanner_path] = filepaths
+
+        self.te_diff = te_diff/1000
 
         self.load_data()
         self.convert_to_rad()
         self.unwrap()
+        self.calculate_phase_diff()
+        self.calculate_b0()
 
     def load_data(self):
         """Load NIfTI files into numpy arrays"""
@@ -175,10 +62,23 @@ class CompareUnwrapping():
         self.phase_e1 = phase_e1
         self.phase_e2 = phase_e2
 
+        # Regions of interest (r=right kidney, l=left kidney)
         roi = RegionOfInterest([self.roir_path, self.roil_path])
-        roi.add()
+        self.roir = roi.data[0]
+        self.roil = roi.data[1]
 
-        self.roib = roi.data[0]
+        # Scanner calculated B0 map
+        b0_scanner_path = self.b0_scanner_path
+
+        if not os.path.basename(b0_scanner_path):
+            # if there is no scanner-generated B0 map, make it empty
+            # this ensures the axes where the B0 map would be shown are deleted
+            b0_scanner = ''
+        else:
+            b0_scanner_nib = nib.load(self.b0_scanner_path)
+            b0_scanner = b0_scanner_nib.get_fdata()
+
+        self.b0_scanner = b0_scanner
 
         return self
 
@@ -186,11 +86,13 @@ class CompareUnwrapping():
         """Convert phase images into radians and "save" them into new
         NIfTI1Image objects (necessary for prelude)"""
 
-        # Convert to rad and save as nib object -------------------------------
+        # Convert to rad and save as nib object
         phase_e1_rad = convert_to_pi_range(self.phase_e1)
         phase_e2_rad = convert_to_pi_range(self.phase_e2)
-        phase_e1_rad_nib = nib.Nifti1Image(phase_e1_rad, self.phase_e1_nib.affine)
-        phase_e2_rad_nib = nib.Nifti1Image(phase_e2_rad, self.phase_e2_nib.affine)
+        phase_e1_rad_nib = nib.Nifti1Image(phase_e1_rad,
+                                           self.phase_e1_nib.affine)
+        phase_e2_rad_nib = nib.Nifti1Image(phase_e2_rad,
+                                           self.phase_e2_nib.affine)
 
         self.phase_e1_rad = phase_e1_rad
         self.phase_e2_rad = phase_e2_rad
@@ -223,8 +125,115 @@ class CompareUnwrapping():
 
         return self
 
-    def plot_raw(self, slice_to_show, suptitle):
-        """Helper plotting function"""
+    def calculate_phase_diff(self):
+        """Subtract phase images"""
+
+        self.phase_diff = self.phase_e2_rad - self.phase_e1_rad
+        self.phase_diff_scikit = (self.phase_e2_rad_scikit -
+                                  self.phase_e1_rad_scikit)
+        self.phase_diff_prelude = (self.phase_e2_rad_prelude -
+                                   self.phase_e1_rad_prelude)
+
+        return self
+
+    def calculate_b0(self):
+        """Calculate B0 maps"""
+
+        d = (2*np.pi*self.te_diff)
+        self.b0 = self.phase_diff / d
+        self.b0_scikit = self.phase_diff_scikit / d
+        self.b0_prelude = self.phase_diff_prelude / d
+
+        return self
+
+    # def print_report(self, slice_to_show):
+
+    #     median2_r = statistics_r['median']['2D'][slice_to_show][0]
+
+    #         this_slice = image[:, :, slice_to_show]
+    #         roir_this_slice = self.roir[:, :, slice_to_show]
+    #         roil_this_slice = self.roil[:, :, slice_to_show]
+
+    #         # Calculate statistics for desired slice and generate a summary
+    #         # string to show in the plots
+    #         stats_r = ArrayStats(image, self.roir).calculate()
+    #         stats_l = ArrayStats(image, self.roil).calculate()
+
+    def roi_metrics(self, soi):
+        """soi = slice of interest"""
+
+        rois = [self.roir, self.roil]
+
+        images = []                               #     R  L
+        images.append(self.phase_e1_rad_scikit)   # = x[0, 9]
+        images.append(self.phase_e2_rad_scikit)   # = x[1, 10]
+        images.append(self.phase_e1_rad_prelude)  # = x[2, 11]
+        images.append(self.phase_e2_rad_prelude)  # = x[3, 12]
+        images.append(self.phase_diff_scikit)     # = x[4, 13]
+        images.append(self.phase_diff_prelude)    # = x[5, 14]
+        images.append(self.b0_scikit)             # = x[6, 15]
+        images.append(self.b0_prelude)            # = x[7, 16]
+        images.append(self.b0_scanner)            # = x[8, 17]
+
+        # Create "x" vector that contains the median value (within the ROIs)
+        # of many of the images generated during b0 mapping (including
+        # intermediate results) in addition to some "metrics" derived from
+        # these that may be useful for QA assessments.
+        # Specifically, each element of x is as follows:
+        # x[0]  - R_PU_S_1          : Right, unwrapped phase, scikit, echo 1
+        # x[1]  - R_PU_S_2          : Right, unwrapped phase, scikit, echo 2
+        # x[2]  - R_PU_P_1          : Right, unwrapped phase, prelude, echo 1
+        # x[3]  - R_PU_P_2          : Right, unwrapped phase, prelude, echo 2
+        # x[4]  - R_PD_S            : Right, phase difference scikit
+        # x[5]  - R_PD_P            : Right, phase difference prelude
+        # x[6]  - R_B0_S            : Right, b0, scikit
+        # x[7]  - R_B0_P            : Right, b0, prelude
+        # x[8]  - R_B0_O            : Right, b0, scanner
+        # x[9]  - L_PU_S_1          : Left, unwrapped phase, scikit, echo 1
+        # x[10] - L_PU_S_2          : Left, unwrapped phase, scikit, echo 2
+        # x[11] - L_PU_P_1          : Left, unwrapped phase, prelude, echo 1
+        # x[12] - L_PU_P_2          : Left, unwrapped phase, prelude, echo 2
+        # x[13] - L_PD_S            : Left, phase difference scikit
+        # x[14] - L_PD_P            : Left, phase difference prelude
+        # x[15] - L_B0_S            : Left, b0, scikit
+        # x[16] - L_B0_P            : Left, b0, prelude
+        # x[17] - L_B0_O            : Left, b0, scanner
+        # x[18] - (R_PD_P - R_PD_S) : Right, difference of phase differences
+        #                             after unwrapping with prelude and scikit
+        # x[19] - (L_PD_P - L_PD_S) : Left, difference of phase differences
+        #                             after unwrapping with prelude and scikit
+        # x[20] - (R_B0_S - L_B0_S) : Right-left B0 difference, scikit
+        # x[21] - (R_B0_P - L_B0_P) : Right-left B0 difference, prelude
+        # x[22] - (R_B0_O - L_B0_O) : Right-left B0 difference, scanner (_O -> [O]nline)
+        # x[23] - Right-left B0 % difference (prelude vs. scikit)
+        # x[24] - Right-left B0 % difference (prelude vs. scanner)
+        x = []
+        for roi in rois:
+            for image in images:
+                if isinstance(image, str) and not image:
+                    x.append(np.nan)
+                    continue
+                stats = ArrayStats(image, roi).calculate()
+                x.append(stats['median']['2D'][soi][0])
+
+        x.append(x[5]-x[4])   # = x[18]
+        x.append(x[14]-x[13]) # = x[19]
+
+        x.append(x[6]-x[15])  # = x[20]
+        x.append(x[7]-x[16])  # = x[21]
+        x.append(x[8]-x[17])  # = x[22]
+
+        x.append(100*((x[21]-x[20])/x[21]))  # = x[23]
+        x.append(100*((x[21]-x[22])/x[21]))  # = x[24]
+
+        return [round(elem, 2) for elem in x]
+
+    def plot_all(self, slice_to_show, suptitle, roi_ir):
+        """Helper plotting function
+
+        roi_ir = roi intensity range
+            if True normalises image intensity to min, max of ROIs
+        """
 
         images = []
         images.append(self.magnitude_e1)
@@ -235,6 +244,14 @@ class CompareUnwrapping():
         images.append(self.phase_e2_rad_scikit)
         images.append(self.phase_e1_rad_prelude)
         images.append(self.phase_e2_rad_prelude)
+        images.append(self.phase_diff)
+        images.append(self.phase_diff_scikit)
+        images.append(self.phase_diff_prelude)
+        images.append('')
+        images.append(self.b0)
+        images.append(self.b0_scikit)
+        images.append(self.b0_prelude)
+        images.append(self.b0_scanner)
 
         titles = ['magnitude_e1',
                   'magnitude_e2',
@@ -243,72 +260,115 @@ class CompareUnwrapping():
                   'phase_e1_rad_scikit',
                   'phase_e2_rad_scikit',
                   'phase_e1_rad_prelude',
-                  'phase_e2_rad_prelude']
+                  'phase_e2_rad_prelude',
+                  'phase_diff',
+                  'phase_diff_scikit',
+                  'phase_diff_prelude',
+                  '',
+                  'b0',
+                  'b0_scikit',
+                  'b0_prelude',
+                  'b0_scanner']
 
-        self.plot_common([2, 4], images, suptitle, titles, slice_to_show)
+        self.plot_common(slice_to_show, suptitle, roi_ir, [4, 4], images,
+                         titles)
 
-    def plot_common(self, mshape, images, suptitle, titles, slice_to_show):
+    def plot_common(self, slice_to_show, suptitle, roi_ir, mshape, images,
+                    titles):
         """General plotting function"""
 
-        fig, axes = plt.subplots(mshape[0], mshape[1])
+        fig, axes = plt.subplots(mshape[0], mshape[1], constrained_layout=True)
+
         for (ax, image, title) in zip(axes.flat, images, titles):
 
+            if isinstance(image, str) and not image:
+                fig.delaxes(ax)
+                continue
+
             this_slice = image[:, :, slice_to_show]
-            roib_this_slice = self.roib[:, :, slice_to_show]
+            roir_this_slice = self.roir[:, :, slice_to_show]
+            roil_this_slice = self.roil[:, :, slice_to_show]
 
             # Calculate statistics for desired slice and generate a summary
             # string to show in the plots
-            stats = ArrayStats(image, self.roib).calculate()
-            summary_string = stats_summary(stats, slice_to_show)
+            stats_r = ArrayStats(image, self.roir).calculate()
+            stats_l = ArrayStats(image, self.roil).calculate()
 
-            # Display image
-            if SLICE_SPECIFIC_INTENSITY_RANGES:
-                # not tested, ensure SLICE_SPECIFIC_INTENSITY_RANGES is FALSE
-                im = ax.imshow(this_slice, cmap='gray',
-                               vmin=stats['min']['2D'][slice_to_show][0],
-                               vmax=stats['max']['2D'][slice_to_show][0])
+            summary_string_2 = summarise_stats(stats_r, stats_l, slice_to_show)
+
+            if roi_ir:
+                # Show images with intensity ranges normalised to min, max
+                # of ROI intensities
+                cmin = min([stats_r['min']['2D'][slice_to_show][0],
+                            stats_l['min']['2D'][slice_to_show][0]])
+                cmax = max([stats_r['max']['2D'][slice_to_show][0],
+                            stats_l['max']['2D'][slice_to_show][0]])
+                im = ax.imshow(this_slice, cmap='gray', vmin=cmin, vmax=cmax)
+                ir_string = "intensity range normalisation: kidney ROIs"
             else:
+                # Don't specify intensity range to display
                 im = ax.imshow(this_slice, cmap='gray')
+                ir_string = "intensity range normalisation: entire image"
 
-            ax.contour(roib_this_slice, colors='cyan', linewidths=0.2, alpha=0.5)
-            # ax.format_coord = Formatter(im)
-            ax.set_title(f"{title}\n{summary_string}", fontsize=10)
+            ax.contour(roir_this_slice, colors='red', linewidths=0.2, alpha=0.5)
+            ax.contour(roil_this_slice, colors='blue', linewidths=0.2, alpha=0.5)
+
+            ax.set_title(f"{title}", fontsize=9)
+            ax.text(1.3, 0.2, summary_string_2, fontsize=8, transform=ax.transAxes)
             ax.axis('off')
             divider = make_axes_locatable(ax)
             cax = divider.append_axes("right", size="2%", pad=0.05)
             plt.colorbar(im, cax=cax)
-            # pixelinfo()
-        fig.suptitle(f"{suptitle} - slice {slice_to_show}")
 
-        # Make fullscreen
-        mng = plt.get_current_fig_manager()
-        mng.full_screen_toggle()
+        fig.suptitle(f"{suptitle} - slice {slice_to_show} - {ir_string}")
+
+        # # Make fullscreen
+        # mng = plt.get_current_fig_manager()
+        # mng.full_screen_toggle()
+
+        fig.canvas.toolbar.pack_forget()
 
         plt.show()
 
 
-def stats_summary(statistics, slice_to_show):
+def summarise_stats(statistics_r, statistics_l, slice_to_show):
     """Summarise statistics in a string"""
 
-    min2 = statistics['min']['2D'][slice_to_show][0]
-    max2 = statistics['max']['2D'][slice_to_show][0]
-    n2 = statistics['n']['2D'][slice_to_show][0]
-    mean2 = statistics['mean']['2D'][slice_to_show][0]
-    median2 = statistics['median']['2D'][slice_to_show][0]
+    # Statistics for each kidney at the desired slice
+    min2_r = statistics_r['min']['2D'][slice_to_show][0]
+    max2_r = statistics_r['max']['2D'][slice_to_show][0]
+    n2_r = statistics_r['n']['2D'][slice_to_show][0]
+    mean2_r = statistics_r['mean']['2D'][slice_to_show][0]
+    median2_r = statistics_r['median']['2D'][slice_to_show][0]
 
-    range2 = max2-min2
-    summary_string = (f'min={min2:.2f}, max={max2:.2f}, mean={mean2:.2f}\n'
-                      f'median={median2:.2f}, range={range2:.2f}, n={n2:.0f}')
-    return summary_string
+    min2_l = statistics_l['min']['2D'][slice_to_show][0]
+    max2_l = statistics_l['max']['2D'][slice_to_show][0]
+    n2_l = statistics_l['n']['2D'][slice_to_show][0]
+    mean2_l = statistics_l['mean']['2D'][slice_to_show][0]
+    median2_l = statistics_l['median']['2D'][slice_to_show][0]
 
+    range2_r = max2_r-min2_r
+    range2_l = max2_l-min2_l
 
-def main():
-    for dataset, filenames, slice_to_show, suptitle \
-         in zip(DATASETS, FILENAMES_ALL, SLICES_TO_SHOW, SUPTITLES):
+    # Right/left differences (d)
+    d_min2 = min2_r - min2_l
+    d_max2 = max2_r - max2_l
+    d_n2 = n2_r - n2_l
+    d_mean2 = mean2_r - mean2_l
+    d_median2 = median2_r - median2_l
+    d_range2 = range2_r - range2_l
 
-        dir_dataset = os.path.join(DIR_DATA, dataset)
-        unwrapping_results = CompareUnwrapping(dir_dataset, filenames)
-        unwrapping_results.plot_raw(slice_to_show, suptitle)
-
-
-main()
+    return (f'Right kidney:\n'
+            f'min={min2_r:.2f}, max={max2_r:.2f}\n'
+            f'mean={mean2_r:.2f}, median={median2_r:.2f}\n'
+            f'range={range2_r:.2f}, n={n2_r:.0f}\n'
+            f'\n'
+            f'Left kidney:\n'
+            f'min={min2_l:.2f}, max={max2_l:.2f}\n'
+            f'mean={mean2_l:.2f}, median={median2_l:.2f}\n'
+            f'range={range2_l:.2f}, n={n2_l:.0f}\n'
+            f'\n'
+            f'Difference (R-L):\n'
+            f'min={d_min2:.2f}, max={d_max2:.2f}\n'
+            f'mean={d_mean2:.2f}, median={d_median2:.2f}\n'
+            f'range={d_range2:.2f}, n={d_n2:.0f}')
