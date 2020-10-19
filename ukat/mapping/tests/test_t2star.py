@@ -40,6 +40,13 @@ class TestT2Star:
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
+        # Auto Threaded
+        mapper = T2Star(signal_array, self.t, method='loglin',
+                        multithread='auto')
+        assert mapper.shape == signal_array.shape[:-1]
+        assert mapper.t2star_map.mean() - self.t2star < 0.1
+        assert mapper.m0_map.mean() - self.m0 < 0.1
+        assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
     def test_2p_exp_fit(self):
         # Make the signal into a 4D array
@@ -56,6 +63,14 @@ class TestT2Star:
         # Single Threaded
         mapper = T2Star(signal_array, self.t, method='2p_exp',
                         multithread=False)
+        assert mapper.shape == signal_array.shape[:-1]
+        assert mapper.t2star_map.mean() - self.t2star < 0.1
+        assert mapper.m0_map.mean() - self.m0 < 0.1
+        assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
+
+        # Auto Threaded
+        mapper = T2Star(signal_array, self.t, method='2p_exp',
+                        multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
@@ -110,3 +125,13 @@ class TestT2Star:
             mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
                             echo_list=np.linspace(0, 2000, 5),
                             method=0)
+
+    def test_multithread_options(self):
+
+        # Not valid string
+        with pytest.raises(AssertionError):
+            mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
+                            echo_list=np.linspace(0, 2000, 5),
+                            multithread='cloud')
+
+    # TODO e2e test

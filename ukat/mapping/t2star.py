@@ -23,7 +23,7 @@ class T2Star(object):
     """
 
     def __init__(self, pixel_array, echo_list, mask=None, method='loglin',
-                 multithread=True):
+                 multithread='auto'):
         """Initialise a T2Star class instance.
 
         Parameters
@@ -40,20 +40,23 @@ class T2Star(object):
             desired T1 map rather than the raw data i.e. omit the time
             dimension.
         method : {'loglin', '2p_exp'}, optional
-            The method used to estimate T2* values. `loglin` is far quicker
+            Default `loglin`
+            The method used to estimate T2* values. 'loglin' uses a
+            weighted linear fit to the natural logarithm of the
+            signal. '2p_exp' fits the signal to a two parameter
+            exponential (S = S0 * exp(-t / T2*)). `loglin` is far quicker
             but produces inaccurate results for T2* below 20 ms. `2p_exp` is
             accurate below 20 ms however this comes at the expense of run time.
-            Default `loglin`
-        multithread : bool, optional
-            Default True.
+        multithread : bool or 'auto', optional
+            Default 'auto'.
             If True, fitting will be distributed over all cores available on
             the node. If False, fitting will be carried out on a single thread.
-            Multithreading is useful when calculating the T2* for a large
-            number of voxels e.g. generating a multi-slice abdominal T2* map.
-            Turning off multithreading can be useful when fitting very small
-            amounts of data e.g. a mean T2* signal decay over an ROI when the
-            overheads of multi-threading are more of a hindrance than the
-            increase in speed distributing the calculation would generate.
+            'auto' attempts to apply multithreading where appropriate based
+            on the number of voxels being fit and the method being used.
+            Generally 'loglin' is quicker running single threaded  due to
+            the additional overheads of multithreading while '2p_exp' is
+            quicker running multithreaded for anything but small numbers of
+            voxels.
         """
         # Some sanity checks
         assert (pixel_array.shape[-1]
@@ -65,9 +68,13 @@ class T2Star(object):
                                                          '2p_exp. You ' \
                                                          'entered {' \
                                                          '}'.format(method)
+        assert multithread is True or multithread is False or multithread == \
+               'auto', 'multithreaded must be True, False or auto. You ' \
+                       'entered {}'.format(multithread)
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
+        self.n_vox = np.prod(self.shape)
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -77,16 +84,22 @@ class T2Star(object):
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.echo_list = echo_list
         self.method = method
+        # Auto multithreading conditions
+        if multithread == 'auto':
+            if self.method == '2p_exp' and self.n_vox > 20:
+                multithread = True
+            else:
+                multithread = False
         self.multithread = multithread
 
         # Fit data
         self.t2star_map, self.m0_map = self.__fit__()
 
     def __fit__(self):
-        n_vox = np.prod(self.shape)
+
         # Initialise maps
-        t2star_map = np.zeros(n_vox)
-        m0_map = np.zeros(n_vox)
+        t2star_map = np.zeros(self.n_vox)
+        m0_map = np.zeros(self.n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_te)
         # Get indices of voxels to process
@@ -129,7 +142,8 @@ class T2Star(object):
 
         return t2star_map, m0_map
 
-    def __fit_signal__(self, sig, te, method):
+    @staticmethod
+    def __fit_signal__(sig, te, method):
 
         sig[sig == 0] = 1E-10
 
