@@ -1,5 +1,6 @@
 import numpy as np
-from ukat.utils.tools import unwrap_phase_image, convert_to_pi_range
+from skimage.restoration import unwrap_phase
+from ukat.utils.tools import convert_to_pi_range
 
 
 def b0map(pixel_array, echo_list, unwrap=True, wrap_around=False):
@@ -37,8 +38,8 @@ def b0map(pixel_array, echo_list, unwrap=True, wrap_around=False):
     phase1 = convert_to_pi_range(np.squeeze(pixel_array[..., 1]))
     if unwrap:
         # Unwrap each phase image
-        phase0 = unwrap_phase_image(phase0, wrap_around=wrap_around)
-        phase1 = unwrap_phase_image(phase1, wrap_around=wrap_around)
+        phase0 = unwrap_phase(phase0, wrap_around=wrap_around)
+        phase1 = unwrap_phase(phase1, wrap_around=wrap_around)
     phase_diff = phase1 - phase0
     delta_te = np.absolute(echo_list[1] - echo_list[0]) * 0.001
     # B0 Map calculation

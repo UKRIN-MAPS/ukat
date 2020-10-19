@@ -5,31 +5,6 @@ multiple algorithms
 """
 import numpy as np
 from scipy.ndimage import zoom
-from skimage.restoration import unwrap_phase
-
-
-def unwrap_phase_image(pixel_array, wrap_around=False):
-    """
-    From an image wrapped to lie in the interval [-pi, pi],
-    this function recovers the original, unwrapped image.
-    Read references in
-    https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
-
-    Parameters
-    ----------
-    pixel_array : np.ndarray
-        A 2D/3D array containing the phase image.
-
-    wrap_around : boolean
-        Optional input argument. By default, this script does not apply the
-        scipy wrap_around in the input image.
-
-    Returns
-    -------
-    np.ndarray with the phase of pixel_array unwrapped.
-    """
-    wrapped_phase = np.angle(np.exp(2j * pixel_array))
-    return unwrap_phase(wrapped_phase, wrap_around=wrap_around)
 
 
 def convert_to_pi_range(pixel_array):

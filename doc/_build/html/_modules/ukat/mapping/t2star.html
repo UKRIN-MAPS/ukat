@@ -1,0 +1,402 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ukat.mapping.t2star &mdash; UKAT 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> UKAT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">ukat</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">UKAT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>ukat.mapping.t2star</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ukat.mapping.t2star</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="T2Star"><a class="viewcode-back" href="../../../ukat.mapping.t2star.html#ukat.mapping.t2star.T2Star">[docs]</a><span class="k">class</span> <span class="nc">T2Star</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Package containing algorithms that calculate parameter maps</span>
+<span class="sd">    of the MRI scans acquired during the UKRIN-MAPS project.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    See parameters of __init__ class</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pixel_array</span><span class="p">,</span> <span class="n">echo_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialise a T2StarCode class instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pixel_array : 4D/3D array</span>
+<span class="sd">            A 4D/3D array containing the signal from each voxel at each</span>
+<span class="sd">            echo time i.e. the dimensions of the array are [x, y, z, TE].</span>
+<span class="sd">        echo_list : list()</span>
+<span class="sd">            An array of the echo times used for the last dimension of the</span>
+<span class="sd">            raw data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span> <span class="o">=</span> <span class="n">pixel_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_list</span> <span class="o">=</span> <span class="n">echo_list</span>
+
+    <span class="c1"># Consider splitting these methods into SubClasses at some point.</span>
+    <span class="c1"># Could create a Diffusion Toolbox where BValues are an attribute.</span>
+    <span class="c1"># Or Fitting, where Inversion Time and Echo Time are attributes.</span>
+    <span class="c1"># https://www.youtube.com/watch?v=RSl87lqOXDE</span>
+
+<div class="viewcode-block" id="T2Star.t2star_nottingham"><a class="viewcode-back" href="../../../ukat.mapping.t2star.html#ukat.mapping.t2star.T2Star.t2star_nottingham">[docs]</a>    <span class="k">def</span> <span class="nf">t2star_nottingham</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a T2* map from a series of volumes collected with different</span>
+<span class="sd">        echo times.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        See class attributes in __init__</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        t2star : 3D array</span>
+<span class="sd">            An array containing the T2* map generated by the function with T2*</span>
+<span class="sd">            measured in milliseconds.</span>
+<span class="sd">        r2star : 3D array</span>
+<span class="sd">            An array containing the R2* map generated by the function with R2*</span>
+<span class="sd">            measured in milliseconds.</span>
+<span class="sd">        m0 : 3D array</span>
+<span class="sd">            An array containing the M0 map generated by the function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1E-10</span>
+        <span class="c1"># If raw data is 2D (3D inc echo times) then add a dimension so it</span>
+        <span class="c1"># can be processed in the same way as 3D data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">t2star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">r2star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">m0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">)[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">)[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">noise</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">sd</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">s_w</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">s_wx</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">s_wx2</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">s_wy</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">s_wxy</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                            <span class="n">noise</span> <span class="o">=</span> <span class="n">noise</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+                            <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">*</span> \
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+                        <span class="n">noise</span> <span class="o">=</span> <span class="n">noise</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                        <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">noise</span> <span class="o">**</span> <span class="mi">2</span>
+                        <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span> <span class="o">**</span> <span class="mi">2</span>
+                        <span class="n">sd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sd</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+                            <span class="n">te_tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_list</span><span class="p">[</span><span class="n">d</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">sd</span><span class="p">:</span>
+                                <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">/</span>
+                                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">-</span> <span class="n">sd</span><span class="p">))</span>
+                                <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span>
+                                <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">]</span> <span class="o">/</span> <span class="mf">0.0001</span><span class="p">)</span>
+                                <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
+                                <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="n">weight</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="n">s_w</span> <span class="o">=</span> <span class="n">s_w</span> <span class="o">+</span> <span class="n">weight</span>
+                            <span class="n">s_wx</span> <span class="o">=</span> <span class="n">s_wx</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">te_tmp</span>
+                            <span class="n">s_wx2</span> <span class="o">=</span> <span class="n">s_wx2</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">te_tmp</span> <span class="o">**</span> <span class="mi">2</span>
+                            <span class="n">s_wy</span> <span class="o">=</span> <span class="n">s_wy</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">sig</span>
+                            <span class="n">s_wxy</span> <span class="o">=</span> <span class="n">s_wxy</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">te_tmp</span> <span class="o">*</span> <span class="n">sig</span>
+                        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_w</span> <span class="o">*</span> <span class="n">s_wx2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">s_wx</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="p">((</span><span class="n">delta</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span>
+                           <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">delta</span><span class="p">))):</span>
+                            <span class="n">t2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="n">r2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="n">m0</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s_wx2</span> <span class="o">*</span> <span class="n">s_wy</span> <span class="o">-</span> <span class="n">s_wx</span> <span class="o">*</span> <span class="n">s_wxy</span><span class="p">)</span>
+                            <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s_w</span> <span class="o">*</span> <span class="n">s_wxy</span> <span class="o">-</span> <span class="n">s_wx</span> <span class="o">*</span> <span class="n">s_wy</span><span class="p">)</span>
+                            <span class="n">t2stars_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span>
+                            <span class="n">r2stars_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)</span>
+                            <span class="n">m0_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">t2stars_temp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">t2stars_temp</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">):</span>
+                                <span class="n">t2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                                <span class="n">r2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                                <span class="n">m0</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">t2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">t2stars_temp</span>
+                                <span class="n">r2star</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">r2stars_temp</span>
+                                <span class="n">m0</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">m0_temp</span>
+        <span class="k">del</span> <span class="n">t2stars_temp</span><span class="p">,</span> <span class="n">r2stars_temp</span><span class="p">,</span> <span class="n">m0_temp</span><span class="p">,</span> <span class="n">delta</span>
+        <span class="k">return</span> <span class="n">t2star</span><span class="p">,</span> <span class="n">r2star</span><span class="p">,</span> <span class="n">m0</span></div>
+
+<div class="viewcode-block" id="T2Star.t2star_joao"><a class="viewcode-back" href="../../../ukat.mapping.t2star.html#ukat.mapping.t2star.T2Star.t2star_joao">[docs]</a>    <span class="k">def</span> <span class="nf">t2star_joao</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a T2* map from a series of volumes</span>
+<span class="sd">        collected with different echo times.</span>
+<span class="sd">        It&#39;s a rewritten version of t2star_nottingham with a few modifications.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        See class attributes in __init__</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        t2star : 3D array</span>
+<span class="sd">            An array containing the T2* map generated by</span>
+<span class="sd">            the function with T2* measured in milliseconds.</span>
+<span class="sd">        r2star : 3D array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1E-10</span>
+        <span class="c1"># If raw data is 2D (3D inc echo times) then add a dimension</span>
+        <span class="c1"># so it can be processed in the same way as 3D data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">number_echoes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">echo_list</span><span class="p">)</span>
+        <span class="n">matrix_ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">])))</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">over</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="p">(</span><span class="n">number_echoes</span> <span class="o">*</span> <span class="n">matrix_ones</span><span class="p">))</span>
+            <span class="n">sd</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+                  <span class="o">/</span> <span class="p">(</span><span class="n">number_echoes</span> <span class="o">*</span> <span class="n">matrix_ones</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">noise</span><span class="p">)))</span>
+            <span class="n">s_w</span> <span class="o">=</span> <span class="n">s_wx</span> <span class="o">=</span> <span class="n">s_wx2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">matrix_ones</span><span class="p">))</span>
+            <span class="n">s_wy</span> <span class="o">=</span> <span class="n">s_wxy</span> <span class="o">=</span> <span class="n">s_w</span>
+            <span class="k">for</span> <span class="n">echo</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_echoes</span><span class="p">):</span>
+                <span class="n">te</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">echo_list</span><span class="p">[</span><span class="n">echo</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.001</span> <span class="o">*</span> <span class="n">matrix_ones</span>
+                <span class="c1"># Conversion from ms to seconds</span>
+                <span class="n">sigma</span> <span class="o">=</span> <span class="n">sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">matrix_ones</span><span class="p">))</span>
+                <span class="n">matrix_iterator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nditer</span><span class="p">(</span><span class="n">sd</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;multi_index&#39;</span><span class="p">])</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">matrix_iterator</span><span class="o">.</span><span class="n">finished</span><span class="p">:</span>
+                    <span class="n">ind</span> <span class="o">=</span> <span class="n">matrix_iterator</span><span class="o">.</span><span class="n">multi_index</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">sd</span><span class="p">[</span><span class="n">ind</span><span class="p">]:</span>
+                        <span class="n">sigma</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">]</span>
+                                             <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">]</span>
+                                             <span class="o">-</span> <span class="n">sd</span><span class="p">[</span><span class="n">ind</span><span class="p">])))</span>
+                        <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sigma</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">]</span>
+                                             <span class="o">/</span> <span class="mf">0.0001</span><span class="p">))</span>
+                        <span class="n">sig</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_array</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="n">echo</span><span class="p">])</span>
+                    <span class="n">matrix_iterator</span><span class="o">.</span><span class="n">iternext</span><span class="p">()</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">matrix_ones</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+                <span class="n">s_w</span> <span class="o">=</span> <span class="n">s_w</span> <span class="o">+</span> <span class="n">weight</span>
+                <span class="n">s_wx</span> <span class="o">=</span> <span class="n">s_wx</span> <span class="o">+</span> <span class="p">(</span><span class="n">weight</span> <span class="o">*</span> <span class="n">te</span><span class="p">)</span>
+                <span class="n">s_wx2</span> <span class="o">=</span> <span class="n">s_wx2</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+                <span class="n">s_wy</span> <span class="o">=</span> <span class="n">s_wy</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">sig</span>
+                <span class="n">s_wxy</span> <span class="o">=</span> <span class="n">s_wxy</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">*</span> <span class="n">te</span> <span class="o">*</span> <span class="n">sig</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_w</span> <span class="o">*</span> <span class="n">s_wx2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">s_wx</span><span class="p">))</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">matrix_ones</span> <span class="o">/</span> <span class="n">delta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">s_w</span> <span class="o">*</span> <span class="n">s_wxy</span> <span class="o">-</span> <span class="n">s_wx</span> <span class="o">*</span> <span class="n">s_wy</span><span class="p">)</span>
+            <span class="n">t2star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="o">-</span><span class="n">matrix_ones</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span>
+            <span class="n">conditions</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">t2star</span><span class="p">))</span> <span class="o">|</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">t2star</span><span class="p">))</span> <span class="o">|</span>
+                          <span class="p">(</span><span class="n">t2star</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">t2star</span> <span class="o">&gt;</span> <span class="mf">500.0</span><span class="p">))</span>
+            <span class="n">t2star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">conditions</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">t2star</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t2star</span></div>
+
+<div class="viewcode-block" id="T2Star.r2star"><a class="viewcode-back" href="../../../ukat.mapping.t2star.html#ukat.mapping.t2star.T2Star.r2star">[docs]</a>    <span class="k">def</span> <span class="nf">r2star</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a R2* map from a series of volumes collected</span>
+<span class="sd">        with different echo times. It calls t2star_joao().</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        See class attributes in __init__</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        r2star : 3D array</span>
+<span class="sd">            An array containing the R2* map generated</span>
+<span class="sd">            by the function with R2* measured in seconds.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">r2star</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t2star_joao</span><span class="p">()))</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">t2star_joao</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">r2star</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, UKRIN-MAPS
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
