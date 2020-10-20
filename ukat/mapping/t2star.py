@@ -20,7 +20,9 @@ class T2Star(object):
         The shape of the T2* map
     n_te : int
         The number of TE used to calculate the map
-
+    n_vox : int
+        The number of voxels in the map i.e. the product of all dimensions
+        apart from TE
     """
 
     def __init__(self, pixel_array, echo_list, mask=None, method='loglin',
@@ -64,11 +66,9 @@ class T2Star(object):
                 == len(echo_list)), 'Number of echoes does not match the ' \
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
-        assert method == 'loglin' or method == '2p_exp', 'method must be ' \
-                                                         'loglin or ' \
-                                                         '2p_exp. You ' \
-                                                         'entered {' \
-                                                         '}'.format(method)
+        assert method == 'loglin' \
+            or method == '2p_exp', 'method must be loglin or 2p_exp. You ' \
+                                   'entered {}'.format(method)
         assert multithread is True \
             or multithread is False \
             or multithread == 'auto', 'multithreaded must be True, False or ' \
@@ -240,9 +240,9 @@ class T2Star(object):
 
         Returns
         -------
-        r2star : ndarray
+        r2star : np.ndarray
             An array containing the R2* map generated
-            by the function with R2* measured in seconds.
+            by the function with R2* measured in ms.
         """
         r2star = np.reciprocal(self.t2star_map)
         return r2star
@@ -264,6 +264,6 @@ def two_param_eq(t, t2star, m0):
 
         Returns
         -------
-        signal: ndarray
+        signal: np.ndarray
         """
     return np.sqrt(np.square(m0 * np.exp(-t / t2star)))
