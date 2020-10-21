@@ -93,14 +93,14 @@ class TestT1:
 
         # Fail to fit using the 2 parameter equation
         mapper_two_param = T1(signal_array, self.t,
-                    parameters=2, multithread=True)
+                              parameters=2, multithread=True)
         assert mapper_two_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
         assert mapper_two_param.t1_map.mean() == 0.0
 
         # Fail to fit using the 3 parameter equation
         mapper_three_param = T1(signal_array, self.t,
-                    parameters=3, multithread=True)
+                                parameters=3, multithread=True)
         assert mapper_three_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
         assert mapper_three_param.t1_map.mean() == 0.0
