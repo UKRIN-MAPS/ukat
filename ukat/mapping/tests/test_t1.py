@@ -69,7 +69,7 @@ class TestT1:
         mapper = T1(signal_array[..., ::-1], self.t, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
-        assert mapper.t1_map.mean() == 0.0
+        np.testing.assert_allclose(mapper.t1_map.mean(), 0.0, atol=1e-3)
 
     def test_three_param_fit(self):
         # Make the signal into a 4D array
@@ -95,7 +95,8 @@ class TestT1:
         mapper = T1(signal_array[..., ::-1], self.t,
                     parameters=3, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() == 0.0
+        # Voxels that fail to fit are set to zero
+        np.testing.assert_allclose(mapper.t1_map.mean(), 0.0, atol=1e-3)
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
