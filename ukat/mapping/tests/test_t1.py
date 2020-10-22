@@ -26,6 +26,8 @@ class TestT1:
                                            60.69527515, 530.73226588,
                                            956.03932295, 1340.87306233,
                                            1689.08502946])
+    # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
+    signal_fail_fit = -5000 * np.ones(9)
 
     def test_two_param_eq(self):
         # Without abs
@@ -65,12 +67,6 @@ class TestT1:
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
-        # Fail to fit
-        mapper = T1(signal_array[..., ::-1], self.t, multithread=True)
-        assert mapper.shape == signal_array.shape[:-1]
-        # Voxels that fail to fit are set to zero
-        np.testing.assert_allclose(mapper.t1_map.mean(), 0.0, atol=1e-3)
-
     def test_three_param_fit(self):
         # Make the signal into a 4D array
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
@@ -91,31 +87,48 @@ class TestT1:
         assert mapper.eff_map.mean() - self.eff < 0.05
         assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
 
-        # Fail to fit
-        mapper = T1(signal_array[..., ::-1], self.t,
-                    parameters=3, multithread=True)
-        assert mapper.shape == signal_array.shape[:-1]
+    def test_failed_fit(self):
+        # Make the signal, where the fitting is expected to fail, into 4D array
+        signal_array = np.tile(self.signal_fail_fit, (10, 10, 3, 1))
+
+        # Fail to fit using the 2 parameter equation
+        mapper_two_param = T1(signal_array, self.t,
+                              parameters=2, multithread=True)
+        assert mapper_two_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
-        np.testing.assert_allclose(mapper.t1_map.mean(), 0.0, atol=1e-3)
+        assert mapper_two_param.t1_map.mean() == 0.0
+        assert mapper_two_param.t1_err.mean() == 0.0
+        assert mapper_two_param.m0_map.mean() == 0.0
+        assert mapper_two_param.m0_err.mean() == 0.0
+
+        # Fail to fit using the 3 parameter equation
+        mapper_three_param = T1(signal_array, self.t,
+                                parameters=3, multithread=True)
+        assert mapper_three_param.shape == signal_array.shape[:-1]
+        # Voxels that fail to fit are set to zero
+        assert mapper_three_param.t1_map.mean() == 0.0
+        assert mapper_three_param.t1_err.mean() == 0.0
+        assert mapper_three_param.m0_map.mean() == 0.0
+        assert mapper_three_param.m0_err.mean() == 0.0
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
 
         # Bool mask
         mask = np.ones(signal_array.shape[:-1], dtype=bool)
-        mask[:5, :, :] = False
+        mask[:5, ...] = False
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, :, :].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, :, :].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
+        assert mapper.t1_map[:5, ...].mean() < 0.1
 
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
-        mask[:5, :, :] = 0
+        mask[:5, ...] = 0
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, :, :].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, :, :].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
+        assert mapper.t1_map[:5, ...].mean() < 0.1
 
     def test_missmatched_raw_data_and_inversion_lengths(self):
 
