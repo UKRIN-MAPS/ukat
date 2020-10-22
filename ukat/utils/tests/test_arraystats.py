@@ -4,6 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import ukat.utils.arraystats as ast
 
+
 def calculate_stats(x):
     """
     Gold standard (gs) implementation of calculation of statistical measures.
