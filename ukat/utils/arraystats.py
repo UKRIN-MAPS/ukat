@@ -1,14 +1,11 @@
 """This module implements the ArrayStats class which calculates several
-descriptive statistics of 2, 3 or 4D input arrays. Statistics are calculated
-for all possible dimensions of input array except the first dimension (medical
-images were the use case in mind when implementing this).
-
-That is, if the input array is a 4D image (rows, columns, slices, "time"), it
-calculates statistics for each 2D slice, each 3D volume and each 4D volume.
-See docstring of the `calculate` method for the list of the calculated
-statistical measures.
+descriptive statistics of 2, 3 or 4D input arrays. That is, if the input array
+is a 4D image (rows, columns, slices, "time"), it calculates statistics for
+each 2D slice, each 3D volume and the entire 4D volume. See docstring of the
+`calculate` method for the list of the calculated statistical measures.
 
 """
+
 import numpy as np
 from scipy import stats
 
@@ -44,9 +41,6 @@ class ArrayStats():
         # Error checks
         if image_ndims < 2 or image_ndims > 4:
             raise ValueError("`image` must be [2, 3, 4]D")
-
-        # if image_ndims == 4:
-        #     raise RuntimeError("`ArrayStats` hasn't been validated for 4D arrays, so do that before trying to use it")
 
         # Initialise unspecified input arguments
         if roi is None:
@@ -273,13 +267,10 @@ class FlatStats():
     ----------
     x : np.ndarray
         flat array (1 dimension)
-    nan_policy : {'propagate', 'raise', 'omit'}, optional
-        See the documentation of stats.skew() or stats.kurtosis()
 
     Attributes
     ----------
     x : see above (parameters)
-    nan_policy : see above (parameters)
     n : float
         number of array elements
     mean : float
@@ -294,18 +285,14 @@ class FlatStats():
     kurtosis : float
 
     """
-    def __init__(self, x, nan_policy='raise'):
+    def __init__(self, x):
         """ Init method: see class documentation for parameters/attributes
 
         """
         if np.ndim(x) != 1:
             raise ValueError("`x` should be a flat (1D) array")
 
-        if np.isnan(x).any():
-            raise ValueError("`x` must not contain nans")
-
         self.x = x
-        self.nan_policy = nan_policy
 
         # Init statistics (calculated in calculate())
         self.n = NOT_CALCULATED_MSG
@@ -326,11 +313,8 @@ class FlatStats():
         FlatStats object with calculated statistics
 
         """
-        x = self.x
-        nan_policy = self.nan_policy
 
-        # Calculate statistics
-        if x is None or x.size == 0:
+        if self.x is None or self.x.size == 0:
             n = 0
             mean = np.nan
             median = np.nan
@@ -340,8 +324,8 @@ class FlatStats():
             cv = np.nan
             skewness = np.nan
             kurtosis = np.nan
-        elif np.isnan(x).any():
-            n = np.nan
+        elif np.isnan(self.x).any():
+            n = len(self.x)
             mean = np.nan
             median = np.nan
             minimum = np.nan
@@ -351,17 +335,22 @@ class FlatStats():
             skewness = np.nan
             kurtosis = np.nan
         else:
-            n = len(x)
-            mean = np.mean(x)
-            median = np.median(x)
-            minimum = np.min(x)
-            maximum = np.max(x)
-            std = np.std(x)
-            cv = std/mean
-            skewness = stats.skew(x, bias=True, nan_policy=nan_policy)
-            kurtosis = stats.kurtosis(x, fisher=True, bias=True, nan_policy=nan_policy)
+            n = len(self.x)
+            mean = np.mean(self.x)
+            median = np.median(self.x)
+            minimum = np.min(self.x)
+            maximum = np.max(self.x)
+            std = np.std(self.x)
+            if mean == 0:
+                cv = np.nan
+            else:
+                cv = std/mean
 
-        # Save in object
+            # Don't need to deal with `nan_policy` as we catch arrays with nans
+            # above and assign nans to the resulting statistical metrics
+            skewness = stats.skew(self.x, bias=True)
+            kurtosis = stats.kurtosis(self.x, fisher=True, bias=True)
+
         self.n = n
         self.mean = mean
         self.median = median
