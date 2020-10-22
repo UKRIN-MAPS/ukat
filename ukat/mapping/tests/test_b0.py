@@ -1,102 +1,99 @@
 import numpy as np
 import pytest
-from ukat.mapping.b0 import b0map
+from ukat.mapping.b0 import B0
 import ukat.utils.tools as tools
 
-# Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
-# if correct_array is wrapped
-# gold_standard = [53.0516476972, 0, 53.0516476972, 53.0516476972]
-gold_standard = [0.0, 0.0, 0.0, 0.0]
+class TestB0:
+    # Create arrays for testing
+    correct_array = np.arange(200).reshape((10, 10, 2))
+    # `correct_array` is wrapped using the algorithm in
+    # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
+    correct_array = np.angle(np.exp(1j * correct_array))
+    one_echo_array = np.arange(100).reshape((10, 10, 1))
+    multiple_echoes_array = (np.concatenate((correct_array,
+                             np.arange(300).reshape((10, 10, 3))), axis=2))
+    correct_echo_list = [4, 7]
+    one_echo_list = [4]
+    multiple_echo_list = [1, 2, 3, 4, 5]
 
-# Create arrays for testing
-# `correct_array` is wrapped using the algorithm used to generate test data in
-# https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
-correct_array = np.arange(200).reshape((10, 10, 2))
+    # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
+    gold_standard = [386.3850, 0.0, 386.3850, 386.3850]
 
-one_echo_array = np.arange(100).reshape((10, 10, 1))
-multiple_echoes_array = (np.concatenate((correct_array,
-                         np.arange(300).reshape((10, 10, 3))), axis=2))
-five_dim_array = np.arange(20000).reshape((10, 10, 10, 10, 2))
-correct_echo_list = [4, 7]
-one_echo_list = [4]
-multiple_echo_list = [1, 2, 3, 4, 5]
+    def test_b0map_values(self):
+        b0_map_calculated = B0(self.correct_array, self.correct_echo_list).b0_map
+        np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
+                                   self.gold_standard, rtol=1e-7, atol=1e-9)
 
+    def test_inputs(self):
+        # Check that it fails when input pixel_array has incorrect shape
+        with pytest.raises(ValueError):
+            B0(self.one_echo_array, self.correct_echo_list)
+        with pytest.raises(ValueError):
+            B0(self.multiple_echoes_array, self.correct_echo_list)
 
-def test_b0map_values():
-    b0_map_calculated = b0map(correct_array, correct_echo_list)
-    np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
-                               gold_standard, rtol=1e-7, atol=1e-9)
+        # Check that it fails when input echo_list has incorrect shape
+        with pytest.raises(ValueError):
+            B0(self.correct_array, self.one_echo_list)
+        with pytest.raises(ValueError):
+            B0(self.correct_array, self.multiple_echo_list)
 
+        # And when both input pixel_array and echo_list have incorrect shapes
+        with pytest.raises(ValueError):
+            B0(self.one_echo_array, self.one_echo_list)
+        with pytest.raises(ValueError):
+            B0(self.multiple_echoes_array, self.one_echo_list)
+        with pytest.raises(ValueError):
+            B0(self.one_echo_array, self.multiple_echo_list)
+        with pytest.raises(ValueError):
+            B0(self.multiple_echoes_array, self.multiple_echo_list)
 
-def test_array_input_output_shapes():
-    output_array_1 = b0map(correct_array, correct_echo_list)
-    output_array_2 = b0map(multiple_echoes_array, multiple_echo_list)
-    assert np.shape(output_array_1) == np.shape(output_array_2)
-    assert np.shape(output_array_1) == (10, 10)
+    def test_mask(self):
+        # Create a mask where one of the echoes is True and the other is False
+        mask = np.ones(self.correct_array.shape[:-1], dtype=bool)
+        mask[:5, ...] = False
 
+        all_pixels = B0(self.correct_array, self.correct_echo_list)
+        masked_pixels = B0(self.correct_array, self.correct_echo_list, mask=mask)
 
-def test_echo_list_lengths():
-    output_array_1 = b0map(correct_array, correct_echo_list)
-    output_array_2 = b0map(multiple_echoes_array, multiple_echo_list)
-    output_array_3 = b0map(correct_array, multiple_echo_list)
-    output_array_4 = b0map(multiple_echoes_array, correct_echo_list)
-    assert (output_array_1 == output_array_4).all()
-    assert (output_array_2 == output_array_3).all()
+        assert (all_pixels.phase_difference != masked_pixels.phase_difference).any()
+        assert (all_pixels.b0_map != masked_pixels.b0_map).any()
+        assert (tools.image_stats(all_pixels.b0_map) != 
+                tools.image_stats(masked_pixels.b0_map))
 
+    def test_unwrap_phase(self):
+        unwrapped = B0(self.correct_array, self.correct_echo_list)
+        wrapped = B0(self.correct_array, self.correct_echo_list, unwrap=False)
 
-def test_b0map_difference():
-    difference_result = b0map(np.concatenate((one_echo_array, one_echo_array),
-                              axis=2), correct_echo_list)
-    assert (difference_result == np.zeros((10, 10))).all()
+        assert (unwrapped.phase_difference != wrapped.phase_difference).any()
+        assert (unwrapped.b0_map != wrapped.b0_map).any()
+        assert (tools.image_stats(unwrapped.b0_map) != 
+                tools.image_stats(wrapped.b0_map))
 
+    def test_pixel_array_type_assertion(self):
+        # Empty array
+        with pytest.raises(ValueError):
+            B0(np.array([]), self.correct_echo_list)
+        # No input argument
+        with pytest.raises(AttributeError):
+            B0(None, self.correct_echo_list)
+        # List
+        with pytest.raises(AttributeError):
+            B0(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
+                self.correct_echo_list)
+        # String
+        with pytest.raises(AttributeError):
+            B0("abcdef", self.correct_echo_list)
 
-def test_unwrap_phase_flag():
-    wrapped_array = np.angle(np.exp(1j * correct_array))
-    unwrapped = b0map(wrapped_array, correct_echo_list)
-    wrapped = b0map(wrapped_array, correct_echo_list,
-                    unwrap=False)
-    assert (unwrapped != wrapped).any()
-
-
-def test_array_ndims():
-    with pytest.raises(ValueError):
-        b0map(five_dim_array, correct_echo_list)
-
-
-def test_one_echo_errors():
-    with pytest.raises(IndexError):
-        b0map(correct_array, one_echo_list)
-    with pytest.raises(IndexError):
-        b0map(one_echo_array, correct_echo_list)
-    with pytest.raises(IndexError):
-        b0map(one_echo_array, one_echo_list)
-
-
-def test_pixel_array_type_assertion():
-    # Empty array
-    with pytest.raises(IndexError):
-        b0map(np.array([]), correct_echo_list)
-    # No input argument
-    with pytest.raises(TypeError):
-        b0map(None, correct_echo_list)
-    # List
-    with pytest.raises(TypeError):
-        b0map(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]), correct_echo_list)
-    # String
-    with pytest.raises(TypeError):
-        b0map("abcdef", correct_echo_list)
-
-
-def test_echo_list_type_assertion():
-    # Empty list
-    with pytest.raises(IndexError):
-        b0map(correct_array, np.array([]))
-    # No input argument
-    with pytest.raises(TypeError):
-        b0map(correct_array, None)
-    # Float
-    with pytest.raises(TypeError):
-        b0map(correct_array, 3.2)
-    # String
-    with pytest.raises(TypeError):
-        b0map(correct_array, "abcdef")
+    def test_echo_list_type_assertion(self):
+        # Empty list
+        with pytest.raises(ValueError):
+            B0(self.correct_array, np.array([]))
+        # No input argument
+        with pytest.raises(TypeError):
+            B0(self.correct_array, None)
+        # Float
+        with pytest.raises(TypeError):
+            B0(self.correct_array, 3.2)
+        # String
+        with pytest.raises(ValueError):
+            B0(self.correct_array, "abcdef")
