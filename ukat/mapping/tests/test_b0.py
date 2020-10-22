@@ -3,6 +3,7 @@ import pytest
 from ukat.mapping.b0 import B0
 import ukat.utils.tools as tools
 
+
 class TestB0:
     # Create arrays for testing
     correct_array = np.arange(200).reshape((10, 10, 2))
@@ -18,7 +19,7 @@ class TestB0:
 
     # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
     gold_standard = [386.3850, 0.0, 386.3850, 386.3850]
-
+    
     def test_b0map_values(self):
         b0_map_calculated = B0(self.correct_array, self.correct_echo_list).b0_map
         np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
@@ -51,7 +52,7 @@ class TestB0:
         # Create a mask where one of the echoes is True and the other is False
         mask = np.ones(self.correct_array.shape[:-1], dtype=bool)
         mask[:5, ...] = False
-
+        
         all_pixels = B0(self.correct_array, self.correct_echo_list)
         masked_pixels = B0(self.correct_array, self.correct_echo_list, mask=mask)
 

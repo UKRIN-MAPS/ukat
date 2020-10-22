@@ -6,7 +6,7 @@ from ukat.utils.tools import convert_to_pi_range
 class B0(object):
     """Package containing algorithms that calculate parameter maps
     of the MRI scans acquired during the UKRIN-MAPS project.
-    
+
     Generates a B0 map from a series of volumes collected
     with 2 different echo times.
 
@@ -52,7 +52,7 @@ class B0(object):
             By default, this script does not apply the scipy wrap_around
             in the phase unwrapping for each phase echo image.
         """
-        
+
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
@@ -84,6 +84,6 @@ class B0(object):
             # B0 Map calculation
             self.b0_map = self.phase_difference / (2 * np.pi * self.delta_te)
         else:
-            raise ValueError('The input should contain 2 echo times.' \
-                    'The last dimension of the input pixel_array must be 2' \
-                    'and the echo_list must only have 2 values.')
+            raise ValueError('The input should contain 2 echo times.'
+                            'The last dimension of the input pixel_array'
+                            'must be 2 and the echo_list must only have 2 values.')
