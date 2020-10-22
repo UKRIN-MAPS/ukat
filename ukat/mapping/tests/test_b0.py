@@ -22,7 +22,7 @@ class TestB0:
     gold_standard = [53.05165, 0.0, 53.05165, 53.05165]
 
     def test_b0map_values(self):
-        b0_map_calculated = B0(self.correct_array, 
+        b0_map_calculated = B0(self.correct_array,
                                self.correct_echo_list).b0_map
         np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
                                    self.gold_standard, rtol=2*np.pi, atol=400)
@@ -54,7 +54,7 @@ class TestB0:
         # Create a mask where one of the echoes is True and the other is False
         mask = np.ones(self.correct_array.shape[:-1], dtype=bool)
         mask[:5, ...] = False
-        
+
         all_pixels = B0(self.correct_array, self.correct_echo_list)
         masked_pixels = B0(self.correct_array, self.correct_echo_list,
                            mask=mask)
@@ -71,7 +71,7 @@ class TestB0:
 
         assert (unwrapped.phase_difference != wrapped.phase_difference).any()
         assert (unwrapped.b0_map != wrapped.b0_map).any()
-        assert (tools.image_stats(unwrapped.b0_map) != 
+        assert (tools.image_stats(unwrapped.b0_map) !=
                 tools.image_stats(wrapped.b0_map))
 
     def test_pixel_array_type_assertion(self):
