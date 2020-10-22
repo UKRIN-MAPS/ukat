@@ -85,5 +85,5 @@ class B0(object):
             self.b0_map = self.phase_difference / (2 * np.pi * self.delta_te)
         else:
             raise ValueError('The input should contain 2 echo times.'
-                            'The last dimension of the input pixel_array'
-                            'must be 2 and the echo_list must only have 2 values.')
+                             'The last dimension of the input pixel_array must'
+                             'be 2 and the echo_list must only have 2 values.')
