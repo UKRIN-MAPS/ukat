@@ -63,8 +63,8 @@ class TestB0:
         assert (all_pixels.phase_difference !=
                 masked_pixels.phase_difference).any()
         assert (all_pixels.b0_map != masked_pixels.b0_map).any()
-        assert (tools.image_stats(all_pixels.b0_map) !=
-                tools.image_stats(masked_pixels.b0_map))
+        assert (arraystats.ArrayStats(all_pixels.b0_map).calculate() !=
+                arraystats.ArrayStats(masked_pixels.b0_map).calculate())      
 
     def test_unwrap_phase(self):
         unwrapped = B0(self.correct_array, self.correct_echo_list)
@@ -72,8 +72,8 @@ class TestB0:
 
         assert (unwrapped.phase_difference != wrapped.phase_difference).any()
         assert (unwrapped.b0_map != wrapped.b0_map).any()
-        assert (tools.image_stats(unwrapped.b0_map) !=
-                tools.image_stats(wrapped.b0_map))
+        assert (arraystats.ArrayStats(unwrapped.b0_map).calculate() !=
+                arraystats.ArrayStats(wrapped.b0_map).calculate())
 
     def test_pixel_array_type_assertion(self):
         # Empty array
