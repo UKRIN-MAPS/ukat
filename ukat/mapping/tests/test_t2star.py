@@ -1,9 +1,9 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
-import ukat.utils.tools as tools
 from ukat.data import fetch
 from ukat.mapping.t2star import T2Star, two_param_eq
+from ukat.utils import arraystats
 
 
 class TestT2Star:
@@ -160,10 +160,14 @@ class TestT2Star:
 
         # loglin method
         mapper = T2Star(image, te, method='loglin')
-        np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
-                                   gold_standard_loglin, rtol=1e-6, atol=1e-4)
+        t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
+        np.testing.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
+                                    t2star_stats["min"], t2star_stats["max"]],
+                                    gold_standard_loglin, rtol=1e-6, atol=1e-4)
 
         # 2p_exp method
         mapper = T2Star(image, te, method='2p_exp')
-        np.testing.assert_allclose(tools.image_stats(mapper.t2star_map),
-                                   gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+        t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
+        np.testing.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
+                                    t2star_stats["min"], t2star_stats["max"]],
+                                    gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
