@@ -20,7 +20,7 @@ five_dim_array = np.arange(20000).reshape((10, 10, 10, 10, 2))
 correct_echo_list = [4, 7]
 one_echo_list = [4]
 multiple_echo_list = [1, 2, 3, 4, 5]
-
+# Force commit, new PR
 
 def test_b0map_values():
     b0_map_calculated = b0map(correct_array, correct_echo_list)
