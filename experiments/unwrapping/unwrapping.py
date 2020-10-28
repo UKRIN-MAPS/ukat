@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from skimage.restoration import unwrap_phase
 from ukat.utils.tools import convert_to_pi_range
+from ukat.utils.arraystats import ArrayStats
 
 # fslpy modules (not part of ukat, need separate installation)
 from fsl.wrappers.fugue import prelude
 from fsl.wrappers import LOAD
 
 # Modules that are not part of ukat but live in this experiments' folder
-from arraystats import ArrayStats
 from roi import RegionOfInterest
 
 

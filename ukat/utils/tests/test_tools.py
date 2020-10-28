@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import ukat.utils.tools as tools
-
+from ukat.utils import arraystats
 
 class TestConvertToPiRange:
 
@@ -18,8 +18,10 @@ class TestConvertToPiRange:
 
     def test_pi_range_result(self):
         pi_range_calculated = tools.convert_to_pi_range(self.array)
-        np.testing.assert_allclose(tools.image_stats(pi_range_calculated),
-                                   self.gold_standard, rtol=1e-7, atol=1e-9)
+        stats = arraystats.ArrayStats(pi_range_calculated).calculate()
+        np.testing.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
+                                    stats["min"]["3D"], stats["max"]["3D"]],
+                                    self.gold_standard, rtol=1e-6, atol=1e-4)
 
     def test_if_ranges(self):
         # Test for values > 3.2
@@ -162,28 +164,3 @@ class TestMaskSlices:
         wrong_dtype_mask = np.full(self.shape, 2)
         with pytest.raises(AssertionError):
             tools.mask_slices(self.shape, 1, wrong_dtype_mask)
-
-
-class TestImageStats:
-
-    # Gold Standard = [mean, std, minimum, maximum]
-    # Input: {np.arange(-5, 6)}
-    gold_standard = [0.0, 3.162278, -5.0,  5.0]
-
-    # Create array for testing
-    array = np.arange(-5, 6)
-
-    def test_stats_result(self):
-        np.testing.assert_allclose(tools.image_stats(self.array),
-                                   self.gold_standard, rtol=1e-3, atol=1e-9)
-
-    def test_stats_shape(self):
-        assert len(tools.image_stats(self.array)) == 4
-
-    def test_stats_input_type(self):
-        # No input argument
-        with pytest.raises(AttributeError):
-            tools.image_stats(None)
-        # String
-        with pytest.raises(TypeError):
-            tools.image_stats("abcdef")
