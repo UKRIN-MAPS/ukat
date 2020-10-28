@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from ukat.mapping.b0 import B0
-import ukat.utils.tools as tools
+from ukat.utils import arraystats
 
 
 class TestB0:
@@ -18,14 +18,15 @@ class TestB0:
     multiple_echo_list = [1, 2, 3, 4, 5]
 
     # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
-    # gold_standard = [386.3850, 0.0, 386.3850, 386.3850]
-    gold_standard = [53.05165, 0.0, 53.05165, 53.05165]
+    gold_standard = [13.051648, 108.320512, -280.281686, 53.051648]
 
     def test_b0map_values(self):
         b0_map_calculated = B0(self.correct_array,
-                               self.correct_echo_list).b0_map
-        np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
-                                   self.gold_standard, rtol=2*np.pi, atol=400)
+                               self.correct_echo_list, unwrap=False).b0_map
+        b0_maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
+        np.testing.assert_allclose([b0_maps_stats["mean"], b0_maps_stats["std"],
+                                   b0_maps_stats["min"], b0_maps_stats["max"]],
+                                   self.gold_standard, rtol=1e-7, atol=1e-9)
 
     def test_inputs(self):
         # Check that it fails when input pixel_array has incorrect shape

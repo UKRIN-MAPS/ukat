@@ -33,7 +33,7 @@ class B0(object):
     """
 
     def __init__(self, pixel_array, echo_list, mask=None, unwrap=True,
-                 wraparound=False):
+                 wrap_around=False):
         """Initialise a T1 class instance.
 
         Parameters
@@ -49,8 +49,13 @@ class B0(object):
             By default, this script applies the
             scipy phase unwrapping for each phase echo image.
         wrap_around : boolean, optional
-            By default, this script does not apply the scipy wrap_around
-            in the phase unwrapping for each phase echo image.
+            By default, this flag from unwrap_phase is False.
+            Copied from scipy wrap_around documentation: "When an element of
+            the sequence is True, the unwrapping process will regard the edges
+            along the corresponding axis of the image to be connected and use
+            this connectivity to guide the phase unwrapping process.".
+            Pratical example: voxels [0, :, :] are considered to be next to
+            voxels [-1, :, :] if wrap_around=True.
         """
 
         self.pixel_array = pixel_array
@@ -77,8 +82,10 @@ class B0(object):
                                 self.pixel_array[..., 1])), mask=mask)
             if unwrap:
                 # Unwrap each phase image
-                self.phase0 = unwrap_phase(self.phase0, wrap_around=wraparound)
-                self.phase1 = unwrap_phase(self.phase1, wrap_around=wraparound)
+                self.phase0 = unwrap_phase(self.phase0,
+                                           wrap_around=wrap_around)
+                self.phase1 = unwrap_phase(self.phase1,
+                                           wrap_around=wrap_around)
             # Phase difference
             self.phase_difference = self.phase1 - self.phase0
             # B0 Map calculation
