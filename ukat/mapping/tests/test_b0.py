@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from ukat.mapping.b0 import b0map
-import ukat.utils.tools as tools
+from ukat.utils import arraystats
 
 # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
 # if correct_array is wrapped
@@ -24,8 +24,10 @@ multiple_echo_list = [1, 2, 3, 4, 5]
 
 def test_b0map_values():
     b0_map_calculated = b0map(correct_array, correct_echo_list)
-    np.testing.assert_allclose(tools.image_stats(b0_map_calculated),
-                               gold_standard, rtol=1e-7, atol=1e-9)
+    b0map_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
+    np.testing.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
+                                b0map_stats["min"], b0map_stats["max"]],
+                                gold_standard, rtol=1e-7, atol=1e-9)
 
 
 def test_array_input_output_shapes():
