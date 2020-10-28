@@ -174,75 +174,100 @@ class ArrayStats():
                 skewness2[iz, it] = array_stats2.skewness
                 kurtosis2[iz, it] = array_stats2.kurtosis
 
-        # Ensure statistics are None if data does not support calculation across
-        # corresponding number of dimensions
-        if self.image_ndims < 3:
-            n3 = None
-            mean3 = None
-            median3 = None
-            min3 = None
-            max3 = None
-            std3 = None
-            cv3 = None
-            skewness3 = None
-            kurtosis3 = None
-        if self.image_ndims < 4:
-            n4 = None
-            mean4 = None
-            median4 = None
-            min4 = None
-            max4 = None
-            std4 = None
-            cv4 = None
-            skewness4 = None
-            kurtosis4 = None
-
-        # Init dict for each dimension of each statistic
-        n = {
-            '2D': n2,  # number of voxels in each 2D slice
-            '3D': n3,  # number of voxels in each 3D volume
-            '4D': n4   # number of voxels in 4D volume
-        }
-        mean = {
-            '2D': mean2,  # mean of each 2D slice
-            '3D': mean3,  # mean of each 3D volume
-            '4D': mean4   # mean of the 4D volume
-        }
-        median = {
-            '2D': median2,
-            '3D': median3,
-            '4D': median4
-        }
-        minimum = {
-            '2D': min2,
-            '3D': min3,
-            '4D': min4
-        }
-        maximum = {
-            '2D': max2,
-            '3D': max3,
-            '4D': max4
-        }
-        std = {
-            '2D': std2,
-            '3D': std3,
-            '4D': std4
-        }
-        cv = {
-            '2D': cv2,
-            '3D': cv3,
-            '4D': cv4
-        }
-        skewness = {
-            '2D': skewness2,
-            '3D': skewness3,
-            '4D': skewness4
-        }
-        kurtosis = {
-            '2D': kurtosis2,
-            '3D': kurtosis3,
-            '4D': kurtosis4
-        }
+        if self.image_ndims == 4:
+            # Init dict for each dimension of each statistic
+            n = {
+                '2D': n2,  # number of voxels in each 2D slice
+                '3D': n3,  # number of voxels in each 3D volume
+                '4D': n4   # number of voxels in 4D volume
+            }
+            mean = {
+                '2D': mean2,  # mean of each 2D slice
+                '3D': mean3,  # mean of each 3D volume
+                '4D': mean4   # mean of the 4D volume
+            }
+            median = {
+                '2D': median2,
+                '3D': median3,
+                '4D': median4
+            }
+            minimum = {
+                '2D': min2,
+                '3D': min3,
+                '4D': min4
+            }
+            maximum = {
+                '2D': max2,
+                '3D': max3,
+                '4D': max4
+            }
+            std = {
+                '2D': std2,
+                '3D': std3,
+                '4D': std4
+            }
+            cv = {
+                '2D': cv2,
+                '3D': cv3,
+                '4D': cv4
+            }
+            skewness = {
+                '2D': skewness2,
+                '3D': skewness3,
+                '4D': skewness4
+            }
+            kurtosis = {
+                '2D': kurtosis2,
+                '3D': kurtosis3,
+                '4D': kurtosis4
+            }
+        elif self.image_ndims == 3:
+            n = {
+                '2D': n2.transpose()[0],
+                '3D': n4, # n4 because {statistic}4 always returns the result
+            }             # over the entire array, which here is 3D
+            mean = {
+                '2D': mean2.transpose()[0],
+                '3D': mean4,
+            }
+            median = {
+                '2D': median2.transpose()[0],
+                '3D': median4,
+            }
+            minimum = {
+                '2D': min2.transpose()[0],
+                '3D': min4,
+            }
+            maximum = {
+                '2D': max2.transpose()[0],
+                '3D': max4,
+            }
+            std = {
+                '2D': std2.transpose()[0],
+                '3D': std4,
+            }
+            cv = {
+                '2D': cv2.transpose()[0],
+                '3D': cv4,
+            }
+            skewness = {
+                '2D': skewness2.transpose()[0],
+                '3D': skewness4,
+            }
+            kurtosis = {
+                '2D': kurtosis2.transpose()[0],
+                '3D': kurtosis4,
+            }
+        else:
+            n = n4             # n4 because {statistic}4 always returns the
+            mean = mean4       # result over the entire array, which here is 2D
+            median = median4
+            minimum = min4
+            maximum = max4
+            std = std4
+            cv = cv4
+            skewness = skewness4
+            kurtosis = kurtosis4
 
         # Init statistics "wrapper" dictionary
         statistics = {
