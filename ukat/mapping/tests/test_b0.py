@@ -23,9 +23,9 @@ class TestB0:
     def test_b0map_values(self):
         b0_map_calculated = B0(self.correct_array,
                                self.correct_echo_list, unwrap=False).b0_map
-        b0_maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
-        np.testing.assert_allclose([b0_maps_stats["mean"], b0_maps_stats["std"],
-                                   b0_maps_stats["min"], b0_maps_stats["max"]],
+        b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
+        np.testing.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
+                                   b0maps_stats["min"], b0maps_stats["max"]],
                                    self.gold_standard, rtol=1e-7, atol=1e-9)
 
     def test_inputs(self):
