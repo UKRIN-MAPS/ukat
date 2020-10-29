@@ -64,7 +64,7 @@ class TestB0:
                 masked_pixels.phase_difference).any()
         assert (all_pixels.b0_map != masked_pixels.b0_map).any()
         assert (arraystats.ArrayStats(all_pixels.b0_map).calculate() !=
-                arraystats.ArrayStats(masked_pixels.b0_map).calculate())      
+                arraystats.ArrayStats(masked_pixels.b0_map).calculate())  
 
     def test_unwrap_phase(self):
         unwrapped = B0(self.correct_array, self.correct_echo_list)
