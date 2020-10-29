@@ -161,13 +161,13 @@ class TestT2Star:
         # loglin method
         mapper = T2Star(image, te, method='loglin')
         t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
-        np.testing.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
+        npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_loglin, rtol=1e-6, atol=1e-4)
 
         # 2p_exp method
         mapper = T2Star(image, te, method='2p_exp')
         t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
-        np.testing.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
+        npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)

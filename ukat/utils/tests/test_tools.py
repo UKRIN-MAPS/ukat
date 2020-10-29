@@ -1,7 +1,9 @@
 import pytest
 import numpy as np
+import numpy.testing as npt
 import ukat.utils.tools as tools
 from ukat.utils import arraystats
+
 
 class TestConvertToPiRange:
 
@@ -19,7 +21,7 @@ class TestConvertToPiRange:
     def test_pi_range_result(self):
         pi_range_calculated = tools.convert_to_pi_range(self.array)
         stats = arraystats.ArrayStats(pi_range_calculated).calculate()
-        np.testing.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
+        npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                                     stats["min"]["3D"], stats["max"]["3D"]],
                                     self.gold_standard, rtol=1e-6, atol=1e-4)
 
