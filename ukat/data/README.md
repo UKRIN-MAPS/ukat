@@ -31,4 +31,5 @@ With the exception of datasets marked with :star:, all test data is from the tra
 * :star: `b0/siemens_2`: not part of travelling kidney pilot study 2019, data acquired after GOSH Prisma upgrade to VE11E (20200305_0281)
 
 ### T1
-* `t1/philips`: NIST Phantom
+* `t1/philips_1`: NIST Phantom
+* `t1/philips_2`: not part of travelling kidney pilot study 2019, data acquired on 20 Oct 2020 in Nottingham
