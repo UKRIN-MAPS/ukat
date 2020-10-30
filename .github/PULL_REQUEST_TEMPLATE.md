@@ -8,13 +8,9 @@ Describe the big picture of your changes here to communicate to the maintainers 
 - [ ] I have added necessary documentation (if appropriate)
 - [ ] I have updated documentation which becomes obsolete after my changes (if appropriate)
 - [ ] Files added follow the repository structure (if appropriate)
-- [ ] The PR is small (so that it can be reviewed quickly)
+- [ ] I ensured that all tests are passing (by running `pytest`)
 
 If adding test data?
 - [ ] Data is anonymised
 - [ ] Ensure imaging data is in NIfTI format and was converted using [`d2n`](https://github.com/UKRIN-MAPS/d2n)
 - [ ] Update the [`data/README.md`](data/README.md) file with info about the origin of the data
-
----
-
-@fnery @JSousa-UoL

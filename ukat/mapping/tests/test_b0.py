@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.testing as npt
 import pytest
 from ukat.mapping.b0 import B0
 from ukat.utils import arraystats
@@ -25,7 +26,7 @@ class TestB0:
                                self.correct_echo_list, unwrap=False).b0_map
         b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
         # This tests the B0 calculation, independently of the unwrapping used/
-        np.testing.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
+        npt.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
                                    b0maps_stats["min"], b0maps_stats["max"]],
                                    self.gold_standard, rtol=1e-7, atol=1e-9)
 
