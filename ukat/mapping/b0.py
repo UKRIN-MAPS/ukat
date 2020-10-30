@@ -16,10 +16,6 @@ class B0:
         The shape of the B0 map
     n_te : int
         The number of TE used to calculate the map
-    echo0 : float
-        The first Echo Time in ms
-    echo1 : float
-        The second Echo Time in ms
     delta_te : float
         The difference between the second and the first Echo Time
     phase0 : np.ndarray
@@ -64,10 +60,10 @@ class B0:
             self.mask = mask
         if self.n_te == len(echo_list) and self.n_te == 2:
             # Get the Echo Times
-            self.echo0 = echo_list[0]
-            self.echo1 = echo_list[1]
+            echo0 = echo_list[0]
+            echo1 = echo_list[1]
             # Calculate DeltaTE in seconds
-            self.delta_te = np.absolute(self.echo1 - self.echo0) * 0.001
+            self.delta_te = np.absolute(echo1 - echo0) * 0.001
             # Extract each phase image, mask them and rescale to
             # [-pi, pi] if not in that range already.
             self.phase0 = np.ma.masked_array(
