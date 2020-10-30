@@ -24,6 +24,7 @@ class TestB0:
         b0_map_calculated = B0(self.correct_array,
                                self.correct_echo_list, unwrap=False).b0_map
         b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
+        # This tests the B0 calculation, independently of the unwrapping used/
         np.testing.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
                                    b0maps_stats["min"], b0maps_stats["max"]],
                                    self.gold_standard, rtol=1e-7, atol=1e-9)
@@ -64,7 +65,7 @@ class TestB0:
                 masked_pixels.phase_difference).any()
         assert (all_pixels.b0_map != masked_pixels.b0_map).any()
         assert (arraystats.ArrayStats(all_pixels.b0_map).calculate() !=
-                arraystats.ArrayStats(masked_pixels.b0_map).calculate())  
+                arraystats.ArrayStats(masked_pixels.b0_map).calculate())
 
     def test_unwrap_phase(self):
         unwrapped = B0(self.correct_array, self.correct_echo_list)

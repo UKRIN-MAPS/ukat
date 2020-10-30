@@ -6,10 +6,8 @@ from tqdm import tqdm
 from scipy.optimize import curve_fit
 
 
-class T2Star(object):
-    """Package containing algorithms that calculate parameter maps
-    of the MRI scans acquired during the UKRIN-MAPS project.
-
+class T2Star:
+    """
     Attributes
     ----------
     t2star_map : np.ndarray

@@ -3,21 +3,19 @@ from skimage.restoration import unwrap_phase
 from ukat.utils.tools import convert_to_pi_range
 
 
-class B0(object):
-    """Package containing algorithms that calculate parameter maps
-    of the MRI scans acquired during the UKRIN-MAPS project.
-
+class B0:
+    """
     Generates a B0 map from a series of volumes collected
     with 2 different echo times.
 
     Attributes
     ----------
     b0_map : np.ndarray
-        The estimated B0 values in rad/s
+        The estimated B0 values in Hz
     shape : tuple
         The shape of the B0 map
     n_te : int
-        The number of TI used to calculate the map
+        The number of TE used to calculate the map
     echo0 : float
         The first Echo Time in ms
     echo1 : float
@@ -50,12 +48,10 @@ class B0(object):
             scipy phase unwrapping for each phase echo image.
         wrap_around : boolean, optional
             By default, this flag from unwrap_phase is False.
-            Copied from scipy wrap_around documentation: "When an element of
-            the sequence is True, the unwrapping process will regard the edges
-            along the corresponding axis of the image to be connected and use
-            this connectivity to guide the phase unwrapping process.".
-            Pratical example: voxels [0, :, :] are considered to be next to
-            voxels [-1, :, :] if wrap_around=True.
+            The algorithm will regard the edges along the corresponding axis
+            of the image to be connected and use this connectivity to guide the
+            phase unwrapping process.Eg., voxels [0, :, :] are considered to be
+            next to voxels [-1, :, :] if wrap_around=True.
         """
 
         self.pixel_array = pixel_array

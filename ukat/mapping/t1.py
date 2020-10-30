@@ -5,10 +5,8 @@ from tqdm import tqdm
 from scipy.optimize import curve_fit
 
 
-class T1(object):
-    """Package containing algorithms that calculate parameter maps
-    of the MRI scans acquired during the UKRIN-MAPS project.
-
+class T1:
+    """
     Attributes
     ----------
     t1_map : np.ndarray
