@@ -154,6 +154,32 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 5),
                         parameters=4)
 
+    def test_tss_valid_axis(self):
+
+        # 4D -1 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=-1)
+
+        # 4D 3 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=3)
+
+        # 3D -1 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=-1)
+
+        # 3D 2 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=2)
+
 
 class TestMagnitudeCorrect:
 

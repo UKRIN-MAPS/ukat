@@ -30,8 +30,8 @@ class T1(object):
         The number of TI used to calculate the map
     """
 
-    def __init__(self, pixel_array, inversion_list, mask=None, parameters=2,
-                 multithread=True):
+    def __init__(self, pixel_array, inversion_list, tss=0, tss_axis=-2,
+                 mask=None, parameters=2, multithread=True):
         """Initialise a T1 class instance.
 
         Parameters
@@ -43,6 +43,17 @@ class T1(object):
         inversion_list : list()
             An array of the inversion times used for the last dimension of the
             raw data. In milliseconds.
+        tss : float, optional
+            Default 0
+            The temporal slice spacing is the delay between acquisition of
+            slices in a T1 map. Including this information means the
+            inversion time is correct for each slice in a multi-slice T1
+            map. In milliseconds.
+        tss_axis : int, optional
+            Default -2 i.e. last spatial axis
+            The axis over which the temporal slice spacing is applied. This
+            axis is relative to the full 4D pixel array i.e. tss_axis=-1
+            would be along the TI axis and would be meaningless.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time
@@ -64,13 +75,9 @@ class T1(object):
             increase in speed distributing the calculation would generate.
         """
 
-        # Some sanity checks
-        assert (pixel_array.shape[-1]
-                == len(inversion_list)), 'Number of inversions does not ' \
-                                         'match the number of time frames ' \
-                                         'on the last axis of pixel_array'
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
+        self.dimensions = len(pixel_array.shape)
         self.n_ti = pixel_array.shape[-1]
         # Generate a mask if there isn't one specified
         if mask is None:
@@ -80,8 +87,18 @@ class T1(object):
         # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
+        self.tss = tss
+        self.tss_axis = tss_axis
         self.parameters = parameters
         self.multithread = multithread
+
+        # Some sanity checks
+        assert (pixel_array.shape[-1]
+                == len(inversion_list)), 'Number of inversions does not ' \
+                                         'match the number of time frames ' \
+                                         'on the last axis of pixel_array'
+        assert (tss_axis % self.dimensions != self.dimensions - 1), \
+            'Temporal slice spacing can\'t be applied to the TI axis.'
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
