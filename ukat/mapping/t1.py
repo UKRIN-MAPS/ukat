@@ -130,6 +130,7 @@ class T1(object):
             eff_err = np.zeros(n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_ti)
+        slices = np.indices(self.shape)[self.tss_axis + 1].ravel()
         # Get indices of voxels to process
         idx = np.argwhere(mask).squeeze()
 
@@ -141,9 +142,11 @@ class T1(object):
                     futures = []
 
                     for ind in idx:
+                        ti_slice_corrected = self.inversion_list + \
+                                             slices[ind] * self.tss
                         future = pool.submit(self.__fit_signal__,
                                              signal[ind, :],
-                                             self.inversion_list,
+                                             ti_slice_corrected,
                                              self.parameters)
                         future.add_done_callback(lambda p: progress.update())
                         futures.append(future)
@@ -168,18 +171,20 @@ class T1(object):
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
                     sig = signal[ind, :]
+                    ti_slice_corrected = self.inversion_list + \
+                                         slices[ind] * self.tss
                     if self.parameters == 2:
                         t1_map[ind], t1_err[ind], \
                             m0_map[ind], m0_err[ind] = \
                                 self.__fit_signal__(sig,
-                                                    self.inversion_list,
+                                                    ti_slice_corrected,
                                                     self.parameters)
                     elif self.parameters == 3:
                         t1_map[ind], t1_err[ind], \
                             m0_map[ind], m0_err[ind], \
                                 eff_map[ind], eff_err[ind] = \
                                     self.__fit_signal__(sig,
-                                                        self.inversion_list,
+                                                        ti_slice_corrected,
                                                         self.parameters)
                     progress.update(1)
 

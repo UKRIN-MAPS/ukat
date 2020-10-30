@@ -26,6 +26,40 @@ class TestT1:
                                            60.69527515, 530.73226588,
                                            956.03932295, 1340.87306233,
                                            1689.08502946])
+    # The ideal signal produced by the equation M0 * (1 - 2 * exp(-t / T1))
+    # where M0 = 5000 and T1 = 1000 acquired over three slices at 9 t
+    # between 200 and 1000 ms + a temporal slice spacing of 10 ms
+    correct_signal_two_param_tss = np.array([[[-3187.30753078, -2408.18220682,
+                                               -1703.20046036, -1065.30659713,
+                                               -488.11636094, 34.14696209,
+                                               506.71035883, 934.30340259,
+                                               1321.20558829],
+                                              [-3105.8424597, -2334.46956224,
+                                               -1636.50250136, -1004.95578812,
+                                               -433.50869074, 83.55802539,
+                                               551.41933777, 974.75775966,
+                                               1357.81020428],
+                                              [-3025.18797962, -2261.49037074,
+                                               -1570.46819815, -945.2054797,
+                                               -379.44437595, 132.4774404,
+                                               595.68345494, 1014.80958915,
+                                               1394.05059827]],
+                                             [[-3187.30753078, -2408.18220682,
+                                               -1703.20046036, -1065.30659713,
+                                               -488.11636094, 34.14696209,
+                                               506.71035883, 934.30340259,
+                                               1321.20558829],
+                                              [-3105.8424597, -2334.46956224,
+                                               -1636.50250136, -1004.95578812,
+                                               -433.50869074, 83.55802539,
+                                               551.41933777, 974.75775966,
+                                               1357.81020428],
+                                              [-3025.18797962, -2261.49037074,
+                                               -1570.46819815, -945.2054797,
+                                               -379.44437595, 132.4774404,
+                                               595.68345494, 1014.80958915,
+                                               1394.05059827]]
+                                             ])
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
 
@@ -56,16 +90,16 @@ class TestT1:
         # Multithread
         mapper = T1(signal_array, self.t, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
         mapper = T1(signal_array, self.t, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
     def test_three_param_fit(self):
         # Make the signal into a 4D array
@@ -74,18 +108,33 @@ class TestT1:
         # Multithread
         mapper = T1(signal_array, self.t, parameters=3, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.eff_map.mean() - self.eff < 0.05
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.eff_map.mean() - self.eff < 0.00005
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
         mapper = T1(signal_array, self.t, parameters=3, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.eff_map.mean() - self.eff < 0.05
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.eff_map.mean() - self.eff < 0.00005
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+
+    def test_tss(self):
+
+        mapper = T1(self.correct_signal_two_param_tss, self.t, tss=10)
+        assert mapper.shape == self.correct_signal_two_param_tss.shape[:-1]
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+
+    def test_tss_axis(self):
+        signal_array = np.swapaxes(self.correct_signal_two_param_tss, 0, 1)
+        mapper = T1(signal_array, self.t, tss=10, tss_axis=0)
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
     def test_failed_fit(self):
         # Make the signal, where the fitting is expected to fail, into 4D array
@@ -119,16 +168,16 @@ class TestT1:
         mask[:5, ...] = False
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, ...].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
+        assert mapper.t1_map[:5, ...].mean() < 0.00001
 
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, ...] = 0
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, ...].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
+        assert mapper.t1_map[:5, ...].mean() < 0.00001
 
     def test_missmatched_raw_data_and_inversion_lengths(self):
 
