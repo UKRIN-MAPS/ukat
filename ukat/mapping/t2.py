@@ -123,7 +123,8 @@ class T2:
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
                     sig = signal[ind, :]
-                    t2_map[ind], t2_err[ind], m0_map[ind], m0_err[ind] = self.__fit_signal__(sig, self.echo_list)
+                    t2_map[ind], t2_err[ind], m0_map[ind], m0_err[ind] = \
+                        self.__fit_signal__(sig, self.echo_list)
                     progress.update(1)
 
         # Reshape results to raw data shape
