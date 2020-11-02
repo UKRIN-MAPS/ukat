@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.testing as npt
 import pytest
 from ukat.mapping.b0 import b0map
 from ukat.utils import arraystats
@@ -25,7 +26,7 @@ multiple_echo_list = [1, 2, 3, 4, 5]
 def test_b0map_values():
     b0_map_calculated = b0map(correct_array, correct_echo_list)
     b0map_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
-    np.testing.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
+    npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
                                 b0map_stats["min"], b0map_stats["max"]],
                                 gold_standard, rtol=1e-7, atol=1e-9)
 
