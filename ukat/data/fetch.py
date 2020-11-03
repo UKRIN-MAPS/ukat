@@ -618,6 +618,8 @@ def t1_philips(dataset_id):
         affine matrix for image data
     numpy.ndarray
         array of inversion times, in seconds
+    float
+        temporal slice spacing of image, in seconds
 
     """
 
@@ -708,6 +710,7 @@ def t1_philips(dataset_id):
         # Sort by increasing inversion time
         sort_idxs = np.argsort(inversion_list)
         inversion_list = inversion_list[sort_idxs]
+        tss = 0
         magnitude = image[:, :, :, sort_idxs]
         phase = np.zeros(image.shape)
         affine = data.affine
@@ -718,6 +721,7 @@ def t1_philips(dataset_id):
         phase_img = nib.load(filepaths[3])
         phase = phase_img.get_fdata()
         inversion_list = list(np.arange(0.1, 1.801, 0.1))
+        tss = 0.0537
         affine = magnitude_img.affine
 
-    return magnitude, phase, affine, inversion_list
+    return magnitude, phase, affine, inversion_list, tss
