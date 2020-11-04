@@ -39,4 +39,4 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov-report=xml --cov=ukat
-        codecov -t 79d35a7a-cca0-4770-b1f4-3ff622604c64
+        codecov -t ${{ secrets.CODECOV_TOKEN }}
