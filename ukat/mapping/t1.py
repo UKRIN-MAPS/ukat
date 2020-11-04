@@ -85,7 +85,7 @@ class T1:
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.tss = tss
-        self.tss_axis = tss_axis
+        self.tss_axis = tss_axis % self.dimensions
         self.parameters = parameters
         self.multithread = multithread
 
@@ -94,7 +94,7 @@ class T1:
                 == len(inversion_list)), 'Number of inversions does not ' \
                                          'match the number of time frames ' \
                                          'on the last axis of pixel_array'
-        assert (tss_axis % self.dimensions != self.dimensions - 1), \
+        assert (self.tss_axis != self.dimensions - 1), \
             'Temporal slice spacing can\'t be applied to the TI axis.'
 
         # Initialise output attributes
@@ -127,7 +127,7 @@ class T1:
             eff_err = np.zeros(n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_ti)
-        slices = np.indices(self.shape)[self.tss_axis + 1].ravel()
+        slices = np.indices(self.shape)[self.tss_axis].ravel()
         # Get indices of voxels to process
         idx = np.argwhere(mask).squeeze()
 
