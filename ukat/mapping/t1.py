@@ -168,7 +168,7 @@ class T1:
                 for ind in idx:
                     sig = signal[ind, :]
                     ti_slice_corrected = self.inversion_list + \
-                                         slices[ind] * self.tss
+                                            slices[ind] * self.tss
                     if self.parameters == 2:
                         t1_map[ind], t1_err[ind], \
                             m0_map[ind], m0_err[ind] = \

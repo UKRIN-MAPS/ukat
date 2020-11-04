@@ -357,4 +357,3 @@ class TestMagnitudeCorrect:
                              complex_stats['min']['4D'],
                              complex_stats['max']['4D']],
                             gold_standard, rtol=1e-6, atol=1e-4)
-
