@@ -1,8 +1,10 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+from ukat.data import fetch
 from ukat.mapping.t1 import T1, magnitude_correct, two_param_eq, \
     two_param_abs_eq, three_param_eq, three_param_abs_eq
+from ukat.utils import arraystats
 
 
 class TestT1:
@@ -228,6 +230,35 @@ class TestT1:
             mapper = T1(pixel_array=np.zeros((5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
                         tss=1, tss_axis=2)
+
+    def test_real_data(self):
+        # Get test data
+        magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
+
+        # Convert times to ms
+        ti = np.array(ti) * 1000
+        tss *= 1000
+
+        # Crop to reduce runtime
+        magnitude = magnitude[37:55, 65:85, :2, :]
+
+        # Gold standard statistics
+        gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
+        gold_standard_3p = [1382.037954, 662.176566, 0.0, 3948.251711]
+
+        # Two parameter method
+        mapper = T1(magnitude, ti, parameters=2, tss=tss)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
+                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                            gold_standard_2p, rtol=1e-6, atol=1e-4)
+
+        # Three parameter method
+        mapper = T1(magnitude, ti, parameters=3, tss=tss)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
+                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                            gold_standard_3p, rtol=1e-6, atol=1e-4)
 
 
 class TestMagnitudeCorrect:
