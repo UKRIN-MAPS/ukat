@@ -5,6 +5,7 @@ from ukat.data import fetch
 from ukat.mapping.t1 import T1, magnitude_correct, two_param_eq, \
     two_param_abs_eq, three_param_eq, three_param_abs_eq
 from ukat.utils import arraystats
+from ukat.utils.tools import convert_to_pi_range
 
 
 class TestT1:
@@ -338,3 +339,22 @@ class TestMagnitudeCorrect:
         npt.assert_allclose(corrected,
                             np.tile(self.correct_array, (4, 4, 4, 1)),
                             rtol=1e-9, atol=1e-9)
+
+    def test_real_data(self):
+        # Get test data
+        magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
+        phase = convert_to_pi_range(phase)
+
+        gold_standard = [59.35023, 191.800416, -2381.208749, 4347.05731]
+        # Convert magnitude and phase into complex data
+        complex_data = magnitude * (np.cos(phase) + 1j * np.sin(phase))
+
+        magnitude_corrected = np.nan_to_num(magnitude_correct(complex_data))
+
+        complex_stats = arraystats.ArrayStats(magnitude_corrected).calculate()
+        npt.assert_allclose([complex_stats['mean']['4D'],
+                             complex_stats['std']['4D'],
+                             complex_stats['min']['4D'],
+                             complex_stats['max']['4D']],
+                            gold_standard, rtol=1e-6, atol=1e-4)
+
