@@ -1,6 +1,5 @@
 import warnings
 import numpy as np
-from multiprocessing import cpu_count
 import concurrent.futures
 from tqdm import tqdm
 from scipy.optimize import curve_fit
@@ -122,8 +121,7 @@ class T2Star:
 
         # Multithreaded method
         if self.multithread:
-            cores = cpu_count()
-            with concurrent.futures.ProcessPoolExecutor(cores) as pool:
+            with concurrent.futures.ProcessPoolExecutor() as pool:
                 with tqdm(total=idx.size) as progress:
                     futures = []
 
