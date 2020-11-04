@@ -1,14 +1,11 @@
 import numpy as np
-from multiprocessing import cpu_count
 import concurrent.futures
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
 
-class T1(object):
-    """Package containing algorithms that calculate parameter maps
-    of the MRI scans acquired during the UKRIN-MAPS project.
-
+class T1:
+    """
     Attributes
     ----------
     t1_map : np.ndarray
@@ -136,8 +133,7 @@ class T1(object):
 
         # Multithreaded method
         if self.multithread:
-            cores = cpu_count()
-            with concurrent.futures.ProcessPoolExecutor(cores) as pool:
+            with concurrent.futures.ProcessPoolExecutor() as pool:
                 with tqdm(total=idx.size) as progress:
                     futures = []
 
@@ -249,8 +245,7 @@ class T1(object):
             return t1, t1_err, m0, m0_err, eff, eff_err
 
     def r1_map(self):
-        r1_map = np.reciprocal(self.t1_map)
-        return r1_map
+        return np.reciprocal(self.t1_map)
 
 
 def two_param_abs_eq(t, t1, m0):
