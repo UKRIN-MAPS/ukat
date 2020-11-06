@@ -21,11 +21,10 @@ class TestB0:
     # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
     gold_standard = [13.051648, 108.320512, -280.281686, 53.051648]
 
-    def test_b0map_values(self):
+    def test_b0_calculation_without_unwrapping(self):
         b0_map_calculated = B0(self.correct_array,
                                self.correct_echo_list, unwrap=False).b0_map
         b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
-        # This tests the B0 calculation, independently of the unwrapping used/
         npt.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
                             b0maps_stats["min"], b0maps_stats["max"]],
                             self.gold_standard, rtol=1e-7, atol=1e-9)
