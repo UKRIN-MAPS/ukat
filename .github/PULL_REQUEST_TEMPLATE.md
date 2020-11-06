@@ -8,7 +8,6 @@ Describe the big picture of your changes here to communicate to the maintainers 
 - [ ] I have added necessary documentation (if appropriate)
 - [ ] I have updated documentation which becomes obsolete after my changes (if appropriate)
 - [ ] Files added follow the repository structure (if appropriate)
-- [ ] I ensured that all tests are passing (by running `pytest`)
 
 If adding test data?
 - [ ] Data is anonymised
