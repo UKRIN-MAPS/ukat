@@ -281,30 +281,31 @@ def r2star_philips():
     # Note that these file names are sorted alphabetically and not sorted by
     # increasing echo time. The sort by echo time will be done later below.
 
-    expected_filenames = ['01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.nii.gz',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.json',
-                          '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.nii.gz']
+    expected_filenames = [
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.nii.gz',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.json',
+        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.nii.gz']
 
     # Initialise path to r2star/philips
     dir_r2star_philips = os.path.join(DIR_DATA, "r2star", "philips")
@@ -442,7 +443,6 @@ def _load_b0_siemens_philips(filepaths):
     for filepath in filepaths:
 
         if filepath.endswith(".nii.gz"):
-
             # Load data in NIfTI files
             nii = nib.load(filepath)
             data.append(nii.get_fdata())
@@ -573,14 +573,15 @@ def b0_philips(dataset_id):
                               '00801__B0_map_expiration_default_e2_real.json',
                               '00801__B0_map_expiration_default_e2_real.nii.gz']
     elif dataset_id == 2:
-        expected_filenames = ['01401__B0_map_expiration_volume_2DMS_product_e1.json',
-                              '01401__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
-                              '01401__B0_map_expiration_volume_2DMS_product_e1_ph.json',
-                              '01401__B0_map_expiration_volume_2DMS_product_e1_ph.nii.gz',
-                              '01401__B0_map_expiration_volume_2DMS_product_e2.json',
-                              '01401__B0_map_expiration_volume_2DMS_product_e2.nii.gz',
-                              '01401__B0_map_expiration_volume_2DMS_product_e2_ph.json',
-                              '01401__B0_map_expiration_volume_2DMS_product_e2_ph.nii.gz']
+        expected_filenames = [
+            '01401__B0_map_expiration_volume_2DMS_product_e1.json',
+            '01401__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
+            '01401__B0_map_expiration_volume_2DMS_product_e1_ph.json',
+            '01401__B0_map_expiration_volume_2DMS_product_e1_ph.nii.gz',
+            '01401__B0_map_expiration_volume_2DMS_product_e2.json',
+            '01401__B0_map_expiration_volume_2DMS_product_e2.nii.gz',
+            '01401__B0_map_expiration_volume_2DMS_product_e2_ph.json',
+            '01401__B0_map_expiration_volume_2DMS_product_e2_ph.nii.gz']
     else:
         error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
         raise ValueError(error_msg)
@@ -721,3 +722,90 @@ def t1_philips(dataset_id):
         affine = magnitude_img.affine
 
     return magnitude, phase, affine, inversion_list
+
+
+def t2_philips(dataset_id):
+    """Fetches t2/philips_{dataset_id} dataset
+
+    dataset_id : int
+            Number of the dataset to load:
+            - dataset_id = 1 to load "t2\philips_1"
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of echo times, in seconds
+
+    """
+
+    POSSIBLE_DATASET_IDS = [1]
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    # Note that these file names are sorted alphabetically and not sorted by
+    # increasing echo time. The sort by echo time will be done later below.
+    if dataset_id == 1:
+        expected_filenames = ['01501__Multi_echo_10_echos_180_RFP_e1.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e1.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e10.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e10.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e11.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e11.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e3.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e3.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e4.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e4.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e5.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e5.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e6.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e6.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e7.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e7.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e8.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e8.nii.gz',
+                              '01501__Multi_echo_10_echos_180_RFP_e9.json',
+                              '01501__Multi_echo_10_echos_180_RFP_e9.nii.gz']
+    else:
+        error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
+        raise ValueError(error_msg)
+
+    # Initialise path to t1/philips_{dataset_id}
+    dir_t2_philips = os.path.join(DIR_DATA, 't2', 'philips' + f'_{dataset_id}')
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_t2_philips, expected_filenames)
+
+    if dataset_id == 1:
+        # Load magnitude data and corresponding echo times (in the orig)
+        magnitude = []
+        echo_list = []
+        for filepath in filepaths:
+
+            if filepath.endswith(".nii.gz"):
+
+                # Load NIfTI
+                data = nib.load(filepath)
+                magnitude.append(data.get_fdata())
+
+            elif filepath.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(filepath, 'r') as json_file:
+                    hdr = json.load(json_file)
+                echo_list.append(hdr["EchoTime"])
+
+        # Move echo dimension to 4th dimension
+        magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+        echo_list = np.array(echo_list)
+
+        # Sort by increasing echo time
+        sort_idxs = np.argsort(echo_list)
+        echo_list = echo_list[sort_idxs]
+        magnitude = magnitude[:, :, :, sort_idxs]
+        affine = data.affine
+
+    return magnitude, affine, echo_list
