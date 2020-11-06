@@ -11,7 +11,7 @@ class TestT2:
     m0 = 3000
     t = np.linspace(12, 120, 10)
 
-    # The idea signal produced by the equation M8 * exp(-t / T2) where
+    # The ideal signal produced by the equation M0 * exp(-t / T2) where
     # M0 = 5000 and T2 = 120 ms at 10 echo times between 12 and 120 ms
     correct_signal = np.array([2714.51225411, 2456.19225923, 2222.45466205,
                                2010.96013811, 1819.59197914, 1646.43490828,
@@ -72,7 +72,7 @@ class TestT2:
         assert mapper.t2_map[5:, :, :].mean() - self.t2 < 0.1
         assert mapper.t2_map[:5, :, :].mean() < 0.1
 
-    def test_missmatched_raw_data_and_echo_lengths(self):
+    def test_mismatched_raw_data_and_echo_lengths(self):
         with pytest.raises(AssertionError):
             mapper = T2(pixel_array=np.zeros((5, 5, 4)),
                         echo_list=np.linspace(0, 2000, 5))

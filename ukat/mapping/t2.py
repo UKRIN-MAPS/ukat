@@ -31,7 +31,7 @@ class T2:
         Parameters
         ----------
         pixel_array : np.ndarray
-            A array containing the signal from each voxel at each echo
+            An array containing the signal from each voxel at each echo
             time with the last dimension being time i.e. the array needed to
             generate a 3D T2 map would have dimensions [x, y, z, TE].
         echo_list : list()
@@ -39,7 +39,7 @@ class T2:
             raw data. In milliseconds.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
-            desired T1 map rather than the raw data i.e. omit the time
+            desired T2 map rather than the raw data i.e. omit the time
             dimension.
         multithread : bool or 'auto', optional
             Default 'auto'.
