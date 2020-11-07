@@ -120,5 +120,5 @@ class TestB0:
         mapper = B0(images, te, unwrap=False)
         b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
-                                    b0map_stats["min"], b0map_stats["max"]],
-                                    gold_standard_b0map,  rtol=1e-7, atol=1e-9)
+                             b0map_stats["min"], b0map_stats["max"]],
+                             gold_standard_b0map,  rtol=1e-7, atol=1e-9)
