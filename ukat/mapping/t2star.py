@@ -5,7 +5,7 @@ from tqdm import tqdm
 from scipy.optimize import curve_fit
 
 
-class T2Star(object):
+class T2Star:
     """
     Attributes
     ----------
