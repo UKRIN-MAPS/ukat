@@ -182,7 +182,7 @@ class TestT1:
         assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
         assert mapper.t1_map[:5, ...].mean() < 0.00001
 
-    def test_missmatched_raw_data_and_inversion_lengths(self):
+    def test_mismatched_raw_data_and_inversion_lengths(self):
 
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 4)),

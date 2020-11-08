@@ -67,8 +67,8 @@ class T1:
             Multithreading is useful when calculating the T1 for a large
             number of voxels e.g. generating a multi-slice abdominal T1 map.
             Turning off multithreading can be useful when fitting very small
-            amounts of data e.g. a mean T1 signal decay over an ROI when the
-            overheads of multi-threading are more of a hindrance than the
+            amounts of data e.g. a mean T1 signal decay over a ROI when the
+            overheads of multithreading are more of a hindrance than the
             increase in speed distributing the calculation would generate.
         """
 
