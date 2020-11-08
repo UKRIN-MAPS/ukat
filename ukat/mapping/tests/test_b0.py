@@ -110,15 +110,16 @@ class TestB0:
         # Get test data
         magnitude, phase, affine, te = fetch.b0_philips(2)
         te *= 1000
-        # Crop to reduce runtime
-        images = phase[30:60, 50:90, 4, :]
 
-        # Gold standard statistics for each method
-        gold_standard_b0map = [5.715511, 105.789000, -433.165542, 430.615635]
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
 
-        # B0Map without unwrapping - unwrapping method may change
-        mapper = B0(images, te, unwrap=False)
+        # Gold standard statistics
+        gold_standard_b0 = [-34.174984, 189.285260, -1739.886907, 786.965213]
+
+        # B0Map with unwrapping - Consider that unwrapping method may change
+        mapper = B0(images, te, unwrap=True)
         b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
                             b0map_stats["min"], b0map_stats["max"]],
-                            gold_standard_b0map,  rtol=1e-7, atol=1e-9)
+                            gold_standard_b0, rtol=1e-3, atol=1e-3)
