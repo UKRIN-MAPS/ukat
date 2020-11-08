@@ -122,4 +122,4 @@ class TestB0:
         b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
                             b0map_stats["min"], b0map_stats["max"]],
-                            gold_standard_b0, rtol=0.01, atol=0.2)
+                            gold_standard_b0, rtol=0.01, atol=0)
