@@ -220,6 +220,12 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         tss=1, tss_axis=3)
 
+        # 4D 4 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=4)
+
         # 3D -1 index
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 10)),
