@@ -1,8 +1,11 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+from ukat.data import fetch
 from ukat.mapping.t1 import T1, magnitude_correct, two_param_eq, \
     two_param_abs_eq, three_param_eq, three_param_abs_eq
+from ukat.utils import arraystats
+from ukat.utils.tools import convert_to_pi_range
 
 
 class TestT1:
@@ -26,6 +29,40 @@ class TestT1:
                                            60.69527515, 530.73226588,
                                            956.03932295, 1340.87306233,
                                            1689.08502946])
+    # The ideal signal produced by the equation M0 * (1 - 2 * exp(-t / T1))
+    # where M0 = 5000 and T1 = 1000 acquired over three slices at 9 t
+    # between 200 and 1000 ms + a temporal slice spacing of 10 ms
+    correct_signal_two_param_tss = np.array([[[-3187.30753078, -2408.18220682,
+                                               -1703.20046036, -1065.30659713,
+                                               -488.11636094, 34.14696209,
+                                               506.71035883, 934.30340259,
+                                               1321.20558829],
+                                              [-3105.8424597, -2334.46956224,
+                                               -1636.50250136, -1004.95578812,
+                                               -433.50869074, 83.55802539,
+                                               551.41933777, 974.75775966,
+                                               1357.81020428],
+                                              [-3025.18797962, -2261.49037074,
+                                               -1570.46819815, -945.2054797,
+                                               -379.44437595, 132.4774404,
+                                               595.68345494, 1014.80958915,
+                                               1394.05059827]],
+                                             [[-3187.30753078, -2408.18220682,
+                                               -1703.20046036, -1065.30659713,
+                                               -488.11636094, 34.14696209,
+                                               506.71035883, 934.30340259,
+                                               1321.20558829],
+                                              [-3105.8424597, -2334.46956224,
+                                               -1636.50250136, -1004.95578812,
+                                               -433.50869074, 83.55802539,
+                                               551.41933777, 974.75775966,
+                                               1357.81020428],
+                                              [-3025.18797962, -2261.49037074,
+                                               -1570.46819815, -945.2054797,
+                                               -379.44437595, 132.4774404,
+                                               595.68345494, 1014.80958915,
+                                               1394.05059827]]
+                                             ])
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
 
@@ -56,16 +93,16 @@ class TestT1:
         # Multithread
         mapper = T1(signal_array, self.t, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
         mapper = T1(signal_array, self.t, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
     def test_three_param_fit(self):
         # Make the signal into a 4D array
@@ -74,18 +111,33 @@ class TestT1:
         # Multithread
         mapper = T1(signal_array, self.t, parameters=3, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.eff_map.mean() - self.eff < 0.05
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.eff_map.mean() - self.eff < 0.00005
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
         mapper = T1(signal_array, self.t, parameters=3, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.1
-        assert mapper.m0_map.mean() - self.m0 < 0.1
-        assert mapper.eff_map.mean() - self.eff < 0.05
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.1
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.eff_map.mean() - self.eff < 0.00005
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+
+    def test_tss(self):
+
+        mapper = T1(self.correct_signal_two_param_tss, self.t, tss=10)
+        assert mapper.shape == self.correct_signal_two_param_tss.shape[:-1]
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+
+    def test_tss_axis(self):
+        signal_array = np.swapaxes(self.correct_signal_two_param_tss, 0, 1)
+        mapper = T1(signal_array, self.t, tss=10, tss_axis=0)
+        assert mapper.t1_map.mean() - self.t1 < 0.00001
+        assert mapper.m0_map.mean() - self.m0 < 0.00001
+        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
     def test_failed_fit(self):
         # Make the signal, where the fitting is expected to fail, into 4D array
@@ -119,18 +171,18 @@ class TestT1:
         mask[:5, ...] = False
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, ...].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
+        assert mapper.t1_map[:5, ...].mean() < 0.00001
 
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, ...] = 0
         mapper = T1(signal_array, self.t, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.1
-        assert mapper.t1_map[:5, ...].mean() < 0.1
+        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
+        assert mapper.t1_map[:5, ...].mean() < 0.00001
 
-    def test_missmatched_raw_data_and_inversion_lengths(self):
+    def test_mismatched_raw_data_and_inversion_lengths(self):
 
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 4)),
@@ -153,6 +205,67 @@ class TestT1:
             mapper = T1(pixel_array=np.zeros((5, 5, 5)),
                         inversion_list=np.linspace(0, 2000, 5),
                         parameters=4)
+
+    def test_tss_valid_axis(self):
+
+        # 4D -1 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=-1)
+
+        # 4D 3 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=3)
+
+        # 4D 4 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=4)
+
+        # 3D -1 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=-1)
+
+        # 3D 2 index
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        tss=1, tss_axis=2)
+
+    def test_real_data(self):
+        # Get test data
+        magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
+
+        # Convert times to ms
+        ti = np.array(ti) * 1000
+        tss *= 1000
+
+        # Crop to reduce runtime
+        magnitude = magnitude[37:55, 65:85, :2, :]
+
+        # Gold standard statistics
+        gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
+        gold_standard_3p = [1382.037954, 662.176566, 0.0, 3948.251711]
+
+        # Two parameter method
+        mapper = T1(magnitude, ti, parameters=2, tss=tss)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
+                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                            gold_standard_2p, rtol=1e-6, atol=1e-4)
+
+        # Three parameter method
+        mapper = T1(magnitude, ti, parameters=3, tss=tss)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
+                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                            gold_standard_3p, rtol=1e-6, atol=5e-3)
 
 
 class TestMagnitudeCorrect:
@@ -232,3 +345,21 @@ class TestMagnitudeCorrect:
         npt.assert_allclose(corrected,
                             np.tile(self.correct_array, (4, 4, 4, 1)),
                             rtol=1e-9, atol=1e-9)
+
+    def test_real_data(self):
+        # Get test data
+        magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
+        phase = convert_to_pi_range(phase)
+
+        gold_standard = [59.35023, 191.800416, -2381.208749, 4347.05731]
+        # Convert magnitude and phase into complex data
+        complex_data = magnitude * (np.cos(phase) + 1j * np.sin(phase))
+
+        magnitude_corrected = np.nan_to_num(magnitude_correct(complex_data))
+
+        complex_stats = arraystats.ArrayStats(magnitude_corrected).calculate()
+        npt.assert_allclose([complex_stats['mean']['4D'],
+                             complex_stats['std']['4D'],
+                             complex_stats['min']['4D'],
+                             complex_stats['max']['4D']],
+                            gold_standard, rtol=1e-6, atol=1e-4)

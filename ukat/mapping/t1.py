@@ -1,13 +1,50 @@
 import numpy as np
-from multiprocessing import cpu_count
 import concurrent.futures
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
 
-class T1(object):
-    """Package containing algorithms that calculate parameter maps
-    of the MRI scans acquired during the UKRIN-MAPS project.
+class T1:
+    """
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+        A array containing the signal from each voxel at each inversion
+        time with the last dimension being time i.e. the array needed to
+        generate a 3D T1 map would have dimensions [x, y, z, TI].
+    inversion_list : list()
+        An array of the inversion times used for the last dimension of the
+        raw data. In milliseconds.
+    tss : float, optional
+        Default 0
+        The temporal slice spacing is the delay between acquisition of
+        slices in a T1 map. Including this information means the
+        inversion time is correct for each slice in a multi-slice T1
+        map. In milliseconds.
+    tss_axis : int, optional
+        Default -2 i.e. last spatial axis
+        The axis over which the temporal slice spacing is applied. This
+        axis is relative to the full 4D pixel array i.e. tss_axis=-1
+        would be along the TI axis and would be meaningless.
+    mask : np.ndarray, optional
+        A boolean mask of the voxels to fit. Should be the shape of the
+        desired T1 map rather than the raw data i.e. omit the time
+        dimension.
+    parameters : {2, 3}, optional
+        Default `2`
+        The number of parameters to fit the data to. A two parameter fit
+        will estimate S0 and T1 while a three parameter fit will also
+        estimate the inversion efficiency.
+    multithread : bool, optional
+        Default True.
+        If True, fitting will be distributed over all cores available on
+        the node. If False, fitting will be carried out on a single thread.
+        Multithreading is useful when calculating the T1 for a large
+        number of voxels e.g. generating a multi-slice abdominal T1 map.
+        Turning off multithreading can be useful when fitting very small
+        amounts of data e.g. a mean T1 signal decay over a ROI when the
+        overheads of multithreading are more of a hindrance than the
+        increase in speed distributing the calculation would generate.
 
     Attributes
     ----------
@@ -30,47 +67,16 @@ class T1(object):
         The number of TI used to calculate the map
     """
 
-    def __init__(self, pixel_array, inversion_list, mask=None, parameters=2,
-                 multithread=True):
+    def __init__(self, pixel_array, inversion_list, tss=0, tss_axis=-2,
+                 mask=None, parameters=2, multithread=True):
         """Initialise a T1 class instance.
 
-        Parameters
-        ----------
-        pixel_array : np.ndarray
-            A array containing the signal from each voxel at each inversion
-            time with the last dimension being time i.e. the array needed to
-            generate a 3D T1 map would have dimensions [x, y, z, TI].
-        inversion_list : list()
-            An array of the inversion times used for the last dimension of the
-            raw data. In milliseconds.
-        mask : np.ndarray, optional
-            A boolean mask of the voxels to fit. Should be the shape of the
-            desired T1 map rather than the raw data i.e. omit the time
-            dimension.
-        parameters : {2, 3}, optional
-            Default `2`
-            The number of parameters to fit the data to. A two parameter fit
-            will estimate S0 and T1 while a three parameter fit will also
-            estimate the inversion efficiency.
-        multithread : bool, optional
-            Default True.
-            If True, fitting will be distributed over all cores available on
-            the node. If False, fitting will be carried out on a single thread.
-            Multithreading is useful when calculating the T1 for a large
-            number of voxels e.g. generating a multi-slice abdominal T1 map.
-            Turning off multithreading can be useful when fitting very small
-            amounts of data e.g. a mean T1 signal decay over an ROI when the
-            overheads of multi-threading are more of a hindrance than the
-            increase in speed distributing the calculation would generate.
+
         """
 
-        # Some sanity checks
-        assert (pixel_array.shape[-1]
-                == len(inversion_list)), 'Number of inversions does not ' \
-                                         'match the number of time frames ' \
-                                         'on the last axis of pixel_array'
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
+        self.dimensions = len(pixel_array.shape)
         self.n_ti = pixel_array.shape[-1]
         # Generate a mask if there isn't one specified
         if mask is None:
@@ -80,8 +86,20 @@ class T1(object):
         # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
+        self.tss = tss
+        self.tss_axis = tss_axis % self.dimensions
         self.parameters = parameters
         self.multithread = multithread
+
+        # Some sanity checks
+        assert (pixel_array.shape[-1]
+                == len(inversion_list)), 'Number of inversions does not ' \
+                                         'match the number of time frames ' \
+                                         'on the last axis of pixel_array'
+        assert (self.tss_axis != self.dimensions - 1), \
+            'Temporal slice spacing can\'t be applied to the TI axis.'
+        assert (tss_axis < self.dimensions), \
+            'tss_axis must be less than the number of spatial dimensions'
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
@@ -113,20 +131,22 @@ class T1(object):
             eff_err = np.zeros(n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_ti)
+        slices = np.indices(self.shape)[self.tss_axis].ravel()
         # Get indices of voxels to process
         idx = np.argwhere(mask).squeeze()
 
         # Multithreaded method
         if self.multithread:
-            cores = cpu_count()
-            with concurrent.futures.ProcessPoolExecutor(cores) as pool:
+            with concurrent.futures.ProcessPoolExecutor() as pool:
                 with tqdm(total=idx.size) as progress:
                     futures = []
 
                     for ind in idx:
+                        ti_slice_corrected = self.inversion_list + \
+                                             slices[ind] * self.tss
                         future = pool.submit(self.__fit_signal__,
                                              signal[ind, :],
-                                             self.inversion_list,
+                                             ti_slice_corrected,
                                              self.parameters)
                         future.add_done_callback(lambda p: progress.update())
                         futures.append(future)
@@ -151,18 +171,20 @@ class T1(object):
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
                     sig = signal[ind, :]
+                    ti_slice_corrected = self.inversion_list + \
+                                            slices[ind] * self.tss
                     if self.parameters == 2:
                         t1_map[ind], t1_err[ind], \
                             m0_map[ind], m0_err[ind] = \
                                 self.__fit_signal__(sig,
-                                                    self.inversion_list,
+                                                    ti_slice_corrected,
                                                     self.parameters)
                     elif self.parameters == 3:
                         t1_map[ind], t1_err[ind], \
                             m0_map[ind], m0_err[ind], \
                                 eff_map[ind], eff_err[ind] = \
                                     self.__fit_signal__(sig,
-                                                        self.inversion_list,
+                                                        ti_slice_corrected,
                                                         self.parameters)
                     progress.update(1)
 
@@ -227,8 +249,7 @@ class T1(object):
             return t1, t1_err, m0, m0_err, eff, eff_err
 
     def r1_map(self):
-        r1_map = np.reciprocal(self.t1_map)
-        return r1_map
+        return np.reciprocal(self.t1_map)
 
 
 def two_param_abs_eq(t, t1, m0):
