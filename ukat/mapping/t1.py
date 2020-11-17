@@ -6,6 +6,46 @@ from scipy.optimize import curve_fit
 
 class T1:
     """
+    Parameters
+    ----------
+    pixel_array : np.ndarray
+        A array containing the signal from each voxel at each inversion
+        time with the last dimension being time i.e. the array needed to
+        generate a 3D T1 map would have dimensions [x, y, z, TI].
+    inversion_list : list()
+        An array of the inversion times used for the last dimension of the
+        raw data. In milliseconds.
+    tss : float, optional
+        Default 0
+        The temporal slice spacing is the delay between acquisition of
+        slices in a T1 map. Including this information means the
+        inversion time is correct for each slice in a multi-slice T1
+        map. In milliseconds.
+    tss_axis : int, optional
+        Default -2 i.e. last spatial axis
+        The axis over which the temporal slice spacing is applied. This
+        axis is relative to the full 4D pixel array i.e. tss_axis=-1
+        would be along the TI axis and would be meaningless.
+    mask : np.ndarray, optional
+        A boolean mask of the voxels to fit. Should be the shape of the
+        desired T1 map rather than the raw data i.e. omit the time
+        dimension.
+    parameters : {2, 3}, optional
+        Default `2`
+        The number of parameters to fit the data to. A two parameter fit
+        will estimate S0 and T1 while a three parameter fit will also
+        estimate the inversion efficiency.
+    multithread : bool, optional
+        Default True.
+        If True, fitting will be distributed over all cores available on
+        the node. If False, fitting will be carried out on a single thread.
+        Multithreading is useful when calculating the T1 for a large
+        number of voxels e.g. generating a multi-slice abdominal T1 map.
+        Turning off multithreading can be useful when fitting very small
+        amounts of data e.g. a mean T1 signal decay over a ROI when the
+        overheads of multithreading are more of a hindrance than the
+        increase in speed distributing the calculation would generate.
+
     Attributes
     ----------
     t1_map : np.ndarray
@@ -31,45 +71,7 @@ class T1:
                  mask=None, parameters=2, multithread=True):
         """Initialise a T1 class instance.
 
-        Parameters
-        ----------
-        pixel_array : np.ndarray
-            A array containing the signal from each voxel at each inversion
-            time with the last dimension being time i.e. the array needed to
-            generate a 3D T1 map would have dimensions [x, y, z, TI].
-        inversion_list : list()
-            An array of the inversion times used for the last dimension of the
-            raw data. In milliseconds.
-        tss : float, optional
-            Default 0
-            The temporal slice spacing is the delay between acquisition of
-            slices in a T1 map. Including this information means the
-            inversion time is correct for each slice in a multi-slice T1
-            map. In milliseconds.
-        tss_axis : int, optional
-            Default -2 i.e. last spatial axis
-            The axis over which the temporal slice spacing is applied. This
-            axis is relative to the full 4D pixel array i.e. tss_axis=-1
-            would be along the TI axis and would be meaningless.
-        mask : np.ndarray, optional
-            A boolean mask of the voxels to fit. Should be the shape of the
-            desired T1 map rather than the raw data i.e. omit the time
-            dimension.
-        parameters : {2, 3}, optional
-            Default `2`
-            The number of parameters to fit the data to. A two parameter fit
-            will estimate S0 and T1 while a three parameter fit will also
-            estimate the inversion efficiency.
-        multithread : bool, optional
-            Default True.
-            If True, fitting will be distributed over all cores available on
-            the node. If False, fitting will be carried out on a single thread.
-            Multithreading is useful when calculating the T1 for a large
-            number of voxels e.g. generating a multi-slice abdominal T1 map.
-            Turning off multithreading can be useful when fitting very small
-            amounts of data e.g. a mean T1 signal decay over a ROI when the
-            overheads of multithreading are more of a hindrance than the
-            increase in speed distributing the calculation would generate.
+
         """
 
         self.pixel_array = pixel_array
