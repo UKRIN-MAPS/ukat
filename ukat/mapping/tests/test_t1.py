@@ -265,7 +265,7 @@ class TestT1:
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
-                            gold_standard_3p, rtol=1e-6, atol=1e-4)
+                            gold_standard_3p, rtol=1e-6, atol=5e-3)
 
 
 class TestMagnitudeCorrect:
