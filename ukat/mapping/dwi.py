@@ -120,3 +120,74 @@ def ivim(data, bvals, bvecs, mask=None):
     f = ivimfit.perfusion_fraction
 
     return S0, D_star, D, f
+
+
+def make_gradient_scheme(bvals, bvecs, normalize=True, one_bzero=True):
+    """Make gradient scheme from list of bvals and bvecs
+
+    Parameters
+    ----------
+    bvals : list
+        b-values in s/mm2
+    bvecs : list of lists
+        bvectors (e.g. [[0, 0, 1], [1, 0, 0]])
+    normalize : bool, optional (default True)
+        Rescales bvecs to have unit length
+    one_bzero : bool, optional (default True)
+        Ensures gradient scheme only includes one b=0 measurement
+        If this is True and bvals does not contain any b=0, a b=0 measurement
+        will be included at the start of the acquisition
+
+    Returns
+    -------
+    string
+        gradient scheme with one line per measurement/volume as follows:
+        bvec1_x   bvec1_y   bvec1_z   bval1
+        bvec2_x   bvec2_y   bvec2_z   bval2
+        ...
+        bvecN_x   bvecN_y   bvecN_z   bvalN
+
+    Notes
+    -----
+    This function was created to generate a diffusion scheme for the UKRIN-MAPS
+    multishell acquisition where all the nonzero b-values have the same number
+    of directions. Currently this does not provide features to generate
+    schemes where different shells have different numbers of directions.
+    This gradient scheme format was decided with the following in mind:
+        1) can be easily written to a text file to allow modifications to it
+           to be done without coding
+        2) not vendor specific
+        3) could be useful as a starting point to convert these schemes to
+           vendor-specific formats
+
+    """
+    if 0 not in bvals and one_bzero:
+        bvals.insert(0, 0)
+
+    if normalize:
+        # Rescale bvecs to have norm 1
+        bvecs = [v/np.linalg.norm(v) for v in bvecs]
+
+    bvecs = [np.round(x,8) for x in bvecs]
+
+    # Make gradient scheme
+    bzero_counter = 0
+    gradient_scheme = ""
+    for bvec in bvecs:
+        for bval in bvals:
+            if bval == 0 and one_bzero and bzero_counter > 0:
+                continue
+            else:
+                gradient_scheme = (f"{gradient_scheme}"
+                                  f"{str(bvec[0]).rjust(11)}  "
+                                  f"{str(bvec[1]).rjust(11)}  "
+                                  f"{str(bvec[2]).rjust(11)}  "
+                                  f"{str(bval).rjust(5)}\n")
+                if bval == 0:
+                    bzero_counter += 1
+
+    # Remove last newline
+    if gradient_scheme[-1] == '\n':
+        gradient_scheme = gradient_scheme[:-1:]
+
+    return gradient_scheme
