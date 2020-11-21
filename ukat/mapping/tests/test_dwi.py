@@ -1,5 +1,6 @@
 from ukat.mapping.dwi import make_gradient_scheme
 
+
 class TestMakeGradientScheme:
 
     def test_one_bzero_true_with_bzero(self):
@@ -31,7 +32,7 @@ class TestMakeGradientScheme:
         bvecs = [[1, 0, 1],
                  [-1, 1, 0]]
         output = make_gradient_scheme(bvals, bvecs, normalize=False,
-                                     one_bzero=True)
+                                      one_bzero=True)
         expected = ("          1            0            1      0\n"
                     "          1            0            1      5\n"
                     "          1            0            1     10\n"

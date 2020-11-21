@@ -168,7 +168,7 @@ def make_gradient_scheme(bvals, bvecs, normalize=True, one_bzero=True):
         # Rescale bvecs to have norm 1
         bvecs = [v/np.linalg.norm(v) for v in bvecs]
 
-    bvecs = [np.round(x,8) for x in bvecs]
+    bvecs = [np.round(x, 8) for x in bvecs]
 
     # Make gradient scheme
     bzero_counter = 0
@@ -179,10 +179,10 @@ def make_gradient_scheme(bvals, bvecs, normalize=True, one_bzero=True):
                 continue
             else:
                 gradient_scheme = (f"{gradient_scheme}"
-                                  f"{str(bvec[0]).rjust(11)}  "
-                                  f"{str(bvec[1]).rjust(11)}  "
-                                  f"{str(bvec[2]).rjust(11)}  "
-                                  f"{str(bval).rjust(5)}\n")
+                                   f"{str(bvec[0]).rjust(11)}  "
+                                   f"{str(bvec[1]).rjust(11)}  "
+                                   f"{str(bvec[2]).rjust(11)}  "
+                                   f"{str(bval).rjust(5)}\n")
                 if bval == 0:
                     bzero_counter += 1
 

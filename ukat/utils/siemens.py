@@ -2,7 +2,7 @@ import numpy as np
 
 
 def write_dvs(scheme, filepath, normalization='none',
-                     coordinate_system='xyz', comment='N/A'):
+              coordinate_system='xyz', comment='N/A'):
     """Create Siemens .dvs file for diffusion imaging acquisitions
 
     Parameters
@@ -64,7 +64,6 @@ def write_dvs(scheme, filepath, normalization='none',
     good_comment = isinstance(comment, str) and len(comment) < 50
     if not good_comment:
         raise ValueError("`comment` must be a string with < 50 characters")
-
 
     if ".txt" in scheme:
         # Assume is filepath
