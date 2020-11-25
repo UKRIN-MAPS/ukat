@@ -25,7 +25,8 @@ class T2:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, multithread='auto'):
+    def __init__(self, pixel_array, echo_list, mask=None, method='2p_exp',
+                 multithread='auto'):
         """Initialise a T2 class instance.
 
         Parameters
@@ -69,6 +70,7 @@ class T2:
             self.mask = mask
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.method = method
         self.echo_list = echo_list
         # Auto multithreading conditions
         if multithread == 'auto':
@@ -130,17 +132,22 @@ class T2:
 
         return t2_map, t2_err, m0_map, m0_err
 
-    @staticmethod
-    def __fit_signal__(sig, te):
+    def __fit_signal__(self, sig, te):
 
         # Initialise parameters
-        bounds = ([0, 0], [700, 1000000])
-        initial_guess = [20, 10000]
+        if self.method == '2p_exp':
+            eq = two_param_eq
+            bounds = ([0, 0], [700, 1000000])
+            initial_guess = [20, 10000]
+        elif self.method == '3p_exp':
+            eq = three_param_eq
+            bounds = ([0, 0, 0], [700, 1000000, 1000000])
+            initial_guess = [20, 10000, 500]
 
         # Fit data to equation
         try:
-            popt, pcov = curve_fit(two_param_eq, te, sig,
-                                   p0=initial_guess, bounds=bounds)
+            popt, pcov = curve_fit(eq, te, sig, p0=initial_guess,
+                                   bounds=bounds)
         except RuntimeError:
             popt = np.zeros(2)
             pcov = np.zeros((2, 2))
@@ -195,3 +202,27 @@ def two_param_eq(t, t2, m0):
             The expected signal
         """
     return np.sqrt(np.square(m0 * np.exp(-t / t2)))
+
+
+def three_param_eq(t, t2, m0, b):
+    """
+        Calculate the expected signal from the equation
+        signal = M0 * exp(-t / T2) + b
+
+        Parameters
+        ----------
+        t: list
+            The times the signal will be calculated at
+        t2: float
+            The T2 of the signal
+        m0: float
+            The M0 of the signal
+        b: float
+            The baseline noise floor of the signal
+
+        Returns
+        -------
+        signal: np.ndarray
+            The expected signal
+        """
+    return np.sqrt(np.square(m0 * np.exp(-t / t2) + b))
