@@ -1,0 +1,26 @@
+# -----------------------------------------------------
+# .dvs file for the following setup:
+# b-val (s/mm2)  # directions
+# 0              2
+# 5              2
+# 50             2
+# -----------------------------------------------------
+
+[directions=6]
+Normalization = none
+CoordinateSystem = xyz
+Comment = This is a comment
+
+Vector[0] = ( -0.000000, -0.000000, 0.000000 )
+Vector[1] = ( 0.298627, -0.038825, 0.096513 )
+Vector[2] = ( -0.228919, 0.504875, -0.832285 )
+Vector[3] = ( -0.000000, -0.000000, -0.000000 )
+Vector[4] = ( -0.142776, -0.253634, -0.123631 )
+Vector[5] = ( -0.436619, 0.309050, 0.844898 )
+
+# b-value[0] = 0
+# b-value[1] = 5
+# b-value[2] = 50
+# b-value[3] = 0
+# b-value[4] = 5
+# b-value[5] = 50
