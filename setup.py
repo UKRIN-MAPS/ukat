@@ -10,11 +10,11 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.1.0", # Soon to be made public?
+    version="0.1.0",  # Soon to be made public?
     description="UKRIN Kidney Analysis Toolbox",
     long_description = long_description,
     url="https://github.com/UKRIN-MAPS/ukat",
-    license="GPL-3.0", # Check if it should be Apache 2.0.
+    license="GPL-3.0",  # Check if it should be Apache 2.0.
 
     python_requires='>=3.5, <4',
     packages=find_packages(),
@@ -31,7 +31,7 @@ setup(
              "*.png"],
     },
 
-    # Classifiers - the purpose in the future is to create a wheel (pip install wheel) and then upload to PYPI
+    # Classifiers - the purpose is to create a wheel and upload it to PYPI
     classifiers=[
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -55,7 +55,7 @@ setup(
 
         # Pick your license as you wish
         'License :: OSI Approved :: GPL-3.0 License',
-        #'License :: OSI Approved :: Apache Software License',
+        # 'License :: OSI Approved :: Apache Software License',
 
 
     ],
