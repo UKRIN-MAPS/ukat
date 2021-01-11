@@ -95,7 +95,6 @@ class B0:
                              'The last dimension of the input pixel_array must'
                              'be 2 and the echo_list must only have 2 values.')
 
-
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all', affine=np.eye(4)):
         """
@@ -117,10 +116,10 @@ class B0:
                 phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
                                                          affine=affine)
                 nib.save(phase_diff_nifti, base_path +
-                        '_phase_difference.nii.gz')
+                         '_phase_difference.nii.gz')
             else:
                 raise ValueError('No NIFTI file saved. The variable "maps"'
-                                'should be "all" or a list of maps')
+                                 'should be "all" or a list of maps')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 'b0' or result == 'b0_map':
@@ -140,7 +139,7 @@ class B0:
                     phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
                                                          affine=affine)
                     nib.save(phase_diff_nifti, base_path +
-                             '_phase_difference.nii.gz')
+                            '_phase_difference.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps"'
                              'should be "all" or a list of maps')

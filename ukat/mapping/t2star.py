@@ -244,7 +244,6 @@ class T2Star:
         """
         r2star = np.reciprocal(self.t2star_map)
         return r2star
-    
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all', affine=np.eye(4)):
@@ -267,7 +266,7 @@ class T2Star:
                 nib.save(mask_nifti, base_path + '_mask.nii.gz')
             else:
                 raise ValueError('No NIFTI file saved. The variable "maps"'
-                                'should be "all" or a list of maps')
+                                 'should be "all" or a list of maps')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 't2star' or result == 't2star_map':
@@ -279,7 +278,7 @@ class T2Star:
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
                 elif result == 'r2star' or result == 'r2star_map':
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
-                                               affine=affine)
+                                                   affine=affine)
                     nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),

@@ -194,14 +194,14 @@ class T2:
                 m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
                 nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
                 r2_nifti = nib.Nifti1Image(T2.r2_map(self),
-                                               affine=affine)
+                                           affine=affine)
                 nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
                 mask_nifti = nib.Nifti1Image(self.mask.astype(int),
                                              affine=affine)
                 nib.save(mask_nifti, base_path + '_mask.nii.gz')
             else:
                 raise ValueError('No NIFTI file saved. The variable "maps"'
-                                'should be "all" or a list of maps')
+                                 'should be "all" or a list of maps')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 't2' or result == 't2_map':
