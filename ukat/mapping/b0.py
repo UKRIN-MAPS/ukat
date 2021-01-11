@@ -114,7 +114,7 @@ class B0:
                 phase1_nifti = nib.Nifti1Image(self.phase1, affine=affine)
                 nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
                 phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
-                                                         affine=affine)
+                                                   affine=affine)
                 nib.save(phase_diff_nifti, base_path +
                          '_phase_difference.nii.gz')
             else:
@@ -137,9 +137,9 @@ class B0:
                     nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
                 elif result == 'phase_difference':
                     phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
-                                                         affine=affine)
+                                                       affine=affine)
                     nib.save(phase_diff_nifti, base_path +
-                            '_phase_difference.nii.gz')
+                             '_phase_difference.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps"'
                              'should be "all" or a list of maps')
