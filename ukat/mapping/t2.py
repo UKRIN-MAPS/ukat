@@ -1,3 +1,5 @@
+import os
+import nibabel as nib
 import numpy as np
 import concurrent.futures
 from tqdm import tqdm
@@ -174,6 +176,59 @@ class T2:
         """
         return np.reciprocal(self.t2_map)
 
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
+                 maps='all', affine=np.eye(4)):
+        """
+        This function converts some of the T1 class attributes to NIFTI.
+        """
+        base_path = os.path.join(output_directory, base_file_name)
+        if isinstance(maps, str):
+            if maps == 'all':
+                # Save all maps
+                t2_nifti = nib.Nifti1Image(self.t2_map, affine=affine)
+                nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
+                t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=affine)
+                nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
+                m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
+                nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                r2_nifti = nib.Nifti1Image(T2.r2_map(self),
+                                               affine=affine)
+                nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
+                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                             affine=affine)
+                nib.save(mask_nifti, base_path + '_mask.nii.gz')
+            else:
+                raise ValueError('No NIFTI file saved. The variable "maps"'
+                                'should be "all" or a list of maps')
+        elif isinstance(maps, list):
+            for result in maps:
+                if result == 't2' or result == 't2_map':
+                    t2_nifti = nib.Nifti1Image(self.t2_map, affine=affine)
+                    nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
+                elif result == 't2_err':
+                    t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=affine)
+                    nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
+                elif result == 'm0' or result == 'm0_map':
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                    nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                elif result == 'm0_err':
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
+                    nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                elif result == 'r2' or result == 'r2_map':
+                    r2_nifti = nib.Nifti1Image(T2.r2_map(self),
+                                               affine=affine)
+                    nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
+                elif result == 'mask':
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=affine)
+                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+        else:
+            raise ValueError('No NIFTI file saved. The variable "maps"'
+                             'should be "all" or a list of maps')
+
+        return
 
 def two_param_eq(t, t2, m0):
     """

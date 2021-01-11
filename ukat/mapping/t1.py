@@ -1,3 +1,5 @@
+import os
+import nibabel as nib
 import numpy as np
 import concurrent.futures
 from tqdm import tqdm
@@ -6,46 +8,6 @@ from scipy.optimize import curve_fit
 
 class T1:
     """
-    Parameters
-    ----------
-    pixel_array : np.ndarray
-        A array containing the signal from each voxel at each inversion
-        time with the last dimension being time i.e. the array needed to
-        generate a 3D T1 map would have dimensions [x, y, z, TI].
-    inversion_list : list()
-        An array of the inversion times used for the last dimension of the
-        raw data. In milliseconds.
-    tss : float, optional
-        Default 0
-        The temporal slice spacing is the delay between acquisition of
-        slices in a T1 map. Including this information means the
-        inversion time is correct for each slice in a multi-slice T1
-        map. In milliseconds.
-    tss_axis : int, optional
-        Default -2 i.e. last spatial axis
-        The axis over which the temporal slice spacing is applied. This
-        axis is relative to the full 4D pixel array i.e. tss_axis=-1
-        would be along the TI axis and would be meaningless.
-    mask : np.ndarray, optional
-        A boolean mask of the voxels to fit. Should be the shape of the
-        desired T1 map rather than the raw data i.e. omit the time
-        dimension.
-    parameters : {2, 3}, optional
-        Default `2`
-        The number of parameters to fit the data to. A two parameter fit
-        will estimate S0 and T1 while a three parameter fit will also
-        estimate the inversion efficiency.
-    multithread : bool, optional
-        Default True.
-        If True, fitting will be distributed over all cores available on
-        the node. If False, fitting will be carried out on a single thread.
-        Multithreading is useful when calculating the T1 for a large
-        number of voxels e.g. generating a multi-slice abdominal T1 map.
-        Turning off multithreading can be useful when fitting very small
-        amounts of data e.g. a mean T1 signal decay over a ROI when the
-        overheads of multithreading are more of a hindrance than the
-        increase in speed distributing the calculation would generate.
-
     Attributes
     ----------
     t1_map : np.ndarray
@@ -71,7 +33,45 @@ class T1:
                  mask=None, parameters=2, multithread=True):
         """Initialise a T1 class instance.
 
-
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            A array containing the signal from each voxel at each inversion
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T1 map would have dimensions [x, y, z, TI].
+        inversion_list : list()
+            An array of the inversion times used for the last dimension of the
+            raw data. In milliseconds.
+        tss : float, optional
+            Default 0
+            The temporal slice spacing is the delay between acquisition of
+            slices in a T1 map. Including this information means the
+            inversion time is correct for each slice in a multi-slice T1
+            map. In milliseconds.
+        tss_axis : int, optional
+            Default -2 i.e. last spatial axis
+            The axis over which the temporal slice spacing is applied. This
+            axis is relative to the full 4D pixel array i.e. tss_axis=-1
+            would be along the TI axis and would be meaningless.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T1 map rather than the raw data i.e. omit the time
+            dimension.
+        parameters : {2, 3}, optional
+            Default `2`
+            The number of parameters to fit the data to. A two parameter fit
+            will estimate S0 and T1 while a three parameter fit will also
+            estimate the inversion efficiency.
+        multithread : bool, optional
+            Default True.
+            If True, fitting will be distributed over all cores available on
+            the node. If False, fitting will be carried out on a single thread.
+            Multithreading is useful when calculating the T1 for a large
+            number of voxels e.g. generating a multi-slice abdominal T1 map.
+            Turning off multithreading can be useful when fitting very small
+            amounts of data e.g. a mean T1 signal decay over a ROI when the
+            overheads of multithreading are more of a hindrance than the
+            increase in speed distributing the calculation would generate.
         """
 
         self.pixel_array = pixel_array
@@ -250,6 +250,71 @@ class T1:
 
     def r1_map(self):
         return np.reciprocal(self.t1_map)
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
+                 maps='all', affine=np.eye(4)):
+        """
+        This function converts some of the T1 class attributes to NIFTI.
+        """
+        base_path = os.path.join(output_directory, base_file_name)
+        if isinstance(maps, str):
+            if maps == 'all':
+                # Save all maps
+                t1_nifti = nib.Nifti1Image(self.t1_map, affine=affine)
+                nib.save(t1_nifti, base_path + '_t1_map.nii.gz')
+                t1_err_nifti = nib.Nifti1Image(self.t1_err, affine=affine)
+                nib.save(t1_err_nifti, base_path + '_t1_err.nii.gz')
+                m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
+                nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                eff_nifti = nib.Nifti1Image(self.eff_map, affine=affine)
+                nib.save(eff_nifti, base_path + '_eff_map.nii.gz')
+                eff_err_nifti = nib.Nifti1Image(self.eff_err, affine=affine)
+                nib.save(eff_err_nifti, base_path + '_eff_err.nii.gz')
+                r1_nifti = nib.Nifti1Image(T1.r1_map(self),
+                                               affine=affine)
+                nib.save(r1_nifti, base_path + '_r1_map.nii.gz')
+                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                             affine=affine)
+                nib.save(mask_nifti, base_path + '_mask.nii.gz')
+            else:
+                raise ValueError('No NIFTI file saved. The variable "maps"'
+                                'should be "all" or a list of maps')
+        elif isinstance(maps, list):
+            for result in maps:
+                if result == 't1' or result == 't1_map':
+                    t1_nifti = nib.Nifti1Image(self.t1_map, affine=affine)
+                    nib.save(t1_nifti, base_path + '_t1_map.nii.gz')
+                elif result == 't1_err':
+                    t1_err_nifti = nib.Nifti1Image(self.t1_err, affine=affine)
+                    nib.save(t1_err_nifti, base_path + '_t1_err.nii.gz')
+                elif result == 'm0' or result == 'm0_map':
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                    nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                elif result == 'm0_err':
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
+                    nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                elif result == 'eff' or result == 'eff_map':
+                    eff_nifti = nib.Nifti1Image(self.eff_map, affine=affine)
+                    nib.save(eff_nifti, base_path + '_eff_map.nii.gz')
+                elif result == 'eff_err':
+                    eff_err_nifti = nib.Nifti1Image(self.eff_err, 
+                                                    affine=affine)
+                    nib.save(eff_err_nifti, base_path + '_eff_err.nii.gz')
+                elif result == 'r1' or result == 'r1_map':
+                    r1_nifti = nib.Nifti1Image(T1.r1_map(self),
+                                               affine=affine)
+                    nib.save(r1_nifti, base_path + '_r1_map.nii.gz')
+                elif result == 'mask':
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=affine)
+                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+        else:
+            raise ValueError('No NIFTI file saved. The variable "maps"'
+                             'should be "all" or a list of maps')
+
+        return
 
 
 def two_param_abs_eq(t, t1, m0):

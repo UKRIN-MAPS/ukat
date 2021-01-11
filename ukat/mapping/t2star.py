@@ -1,5 +1,7 @@
+import os
 import warnings
 import numpy as np
+import nibabel as nib
 import concurrent.futures
 from tqdm import tqdm
 from scipy.optimize import curve_fit
@@ -242,6 +244,52 @@ class T2Star:
         """
         r2star = np.reciprocal(self.t2star_map)
         return r2star
+    
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
+                 maps='all', affine=np.eye(4)):
+        """
+        This function converts some of the T2Star class attributes to NIFTI.
+        """
+        base_path = os.path.join(output_directory, base_file_name)
+        if isinstance(maps, str):
+            if maps == 'all':
+                # Save all maps
+                t2star_nifti = nib.Nifti1Image(self.t2star_map, affine=affine)
+                nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
+                m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                               affine=affine)
+                nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
+                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                             affine=affine)
+                nib.save(mask_nifti, base_path + '_mask.nii.gz')
+            else:
+                raise ValueError('No NIFTI file saved. The variable "maps"'
+                                'should be "all" or a list of maps')
+        elif isinstance(maps, list):
+            for result in maps:
+                if result == 't2star' or result == 't2star_map':
+                    t2star_nifti = nib.Nifti1Image(self.t2star_map,
+                                                   affine=affine)
+                    nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
+                elif result == 'm0' or result == 'm0_map':
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                    nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                elif result == 'r2star' or result == 'r2star_map':
+                    r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                               affine=affine)
+                    nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
+                elif result == 'mask':
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=affine)
+                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+        else:
+            raise ValueError('No NIFTI file saved. The variable "maps"'
+                             'should be "all" or a list of maps')
+
+        return
 
 
 def two_param_eq(t, t2star, m0):
