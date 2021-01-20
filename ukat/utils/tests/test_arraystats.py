@@ -262,7 +262,7 @@ class TestArrayStats:
         gs_kurtosis_2D = np.array([[gs_2D_0[8], gs_2D_1[8]],
                                    [gs_2D_2[8], gs_2D_3[8]]])
         gs_entropy_2D = np.array([[gs_2D_0[9], gs_2D_1[9]],
-                                   [gs_2D_2[9], gs_2D_3[9]]])
+                                  [gs_2D_2[9], gs_2D_3[9]]])
 
         # Tests
         npt.assert_allclose(stats["n"]["4D"], gs_n_4D, rtol=1e-6)
