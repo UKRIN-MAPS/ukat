@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+from ukat.data import fetch
 from ukat.mapping.b0 import B0
 from ukat.utils import arraystats
 
@@ -79,28 +80,46 @@ class TestB0:
     def test_pixel_array_type_assertion(self):
         # Empty array
         with pytest.raises(ValueError):
-            B0(np.array([]), self.correct_echo_list)
+            mapper = B0(np.array([]), self.correct_echo_list)
         # No input argument
         with pytest.raises(AttributeError):
-            B0(None, self.correct_echo_list)
+            mapper = B0(None, self.correct_echo_list)
         # List
         with pytest.raises(AttributeError):
-            B0(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
+            mapper = B0(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
                 self.correct_echo_list)
         # String
         with pytest.raises(AttributeError):
-            B0("abcdef", self.correct_echo_list)
+            mapper = B0("abcdef", self.correct_echo_list)
 
     def test_echo_list_type_assertion(self):
         # Empty list
         with pytest.raises(ValueError):
-            B0(self.correct_array, np.array([]))
+            mapper = B0(self.correct_array, np.array([]))
         # No input argument
         with pytest.raises(TypeError):
-            B0(self.correct_array, None)
+            mapper = B0(self.correct_array, None)
         # Float
         with pytest.raises(TypeError):
-            B0(self.correct_array, 3.2)
+            mapper = B0(self.correct_array, 3.2)
         # String
         with pytest.raises(ValueError):
-            B0(self.correct_array, "abcdef")
+            mapper = B0(self.correct_array, "abcdef")
+
+    def test_real_data(self):
+        # Get test data
+        magnitude, phase, affine, te = fetch.b0_philips(2)
+        te *= 1000
+
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+
+        # Gold standard statistics
+        gold_standard_b0 = [-34.174984, 189.285260, -1739.886907, 786.965213]
+
+        # B0Map with unwrapping - Consider that unwrapping method may change
+        mapper = B0(images, te, unwrap=True)
+        b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
+        npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
+                            b0map_stats["min"], b0map_stats["max"]],
+                            gold_standard_b0, rtol=0.01, atol=0)

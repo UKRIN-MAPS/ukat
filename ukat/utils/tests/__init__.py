@@ -1,1 +1,1 @@
-from . import test_tools, test_arraystats
+from . import test_arraystats, test_siemens, test_tools
