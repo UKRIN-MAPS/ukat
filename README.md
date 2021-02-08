@@ -36,6 +36,10 @@ If you are new to git/GitHub you may find the following cheat sheets handy ([web
 2. Run the following command in your terminal: `pip install -e . `
 3. Install [SimpleElastix](https://simpleelastix.github.io/) ([instructions](https://simpleelastix.readthedocs.io/GettingStarted.html)).
 
+Alternatively, you can download and install everything in one go by running the following command: `pip install [-e] git+https://github.com/UKRIN-MAPS/ukat#egg=ukat`.
+
+This will download the repository from Github and install the `ukat` package. The `-e` flag is optional depending on what your aim is. If the user only wishes to install `ukat` as a python package, then the `-e` flag is not required. If the user wants to have all the files downloaded locally from Github and installed, then the `-e` flag is necessary. 
+
 If you run into any problems or find any issues with the installation process please raise an [issue](https://github.com/UKRIN-MAPS/ukat/issues).
 
 # Contributing guidelines
