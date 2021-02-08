@@ -10,11 +10,11 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.1.0",  # Soon to be made public?
+    version="0.1.0",
     description="UKRIN Kidney Analysis Toolbox",
     long_description = long_description,
     url="https://github.com/UKRIN-MAPS/ukat",
-    license="GPL-3.0",  # Check if it should be Apache 2.0.
+    license="GPL-3.0",
 
     python_requires='>=3.5, <4',
     packages=find_packages(),
