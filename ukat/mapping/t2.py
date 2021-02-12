@@ -27,7 +27,8 @@ class T2:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, multithread='auto'):
+    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+                 multithread='auto'):
         """Initialise a T2 class instance.
 
         Parameters
@@ -39,6 +40,10 @@ class T2:
         echo_list : list()
             An array of the echo times used for the last dimension of the
             raw data. In milliseconds.
+        affine : np.ndarray, optional
+            The matrix that represents the affine transformation. It can be
+            used to save images as NIFTI files. Affine transformations are 
+            normally used to correct for geometric distortions or deformations.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T2 map rather than the raw data i.e. omit the time
@@ -64,6 +69,7 @@ class T2:
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
         self.n_vox = np.prod(self.shape)
+        self.affine = affine
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -177,56 +183,61 @@ class T2:
         return np.reciprocal(self.t2_map)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
-                 maps='all', affine=np.eye(4)):
+                 maps='all'):
         """
         This function converts some of the T1 class attributes to NIFTI.
         """
         base_path = os.path.join(output_directory, base_file_name)
-        if isinstance(maps, str):
-            if maps == 'all':
-                # Save all maps
-                t2_nifti = nib.Nifti1Image(self.t2_map, affine=affine)
-                nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
-                t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=affine)
-                nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
-                m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
-                nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
-                m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
-                nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
-                r2_nifti = nib.Nifti1Image(T2.r2_map(self),
-                                           affine=affine)
-                nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                             affine=affine)
-                nib.save(mask_nifti, base_path + '_mask.nii.gz')
-            else:
-                raise ValueError('No NIFTI file saved. The variable "maps"'
-                                 'should be "all" or a list of maps')
+        if not isinstance(self.affine, np.ndarray) and not isinstance(self.affine, list):
+            raise ValueError('No NIFTI file saved because no affine '
+                             'matrix was provided.')
+        if np.shape(self.affine) != (4, 4):
+            raise ValueError('No NIFTI file saved because the provided affine '
+                             'is not a 4x4 matrix.')
+        if maps == 'all' or maps == ['all']:
+            # Save all maps
+            t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
+            nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
+            t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=self.affine)
+            nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
+            m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
+            nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+            m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=self.affine)
+            nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+            r2_nifti = nib.Nifti1Image(T2.r2_map(self), affine=self.affine)
+            nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
+            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                         affine=self.affine)
+            nib.save(mask_nifti, base_path + '_mask.nii.gz')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 't2' or result == 't2_map':
-                    t2_nifti = nib.Nifti1Image(self.t2_map, affine=affine)
+                    t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
                     nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
                 elif result == 't2_err':
-                    t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=affine)
+                    t2_err_nifti = nib.Nifti1Image(self.t2_err,
+                                                   affine=self.affine)
                     nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
                 elif result == 'm0' or result == 'm0_map':
-                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
                 elif result == 'm0_err':
-                    m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=affine)
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                                   affine=self.affine)
                     nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
                 elif result == 'r2' or result == 'r2_map':
                     r2_nifti = nib.Nifti1Image(T2.r2_map(self),
-                                               affine=affine)
+                                               affine=self.affine)
                     nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                                 affine=affine)
+                                                 affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
-            raise ValueError('No NIFTI file saved. The variable "maps"'
-                             'should be "all" or a list of maps')
+            raise ValueError('No NIFTI file saved. The variable "maps" '
+                             'should be "all" or a list of maps from '
+                             '"["t2", "t2_err", "m0", "m0_err", "r2", '
+                             '"mask"]".')
 
         return
 

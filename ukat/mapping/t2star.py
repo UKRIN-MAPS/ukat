@@ -24,8 +24,8 @@ class T2Star:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, method='loglin',
-                 multithread='auto'):
+    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+                 method='loglin', multithread='auto'):
         """Initialise a T2Star class instance.
 
         Parameters
@@ -37,6 +37,10 @@ class T2Star:
         echo_list : list()
             An array of the echo times used for the last dimension of the
             raw data. In milliseconds.
+        affine : np.ndarray, optional
+            The matrix that represents the affine transformation. It can be
+            used to save images as NIFTI files. Affine transformations are 
+            normally used to correct for geometric distortions or deformations.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T1 map rather than the raw data i.e. omit the time
@@ -77,6 +81,7 @@ class T2Star:
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
         self.n_vox = np.prod(self.shape)
+        self.affine = affine
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -246,47 +251,50 @@ class T2Star:
         return r2star
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
-                 maps='all', affine=np.eye(4)):
+                 maps='all'):
         """
         This function converts some of the T2Star class attributes to NIFTI.
         """
         base_path = os.path.join(output_directory, base_file_name)
-        if isinstance(maps, str):
-            if maps == 'all':
-                # Save all maps
-                t2star_nifti = nib.Nifti1Image(self.t2star_map, affine=affine)
-                nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
-                m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
-                nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
-                r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
-                                               affine=affine)
-                nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                             affine=affine)
-                nib.save(mask_nifti, base_path + '_mask.nii.gz')
-            else:
-                raise ValueError('No NIFTI file saved. The variable "maps"'
-                                 'should be "all" or a list of maps')
+        if not isinstance(self.affine, np.ndarray) and not isinstance(self.affine, list):
+            raise ValueError('No NIFTI file saved because no affine '
+                             'matrix was provided.')
+        if np.shape(self.affine) != (4, 4):
+            raise ValueError('No NIFTI file saved because the provided affine '
+                             'is not a 4x4 matrix.')
+        if maps == 'all' or maps == ['all']:
+            # Save all maps
+            t2star_nifti = nib.Nifti1Image(self.t2star_map, affine=self.affine)
+            nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
+            m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
+            nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+            r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                           affine=self.affine)
+            nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
+            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                         affine=self.affine)
+            nib.save(mask_nifti, base_path + '_mask.nii.gz')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 't2star' or result == 't2star_map':
                     t2star_nifti = nib.Nifti1Image(self.t2star_map,
-                                                   affine=affine)
+                                                   affine=self.affine)
                     nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
                 elif result == 'm0' or result == 'm0_map':
-                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=affine)
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
                 elif result == 'r2star' or result == 'r2star_map':
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
-                                                   affine=affine)
+                                                   affine=self.affine)
                     nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                                 affine=affine)
+                                                 affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
-            raise ValueError('No NIFTI file saved. The variable "maps"'
-                             'should be "all" or a list of maps')
+            raise ValueError('No NIFTI file saved. The variable "maps" '
+                             'should be "all" or a list of maps from '
+                             '"["t2star", "m0", "r2star", "mask"]".')
 
         return
 

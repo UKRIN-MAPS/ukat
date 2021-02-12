@@ -30,8 +30,8 @@ class B0:
         The difference between the 2 phase images
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, unwrap=True,
-                 wrap_around=False):
+    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+                 unwrap=True, wrap_around=False):
         """Initialise a T1 class instance.
 
         Parameters
@@ -43,6 +43,10 @@ class B0:
         echo_list : list
             An array of the echo times in ms used for the last dimension of the
             raw data.
+        affine : np.ndarray, optional
+            The matrix that represents the affine transformation. It can be
+            used to save images as NIFTI files. Affine transformations are 
+            normally used to correct for geometric distortions or deformations.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired B0 map rather than the raw data i.e. omit the echo times
@@ -61,6 +65,7 @@ class B0:
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
+        self.affine = affine
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -96,52 +101,57 @@ class B0:
                              'be 2 and the echo_list must only have 2 values.')
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
-                 maps='all', affine=np.eye(4)):
+                 maps='all'):
         """
         This function converts some of the B0 class attributes to NIFTI.
         """
         base_path = os.path.join(output_directory, base_file_name)
-        if isinstance(maps, str):
-            if maps == 'all':
-                # Save all maps
-                b0_nifti = nib.Nifti1Image(self.b0_map, affine=affine)
-                nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                             affine=affine)
-                nib.save(mask_nifti, base_path + '_mask.nii.gz')
-                phase0_nifti = nib.Nifti1Image(self.phase0, affine=affine)
-                nib.save(phase0_nifti, base_path + '_phase0.nii.gz')
-                phase1_nifti = nib.Nifti1Image(self.phase1, affine=affine)
-                nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
-                phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
-                                                   affine=affine)
-                nib.save(phase_diff_nifti, base_path +
-                         '_phase_difference.nii.gz')
-            else:
-                raise ValueError('No NIFTI file saved. The variable "maps"'
-                                 'should be "all" or a list of maps')
+        if not isinstance(self.affine, np.ndarray) and not isinstance(self.affine, list):
+            raise ValueError('No NIFTI file saved because no affine '
+                             'matrix was provided.')
+        if np.shape(self.affine) != (4, 4):
+            raise ValueError('No NIFTI file saved because the provided affine '
+                             'is not a 4x4 matrix.')
+        if maps == 'all' or maps == ['all']:
+            # Save all maps
+            b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
+            nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
+            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                         affine=self.affine)
+            nib.save(mask_nifti, base_path + '_mask.nii.gz')
+            phase0_nifti = nib.Nifti1Image(self.phase0, affine=self.affine)
+            nib.save(phase0_nifti, base_path + '_phase0.nii.gz')
+            phase1_nifti = nib.Nifti1Image(self.phase1, affine=self.affine)
+            nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
+            phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
+                                               affine=self.affine)
+            nib.save(phase_diff_nifti, base_path + '_phase_difference.nii.gz')
         elif isinstance(maps, list):
             for result in maps:
                 if result == 'b0' or result == 'b0_map':
-                    b0_nifti = nib.Nifti1Image(self.b0_map, affine=affine)
+                    b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
                     nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                                 affine=affine)
+                                                 affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
                 elif result == 'phase0':
-                    phase0_nifti = nib.Nifti1Image(self.phase0, affine=affine)
+                    phase0_nifti = nib.Nifti1Image(self.phase0,
+                                                   affine=self.affine)
                     nib.save(phase0_nifti, base_path + '_phase0.nii.gz')
                 elif result == 'phase1':
-                    phase1_nifti = nib.Nifti1Image(self.phase1, affine=affine)
+                    phase1_nifti = nib.Nifti1Image(self.phase1,
+                                                   affine=self.affine)
                     nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
                 elif result == 'phase_difference':
                     phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
-                                                       affine=affine)
+                                                       affine=self.affine)
                     nib.save(phase_diff_nifti, base_path +
                              '_phase_difference.nii.gz')
         else:
-            raise ValueError('No NIFTI file saved. The variable "maps"'
-                             'should be "all" or a list of maps')
+            raise ValueError('No NIFTI file saved. The variable "maps" '
+                             'should be "all" or a list of maps from '
+                             '"["b0","mask", "phase0", "phase1", ' 
+                             '"phase_difference"]".')
 
         return
