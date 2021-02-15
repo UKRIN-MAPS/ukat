@@ -331,6 +331,12 @@ class TestT1:
             mapper = T1(signal_array, self.t, affine=np.eye(3))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t1test', maps='all')
+                
+        # No maps are given
+        with pytest.raises(ValueError):
+            mapper = T1(signal_array, self.t, affine=np.eye(4))
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t1test', maps='')
 
         # Delete 'test_output' folder
         os.rmdir('test_output')
@@ -430,6 +436,7 @@ class TestMagnitudeCorrect:
                              complex_stats['min']['4D'],
                              complex_stats['max']['4D']],
                             gold_standard, rtol=1e-6, atol=1e-4)
+
 
 # Delete the NIFTI test folder if any of the unit tests failed
 if os.path.exists('test_output'):

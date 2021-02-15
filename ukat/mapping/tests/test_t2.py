@@ -99,7 +99,7 @@ class TestT2:
         npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
                              t2_stats["min"], t2_stats["max"]],
                             gold_standard, rtol=1e-6, atol=1e-4)
-                    
+
     def test_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
@@ -159,9 +159,16 @@ class TestT2:
             mapper = T2(signal_array, self.t, affine=np.eye(3))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2test', maps='all')
+            
+        # No maps are given
+        with pytest.raises(ValueError):
+            mapper = T2(signal_array, self.t, affine=np.eye(4))
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2test', maps='')
 
         # Delete 'test_output' folder
         os.rmdir('test_output')
+
 
 # Delete the NIFTI test folder if any of the unit tests failed
 if os.path.exists('test_output'):

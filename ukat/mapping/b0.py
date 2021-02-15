@@ -110,7 +110,7 @@ class B0:
                              'to be created first')
         base_path = os.path.join(output_directory, base_file_name)
         if (not isinstance(self.affine, np.ndarray) and
-            not isinstance(self.affine, list)):
+           not isinstance(self.affine, list)):
             raise TypeError('No NIFTI file saved because no affine '
                             'matrix was provided.')
         if np.shape(self.affine) != (4, 4):

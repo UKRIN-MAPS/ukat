@@ -104,12 +104,12 @@ class TestB0:
             os.remove(os.path.join('test_output', f))
 
         # Check that no files are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='b0test', maps=[])
         assert len(os.listdir('test_output')) == 0
 
         # Check that only b0 and phase0 are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='b0test', maps=['b0', 'phase0'])
         assert len(os.listdir('test_output')) == 2
         assert len(list(set(os.listdir('test_output')).intersection(
@@ -126,17 +126,24 @@ class TestB0:
                             base_file_name='b0test', maps='all')
         # Affine as a string
         with pytest.raises(TypeError):
-            mapper = B0(self.correct_array, self.correct_echo_list, 
+            mapper = B0(self.correct_array, self.correct_echo_list,
                         affine='affine', unwrap=False)
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='b0test', maps='all')
 
         # Affine as a 3x3 array instead of a 4x4 array
         with pytest.raises(ValueError):
-            mapper = B0(self.correct_array, self.correct_echo_list, 
+            mapper = B0(self.correct_array, self.correct_echo_list,
                         affine=np.eye(3), unwrap=False)
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='b0test', maps='all')
+                    
+        # No maps are given
+        with pytest.raises(ValueError):
+            mapper = B0(self.correct_array, self.correct_echo_list,
+                        affine=np.eye(4), unwrap=False)
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='b0test', maps='')
 
         # Delete 'test_output' folder
         os.rmdir('test_output')
@@ -188,6 +195,7 @@ class TestB0:
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
                             b0map_stats["min"], b0map_stats["max"]],
                             gold_standard_b0, rtol=0.01, atol=0)
+
 
 # Delete the NIFTI test folder if any of the unit tests failed
 if os.path.exists('test_output'):

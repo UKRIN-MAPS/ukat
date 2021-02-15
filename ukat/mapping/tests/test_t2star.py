@@ -160,6 +160,12 @@ class TestT2Star:
             mapper = T2Star(signal_array, self.t, affine=np.eye(3))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2startest', maps='all')
+            
+        # No maps are given
+        with pytest.raises(ValueError):
+            mapper = T2Star(signal_array, self.t, affine=np.eye(4))
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps='')
 
         # Delete 'test_output' folder
         os.rmdir('test_output')
@@ -231,6 +237,7 @@ class TestT2Star:
         npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+
 
 # Delete the NIFTI test folder if any of the unit tests failed
 if os.path.exists('test_output'):
