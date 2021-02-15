@@ -45,7 +45,7 @@ class B0:
             raw data.
         affine : np.ndarray, optional
             The matrix that represents the affine transformation. It can be
-            used to save images as NIFTI files. Affine transformations are 
+            used to save images as NIFTI files. Affine transformations are
             normally used to correct for geometric distortions or deformations.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
@@ -109,9 +109,10 @@ class B0:
             raise ValueError('Output directory doesn\'t exist and needs'
                              'to be created first')
         base_path = os.path.join(output_directory, base_file_name)
-        if not isinstance(self.affine, np.ndarray) and not isinstance(self.affine, list):
+        if (not isinstance(self.affine, np.ndarray) and
+            not isinstance(self.affine, list)):
             raise TypeError('No NIFTI file saved because no affine '
-                             'matrix was provided.')
+                            'matrix was provided.')
         if np.shape(self.affine) != (4, 4):
             raise ValueError('No NIFTI file saved because the provided affine '
                              'is not a 4x4 matrix.')
@@ -154,7 +155,7 @@ class B0:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["b0","mask", "phase0", "phase1", ' 
+                             '"["b0","mask", "phase0", "phase1", '
                              '"phase_difference"]".')
 
         return

@@ -82,17 +82,23 @@ class TestB0:
         # Create a B0 map instance and test different export to NIFTI scenarios
         mapper = B0(self.correct_array,
                     self.correct_echo_list, affine=np.eye(4), unwrap=False)
-        if not os.path.exists('test_output'): os.makedirs('test_output')
-        
+        if not os.path.exists('test_output'):
+            os.makedirs('test_output')
+
         # Check all is saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='b0test', maps='all')
         assert len(os.listdir('test_output')) == 5
-        assert os.listdir('test_output')[0] == 'b0test_b0_map.nii.gz'
-        assert os.listdir('test_output')[1] == 'b0test_mask.nii.gz'
-        assert os.listdir('test_output')[2] == 'b0test_phase0.nii.gz'
-        assert os.listdir('test_output')[3] == 'b0test_phase1.nii.gz'
-        assert os.listdir('test_output')[4] == 'b0test_phase_difference.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_b0_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_mask.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_phase0.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_phase1.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_phase_difference.nii.gz']))) == 1
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
@@ -106,8 +112,10 @@ class TestB0:
         mapper.to_nifti(output_directory='test_output', 
                         base_file_name='b0test', maps=['b0', 'phase0'])
         assert len(os.listdir('test_output')) == 2
-        assert os.listdir('test_output')[0] == 'b0test_b0_map.nii.gz'
-        assert os.listdir('test_output')[1] == 'b0test_phase0.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_b0_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_phase0.nii.gz']))) == 1
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
@@ -180,3 +188,7 @@ class TestB0:
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
                             b0map_stats["min"], b0map_stats["max"]],
                             gold_standard_b0, rtol=0.01, atol=0)
+
+# Delete the NIFTI test folder if any of the unit tests failed
+if os.path.exists('test_output'):
+    os.rmdir('test_output')

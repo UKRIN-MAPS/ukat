@@ -272,35 +272,46 @@ class TestT1:
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         mapper = T1(signal_array, self.t, affine=np.eye(4), parameters=3)
-        if not os.path.exists('test_output'): os.makedirs('test_output')
-        
+        if not os.path.exists('test_output'):
+            os.makedirs('test_output')
+
         # Check all is saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t1test', maps='all')
         assert len(os.listdir('test_output')) == 8
-        assert os.listdir('test_output')[0] == 't1test_eff_err.nii.gz'
-        assert os.listdir('test_output')[1] == 't1test_eff_map.nii.gz'
-        assert os.listdir('test_output')[2] == 't1test_m0_err.nii.gz'
-        assert os.listdir('test_output')[3] == 't1test_m0_map.nii.gz'
-        assert os.listdir('test_output')[4] == 't1test_mask.nii.gz'
-        assert os.listdir('test_output')[5] == 't1test_r1_map.nii.gz'
-        assert os.listdir('test_output')[6] == 't1test_t1_err.nii.gz'
-        assert os.listdir('test_output')[7] == 't1test_t1_map.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_eff_err.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_eff_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_m0_err.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_m0_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_mask.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_r1_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_t1_err.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_t1_map.nii.gz']))) == 1
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         # Check that no files are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t1test', maps=[])
         assert len(os.listdir('test_output')) == 0
 
         # Check that only t1 and efficiency are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t1test', maps=['t1', 'eff'])
         assert len(os.listdir('test_output')) == 2
-        assert os.listdir('test_output')[0] == 't1test_eff_map.nii.gz'
-        assert os.listdir('test_output')[1] == 't1test_t1_map.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_t1_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t1test_eff_map.nii.gz']))) == 1
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
@@ -419,3 +430,7 @@ class TestMagnitudeCorrect:
                              complex_stats['min']['4D'],
                              complex_stats['max']['4D']],
                             gold_standard, rtol=1e-6, atol=1e-4)
+
+# Delete the NIFTI test folder if any of the unit tests failed
+if os.path.exists('test_output'):
+    os.rmdir('test_output')

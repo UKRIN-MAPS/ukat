@@ -109,31 +109,38 @@ class TestT2Star:
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2Star(signal_array, self.t, affine=np.eye(4))
-        if not os.path.exists('test_output'): os.makedirs('test_output')
-        
+        if not os.path.exists('test_output'):
+            os.makedirs('test_output')
+
         # Check all is saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps='all')
         assert len(os.listdir('test_output')) == 4
-        assert os.listdir('test_output')[0] == 't2startest_m0_map.nii.gz'
-        assert os.listdir('test_output')[1] == 't2startest_mask.nii.gz'
-        assert os.listdir('test_output')[2] == 't2startest_r2star_map.nii.gz'
-        assert os.listdir('test_output')[3] == 't2startest_t2star_map.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_m0_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_mask.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_r2star_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_t2star_map.nii.gz']))) == 1
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         # Check that no files are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps=[])
         assert len(os.listdir('test_output')) == 0
 
         # Check that only t2star and r2star are saved.
-        mapper.to_nifti(output_directory='test_output', 
+        mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps=['t2star', 'r2star'])
         assert len(os.listdir('test_output')) == 2
-        assert os.listdir('test_output')[0] == 't2startest_r2star_map.nii.gz'
-        assert os.listdir('test_output')[1] == 't2startest_t2star_map.nii.gz'
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_r2star_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_t2star_map.nii.gz']))) == 1
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
@@ -156,7 +163,6 @@ class TestT2Star:
 
         # Delete 'test_output' folder
         os.rmdir('test_output')
-
 
     def test_missmatched_raw_data_and_echo_lengths(self):
 
@@ -225,3 +231,7 @@ class TestT2Star:
         npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+
+# Delete the NIFTI test folder if any of the unit tests failed
+if os.path.exists('test_output'):
+    os.rmdir('test_output')
