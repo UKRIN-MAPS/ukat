@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -267,6 +268,61 @@ class TestT1:
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
 
+    def test_nifti(self):
+        # Create a T1 map instance and test different export to NIFTI scenarios
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+        mapper = T1(signal_array, self.t, affine=np.eye(4), parameters=3)
+        if not os.path.exists('test_output'): os.makedirs('test_output')
+        
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t1test', maps='all')
+        assert len(os.listdir('test_output')) == 8
+        assert os.listdir('test_output')[0] == 't1test_eff_err.nii.gz'
+        assert os.listdir('test_output')[1] == 't1test_eff_map.nii.gz'
+        assert os.listdir('test_output')[2] == 't1test_m0_err.nii.gz'
+        assert os.listdir('test_output')[3] == 't1test_m0_map.nii.gz'
+        assert os.listdir('test_output')[4] == 't1test_mask.nii.gz'
+        assert os.listdir('test_output')[5] == 't1test_r1_map.nii.gz'
+        assert os.listdir('test_output')[6] == 't1test_t1_err.nii.gz'
+        assert os.listdir('test_output')[7] == 't1test_t1_map.nii.gz'
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t1test', maps=[])
+        assert len(os.listdir('test_output')) == 0
+
+        # Check that only t1 and efficiency are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t1test', maps=['t1', 'eff'])
+        assert len(os.listdir('test_output')) == 2
+        assert os.listdir('test_output')[0] == 't1test_eff_map.nii.gz'
+        assert os.listdir('test_output')[1] == 't1test_t1_map.nii.gz'
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when:
+        # Output Path doesn't exist
+        with pytest.raises(ValueError):
+            mapper.to_nifti(output_directory='non-existing-folder',
+                            base_file_name='t1test', maps='all')
+        # Affine as a string
+        with pytest.raises(TypeError):
+            mapper = T1(signal_array, self.t, affine='affine')
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t1test', maps='all')
+
+        # Affine as a 3x3 array instead of a 4x4 array
+        with pytest.raises(ValueError):
+            mapper = T1(signal_array, self.t, affine=np.eye(3))
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t1test', maps='all')
+
+        # Delete 'test_output' folder
+        os.rmdir('test_output')
 
 class TestMagnitudeCorrect:
 

@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -103,6 +104,59 @@ class TestT2Star:
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map[5:, :, :].mean() - self.t2star < 0.1
         assert mapper.t2star_map[:5, :, :].mean() < 0.1
+
+    def test_nifti(self):
+        # Create a T1 map instance and test different export to NIFTI scenarios
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+        mapper = T2Star(signal_array, self.t, affine=np.eye(4))
+        if not os.path.exists('test_output'): os.makedirs('test_output')
+        
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t2startest', maps='all')
+        assert len(os.listdir('test_output')) == 4
+        assert os.listdir('test_output')[0] == 't2startest_m0_map.nii.gz'
+        assert os.listdir('test_output')[1] == 't2startest_mask.nii.gz'
+        assert os.listdir('test_output')[2] == 't2startest_r2star_map.nii.gz'
+        assert os.listdir('test_output')[3] == 't2startest_t2star_map.nii.gz'
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t2startest', maps=[])
+        assert len(os.listdir('test_output')) == 0
+
+        # Check that only t2star and r2star are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='t2startest', maps=['t2star', 'r2star'])
+        assert len(os.listdir('test_output')) == 2
+        assert os.listdir('test_output')[0] == 't2startest_r2star_map.nii.gz'
+        assert os.listdir('test_output')[1] == 't2startest_t2star_map.nii.gz'
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when:
+        # Output Path doesn't exist
+        with pytest.raises(ValueError):
+            mapper.to_nifti(output_directory='non-existing-folder',
+                            base_file_name='t2startest', maps='all')
+        # Affine as a string
+        with pytest.raises(TypeError):
+            mapper = T2Star(signal_array, self.t, affine='affine')
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps='all')
+
+        # Affine as a 3x3 array instead of a 4x4 array
+        with pytest.raises(ValueError):
+            mapper = T2Star(signal_array, self.t, affine=np.eye(3))
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps='all')
+
+        # Delete 'test_output' folder
+        os.rmdir('test_output')
+
 
     def test_missmatched_raw_data_and_echo_lengths(self):
 

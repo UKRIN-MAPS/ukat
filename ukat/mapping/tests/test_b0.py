@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -76,6 +77,62 @@ class TestB0:
         assert (unwrapped.b0_map != wrapped.b0_map).any()
         assert (arraystats.ArrayStats(unwrapped.b0_map).calculate() !=
                 arraystats.ArrayStats(wrapped.b0_map).calculate())
+
+    def test_nifti(self):
+        # Create a B0 map instance and test different export to NIFTI scenarios
+        mapper = B0(self.correct_array,
+                    self.correct_echo_list, affine=np.eye(4), unwrap=False)
+        if not os.path.exists('test_output'): os.makedirs('test_output')
+        
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='b0test', maps='all')
+        assert len(os.listdir('test_output')) == 5
+        assert os.listdir('test_output')[0] == 'b0test_b0_map.nii.gz'
+        assert os.listdir('test_output')[1] == 'b0test_mask.nii.gz'
+        assert os.listdir('test_output')[2] == 'b0test_phase0.nii.gz'
+        assert os.listdir('test_output')[3] == 'b0test_phase1.nii.gz'
+        assert os.listdir('test_output')[4] == 'b0test_phase_difference.nii.gz'
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='b0test', maps=[])
+        assert len(os.listdir('test_output')) == 0
+
+        # Check that only b0 and phase0 are saved.
+        mapper.to_nifti(output_directory='test_output', 
+                        base_file_name='b0test', maps=['b0', 'phase0'])
+        assert len(os.listdir('test_output')) == 2
+        assert os.listdir('test_output')[0] == 'b0test_b0_map.nii.gz'
+        assert os.listdir('test_output')[1] == 'b0test_phase0.nii.gz'
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when:
+        # Output Path doesn't exist
+        with pytest.raises(ValueError):
+            mapper.to_nifti(output_directory='non-existing-folder',
+                            base_file_name='b0test', maps='all')
+        # Affine as a string
+        with pytest.raises(TypeError):
+            mapper = B0(self.correct_array, self.correct_echo_list, 
+                        affine='affine', unwrap=False)
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='b0test', maps='all')
+
+        # Affine as a 3x3 array instead of a 4x4 array
+        with pytest.raises(ValueError):
+            mapper = B0(self.correct_array, self.correct_echo_list, 
+                        affine=np.eye(3), unwrap=False)
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='b0test', maps='all')
+
+        # Delete 'test_output' folder
+        os.rmdir('test_output')
+
 
     def test_pixel_array_type_assertion(self):
         # Empty array

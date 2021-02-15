@@ -105,9 +105,12 @@ class B0:
         """
         This function converts some of the B0 class attributes to NIFTI.
         """
+        if not os.path.exists(output_directory):
+            raise ValueError('Output directory doesn\'t exist and needs'
+                             'to be created first')
         base_path = os.path.join(output_directory, base_file_name)
         if not isinstance(self.affine, np.ndarray) and not isinstance(self.affine, list):
-            raise ValueError('No NIFTI file saved because no affine '
+            raise TypeError('No NIFTI file saved because no affine '
                              'matrix was provided.')
         if np.shape(self.affine) != (4, 4):
             raise ValueError('No NIFTI file saved because the provided affine '
