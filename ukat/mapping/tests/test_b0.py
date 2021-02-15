@@ -108,14 +108,17 @@ class TestB0:
                         base_file_name='b0test', maps=[])
         assert len(os.listdir('test_output')) == 0
 
-        # Check that only b0 and phase0 are saved.
+        # Check that only b0, phase0 and phase_difference are saved.
         mapper.to_nifti(output_directory='test_output',
-                        base_file_name='b0test', maps=['b0', 'phase0'])
-        assert len(os.listdir('test_output')) == 2
+                        base_file_name='b0test', maps=['b0', 'phase0',
+                        'phase_difference'])
+        assert len(os.listdir('test_output')) == 3
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['b0test_b0_map.nii.gz']))) == 1
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['b0test_phase0.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['b0test_phase_difference.nii.gz']))) == 1
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
@@ -137,7 +140,7 @@ class TestB0:
                         affine=np.eye(3), unwrap=False)
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='b0test', maps='all')
-                    
+
         # No maps are given
         with pytest.raises(ValueError):
             mapper = B0(self.correct_array, self.correct_echo_list,

@@ -135,12 +135,15 @@ class TestT2Star:
 
         # Check that only t2star and r2star are saved.
         mapper.to_nifti(output_directory='test_output',
-                        base_file_name='t2startest', maps=['t2star', 'r2star'])
-        assert len(os.listdir('test_output')) == 2
+                        base_file_name='t2startest', maps=['mask','t2star',
+                        'r2star'])
+        assert len(os.listdir('test_output')) == 3
         assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2startest_r2star_map.nii.gz']))) == 1
+                   ['t2startest_mask.nii.gz']))) == 1
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['t2startest_t2star_map.nii.gz']))) == 1
+        assert len(list(set(os.listdir('test_output')).intersection(
+                   ['t2startest_r2star_map.nii.gz']))) == 1
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
@@ -160,7 +163,7 @@ class TestT2Star:
             mapper = T2Star(signal_array, self.t, affine=np.eye(3))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2startest', maps='all')
-            
+
         # No maps are given
         with pytest.raises(ValueError):
             mapper = T2Star(signal_array, self.t, affine=np.eye(4))
