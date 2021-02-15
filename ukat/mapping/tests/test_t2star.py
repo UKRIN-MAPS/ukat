@@ -136,7 +136,7 @@ class TestT2Star:
         # Check that only t2star and r2star are saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps=['mask', 't2star',
-                         'r2star'])
+                                                           'r2star'])
         assert len(os.listdir('test_output')) == 3
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['t2startest_mask.nii.gz']))) == 1

@@ -111,7 +111,7 @@ class TestB0:
         # Check that only b0, phase0 and phase_difference are saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='b0test', maps=['b0', 'phase0',
-                         'phase_difference'])
+                                                       'phase_difference'])
         assert len(os.listdir('test_output')) == 3
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['b0test_b0_map.nii.gz']))) == 1
