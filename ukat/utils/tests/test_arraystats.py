@@ -30,8 +30,10 @@ def calc_stats(x):
         cv = std/mean
     skewness = scipy.stats.skew(x, bias=True)
     kurtosis = scipy.stats.kurtosis(x, fisher=True, bias=True)
+    entropy = scipy.stats.entropy(x)
 
-    return [n, mean, median, minimum, maximum, std, cv, skewness, kurtosis]
+    return [n, mean, median, minimum, maximum, std, cv, skewness, kurtosis,
+            entropy]
 
 
 class TestFlatStats:
@@ -109,7 +111,8 @@ class TestFlatStats:
                                    np.nan,   # std
                                    np.nan,   # cv
                                    np.nan,   # skewness
-                                   np.nan])  # kurtosis
+                                   np.nan,   # kurtosis
+                                   np.nan])  # entropy
 
         x1 = np.array([])
         stats_1 = self.flatstats_to_array(ast.FlatStats(x1).calculate())
@@ -134,8 +137,10 @@ class TestFlatStats:
         cv = fs.cv
         skewness = fs.skewness
         kurtosis = fs.kurtosis
+        entropy = fs.entropy
 
-        return [n, mean, median, minimum, maximum, std, cv, skewness, kurtosis]
+        return [n, mean, median, minimum, maximum, std, cv, skewness, kurtosis,
+                entropy]
 
 
 class TestArrayStats:
@@ -225,6 +230,7 @@ class TestArrayStats:
         gs_cv_4D = gs_4D[6]
         gs_skewness_4D = gs_4D[7]
         gs_kurtosis_4D = gs_4D[8]
+        gs_entropy_4D = gs_4D[9]
 
         gs_n_3D = np.array([gs_3D_0[0], gs_3D_1[0]])
         gs_mean_3D = np.array([gs_3D_0[1], gs_3D_1[1]])
@@ -235,6 +241,7 @@ class TestArrayStats:
         gs_cv_3D = np.array([gs_3D_0[6], gs_3D_1[6]])
         gs_skewness_3D = np.array([gs_3D_0[7], gs_3D_1[7]])
         gs_kurtosis_3D = np.array([gs_3D_0[8], gs_3D_1[8]])
+        gs_entropy_3D = np.array([gs_3D_0[9], gs_3D_1[9]])
 
         gs_n_2D = np.array([[gs_2D_0[0], gs_2D_1[0]],
                             [gs_2D_2[0], gs_2D_3[0]]])
@@ -254,6 +261,8 @@ class TestArrayStats:
                                    [gs_2D_2[7], gs_2D_3[7]]])
         gs_kurtosis_2D = np.array([[gs_2D_0[8], gs_2D_1[8]],
                                    [gs_2D_2[8], gs_2D_3[8]]])
+        gs_entropy_2D = np.array([[gs_2D_0[9], gs_2D_1[9]],
+                                  [gs_2D_2[9], gs_2D_3[9]]])
 
         # Tests
         npt.assert_allclose(stats["n"]["4D"], gs_n_4D, rtol=1e-6)
@@ -265,6 +274,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"]["4D"], gs_cv_4D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"]["4D"], gs_skewness_4D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"]["4D"], gs_kurtosis_4D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"]["4D"], gs_entropy_4D, rtol=1e-6)
 
         npt.assert_allclose(stats["n"]["3D"], gs_n_3D, rtol=1e-6)
         npt.assert_allclose(stats["mean"]["3D"], gs_mean_3D, rtol=1e-6)
@@ -275,6 +285,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"]["3D"], gs_cv_3D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"]["3D"], gs_skewness_3D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"]["3D"], gs_kurtosis_3D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"]["3D"], gs_entropy_3D, rtol=1e-6)
 
         npt.assert_allclose(stats["n"]["2D"], gs_n_2D, rtol=1e-6)
         npt.assert_allclose(stats["mean"]["2D"], gs_mean_2D, rtol=1e-6)
@@ -285,6 +296,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"]["2D"], gs_cv_2D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"]["2D"], gs_skewness_2D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"]["2D"], gs_kurtosis_2D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"]["2D"], gs_entropy_2D, rtol=1e-6)
 
     def test_3D_without_roi(self):
         # Calculate stats using ArrayStats
@@ -305,6 +317,7 @@ class TestArrayStats:
         gs_cv_3D = gs_3D[6]
         gs_skewness_3D = gs_3D[7]
         gs_kurtosis_3D = gs_3D[8]
+        gs_entropy_3D = gs_3D[9]
 
         gs_n_2D = np.array([gs_2D_0[0], gs_2D_1[0]])
         gs_mean_2D = np.array([gs_2D_0[1], gs_2D_1[1]])
@@ -315,6 +328,7 @@ class TestArrayStats:
         gs_cv_2D = np.array([gs_2D_0[6], gs_2D_1[6]])
         gs_skewness_2D = np.array([gs_2D_0[7], gs_2D_1[7]])
         gs_kurtosis_2D = np.array([gs_2D_0[8], gs_2D_1[8]])
+        gs_entropy_2D = np.array([gs_2D_0[9], gs_2D_1[9]])
 
         npt.assert_allclose(stats["n"]["3D"], gs_n_3D, rtol=1e-6)
         npt.assert_allclose(stats["mean"]["3D"], gs_mean_3D, rtol=1e-6)
@@ -325,6 +339,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"]["3D"], gs_cv_3D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"]["3D"], gs_skewness_3D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"]["3D"], gs_kurtosis_3D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"]["3D"], gs_entropy_3D, rtol=1e-6)
 
         npt.assert_allclose(stats["n"]["2D"], gs_n_2D, rtol=1e-6)
         npt.assert_allclose(stats["mean"]["2D"], gs_mean_2D, rtol=1e-6)
@@ -335,6 +350,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"]["2D"], gs_cv_2D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"]["2D"], gs_skewness_2D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"]["2D"], gs_kurtosis_2D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"]["2D"], gs_entropy_2D, rtol=1e-6)
 
     def test_2D_without_roi(self):
         # Calculate stats using ArrayStats
@@ -353,6 +369,7 @@ class TestArrayStats:
         gs_cv_2D = gs_2D[6]
         gs_skewness_2D = gs_2D[7]
         gs_kurtosis_2D = gs_2D[8]
+        gs_entropy_2D = gs_2D[9]
 
         npt.assert_allclose(stats["n"], gs_n_2D, rtol=1e-6)
         npt.assert_allclose(stats["mean"], gs_mean_2D, rtol=1e-6)
@@ -363,6 +380,7 @@ class TestArrayStats:
         npt.assert_allclose(stats["cv"], gs_cv_2D, rtol=1e-6)
         npt.assert_allclose(stats["skewness"], gs_skewness_2D, rtol=1e-6)
         npt.assert_allclose(stats["kurtosis"], gs_kurtosis_2D, rtol=1e-6)
+        npt.assert_allclose(stats["entropy"], gs_entropy_2D, rtol=1e-6)
 
     def test_bad_array_dimensions(self):
         with pytest.raises(ValueError):
