@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -268,12 +269,12 @@ class TestT1:
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
 
-    def test_nifti(self):
+    def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         mapper = T1(signal_array, self.t, affine=np.eye(4), parameters=3)
-        if not os.path.exists('test_output'):
-            os.makedirs('test_output')
+        
+        os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
         mapper.to_nifti(output_directory='test_output',
@@ -314,34 +315,18 @@ class TestT1:
                    ['t1test_r1_map.nii.gz']))) == 1
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['t1test_eff_map.nii.gz']))) == 1
+
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
-        # Check that it fails when:
-        # Output Path doesn't exist
-        with pytest.raises(ValueError):
-            mapper.to_nifti(output_directory='non-existing-folder',
-                            base_file_name='t1test', maps='all')
-        # Affine as a string
-        with pytest.raises(TypeError):
-            mapper = T1(signal_array, self.t, affine='affine')
-            mapper.to_nifti(output_directory='test_output',
-                            base_file_name='t1test', maps='all')
-
-        # Affine as a 3x3 array instead of a 4x4 array
-        with pytest.raises(ValueError):
-            mapper = T1(signal_array, self.t, affine=np.eye(3))
-            mapper.to_nifti(output_directory='test_output',
-                            base_file_name='t1test', maps='all')
-
-        # No maps are given
+        # Check that it fails when no maps are given
         with pytest.raises(ValueError):
             mapper = T1(signal_array, self.t, affine=np.eye(4))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t1test', maps='')
 
         # Delete 'test_output' folder
-        os.rmdir('test_output')
+        shutil.rmtree('test_output')
 
 class TestMagnitudeCorrect:
 
@@ -440,6 +425,6 @@ class TestMagnitudeCorrect:
                             gold_standard, rtol=1e-6, atol=1e-4)
 
 
-# Delete the NIFTI test folder if any of the unit tests failed
+# Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
-    os.rmdir('test_output')
+    shutil.rmtree('test_output') 

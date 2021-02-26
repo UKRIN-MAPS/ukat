@@ -1,4 +1,5 @@
 import os
+import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -105,12 +106,12 @@ class TestT2Star:
         assert mapper.t2star_map[5:, :, :].mean() - self.t2star < 0.1
         assert mapper.t2star_map[:5, :, :].mean() < 0.1
 
-    def test_nifti(self):
+    def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2Star(signal_array, self.t, affine=np.eye(4))
-        if not os.path.exists('test_output'):
-            os.makedirs('test_output')
+        
+        os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
         mapper.to_nifti(output_directory='test_output',
@@ -144,34 +145,18 @@ class TestT2Star:
                    ['t2startest_t2star_map.nii.gz']))) == 1
         assert len(list(set(os.listdir('test_output')).intersection(
                    ['t2startest_r2star_map.nii.gz']))) == 1
+
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
-        # Check that it fails when:
-        # Output Path doesn't exist
-        with pytest.raises(ValueError):
-            mapper.to_nifti(output_directory='non-existing-folder',
-                            base_file_name='t2startest', maps='all')
-        # Affine as a string
-        with pytest.raises(TypeError):
-            mapper = T2Star(signal_array, self.t, affine='affine')
-            mapper.to_nifti(output_directory='test_output',
-                            base_file_name='t2startest', maps='all')
-
-        # Affine as a 3x3 array instead of a 4x4 array
-        with pytest.raises(ValueError):
-            mapper = T2Star(signal_array, self.t, affine=np.eye(3))
-            mapper.to_nifti(output_directory='test_output',
-                            base_file_name='t2startest', maps='all')
-
-        # No maps are given
+        # Check that it fails when no maps are given
         with pytest.raises(ValueError):
             mapper = T2Star(signal_array, self.t, affine=np.eye(4))
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2startest', maps='')
 
         # Delete 'test_output' folder
-        os.rmdir('test_output')
+        shutil.rmtree('test_output')
 
     def test_missmatched_raw_data_and_echo_lengths(self):
 
@@ -242,6 +227,6 @@ class TestT2Star:
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
 
 
-# Delete the NIFTI test folder if any of the unit tests failed
+# Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
-    os.rmdir('test_output')
+    shutil.rmtree('test_output') 

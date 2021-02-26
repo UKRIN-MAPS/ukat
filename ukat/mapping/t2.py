@@ -41,9 +41,8 @@ class T2:
             An array of the echo times used for the last dimension of the
             raw data. In milliseconds.
         affine : np.ndarray, optional
-            The matrix that represents the affine transformation. It can be
-            used to save images as NIFTI files. Affine transformations are
-            normally used to correct for geometric distortions or deformations.
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T2 map rather than the raw data i.e. omit the time
@@ -185,11 +184,9 @@ class T2:
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """
-        This function converts some of the T1 class attributes to NIFTI.
+        This function exports some of the T1 class attributes to NIFTI.
         """
-        if not os.path.exists(output_directory):
-            raise ValueError('Output directory doesn\'t exist and needs'
-                             'to be created first')
+        os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if (not isinstance(self.affine, np.ndarray) and
            not isinstance(self.affine, list)):
