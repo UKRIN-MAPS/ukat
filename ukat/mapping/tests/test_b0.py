@@ -145,7 +145,7 @@ class TestB0:
         # List
         with pytest.raises(AttributeError):
             mapper = B0(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
-                self.correct_echo_list, self.affine)
+                        self.correct_echo_list, self.affine)
         # String
         with pytest.raises(AttributeError):
             mapper = B0("abcdef", self.correct_echo_list, self.affine)

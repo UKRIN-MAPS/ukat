@@ -139,7 +139,7 @@ class TestT2:
         assert len(output_files) == 3
         assert 't2test_mask.nii.gz' in output_files
         assert 't2test_t2_map.nii.gz' in output_files
-        assert 't2test_r2_map.nii.gz' in output_files 
+        assert 't2test_r2_map.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
