@@ -19,7 +19,7 @@ class TestT2:
                                2010.96013811, 1819.59197914, 1646.43490828,
                                1489.75591137, 1347.98689235, 1219.70897922,
                                1103.63832351])
-
+    affine = np.eye(4)
     def test_two_param_eq(self):
         signal = two_param_eq(self.t, self.t2, self.m0)
         npt.assert_allclose(signal, self.correct_signal, rtol=1e-6, atol=1e-8)
@@ -29,28 +29,29 @@ class TestT2:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
 
         # Multithread
-        mapper = T2(signal_array, self.t, multithread=True)
+        mapper = T2(signal_array, self.t, self.affine, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2_map.mean() - self.t2 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.r2_map().mean() - 1 / self.t2 < 0.1
 
         # Single Threaded
-        mapper = T2(signal_array, self.t, multithread=False)
+        mapper = T2(signal_array, self.t, self.affine, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2_map.mean() - self.t2 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.r2_map().mean() - 1 / self.t2 < 0.1
 
         # Auto Threaded
-        mapper = T2(signal_array, self.t, multithread='auto')
+        mapper = T2(signal_array, self.t, self.affine, multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2_map.mean() - self.t2 < 0.1
         assert mapper.m0_map.mean() - self.m0 < 0.1
         assert mapper.r2_map().mean() - 1 / self.t2 < 0.1
 
         # Fail to fit
-        mapper = T2(signal_array[..., ::-1], self.t, multithread=True)
+        mapper = T2(signal_array[..., ::-1], self.t, self.affine,
+                    multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
         assert mapper.t2_map.mean() == 0.0
@@ -61,7 +62,7 @@ class TestT2:
         # Bool mask
         mask = np.ones(signal_array.shape[:-1], dtype=bool)
         mask[:5, :, :] = False
-        mapper = T2(signal_array, self.t, mask=mask)
+        mapper = T2(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2_map[5:, :, :].mean() - self.t2 < 0.1
         assert mapper.t2_map[:5, :, :].mean() < 0.1
@@ -69,7 +70,7 @@ class TestT2:
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, :, :] = 0
-        mapper = T2(signal_array, self.t, mask=mask)
+        mapper = T2(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2_map[5:, :, :].mean() - self.t2 < 0.1
         assert mapper.t2_map[:5, :, :].mean() < 0.1
@@ -77,11 +78,13 @@ class TestT2:
     def test_mismatched_raw_data_and_echo_lengths(self):
         with pytest.raises(AssertionError):
             mapper = T2(pixel_array=np.zeros((5, 5, 4)),
-                        echo_list=np.linspace(0, 2000, 5))
+                        echo_list=np.linspace(0, 2000, 5),
+                        affine=self.affine)
 
         with pytest.raises(AssertionError):
             mapper = T2(pixel_array=np.zeros((5, 5, 5)),
-                        echo_list=np.linspace(0, 2000, 4))
+                        echo_list=np.linspace(0, 2000, 4),
+                        affine=self.affine)
 
     def test_real_data(self):
         # Get test data
@@ -95,7 +98,7 @@ class TestT2:
                          0.0, 568.160604]
 
         # 2p_exp method
-        mapper = T2(image, te)
+        mapper = T2(image, te, self.affine)
         t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
                              t2_stats["min"], t2_stats["max"]],
@@ -104,26 +107,21 @@ class TestT2:
     def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
-        mapper = T2(signal_array, self.t, affine=np.eye(4))
-        
+        mapper = T2(signal_array, self.t, self.affine)
+
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2test', maps='all')
-        assert len(os.listdir('test_output')) == 6
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_m0_err.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_m0_map.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_mask.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_r2_map.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_t2_err.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_t2_map.nii.gz']))) == 1
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 6
+        assert 't2test_m0_err.nii.gz' in output_files
+        assert 't2test_m0_map.nii.gz' in output_files
+        assert 't2test_mask.nii.gz' in output_files
+        assert 't2test_r2_map.nii.gz' in output_files
+        assert 't2test_t2_err.nii.gz' in output_files
+        assert 't2test_t2_map.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
@@ -131,25 +129,24 @@ class TestT2:
         # Check that no files are saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2test', maps=[])
-        assert len(os.listdir('test_output')) == 0
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 0
 
         # Check that only t2 and r2 are saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2test', maps=['mask', 't2', 'r2'])
-        assert len(os.listdir('test_output')) == 3
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_mask.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_t2_map.nii.gz']))) == 1
-        assert len(list(set(os.listdir('test_output')).intersection(
-                   ['t2test_r2_map.nii.gz']))) == 1
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 3
+        assert 't2test_mask.nii.gz' in output_files
+        assert 't2test_t2_map.nii.gz' in output_files
+        assert 't2test_r2_map.nii.gz' in output_files 
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         # Check that it fails when no maps are given
         with pytest.raises(ValueError):
-            mapper = T2(signal_array, self.t, affine=np.eye(4))
+            mapper = T2(signal_array, self.t, self.affine)
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2test', maps='')
 
@@ -159,4 +156,4 @@ class TestT2:
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
-    shutil.rmtree('test_output') 
+    shutil.rmtree('test_output')

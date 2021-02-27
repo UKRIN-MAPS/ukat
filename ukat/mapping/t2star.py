@@ -24,7 +24,7 @@ class T2Star:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
                  method='loglin', multithread='auto'):
         """Initialise a T2Star class instance.
 
@@ -256,26 +256,9 @@ class T2Star:
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
-        if (not isinstance(self.affine, np.ndarray) and
-           not isinstance(self.affine, list)):
-            raise TypeError('No NIFTI file saved because no affine '
-                            'matrix was provided.')
-        if np.shape(self.affine) != (4, 4):
-            raise ValueError('No NIFTI file saved because the provided affine '
-                             'is not a 4x4 matrix.')
         if maps == 'all' or maps == ['all']:
-            # Save all maps
-            t2star_nifti = nib.Nifti1Image(self.t2star_map, affine=self.affine)
-            nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
-            m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-            nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
-            r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
-                                           affine=self.affine)
-            nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
-            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                         affine=self.affine)
-            nib.save(mask_nifti, base_path + '_mask.nii.gz')
-        elif isinstance(maps, list):
+            maps = ['t2star', 'm0', 'r2star', 'mask']
+        if isinstance(maps, list):
             for result in maps:
                 if result == 't2star' or result == 't2star_map':
                     t2star_nifti = nib.Nifti1Image(self.t2star_map,

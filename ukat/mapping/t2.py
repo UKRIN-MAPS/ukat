@@ -27,7 +27,7 @@ class T2:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
                  multithread='auto'):
         """Initialise a T2 class instance.
 
@@ -188,29 +188,9 @@ class T2:
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
-        if (not isinstance(self.affine, np.ndarray) and
-           not isinstance(self.affine, list)):
-            raise TypeError('No NIFTI file saved because no affine '
-                            'matrix was provided.')
-        if np.shape(self.affine) != (4, 4):
-            raise ValueError('No NIFTI file saved because the provided affine '
-                             'is not a 4x4 matrix.')
         if maps == 'all' or maps == ['all']:
-            # Save all maps
-            t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-            nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
-            t2_err_nifti = nib.Nifti1Image(self.t2_err, affine=self.affine)
-            nib.save(t2_err_nifti, base_path + '_t2_err.nii.gz')
-            m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-            nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
-            m0_err_nifti = nib.Nifti1Image(self.m0_err, affine=self.affine)
-            nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
-            r2_nifti = nib.Nifti1Image(T2.r2_map(self), affine=self.affine)
-            nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
-            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                         affine=self.affine)
-            nib.save(mask_nifti, base_path + '_mask.nii.gz')
-        elif isinstance(maps, list):
+            maps = ['t2', 't2_err', 'm0', 'm0_err', 'r2', 'mask']
+        if isinstance(maps, list):
             for result in maps:
                 if result == 't2' or result == 't2_map':
                     t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)

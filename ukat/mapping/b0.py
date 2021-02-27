@@ -30,7 +30,7 @@ class B0:
         The difference between the 2 phase images
     """
 
-    def __init__(self, pixel_array, echo_list, affine=None, mask=None,
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
                  unwrap=True, wrap_around=False):
         """Initialise a T1 class instance.
 
@@ -106,28 +106,9 @@ class B0:
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
-        if (not isinstance(self.affine, np.ndarray) and
-           not isinstance(self.affine, list)):
-            raise TypeError('No NIFTI file saved because no affine '
-                            'matrix was provided.')
-        if np.shape(self.affine) != (4, 4):
-            raise ValueError('No NIFTI file saved because the provided affine '
-                             'is not a 4x4 matrix.')
         if maps == 'all' or maps == ['all']:
-            # Save all maps
-            b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
-            nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
-            mask_nifti = nib.Nifti1Image(self.mask.astype(int),
-                                         affine=self.affine)
-            nib.save(mask_nifti, base_path + '_mask.nii.gz')
-            phase0_nifti = nib.Nifti1Image(self.phase0, affine=self.affine)
-            nib.save(phase0_nifti, base_path + '_phase0.nii.gz')
-            phase1_nifti = nib.Nifti1Image(self.phase1, affine=self.affine)
-            nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
-            phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
-                                               affine=self.affine)
-            nib.save(phase_diff_nifti, base_path + '_phase_difference.nii.gz')
-        elif isinstance(maps, list):
+            maps = ['b0', 'mask', 'phase0', 'phase1', 'phase_difference']
+        if isinstance(maps, list):
             for result in maps:
                 if result == 'b0' or result == 'b0_map':
                     b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
