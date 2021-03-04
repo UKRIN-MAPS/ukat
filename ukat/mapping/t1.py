@@ -257,8 +257,19 @@ class T1:
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """
-        This function exports some of the T1 class attributes to NIFTI.
+        """Exports some of the T1 class attributes to NIFTI.
+        
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        maps : list or 'all', optional
+            List of maps to save to NIFTI. This should either the string "all"
+            or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
+            "eff_err", "r1", "mask"]
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)

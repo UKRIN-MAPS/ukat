@@ -101,8 +101,19 @@ class B0:
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """
-        This function exports some of the B0 class attributes to NIFTI.
+        """Exports some of the B0 class attributes to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        maps : list or 'all', optional
+            List of maps to save to NIFTI. This should either the string "all"
+            or a list of maps from ["b0", "mask", "phase0", "phase1",
+            "phase_difference"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
@@ -133,7 +144,7 @@ class B0:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["b0","mask", "phase0", "phase1", '
+                             '"["b0", "mask", "phase0", "phase1", '
                              '"phase_difference"]".')
 
         return
