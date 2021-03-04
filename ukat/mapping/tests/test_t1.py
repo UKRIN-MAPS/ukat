@@ -1,3 +1,5 @@
+import os
+import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -65,7 +67,7 @@ class TestT1:
                                              ])
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
-
+    affine = np.eye(4)
     def test_two_param_eq(self):
         # Without abs
         signal = two_param_eq(self.t, self.t1, self.m0)
@@ -91,14 +93,14 @@ class TestT1:
         signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
 
         # Multithread
-        mapper = T1(signal_array, self.t, multithread=True)
+        mapper = T1(signal_array, self.t, self.affine, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
         assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
-        mapper = T1(signal_array, self.t, multithread=False)
+        mapper = T1(signal_array, self.t, self.affine, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
@@ -109,7 +111,8 @@ class TestT1:
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
 
         # Multithread
-        mapper = T1(signal_array, self.t, parameters=3, multithread=True)
+        mapper = T1(signal_array, self.t, self.affine, parameters=3,
+                    multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
@@ -117,7 +120,8 @@ class TestT1:
         assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
 
         # Single Threaded
-        mapper = T1(signal_array, self.t, parameters=3, multithread=False)
+        mapper = T1(signal_array, self.t, self.affine, parameters=3,
+                    multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
@@ -126,7 +130,8 @@ class TestT1:
 
     def test_tss(self):
 
-        mapper = T1(self.correct_signal_two_param_tss, self.t, tss=10)
+        mapper = T1(self.correct_signal_two_param_tss, self.t, self.affine,
+                    tss=10)
         assert mapper.shape == self.correct_signal_two_param_tss.shape[:-1]
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
@@ -134,7 +139,7 @@ class TestT1:
 
     def test_tss_axis(self):
         signal_array = np.swapaxes(self.correct_signal_two_param_tss, 0, 1)
-        mapper = T1(signal_array, self.t, tss=10, tss_axis=0)
+        mapper = T1(signal_array, self.t, self.affine, tss=10, tss_axis=0)
         assert mapper.t1_map.mean() - self.t1 < 0.00001
         assert mapper.m0_map.mean() - self.m0 < 0.00001
         assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
@@ -144,7 +149,7 @@ class TestT1:
         signal_array = np.tile(self.signal_fail_fit, (10, 10, 3, 1))
 
         # Fail to fit using the 2 parameter equation
-        mapper_two_param = T1(signal_array, self.t,
+        mapper_two_param = T1(signal_array, self.t, self.affine,
                               parameters=2, multithread=True)
         assert mapper_two_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
@@ -154,7 +159,7 @@ class TestT1:
         assert mapper_two_param.m0_err.mean() == 0.0
 
         # Fail to fit using the 3 parameter equation
-        mapper_three_param = T1(signal_array, self.t,
+        mapper_three_param = T1(signal_array, self.t, self.affine,
                                 parameters=3, multithread=True)
         assert mapper_three_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
@@ -169,7 +174,7 @@ class TestT1:
         # Bool mask
         mask = np.ones(signal_array.shape[:-1], dtype=bool)
         mask[:5, ...] = False
-        mapper = T1(signal_array, self.t, mask=mask)
+        mapper = T1(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
         assert mapper.t1_map[:5, ...].mean() < 0.00001
@@ -177,7 +182,7 @@ class TestT1:
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, ...] = 0
-        mapper = T1(signal_array, self.t, mask=mask)
+        mapper = T1(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
         assert mapper.t1_map[:5, ...].mean() < 0.00001
@@ -186,11 +191,13 @@ class TestT1:
 
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 4)),
-                        inversion_list=np.linspace(0, 2000, 5))
+                        inversion_list=np.linspace(0, 2000, 5),
+                        affine=self.affine)
 
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5)),
-                        inversion_list=np.linspace(0, 2000, 4))
+                        inversion_list=np.linspace(0, 2000, 4),
+                        affine=self.affine)
 
     def test_parameters(self):
 
@@ -198,13 +205,13 @@ class TestT1:
         with pytest.raises(ValueError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5)),
                         inversion_list=np.linspace(0, 2000, 5),
-                        parameters=1)
+                        affine=self.affine, parameters=1)
 
         # Four parameter fit
         with pytest.raises(ValueError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5)),
                         inversion_list=np.linspace(0, 2000, 5),
-                        parameters=4)
+                        affine=self.affine, parameters=4)
 
     def test_tss_valid_axis(self):
 
@@ -212,31 +219,31 @@ class TestT1:
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
-                        tss=1, tss_axis=-1)
+                        affine=self.affine, tss=1, tss_axis=-1)
 
         # 4D 3 index
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
-                        tss=1, tss_axis=3)
+                        affine=self.affine, tss=1, tss_axis=3)
 
         # 4D 4 index
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
-                        tss=1, tss_axis=4)
+                        affine=self.affine, tss=1, tss_axis=4)
 
         # 3D -1 index
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
-                        tss=1, tss_axis=-1)
+                        affine=self.affine, tss=1, tss_axis=-1)
 
         # 3D 2 index
         with pytest.raises(AssertionError):
             mapper = T1(pixel_array=np.zeros((5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
-                        tss=1, tss_axis=2)
+                        affine=self.affine, tss=1, tss_axis=2)
 
     def test_real_data(self):
         # Get test data
@@ -254,19 +261,69 @@ class TestT1:
         gold_standard_3p = [1382.037954, 662.176566, 0.0, 3948.251711]
 
         # Two parameter method
-        mapper = T1(magnitude, ti, parameters=2, tss=tss)
+        mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
                             gold_standard_2p, rtol=1e-6, atol=1e-4)
 
         # Three parameter method
-        mapper = T1(magnitude, ti, parameters=3, tss=tss)
+        mapper = T1(magnitude, ti, affine, parameters=3, tss=tss)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
 
+    def test_to_nifti(self):
+        # Create a T1 map instance and test different export to NIFTI scenarios
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+        mapper = T1(signal_array, self.t, self.affine, parameters=3)
+
+        os.makedirs('test_output', exist_ok=True)
+
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t1test', maps='all')
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 8
+        assert 't1test_eff_err.nii.gz' in output_files
+        assert 't1test_eff_map.nii.gz' in output_files
+        assert 't1test_m0_err.nii.gz' in output_files
+        assert 't1test_m0_map.nii.gz' in output_files
+        assert 't1test_mask.nii.gz' in output_files
+        assert 't1test_r1_map.nii.gz' in output_files
+        assert 't1test_t1_err.nii.gz' in output_files
+        assert 't1test_t1_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t1test', maps=[])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 0
+
+        # Check that only t1, r1 and efficiency are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t1test', maps=['t1', 'r1', 'eff'])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 3
+        assert 't1test_t1_map.nii.gz' in output_files
+        assert 't1test_r1_map.nii.gz' in output_files
+        assert 't1test_eff_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when no maps are given
+        with pytest.raises(ValueError):
+            mapper = T1(signal_array, self.t, self.affine)
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t1test', maps='')
+
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
 
 class TestMagnitudeCorrect:
 
@@ -363,3 +420,8 @@ class TestMagnitudeCorrect:
                              complex_stats['min']['4D'],
                              complex_stats['max']['4D']],
                             gold_standard, rtol=1e-6, atol=1e-4)
+
+
+# Delete the NIFTI test folder recursively if any of the unit tests failed
+if os.path.exists('test_output'):
+    shutil.rmtree('test_output')
