@@ -25,7 +25,7 @@ class T2:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, method='2p_exp',
+    def __init__(self, pixel_array, echo_list, mask=None, threshold=0, method='2p_exp',
                  multithread='auto'):
         """Initialise a T2 class instance.
 
@@ -70,6 +70,7 @@ class T2:
             self.mask = mask
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.threshold = threshold
         self.method = method
         self.echo_list = echo_list
         # Auto multithreading conditions
@@ -102,12 +103,14 @@ class T2:
                     futures = []
 
                     for ind in idx:
+                        signal_thresh = signal[ind, :][signal[ind, :] > self.threshold]
+               	        echo_list_thresh = self.echo_list[signal[ind, :] > self.threshold]
                         future = pool.submit(self.__fit_signal__,
-                                             signal[ind, :],
-                                             self.echo_list)
+                                             signal_thresh,
+                                             echo_list_thresh)
                         future.add_done_callback(lambda p: progress.update())
                         futures.append(future)
-
+    
                     results = []
                     for future in futures:
                         result = future.result()
@@ -119,9 +122,10 @@ class T2:
         else:
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
-                    sig = signal[ind, :]
+                    signal_thresh = signal[ind, :][signal[ind, :] > self.threshold]
+                    echo_list_thresh = self.echo_list[signal[ind, :] > self.threshold]
                     t2_map[ind], t2_err[ind], m0_map[ind], m0_err[ind] = \
-                        self.__fit_signal__(sig, self.echo_list)
+                        self.__fit_signal__(signal_thresh, echo_list_thresh)
                     progress.update(1)
 
         # Reshape results to raw data shape
@@ -148,7 +152,7 @@ class T2:
         try:
             popt, pcov = curve_fit(eq, te, sig, p0=initial_guess,
                                    bounds=bounds)
-        except RuntimeError:
+        except (RuntimeError, ValueError):
             popt = np.zeros(2)
             pcov = np.zeros((2, 2))
 
