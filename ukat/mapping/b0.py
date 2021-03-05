@@ -1,4 +1,6 @@
+import os
 import numpy as np
+import nibabel as nib
 from skimage.restoration import unwrap_phase
 from ukat.utils.tools import convert_to_pi_range
 
@@ -14,6 +16,8 @@ class B0:
         The estimated B0 values in Hz
     shape : tuple
         The shape of the B0 map
+    mask : np.ndarray
+        A boolean mask of the voxels to fit
     n_te : int
         The number of TE used to calculate the map
     delta_te : float
@@ -26,8 +30,8 @@ class B0:
         The difference between the 2 phase images
     """
 
-    def __init__(self, pixel_array, echo_list, mask=None, unwrap=True,
-                 wrap_around=False):
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
+                 unwrap=True, wrap_around=False):
         """Initialise a T1 class instance.
 
         Parameters
@@ -39,6 +43,13 @@ class B0:
         echo_list : list
             An array of the echo times in ms used for the last dimension of the
             raw data.
+        affine : np.ndarray, optional
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired B0 map rather than the raw data i.e. omit the echo times
+            dimension.
         unwrap : boolean, optional
             By default, this script applies the
             scipy phase unwrapping for each phase echo image.
@@ -53,6 +64,7 @@ class B0:
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
+        self.affine = affine
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -86,3 +98,53 @@ class B0:
             raise ValueError('The input should contain 2 echo times.'
                              'The last dimension of the input pixel_array must'
                              'be 2 and the echo_list must only have 2 values.')
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
+                 maps='all'):
+        """Exports some of the B0 class attributes to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        maps : list or 'all', optional
+            List of maps to save to NIFTI. This should either the string "all"
+            or a list of maps from ["b0", "mask", "phase0", "phase1",
+            "phase_difference"].
+        """
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+        if maps == 'all' or maps == ['all']:
+            maps = ['b0', 'mask', 'phase0', 'phase1', 'phase_difference']
+        if isinstance(maps, list):
+            for result in maps:
+                if result == 'b0' or result == 'b0_map':
+                    b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
+                    nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
+                elif result == 'mask':
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=self.affine)
+                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+                elif result == 'phase0':
+                    phase0_nifti = nib.Nifti1Image(self.phase0,
+                                                   affine=self.affine)
+                    nib.save(phase0_nifti, base_path + '_phase0.nii.gz')
+                elif result == 'phase1':
+                    phase1_nifti = nib.Nifti1Image(self.phase1,
+                                                   affine=self.affine)
+                    nib.save(phase1_nifti, base_path + '_phase1.nii.gz')
+                elif result == 'phase_difference':
+                    phase_diff_nifti = nib.Nifti1Image(self.phase_difference,
+                                                       affine=self.affine)
+                    nib.save(phase_diff_nifti, base_path +
+                             '_phase_difference.nii.gz')
+        else:
+            raise ValueError('No NIFTI file saved. The variable "maps" '
+                             'should be "all" or a list of maps from '
+                             '"["b0", "mask", "phase0", "phase1", '
+                             '"phase_difference"]".')
+
+        return

@@ -72,6 +72,7 @@ class ArrayStats():
             - 'cv'       : coefficient of variation (std/mean)
             - 'skewness'
             - 'kurtosis'
+            - 'entropy'
             Each of the statistical measures is a dictionary in itself, where
             keys are the dimensions over which the calculation was performed.
             For example:
@@ -108,6 +109,7 @@ class ArrayStats():
         cv2 = np.copy(tmp2)
         skewness2 = np.copy(tmp2)
         kurtosis2 = np.copy(tmp2)
+        entropy2 = np.copy(tmp2)
 
         # Pre-allocate 3D
         tmp3 = np.full(nt, np.nan)
@@ -120,6 +122,7 @@ class ArrayStats():
         cv3 = np.copy(tmp3)
         skewness3 = np.copy(tmp3)
         kurtosis3 = np.copy(tmp3)
+        entropy3 = np.copy(tmp3)
 
         # Pre-allocate 4D
         tmp4 = np.full(1, np.nan)
@@ -132,6 +135,7 @@ class ArrayStats():
         cv4 = np.copy(tmp4)
         skewness4 = np.copy(tmp4)
         kurtosis4 = np.copy(tmp4)
+        entropy4 = np.copy(tmp4)
 
         # Calculate statistics of the 4D volume
         intensities = image[roi]
@@ -145,6 +149,7 @@ class ArrayStats():
         cv4 = array_stats4.cv
         skewness4 = array_stats4.skewness
         kurtosis4 = array_stats4.kurtosis
+        entropy4 = array_stats4.entropy
 
         for it in range(nt):
             # Calculate statistics of each 3D volume
@@ -159,6 +164,7 @@ class ArrayStats():
             cv3[it] = array_stats3.cv
             skewness3[it] = array_stats3.skewness
             kurtosis3[it] = array_stats3.kurtosis
+            entropy3[it] = array_stats3.entropy
 
             for iz in range(nz):
                 # Calculate statistics of each 2D slice
@@ -173,6 +179,7 @@ class ArrayStats():
                 cv2[iz, it] = array_stats2.cv
                 skewness2[iz, it] = array_stats2.skewness
                 kurtosis2[iz, it] = array_stats2.kurtosis
+                entropy2[iz, it] = array_stats2.entropy
 
         if self.image_ndims == 4:
             # Init dict for each dimension of each statistic
@@ -221,6 +228,11 @@ class ArrayStats():
                 '3D': kurtosis3,
                 '4D': kurtosis4
             }
+            entropy = {
+                '2D': entropy2,
+                '3D': entropy3,
+                '4D': entropy4
+            }
         elif self.image_ndims == 3:
             n = {
                 '2D': n2.transpose()[0],
@@ -258,6 +270,10 @@ class ArrayStats():
                 '2D': kurtosis2.transpose()[0],
                 '3D': kurtosis4,
             }
+            entropy = {
+                '2D': entropy2.transpose()[0],
+                '3D': entropy4,
+            }
         else:
             n = n4             # n4 because {statistic}4 always returns the
             mean = mean4       # result over the entire array, which here is 2D
@@ -268,6 +284,7 @@ class ArrayStats():
             cv = cv4
             skewness = skewness4
             kurtosis = kurtosis4
+            entropy = entropy4
 
         # Init statistics "wrapper" dictionary
         statistics = {
@@ -279,7 +296,8 @@ class ArrayStats():
             'std': std,
             'cv': cv,
             'skewness': skewness,
-            'kurtosis': kurtosis
+            'kurtosis': kurtosis,
+            'entropy': entropy
         }
 
         return statistics
@@ -308,6 +326,7 @@ class FlatStats():
         coefficient of variation (std/mean)
     skewness : float
     kurtosis : float
+    entropy : float
 
     """
     def __init__(self, x):
@@ -329,6 +348,7 @@ class FlatStats():
         self.cv = NOT_CALCULATED_MSG
         self.skewness = NOT_CALCULATED_MSG
         self.kurtosis = NOT_CALCULATED_MSG
+        self.entropy = NOT_CALCULATED_MSG
 
     def calculate(self):
         """Calculate flat array statistics
@@ -349,6 +369,7 @@ class FlatStats():
             cv = np.nan
             skewness = np.nan
             kurtosis = np.nan
+            entropy = np.nan
         elif np.isnan(self.x).any():
             n = len(self.x)
             mean = np.nan
@@ -359,6 +380,7 @@ class FlatStats():
             cv = np.nan
             skewness = np.nan
             kurtosis = np.nan
+            entropy = np.nan
         else:
             n = len(self.x)
             mean = np.mean(self.x)
@@ -375,6 +397,7 @@ class FlatStats():
             # above and assign nans to the resulting statistical metrics
             skewness = stats.skew(self.x, bias=True)
             kurtosis = stats.kurtosis(self.x, fisher=True, bias=True)
+            entropy = stats.entropy(self.x)
 
         self.n = n
         self.mean = mean
@@ -385,5 +408,6 @@ class FlatStats():
         self.cv = cv
         self.skewness = skewness
         self.kurtosis = kurtosis
+        self.entropy = entropy
 
         return self

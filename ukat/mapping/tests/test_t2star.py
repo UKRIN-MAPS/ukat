@@ -1,3 +1,5 @@
+import os
+import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
@@ -17,7 +19,7 @@ class TestT2Star:
                                2267.35122437, 2135.31096829, 2010.96013811,
                                1893.85093652, 1783.56164391, 1679.6950997,
                                1581.87727213, 1489.75591137, 1402.99928103])
-
+    affine = np.eye(4)
     def test_two_param_eq(self):
         signal = two_param_eq(self.t, self.t2star, self.m0)
         npt.assert_allclose(signal, self.correct_signal, rtol=1e-6, atol=1e-8)
@@ -27,7 +29,7 @@ class TestT2Star:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
 
         # Multithread
-        mapper = T2Star(signal_array, self.t, method='loglin',
+        mapper = T2Star(signal_array, self.t, self.affine, method='loglin',
                         multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -35,7 +37,7 @@ class TestT2Star:
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
         # Single Threaded
-        mapper = T2Star(signal_array, self.t, method='loglin',
+        mapper = T2Star(signal_array, self.t, self.affine, method='loglin',
                         multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -43,7 +45,7 @@ class TestT2Star:
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
         # Auto Threaded
-        mapper = T2Star(signal_array, self.t, method='loglin',
+        mapper = T2Star(signal_array, self.t, self.affine, method='loglin',
                         multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -55,7 +57,7 @@ class TestT2Star:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
 
         # Multithread
-        mapper = T2Star(signal_array, self.t, method='2p_exp',
+        mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp',
                         multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -63,7 +65,7 @@ class TestT2Star:
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
         # Single Threaded
-        mapper = T2Star(signal_array, self.t, method='2p_exp',
+        mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp',
                         multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -71,7 +73,7 @@ class TestT2Star:
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
         # Auto Threaded
-        mapper = T2Star(signal_array, self.t, method='2p_exp',
+        mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp',
                         multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map.mean() - self.t2star < 0.1
@@ -79,7 +81,7 @@ class TestT2Star:
         assert mapper.r2star_map().mean() - 1 / self.t2star < 0.1
 
         # Fail to fit
-        mapper = T2Star(signal_array[..., ::-1], self.t,
+        mapper = T2Star(signal_array[..., ::-1], self.t, self.affine,
                         method='2p_exp', multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
@@ -91,7 +93,7 @@ class TestT2Star:
         # Bool mask
         mask = np.ones(signal_array.shape[:-1], dtype=bool)
         mask[:5, :, :] = False
-        mapper = T2Star(signal_array, self.t, mask=mask)
+        mapper = T2Star(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map[5:, :, :].mean() - self.t2star < 0.1
         assert mapper.t2star_map[:5, :, :].mean() < 0.1
@@ -99,20 +101,70 @@ class TestT2Star:
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, :, :] = 0
-        mapper = T2Star(signal_array, self.t, mask=mask)
+        mapper = T2Star(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
         assert mapper.t2star_map[5:, :, :].mean() - self.t2star < 0.1
         assert mapper.t2star_map[:5, :, :].mean() < 0.1
+
+    def test_to_nifti(self):
+        # Create a T1 map instance and test different export to NIFTI scenarios
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+        mapper = T2Star(signal_array, self.t, self.affine)
+
+        os.makedirs('test_output', exist_ok=True)
+
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2startest', maps='all')
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 4
+        assert 't2startest_m0_map.nii.gz' in output_files
+        assert 't2startest_mask.nii.gz' in output_files
+        assert 't2startest_r2star_map.nii.gz' in output_files
+        assert 't2startest_t2star_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2startest', maps=[])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 0
+
+        # Check that only t2star and r2star are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2startest', maps=['mask', 't2star',
+                                                           'r2star'])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 3
+        assert 't2startest_mask.nii.gz' in output_files
+        assert 't2startest_r2star_map.nii.gz' in output_files
+        assert 't2startest_t2star_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when no maps are given
+        with pytest.raises(ValueError):
+            mapper = T2Star(signal_array, self.t, self.affine)
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps='')
+
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
 
     def test_missmatched_raw_data_and_echo_lengths(self):
 
         with pytest.raises(AssertionError):
             mapper = T2Star(pixel_array=np.zeros((5, 5, 4)),
-                            echo_list=np.linspace(0, 2000, 5))
+                            echo_list=np.linspace(0, 2000, 5),
+                            affine=self.affine)
 
         with pytest.raises(AssertionError):
             mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
-                            echo_list=np.linspace(0, 2000, 4))
+                            echo_list=np.linspace(0, 2000, 4),
+                            affine=self.affine)
 
     def test_methods(self):
 
@@ -120,13 +172,13 @@ class TestT2Star:
         with pytest.raises(AssertionError):
             mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
                             echo_list=np.linspace(0, 2000, 5),
-                            method='magic')
+                            affine=self.affine, method='magic')
 
         # Int method
         with pytest.raises(AssertionError):
             mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
                             echo_list=np.linspace(0, 2000, 5),
-                            method=0)
+                            affine=self.affine, method=0)
 
     def test_multithread_options(self):
 
@@ -134,7 +186,7 @@ class TestT2Star:
         with pytest.raises(AssertionError):
             mapper = T2Star(pixel_array=np.zeros((5, 5, 5)),
                             echo_list=np.linspace(0, 2000, 5),
-                            multithread='cloud')
+                            affine=self.affine, multithread='cloud')
 
     def test_loglin_warning(self):
 
@@ -142,7 +194,8 @@ class TestT2Star:
         signal = two_param_eq(self.t, 10, self.m0)
         signal_array = np.tile(signal, (10, 10, 3, 1))
         with pytest.warns(UserWarning):
-            mapper = T2Star(signal_array, self.t, method='loglin')
+            mapper = T2Star(signal_array, self.t, affine=self.affine,
+                            method='loglin')
 
     def test_real_data(self):
 
@@ -159,15 +212,20 @@ class TestT2Star:
                                 0.0, 529.8640757093401]
 
         # loglin method
-        mapper = T2Star(image, te, method='loglin')
+        mapper = T2Star(image, te, self.affine, method='loglin')
         t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
         npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_loglin, rtol=1e-6, atol=1e-4)
 
         # 2p_exp method
-        mapper = T2Star(image, te, method='2p_exp')
+        mapper = T2Star(image, te, self.affine, method='2p_exp')
         t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
         npt.assert_allclose([t2star_stats["mean"], t2star_stats["std"],
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+
+
+# Delete the NIFTI test folder recursively if any of the unit tests failed
+if os.path.exists('test_output'):
+    shutil.rmtree('test_output')
