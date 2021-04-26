@@ -47,6 +47,17 @@ class T2:
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T2 map rather than the raw data i.e. omit the time
             dimension.
+        threshold : float, optional
+            Default 0
+            Voxels with magnitude less than this threshold will not be used
+            when fitting. This can be useful if the noise floor of the data
+            is known.
+        method : {'2p_exp', '3p_exp'}, optional
+            Default `2p_exp`
+            The model the data is fit to. 2p_exp uses is two parameter
+            exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
+            three parameter exponential model (S = S0 * exp(-t / T2) + b) to
+            fit for noise/very long T2 components of the signal.
         multithread : bool or 'auto', optional
             Default 'auto'.
             If True, fitting will be distributed over all cores available on
@@ -64,6 +75,10 @@ class T2:
             or multithread == 'auto', 'multithreaded must be True, False or ' \
                                       'auto. You entered {}'\
                                       .format(multithread)
+        if method is not '2p_exp' and method is not '3p_exp':
+            raise ValueError('method can be 2p_exp or 3p_exp only. You '
+                             'specified {}'.format(method))
+
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
