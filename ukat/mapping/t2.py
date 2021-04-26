@@ -141,11 +141,11 @@ class T2:
         # Initialise parameters
         if self.method == '2p_exp':
             eq = two_param_eq
-            bounds = ([0, 0], [700, 1000000])
+            bounds = ([0, 0], [1000, 1000000])
             initial_guess = [20, 10000]
         elif self.method == '3p_exp':
             eq = three_param_eq
-            bounds = ([0, 0, 0], [700, 1000000, 1000000])
+            bounds = ([0, 0, 0], [1000, 1000000, 1000000])
             initial_guess = [20, 10000, 500]
 
         # Fit data to equation
