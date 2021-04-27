@@ -27,7 +27,8 @@ class TestT2:
 
     def test_three_param_eq(self):
         signal = three_param_eq(self.t, self.t2, self.m0, self.b)
-        npt.assert_allclose(signal, self.correct_signal + self.b, rtol=1e-6, atol=1e-8)
+        npt.assert_allclose(signal, self.correct_signal + self.b,
+                            rtol=1e-6, atol=1e-8)
 
     def test_2p_exp_fit(self):
         # Make the signal into a 4D array

@@ -72,8 +72,8 @@ class T2:
                                     'of pixel_array'
         assert multithread is True \
                or multithread is False \
-               or multithread == 'auto', 'multithreaded must be True, False ' \
-                                         'or auto. You entered {}' \
+               or multithread == 'auto', 'multithreaded must be True, ' \
+                                         'False or auto. You entered {}' \
             .format(multithread)
         if method != '2p_exp' and method != '3p_exp':
             raise ValueError('method can be 2p_exp or 3p_exp only. You '
@@ -105,12 +105,12 @@ class T2:
         # Fit data
         if self.method == '2p_exp':
             self.t2_map, self.t2_err, \
-            self.m0_map, self.m0_err \
+                self.m0_map, self.m0_err \
                 = self.__fit__()
         elif self.method == '3p_exp':
             self.t2_map, self.t2_err, \
-            self.m0_map, self.m0_err, \
-            self.b_map, self.b_err \
+                self.m0_map, self.m0_err, \
+                self.b_map, self.b_err \
                 = self.__fit__()
 
     def __fit__(self):
@@ -154,8 +154,8 @@ class T2:
                     row) for row in zip(*results)]
             elif self.method == '3p_exp':
                 t2_map[idx], t2_err[idx], \
-                m0_map[idx], m0_err[idx], \
-                b_map[idx], b_err[idx] = \
+                    m0_map[idx], m0_err[idx], \
+                    b_map[idx], b_err[idx] = \
                     [np.array(row) for row in zip(*results)]
 
         # Single threaded method
@@ -168,13 +168,13 @@ class T2:
                         signal[ind, :] > self.noise_threshold]
                     if self.method == '2p_exp':
                         t2_map[ind], t2_err[ind], \
-                        m0_map[ind], m0_err[ind] \
+                            m0_map[ind], m0_err[ind] \
                             = self.__fit_signal__(signal_thresh,
                                                   echo_list_thresh)
                     elif self.method == '3p_exp':
                         t2_map[ind], t2_err[ind], \
-                        m0_map[ind], m0_err[ind], \
-                        b_map[ind], b_err[ind] \
+                            m0_map[ind], m0_err[ind], \
+                            b_map[ind], b_err[ind] \
                             = self.__fit_signal__(signal_thresh,
                                                   echo_list_thresh)
                     progress.update(1)
