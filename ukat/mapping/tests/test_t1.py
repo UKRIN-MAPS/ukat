@@ -258,7 +258,7 @@ class TestT1:
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
-        gold_standard_3p = [1382.037954, 662.176566, 0.0, 3948.251711]
+        gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
