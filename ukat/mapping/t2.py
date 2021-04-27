@@ -27,8 +27,8 @@ class T2:
         apart from TE
     """
 
-    def __init__(self, pixel_array, echo_list, affine, mask=None, threshold=0, method='2p_exp',
-                 multithread='auto'):
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
+                 noise_threshold=0, method='2p_exp', multithread='auto'):
         """Initialise a T2 class instance.
 
         Parameters
@@ -47,14 +47,14 @@ class T2:
             A boolean mask of the voxels to fit. Should be the shape of the
             desired T2 map rather than the raw data i.e. omit the time
             dimension.
-        threshold : float, optional
+        noise_threshold : float, optional
             Default 0
             Voxels with magnitude less than this threshold will not be used
             when fitting. This can be useful if the noise floor of the data
             is known.
         method : {'2p_exp', '3p_exp'}, optional
             Default `2p_exp`
-            The model the data is fit to. 2p_exp uses is two parameter
+            The model the data is fit to. 2p_exp uses a two parameter
             exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
             three parameter exponential model (S = S0 * exp(-t / T2) + b) to
             fit for noise/very long T2 components of the signal.
@@ -71,10 +71,10 @@ class T2:
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
         assert multithread is True \
-            or multithread is False \
-            or multithread == 'auto', 'multithreaded must be True, False or ' \
-                                      'auto. You entered {}'\
-                                      .format(multithread)
+               or multithread is False \
+               or multithread == 'auto', 'multithreaded must be True, False ' \
+                                         'or auto. You entered {}' \
+            .format(multithread)
         if method != '2p_exp' and method != '3p_exp':
             raise ValueError('method can be 2p_exp or 3p_exp only. You '
                              'specified {}'.format(method))
@@ -91,7 +91,7 @@ class T2:
             self.mask = mask
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
-        self.threshold = threshold
+        self.noise_threshold = noise_threshold
         self.method = method
         self.echo_list = echo_list
         # Auto multithreading conditions
@@ -105,12 +105,12 @@ class T2:
         # Fit data
         if self.method == '2p_exp':
             self.t2_map, self.t2_err, \
-            self.m0_map, self.m0_err\
+            self.m0_map, self.m0_err \
                 = self.__fit__()
         elif self.method == '3p_exp':
             self.t2_map, self.t2_err, \
             self.m0_map, self.m0_err, \
-            self.b_map, self.b_err\
+            self.b_map, self.b_err \
                 = self.__fit__()
 
     def __fit__(self):
@@ -134,14 +134,16 @@ class T2:
                     futures = []
 
                     for ind in idx:
-                        signal_thresh = signal[ind, :][signal[ind, :] > self.threshold]
-                        echo_list_thresh = self.echo_list[signal[ind, :] > self.threshold]
+                        signal_thresh = signal[ind, :][
+                            signal[ind, :] > self.noise_threshold]
+                        echo_list_thresh = self.echo_list[
+                            signal[ind, :] > self.noise_threshold]
                         future = pool.submit(self.__fit_signal__,
                                              signal_thresh,
                                              echo_list_thresh)
                         future.add_done_callback(lambda p: progress.update())
                         futures.append(future)
-    
+
                     results = []
                     for future in futures:
                         result = future.result()
@@ -160,17 +162,21 @@ class T2:
         else:
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
-                    signal_thresh = signal[ind, :][signal[ind, :] > self.threshold]
-                    echo_list_thresh = self.echo_list[signal[ind, :] > self.threshold]
+                    signal_thresh = signal[ind, :][
+                        signal[ind, :] > self.noise_threshold]
+                    echo_list_thresh = self.echo_list[
+                        signal[ind, :] > self.noise_threshold]
                     if self.method == '2p_exp':
-                        t2_map[ind], t2_err[ind], m0_map[ind], m0_err[ind]\
+                        t2_map[ind], t2_err[ind], \
+                        m0_map[ind], m0_err[ind] \
                             = self.__fit_signal__(signal_thresh,
-                                                echo_list_thresh)
+                                                  echo_list_thresh)
                     elif self.method == '3p_exp':
                         t2_map[ind], t2_err[ind], \
-                        m0_map[ind], m0_err[ind], b_map[ind], b_err[ind] \
+                        m0_map[ind], m0_err[ind], \
+                        b_map[ind], b_err[ind] \
                             = self.__fit_signal__(signal_thresh,
-                                                echo_list_thresh)
+                                                  echo_list_thresh)
                     progress.update(1)
 
         # Reshape results to raw data shape
@@ -301,6 +307,7 @@ class T2:
                              '"mask"]".')
 
         return
+
 
 def two_param_eq(t, t2, m0):
     """

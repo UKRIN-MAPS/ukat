@@ -85,14 +85,14 @@ class TestT2:
 
         # Multithread
         mapper = T2(signal_array, self.t, self.affine, multithread=True,
-                    threshold=1300)
+                    noise_threshold=1300)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False,
-                    threshold=1300)
+                    noise_threshold=1300)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
@@ -163,7 +163,7 @@ class TestT2:
                             gold_standard_3p_exp, rtol=1e-6, atol=1e-4)
 
         # threshold method
-        mapper = T2(image, te, self.affine, threshold=100)
+        mapper = T2(image, te, self.affine, noise_threshold=100)
         t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
                              t2_stats["min"], t2_stats["max"]],
