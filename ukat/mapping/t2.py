@@ -71,9 +71,9 @@ class T2:
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
         assert multithread is True \
-               or multithread is False \
-               or multithread == 'auto', 'multithreaded must be True, ' \
-                                         'False or auto. You entered {}' \
+            or multithread is False \
+            or multithread == 'auto', 'multithreaded must be True, ' \
+                                      'False or auto. You entered {}' \
             .format(multithread)
         if method != '2p_exp' and method != '3p_exp':
             raise ValueError('method can be 2p_exp or 3p_exp only. You '
