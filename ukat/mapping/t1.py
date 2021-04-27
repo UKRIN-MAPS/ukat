@@ -100,10 +100,11 @@ class T1:
                 == len(inversion_list)), 'Number of inversions does not ' \
                                          'match the number of time frames ' \
                                          'on the last axis of pixel_array'
-        assert (self.tss_axis != self.dimensions - 1), \
-            'Temporal slice spacing can\'t be applied to the TI axis.'
-        assert (tss_axis < self.dimensions), \
-            'tss_axis must be less than the number of spatial dimensions'
+        if self.tss != 0:
+            assert (self.tss_axis != self.dimensions - 1), \
+                'Temporal slice spacing can\'t be applied to the TI axis.'
+            assert (tss_axis < self.dimensions), \
+                'tss_axis must be less than the number of spatial dimensions'
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
