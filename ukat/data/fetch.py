@@ -101,6 +101,101 @@ def dwi_ge():
     return data, affine, bvals, bvecs
 
 
+def dwi_philips():
+    """Fetches dwi/philips dataset
+
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of b-values
+    numpy.ndarray
+        array of b-vectors
+
+    """
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    expected_filenames = ['03901__DWI_5slices.bval',
+                          '03901__DWI_5slices.bvec',
+                          '03901__DWI_5slices.json',
+                          '03901__DWI_5slices.nii.gz',
+                          'box_01.nii.gz',
+                          'box_02.nii.gz',
+                          'box_check.png']
+
+    # Initialise path to dwi/ge
+    dir_dwi_philips = os.path.join(DIR_DATA, "dwi", "philips")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_dwi_philips, expected_filenames)
+
+    # Read bvals, bvecs, and DWI data into numpy arrays
+    bval_path = filepaths[0]
+    bvec_path = filepaths[1]
+    nii_path = filepaths[3]
+
+    bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
+    nii = nib.load(nii_path)
+
+    data = nii.get_fdata()
+    affine = nii.affine
+
+    return data, affine, bvals, bvecs
+
+
+def dwi_siemens():
+    """Fetches dwi/siemens dataset
+
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of b-values
+    numpy.ndarray
+        array of b-vectors
+
+    """
+
+    # Initialise hard-coded list of file names that are the expected files
+    # in this test dataset. If the actual files in the directory don't match
+    # this list this means that the test dataset has been corrupted.
+    expected_filenames = ['00042__trig_dwi_13b_06dir.bval',
+                          '00042__trig_dwi_13b_06dir.bval_before_manual_correction',
+                          '00042__trig_dwi_13b_06dir.bvec',
+                          '00042__trig_dwi_13b_06dir.json',
+                          '00042__trig_dwi_13b_06dir.nii.gz',
+                          'box_01.nii.gz',
+                          'box_02.nii.gz',
+                          'box_check.png']
+
+    # Initialise path to dwi/ge
+    dir_dwi_siemens = os.path.join(DIR_DATA, "dwi", "siemens")
+
+    # Get filepaths in directory and check their names match expected_filenames
+    filepaths = get_filepaths(dir_dwi_siemens, expected_filenames)
+
+    # Read bvals, bvecs, and DWI data into numpy arrays
+    bval_path = filepaths[0]
+    bvec_path = filepaths[1]
+    nii_path = filepaths[3]
+
+    bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
+    nii = nib.load(nii_path)
+
+    data = nii.get_fdata()
+    affine = nii.affine
+
+    return data, affine, bvals, bvecs
+
+
 def r2star_ge():
     """Fetches r2star/ge dataset
 
