@@ -40,7 +40,7 @@ class T2:
         echo_list : list()
             An array of the echo times used for the last dimension of the
             raw data. In milliseconds.
-        affine : np.ndarray, optional
+        affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
         mask : np.ndarray, optional
