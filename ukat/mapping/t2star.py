@@ -42,7 +42,7 @@ class T2Star:
             world coordinates.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
-            desired T1 map rather than the raw data i.e. omit the time
+            desired T2* map rather than the raw data i.e. omit the time
             dimension.
         method : {'loglin', '2p_exp'}, optional
             Default `loglin`

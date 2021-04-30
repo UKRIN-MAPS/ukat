@@ -198,7 +198,66 @@ def ivim(data, bvals, bvecs, mask=None):
 
 
 class DTI:
+    """
+    Attributes
+    ----------
+    md : np.ndarray
+        The estimated mean diffusivity values in mm^2/s
+    fa : np.ndarray
+        The estimated fractional anisotropy values
+    fa_color : np.ndarray
+        The estimated direcitonal fractional anisotropy represented as red,
+        green and blue corresponding to correspond to fractional anisotropy
+        in the x, y and z directions respectively
+    shape : tuple
+        The shape of the T2* map
+    bvals : 1d numpy array
+        All b-values that will be used to generate the maps in s/mm^2
+    u_bvals : 1d numpy array
+        The unique b-values used in the experiment e.g. if the experiment
+        acquires a single b-0 volume and 64 volumes with b=600 s/mm^2 in
+        different directions, u_bvals will be [0, 600]
+    n_bvals : int
+        The number of unique b-values acquired in the experiment
+    bvecs : (N, 3) numpy array
+        All b-vectors that will be used to generate the maps
+    u_bvecs : (M, 3) numpy array
+        The unique b-vectors used in the experiment e.g. if the experiment
+        acquires six directions at 10 gradient strengths, u_bvecs will be a
+        6 x 3 numpy array
+    n_bvecs : int
+        The number of unique b-vectors acquired in the experiment
+    n_grad : 1d numpy array
+        Total number of diffusion values/vectors acquired e.g. if the
+        experiment acquires six directions at 10 gradient strengths and a
+        b-0 volume, n_grad will be 61
+    gtab : dipy GradientTable
+        The dipy gradient table used to generate maps
+    tensor_fit : dipy TensorModel after fitting
+        The fit dipy tensor model, can be used to recall additional parameters
+    """
     def __init__(self, pixel_array, bvals, bvecs, affine, mask=None):
+        """Initialise a DTI class instance.
+
+        Parameters
+        ----------
+        pixel_array : (..., N) np.ndarray
+            A array containing the signal from each voxel at each
+            diffusion sensitising parameter. The final dimension should be
+            different diffusion weightings/directions
+        bvals : (N,) np.array
+            An array of the b-values used for the last dimension of the raw
+            data. In s/mm^2.
+        bvecs : (N, 3) np.array
+            An array of the b-vectors used for the last dimension of the raw
+            data. In s/mm^2.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired map rather than the raw data i.e. omit the last dimension.
+        """
         # Some sanity checks
         assert (pixel_array.shape[-1]
                 == len(bvals)), 'Number of bvals does not match number of ' \
