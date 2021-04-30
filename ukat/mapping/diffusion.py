@@ -1,9 +1,10 @@
 """
-Diffusion-weighted imaging module
+Diffusion imaging module
 
 """
 import os
 import warnings
+from tqdm import tqdm
 import numpy as np
 import nibabel as nib
 from dipy.core.gradients import gradient_table
@@ -197,6 +198,185 @@ def ivim(data, bvals, bvecs, mask=None):
     return S0, D_star, D, f
 
 
+class ADC:
+    """
+    Attributes
+    ----------
+    adc_map : np.ndarray
+        The estimated ADC in mm^2/s
+    adc_err : np.ndarray
+        The certainty in the fit of `adc_map` in mm^2/s
+    shape : tuple
+        The shape of the ADC map
+    n_vox : int
+        The number of voxels in the map
+    bvals : 1d numpy array
+        All b-values that will be used to generate the maps in s/mm^2
+    u_bvals : 1d numpy array
+        The unique b-values used in the experiment e.g. if the experiment
+        acquires a single b-0 volume and 64 volumes with b=600 s/mm^2 in
+        different directions, u_bvals will be [0, 600]
+    n_bvals : int
+        The number of unique b-values acquired in the experiment
+    bvecs : (N, 3) numpy array
+        All b-vectors that will be used to generate the maps
+    u_bvecs : (M, 3) numpy array
+        The unique b-vectors used in the experiment e.g. if the experiment
+        acquires six directions at 10 gradient strengths, u_bvecs will be a
+        6 x 3 numpy array
+    n_bvecs : int
+        The number of unique b-vectors acquired in the experiment
+    n_grad : 1d numpy array
+        Total number of diffusion values/vectors acquired e.g. if the
+        experiment acquires six directions at 10 gradient strengths and a
+        b-0 volume, n_grad will be 61
+    pixel_array_mean : np.ndarray
+        The average of the `pixel_array` at each across bvecs e.g. if
+        `pixel_array` contains six volumes acquired with b=600 s/mm^2 in
+        different directions, these six volumes will be averaged together.
+    """
+    def __init__(self, pixel_array, bvals, bvecs, affine, mask=None):
+        """Initialise a ADC class instance.
+
+        Parameters
+        ----------
+        pixel_array : (..., N) np.ndarray
+            A array containing the signal from each voxel at each
+            diffusion sensitising parameter. The final dimension should be
+            different diffusion weightings/directions
+        bvals : (N,) np.array
+            An array of the b-values used for the last dimension of the raw
+            data. In s/mm^2.
+        bvecs : (N, 3) np.array
+            An array of the b-vectors used for the last dimension of the raw
+            data. In s/mm^2.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired map rather than the raw data i.e. omit the last dimension.
+        """
+        # Sanity checks
+        assert (pixel_array.shape[-1]
+                == len(bvals)), 'Number of bvals does not match number of ' \
+                                'gradients in pixel_array'
+        if bvecs.shape[1] != 3 and bvecs.shape[0] == 3:
+            bvecs = bvecs.T
+            warnings.warn(f'bvecs should be (N, 3). Because your bvecs array '
+                          'is {bvecs.shape} it has been transposed to {'
+                          'bvecs.T.shape}.')
+        assert (bvecs.shape[1] == 3)
+        assert (pixel_array.shape[-1] == bvecs.shape[0]), 'Number of bvecs ' \
+                                                          'does not match ' \
+                                                          'number of ' \
+                                                          'gradients in ' \
+                                                          'pixel_array'
+        self.pixel_array = pixel_array
+        self.shape = pixel_array.shape[:-1]
+        self.n_vox = np.prod(self.shape)
+        self.bvals = bvals
+        self.bvecs = bvecs
+        self.n_grad = len(self.bvals)
+        self.u_bvals = np.unique(self.bvals)
+        self.n_bvals = len(self.u_bvals)
+        self.u_bvecs = np.unique(self.bvecs)
+        self.n_bvecs = len(self.u_bvecs)
+        self.affine = affine
+        # Generate a mask if there isn't one specified
+        if mask is None:
+            self.mask = np.ones(self.shape, dtype=bool)
+        else:
+            self.mask = mask
+            # Don't process any nan values
+        self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.pixel_array = np.nan_to_num(self.pixel_array)
+
+        self.pixel_array_mean = self.__mean_over_directions__()
+
+        self.adc, self.adc_err = self.__fit__()
+
+    def __mean_over_directions__(self):
+        pixel_array_mean = np.zeros((*self.shape, self.n_bvals))
+        for ind, bval in enumerate(self.u_bvals):
+            pixel_array_mean[..., ind]\
+                = np.mean(self.pixel_array[..., self.bvals == bval], axis=-1)
+        return pixel_array_mean
+
+    def __fit__(self):
+        # Initialise maps
+        adc_map = np.zeros(self.n_vox)
+        adc_err = np.zeros(self.n_vox)
+
+        mask = self.mask.flatten()
+        signal = self.pixel_array_mean.reshape(-1, self.n_bvals)
+        idx = np.argwhere(mask).squeeze()
+        with tqdm(total=idx.size) as progress:
+            for ind in idx:
+                sig = signal[ind, :]
+                adc_map[ind], adc_err[ind] = self.__fit_signal__(sig,
+                                                                 self.u_bvals)
+                progress.update(1)
+        adc_map[adc_map < 0] = 0
+        adc_err[adc_map < 0] = 0
+
+        # Reshape results into raw data shape
+        adc_map = adc_map.reshape(self.shape)
+        adc_err = adc_err.reshape(self.shape)
+
+        return adc_map, adc_err
+
+    @staticmethod
+    def __fit_signal__(sig, bvals):
+        try:
+            popt, pvar = np.polyfit(bvals[sig > 0], np.log(sig[sig > 0]), 1,
+                                    cov=True)
+            adc = -popt[0]
+            adc_err = np.sqrt(pvar[0, 0])
+        except np.linalg.LinAlgError:
+            adc = 0
+            adc_err = 0
+
+        return adc, adc_err
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
+                 maps='all'):
+        """Exports maps generated by the ADC class as NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        maps : list or 'all', optional
+            List of maps to save to NIFTI. This should either the string "all"
+            or a list of maps from ["adc", "adc_err", "mask"].
+        """
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+        if maps == 'all' or maps == ['all']:
+            maps = ['adc', 'adc_err', 'mask']
+        if isinstance(maps, list):
+            for result in maps:
+                if result == 'adc' or result == 'adc_map':
+                    adc_nifti = nib.Nifti1Image(self.adc, affine=self.affine)
+                    nib.save(adc_nifti, base_path + '_adc_map.nii.gz')
+                elif result == 'adc_err' or result == 'adc_err_map':
+                    adc_err_nifti = nib.Nifti1Image(self.adc_err,
+                                                    affine=self.affine)
+                    nib.save(adc_err_nifti, base_path + '_adc_err.nii.gz')
+                elif result == 'mask':
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=self.affine)
+                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+        else:
+            raise ValueError('No NIFTI file saved. The variable "maps" '
+                             'should be "all" or a list of maps from '
+                             '"["adc", "adc_err", "mask"]".')
+
+
 class DTI:
     """
     Attributes
@@ -205,12 +385,12 @@ class DTI:
         The estimated mean diffusivity values in mm^2/s
     fa : np.ndarray
         The estimated fractional anisotropy values
-    fa_color : np.ndarray
-        The estimated direcitonal fractional anisotropy represented as red,
+    color_fa : np.ndarray
+        The estimated directional fractional anisotropy represented as red,
         green and blue corresponding to correspond to fractional anisotropy
         in the x, y and z directions respectively
     shape : tuple
-        The shape of the T2* map
+        The shape of the resulting maps
     bvals : 1d numpy array
         All b-values that will be used to generate the maps in s/mm^2
     u_bvals : 1d numpy array
