@@ -168,7 +168,8 @@ def dwi_siemens():
     # in this test dataset. If the actual files in the directory don't match
     # this list this means that the test dataset has been corrupted.
     expected_filenames = ['00042__trig_dwi_13b_06dir.bval',
-                          '00042__trig_dwi_13b_06dir.bval_before_manual_correction',
+                          '00042__trig_dwi_13b_06dir.'
+                          'bval_before_manual_correction',
                           '00042__trig_dwi_13b_06dir.bvec',
                           '00042__trig_dwi_13b_06dir.json',
                           '00042__trig_dwi_13b_06dir.nii.gz',
