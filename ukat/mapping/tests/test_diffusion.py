@@ -80,24 +80,24 @@ class TestADC:
     def test_missmatched_raw_data_and_bvals(self):
 
         with pytest.raises(AssertionError):
-            mapper = ADC(self.pixel_array, self.bvals[:-2], self.bvecs,
-                         self.affine, self.mask)
+            mapper = ADC(self.pixel_array, self.affine, self.bvals[:-2],
+                         self.bvecs, self.mask)
 
     def test_missmatched_raw_data_and_bvecs(self):
 
         with pytest.raises(AssertionError):
-            mapper = ADC(self.pixel_array, self.bvals, self.bvecs[:-1, :],
-                         self.affine, self.mask)
+            mapper = ADC(self.pixel_array, self.affine, self.bvals,
+                         self.bvecs[:-1, :], self.mask)
 
     def test_bvecs_transpose(self):
 
         with pytest.warns(UserWarning):
-            mapper = ADC(self.pixel_array, self.bvals, self.bvecs.T,
-                         self.affine, self.mask)
+            mapper = ADC(self.pixel_array, self.affine, self.bvals,
+                         self.bvecs.T, self.mask)
 
     def test_fail_to_fit(self):
-        mapper = ADC(self.pixel_array[..., ::-1], self.bvals, self.bvecs.T,
-                     self.affine, self.mask)
+        mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
+                     self.bvecs.T, self.mask)
         assert np.abs(mapper.adc.mean()) < 1e-6
 
     def test_real_data(self):
@@ -105,7 +105,7 @@ class TestADC:
         gold_standard_adc = [0.00146, 0.001057, 0.0, 0.005391]
         gold_standard_adc_err = [0.000128, 0.000143, 0.0, 0.001044]
         # Test maps
-        mapper = ADC(self.pixel_array, self.bvals, self.bvecs, self.affine,
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.bvecs,
                      self.mask)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
@@ -118,8 +118,35 @@ class TestADC:
                              adc_err_stats['max']['3D']],
                             gold_standard_adc_err, rtol=5e-3, atol=1e-7)
 
+    def test_no_bvecs(self):
+        # Gold standard statistics
+        gold_standard_adc = [0.00146, 0.001057, 0.0, 0.005391]
+        gold_standard_adc_err = [0.000128, 0.000143, 0.0, 0.001044]
+        # Calculate mean across bvecs before mapping to simulate scanner
+        # averaging of ADC data
+        u_bvals = np.unique(self.bvals)
+        pixel_array_mean = np.zeros((*self.pixel_array.shape[:3],
+                                     len(u_bvals)))
+        for ind, bval in enumerate(u_bvals):
+            pixel_array_mean[..., ind] \
+                = np.mean(self.pixel_array[..., self.bvals == bval], axis=-1)
+
+        # Calculate map
+        mapper = ADC(pixel_array_mean, self.affine, u_bvals, bvecs=None,
+                     mask=self.mask)
+        adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
+        adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+        npt.assert_allclose([adc_stats['mean']['3D'], adc_stats['std']['3D'],
+                             adc_stats['min']['3D'], adc_stats['max']['3D']],
+                            gold_standard_adc, rtol=1e-4, atol=1e-7)
+        npt.assert_allclose([adc_err_stats['mean']['3D'],
+                             adc_err_stats['std']['3D'],
+                             adc_err_stats['min']['3D'],
+                             adc_err_stats['max']['3D']],
+                            gold_standard_adc_err, rtol=5e-3, atol=1e-7)
+
     def test_to_nifti(self):
-        mapper = ADC(self.pixel_array, self.bvals, self.bvecs, self.affine,
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.bvecs,
                      self.mask)
 
         os.makedirs('test_output', exist_ok=True)
@@ -170,20 +197,20 @@ class TestDTI:
     def test_missmatched_raw_data_and_bvals(self):
 
         with pytest.raises(AssertionError):
-            mapper = DTI(self.pixel_array, self.bvals[:-2], self.bvecs,
-                         self.affine, self.mask)
+            mapper = DTI(self.pixel_array, self.affine, self.bvals[:-2],
+                         self.bvecs, self.mask)
 
     def test_missmatched_raw_data_and_bvecs(self):
 
         with pytest.raises(AssertionError):
-            mapper = DTI(self.pixel_array, self.bvals, self.bvecs[:-1, :],
-                         self.affine, self.mask)
+            mapper = DTI(self.pixel_array, self.affine, self.bvals,
+                         self.bvecs[:-1, :], self.mask)
 
     def test_bvecs_transpose(self):
 
         with pytest.warns(UserWarning):
-            mapper = DTI(self.pixel_array, self.bvals, self.bvecs.T,
-                         self.affine, self.mask)
+            mapper = DTI(self.pixel_array, self.affine, self.bvals,
+                         self.bvecs.T, self.mask)
 
     def test_real_data(self):
         # Gold standard statistics
@@ -192,7 +219,7 @@ class TestDTI:
         gold_standard_color_fa = [0.170594, 0.185415, 0.0, 0.968977]
 
         # Test maps
-        mapper = DTI(self.pixel_array, self.bvals, self.bvecs, self.affine,
+        mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
                      self.mask)
         md_stats = arraystats.ArrayStats(mapper.md).calculate()
         fa_stats = arraystats.ArrayStats(mapper.fa).calculate()
@@ -210,7 +237,7 @@ class TestDTI:
                             gold_standard_color_fa, rtol=1e-6, atol=1e-4)
 
     def test_to_nifti(self):
-        mapper = DTI(self.pixel_array, self.bvals, self.bvecs, self.affine,
+        mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
                      self.mask)
 
         os.makedirs('test_output', exist_ok=True)

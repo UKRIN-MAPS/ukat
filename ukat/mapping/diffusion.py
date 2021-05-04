@@ -119,7 +119,7 @@ class ADC:
         `pixel_array` contains six volumes acquired with b=600 s/mm^2 in
         different directions, these six volumes will be averaged together.
     """
-    def __init__(self, pixel_array, bvals, bvecs, affine, mask=None):
+    def __init__(self, pixel_array, affine, bvals, bvecs=None, mask=None):
         """Initialise a ADC class instance.
 
         Parameters
@@ -128,15 +128,15 @@ class ADC:
             A array containing the signal from each voxel at each
             diffusion sensitising parameter. The final dimension should be
             different diffusion weightings/directions
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         bvals : (N,) np.array
             An array of the b-values used for the last dimension of the raw
             data. In s/mm^2.
         bvecs : (N, 3) np.array
             An array of the b-vectors used for the last dimension of the raw
             data. In s/mm^2.
-        affine : np.ndarray
-            A matrix giving the relationship between voxel coordinates and
-            world coordinates.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired map rather than the raw data i.e. omit the last dimension.
@@ -145,17 +145,16 @@ class ADC:
         assert (pixel_array.shape[-1]
                 == len(bvals)), 'Number of bvals does not match number of ' \
                                 'gradients in pixel_array'
-        if bvecs.shape[1] != 3 and bvecs.shape[0] == 3:
-            bvecs = bvecs.T
-            warnings.warn(f'bvecs should be (N, 3). Because your bvecs array '
-                          'is {bvecs.shape} it has been transposed to {'
-                          'bvecs.T.shape}.')
-        assert (bvecs.shape[1] == 3)
-        assert (pixel_array.shape[-1] == bvecs.shape[0]), 'Number of bvecs ' \
-                                                          'does not match ' \
-                                                          'number of ' \
-                                                          'gradients in ' \
-                                                          'pixel_array'
+        if bvecs is not None:
+            if bvecs.shape[1] != 3 and bvecs.shape[0] == 3:
+                bvecs = bvecs.T
+                warnings.warn(f'bvecs should be (N, 3). Because your bvecs '
+                              'array is {bvecs.shape} it has been '
+                              'transposed to {bvecs.T.shape}.')
+            assert (bvecs.shape[1] == 3)
+            assert (pixel_array.shape[-1]
+                    == bvecs.shape[0]), 'Number of bvecs does not match ' \
+                                        'number of gradients in pixel_array'
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_vox = np.prod(self.shape)
@@ -300,7 +299,7 @@ class DTI:
     tensor_fit : dipy TensorModel after fitting
         The fit dipy tensor model, can be used to recall additional parameters
     """
-    def __init__(self, pixel_array, bvals, bvecs, affine, mask=None):
+    def __init__(self, pixel_array, affine, bvals, bvecs, mask=None):
         """Initialise a DTI class instance.
 
         Parameters
@@ -309,15 +308,15 @@ class DTI:
             A array containing the signal from each voxel at each
             diffusion sensitising parameter. The final dimension should be
             different diffusion weightings/directions
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         bvals : (N,) np.array
             An array of the b-values used for the last dimension of the raw
             data. In s/mm^2.
         bvecs : (N, 3) np.array
             An array of the b-vectors used for the last dimension of the raw
             data. In s/mm^2.
-        affine : np.ndarray
-            A matrix giving the relationship between voxel coordinates and
-            world coordinates.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
             desired map rather than the raw data i.e. omit the last dimension.
