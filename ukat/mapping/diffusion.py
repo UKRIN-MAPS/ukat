@@ -3,12 +3,13 @@ Diffusion imaging module
 
 """
 import os
-import warnings
-from tqdm import tqdm
-import numpy as np
 import nibabel as nib
-from dipy.core.gradients import gradient_table
+import numpy as np
+import warnings
+
+from dipy.core.gradients import gradient_table, unique_bvals_tolerance
 from dipy.reconst.dti import TensorModel
+from tqdm import tqdm
 
 
 def make_gradient_scheme(bvals, bvecs, normalize=True, one_bzero=True):
@@ -161,7 +162,7 @@ class ADC:
         self.bvals = bvals
         self.bvecs = bvecs
         self.n_grad = len(self.bvals)
-        self.u_bvals = np.unique(self.bvals)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
         self.n_bvals = len(self.u_bvals)
         self.u_bvecs = np.unique(self.bvecs)
         self.n_bvecs = len(self.u_bvecs)
@@ -352,7 +353,7 @@ class DTI:
         self.bvals = bvals
         self.bvecs = bvecs
         self.n_grad = len(self.bvals)
-        self.u_bvals = np.unique(self.bvals)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
         self.n_bvals = len(self.u_bvals)
         self.u_bvecs = np.unique(self.bvecs)
         self.n_bvecs = len(self.u_bvecs)
