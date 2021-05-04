@@ -86,10 +86,10 @@ class ADC:
     """
     Attributes
     ----------
-    adc_map : np.ndarray
+    adc : np.ndarray
         The estimated ADC in mm^2/s
     adc_err : np.ndarray
-        The certainty in the fit of `adc_map` in mm^2/s
+        The certainty in the fit of `adc` in mm^2/s
     shape : tuple
         The shape of the ADC map
     n_vox : int
@@ -115,9 +115,9 @@ class ADC:
         experiment acquires six directions at 10 gradient strengths and a
         b-0 volume, n_grad will be 61
     pixel_array_mean : np.ndarray
-        The average of the `pixel_array` at each across bvecs e.g. if
-        `pixel_array` contains six volumes acquired with b=600 s/mm^2 in
-        different directions, these six volumes will be averaged together.
+        The average of the `pixel_array`across bvecs e.g. if `pixel_array`
+        contains six volumes acquired with b=600 s/mm^2 in different
+        directions, these six volumes will be averaged together.
     """
     def __init__(self, pixel_array, affine, bvals, bvecs=None, mask=None):
         """Initialise a ADC class instance.
@@ -134,7 +134,7 @@ class ADC:
         bvals : (N,) np.array
             An array of the b-values used for the last dimension of the raw
             data. In s/mm^2.
-        bvecs : (N, 3) np.array
+        bvecs : (N, 3) np.array, optional
             An array of the b-vectors used for the last dimension of the raw
             data. In s/mm^2.
         mask : np.ndarray, optional
@@ -180,6 +180,17 @@ class ADC:
         self.adc, self.adc_err = self.__fit__()
 
     def __mean_over_directions__(self):
+        """
+        Calculates the mean signal across different directions at each unique
+        b-value e.g. if `pixel_array` contains six volumes acquired with
+        b=600 s/mm^2 in different directions, these six volumes will be
+        averaged together.
+
+        Returns
+        -------
+        pixel_array_mean : np.ndarray
+            The average of the `pixel_array` across bvecs
+        """
         pixel_array_mean = np.zeros((*self.shape, self.n_bvals))
         for ind, bval in enumerate(self.u_bvals):
             pixel_array_mean[..., ind]\
