@@ -53,7 +53,7 @@ class T1:
             The axis over which the temporal slice spacing is applied. This
             axis is relative to the full 4D pixel array i.e. tss_axis=-1
             would be along the TI axis and would be meaningless.
-        affine : np.ndarray, optional
+        affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
         mask : np.ndarray, optional
