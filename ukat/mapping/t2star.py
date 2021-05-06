@@ -296,6 +296,11 @@ class T2Star:
                                                        affine=self.affine)
                     nib.save(t2star_err_nifti, base_path +
                              '_t2star_err.nii.gz')
+                    if self.method == 'loglin':
+                        warnings.warn('Saving t2star_error however, '
+                                      'the loglin method does not produce '
+                                      'confidence intervals. As such the '
+                                      'resulting nifti will be all zeros.')
                 elif result == 'm0' or result == 'm0_map':
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
@@ -303,6 +308,11 @@ class T2Star:
                     m0_err_nifti = nib.Nifti1Image(self.m0_err,
                                                    affine=self.affine)
                     nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                    if self.method == 'loglin':
+                        warnings.warn('Saving m0_error however, the loglin '
+                                      'method does not produce confidence '
+                                      'intervals. As such the resulting nifti'
+                                      ' will be all zeros.')
                 elif result == 'r2star' or result == 'r2star_map':
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
                                                    affine=self.affine)

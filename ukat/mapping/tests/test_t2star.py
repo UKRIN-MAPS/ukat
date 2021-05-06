@@ -162,8 +162,9 @@ class TestT2Star:
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2startest', maps='')
 
-        # Check that error maps arent saved if method is `loglin`
         mapper = T2Star(signal_array, self.t, self.affine, method='loglin')
+
+        # Check that error maps arent saved if method is `loglin`
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps='all')
         output_files = os.listdir('test_output')
@@ -172,6 +173,34 @@ class TestT2Star:
         assert 't2startest_mask.nii.gz' in output_files
         assert 't2startest_r2star_map.nii.gz' in output_files
         assert 't2startest_t2star_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check warning is produced if user explicitly asks for
+        # t2star_err
+        with pytest.warns(UserWarning):
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps=['t2star',
+                                                               't2star_err'])
+            output_files = os.listdir('test_output')
+            print(output_files)
+            assert len(output_files) == 2
+            assert 't2startest_t2star_err.nii.gz' in output_files
+            assert 't2startest_t2star_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+            
+        # Check warning is produced if user explicitly asks for
+        # t2star_err
+        with pytest.warns(UserWarning):
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2startest', maps=['m0', 'm0_err'])
+            output_files = os.listdir('test_output')
+            assert len(output_files) == 2
+            assert 't2startest_m0_err.nii.gz' in output_files
+            assert 't2startest_m0_map.nii.gz' in output_files
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
