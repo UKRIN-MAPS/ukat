@@ -29,8 +29,9 @@ class T1:
         The number of TI used to calculate the map
     """
 
+
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, multithread=True):
+                 mask=None, parameters = 2, multithread=True):
         """Initialise a T1 class instance.
 
         Parameters
