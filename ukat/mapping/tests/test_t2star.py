@@ -191,7 +191,7 @@ class TestT2Star:
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
-            
+
         # Check warning is produced if user explicitly asks for
         # t2star_err
         with pytest.warns(UserWarning):
