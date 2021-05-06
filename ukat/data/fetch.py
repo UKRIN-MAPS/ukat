@@ -1,9 +1,7 @@
 """Data fetcher module. Do not move this file from `data` folder.
-
 The data fetcher function names match the directory structure of the test data.
 For example, to load data in the `data/dwi/ge` directory, there should be a
 fetcher function named `dwi_ge`.
-
 """
 
 import os
@@ -15,48 +13,8 @@ from dipy.io import read_bvals_bvecs
 DIR_DATA = os.path.dirname(os.path.realpath(__file__))
 
 
-def get_filepaths(directory, expected_filenames):
-    """Get filepaths in directory; check their names match expected_filenames
-
-    Parameters
-    ----------
-    directory : str
-        full path to directory
-    expected_filenames : list
-        list of strings with expected file names
-
-    Returns
-    -------
-    list
-        list of strings with full paths to files (sorted alphabetically)
-
-    """
-    # Ensure expected_filenames is sorted alphabetically
-    expected_filenames = sorted(expected_filenames)
-
-    # Get filenames in directory ensuring alphabetical order
-    filenames = sorted(os.listdir(directory))
-
-    # Ignore "__init__.py" files
-    if "__init__.py" in filenames:
-        filenames.remove("__init__.py")
-
-    # Check filenames match expected_filenames
-    not_match_msg = (f"Expected files in {directory}:\n{expected_filenames}\n"
-                     f"This doesn't match the found files:\n{filenames}")
-    assert (filenames == expected_filenames), not_match_msg
-
-    # Make list of file paths
-    filepaths = []
-    for filename in filenames:
-        filepaths.append(os.path.join(directory, filename))
-
-    return filepaths
-
-
 def dwi_ge():
     """Fetches dwi/ge dataset
-
     Returns
     -------
     numpy.ndarray
@@ -67,30 +25,19 @@ def dwi_ge():
         array of b-values
     numpy.ndarray
         array of b-vectors
-
     """
-
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    expected_filenames = ['00014__Cor_DWI_RT.bval',
-                          '00014__Cor_DWI_RT.bvec',
-                          '00014__Cor_DWI_RT.json',
-                          '00014__Cor_DWI_RT.nii.gz',
-                          'box_01.nii.gz',
-                          'box_02.nii.gz',
-                          'box_check.png']
 
     # Initialise path to dwi/ge
     dir_dwi_ge = os.path.join(DIR_DATA, "dwi", "ge")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_dwi_ge, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_dwi_ge, f) for f in
+                        os.listdir(dir_dwi_ge) if not f.endswith('.py')])
 
     # Read bvals, bvecs, and DWI data into numpy arrays
-    bval_path = filepaths[0]
-    bvec_path = filepaths[1]
-    nii_path = filepaths[3]
+    bval_path = [f for f in filepaths if f.endswith('.bval')][0]
+    bvec_path = [f for f in filepaths if f.endswith('.bvec')][0]
+    nii_path = [f for f in filepaths if f.endswith('.nii.gz')][0]
 
     bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
     nii = nib.load(nii_path)
@@ -117,27 +64,17 @@ def dwi_philips():
 
     """
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    expected_filenames = ['03901__DWI_5slices.bval',
-                          '03901__DWI_5slices.bvec',
-                          '03901__DWI_5slices.json',
-                          '03901__DWI_5slices.nii.gz',
-                          'box_01.nii.gz',
-                          'box_02.nii.gz',
-                          'box_check.png']
-
-    # Initialise path to dwi/ge
+    # Initialise path to dwi/philips
     dir_dwi_philips = os.path.join(DIR_DATA, "dwi", "philips")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_dwi_philips, expected_filenames)
+    # Get filepaths in directory 
+    filepaths = sorted([os.path.join(dir_dwi_philips, f) for f in
+                        os.listdir(dir_dwi_philips) if not f.endswith('.py')])
 
     # Read bvals, bvecs, and DWI data into numpy arrays
-    bval_path = filepaths[0]
-    bvec_path = filepaths[1]
-    nii_path = filepaths[3]
+    bval_path = [f for f in filepaths if f.endswith('.bval')][0]
+    bvec_path = [f for f in filepaths if f.endswith('.bvec')][0]
+    nii_path = [f for f in filepaths if f.endswith('.nii.gz')][0]
 
     bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
     nii = nib.load(nii_path)
@@ -164,29 +101,17 @@ def dwi_siemens():
 
     """
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    expected_filenames = ['00042__trig_dwi_13b_06dir.bval',
-                          '00042__trig_dwi_13b_06dir.'
-                          'bval_before_manual_correction',
-                          '00042__trig_dwi_13b_06dir.bvec',
-                          '00042__trig_dwi_13b_06dir.json',
-                          '00042__trig_dwi_13b_06dir.nii.gz',
-                          'box_01.nii.gz',
-                          'box_02.nii.gz',
-                          'box_check.png']
-
-    # Initialise path to dwi/ge
+    # Initialise path to dwi/siemens
     dir_dwi_siemens = os.path.join(DIR_DATA, "dwi", "siemens")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_dwi_siemens, expected_filenames)
+    # Get filepaths in directory 
+    filepaths = sorted([os.path.join(dir_dwi_siemens, f) for f in
+                        os.listdir(dir_dwi_siemens) if not f.endswith('.py')])
 
     # Read bvals, bvecs, and DWI data into numpy arrays
-    bval_path = filepaths[0]
-    bvec_path = filepaths[1]
-    nii_path = filepaths[3]
+    bval_path = [f for f in filepaths if f.endswith('.bval')][0]
+    bvec_path = [f for f in filepaths if f.endswith('.bvec')][0]
+    nii_path = [f for f in filepaths if f.endswith('.nii.gz')][0]
 
     bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
     nii = nib.load(nii_path)
@@ -199,7 +124,6 @@ def dwi_siemens():
 
 def r2star_ge():
     """Fetches r2star/ge dataset
-
     Returns
     -------
     numpy.ndarray
@@ -208,45 +132,15 @@ def r2star_ge():
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
-
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-    expected_filenames = ['00016__InPhase_Cor_R2_Mapping_BH_+_phase_e1.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e1.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e10.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e10.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e11.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e11.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e12.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e12.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e2.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e2.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e3.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e3.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e4.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e4.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e5.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e5.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e6.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e6.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e7.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e7.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e8.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e8.nii.gz',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e9.json',
-                          '00016__InPhase_Cor_R2_Mapping_BH_+_phase_e9.nii.gz']
-
+    
     # Initialise path to r2star/ge
     dir_r2star_ge = os.path.join(DIR_DATA, "r2star", "ge")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_r2star_ge, expected_filenames)
-
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_r2star_ge, f) for f in
+                        os.listdir(dir_r2star_ge) if not f.endswith('.py')])
+    
     # Load magnitude data and corresponding echo times (in the orig)
     image = []
     echo_list = []
@@ -279,7 +173,6 @@ def r2star_ge():
 
 def r2star_siemens():
     """Fetches r2star/siemens dataset
-
     Returns
     -------
     numpy.ndarray
@@ -288,44 +181,15 @@ def r2star_siemens():
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
-
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-    expected_filenames = ['00025__bh3x_r2star_inphase_volume_e1.json',
-                          '00025__bh3x_r2star_inphase_volume_e1.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e10.json',
-                          '00025__bh3x_r2star_inphase_volume_e10.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e11.json',
-                          '00025__bh3x_r2star_inphase_volume_e11.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e12.json',
-                          '00025__bh3x_r2star_inphase_volume_e12.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e2.json',
-                          '00025__bh3x_r2star_inphase_volume_e2.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e3.json',
-                          '00025__bh3x_r2star_inphase_volume_e3.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e4.json',
-                          '00025__bh3x_r2star_inphase_volume_e4.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e5.json',
-                          '00025__bh3x_r2star_inphase_volume_e5.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e6.json',
-                          '00025__bh3x_r2star_inphase_volume_e6.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e7.json',
-                          '00025__bh3x_r2star_inphase_volume_e7.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e8.json',
-                          '00025__bh3x_r2star_inphase_volume_e8.nii.gz',
-                          '00025__bh3x_r2star_inphase_volume_e9.json',
-                          '00025__bh3x_r2star_inphase_volume_e9.nii.gz']
 
     # Initialise path to r2star/siemens
     dir_r2star_siemens = os.path.join(DIR_DATA, "r2star", "siemens")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_r2star_siemens, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_r2star_siemens, f) for f in
+                        os.listdir(dir_r2star_siemens)
+                        if not f.endswith('.py')])
 
     # Load magnitude data and corresponding echo times (in the orig)
     image = []
@@ -359,7 +223,6 @@ def r2star_siemens():
 
 def r2star_philips():
     """Fetches r2star/philips dataset
-
     Returns
     -------
     numpy.ndarray
@@ -368,46 +231,15 @@ def r2star_philips():
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
-
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-
-    expected_filenames = [
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e1.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e10.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e11.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e12.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e13.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e3.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e4.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e5.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e6.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e7.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e8.nii.gz',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.json',
-        '01401__Kidney_T2star_m-FFE_3x3x5_SPIR_volume_inphase_e9.nii.gz']
 
     # Initialise path to r2star/philips
     dir_r2star_philips = os.path.join(DIR_DATA, "r2star", "philips")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_r2star_philips, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_r2star_philips, f) for f in
+                        os.listdir(dir_r2star_philips)
+                        if not f.endswith('.py')])
 
     # Load magnitude data and corresponding echo times (in the orig)
     image = []
@@ -441,7 +273,6 @@ def r2star_philips():
 
 def b0_ge():
     """Fetches b0/ge dataset
-
     Returns
     -------
     numpy.ndarray
@@ -452,24 +283,14 @@ def b0_ge():
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
-
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-    expected_filenames = ['00009__3D_B0_map_VOL_e1.json',
-                          '00009__3D_B0_map_VOL_e1.nii.gz',
-                          '00009__3D_B0_map_VOL_e2.json',
-                          '00009__3D_B0_map_VOL_e2.nii.gz']
 
     # Initialise path to b0/ge
     dir_b0_ge = os.path.join(DIR_DATA, "b0", "ge")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_b0_ge, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_b0_ge, f) for f in
+                        os.listdir(dir_b0_ge) if not f.endswith('.py')])
 
     # Load magnitude, real and imaginary data and corresponding echo times
     magnitude = []
@@ -517,7 +338,6 @@ def b0_ge():
 
 def _load_b0_siemens_philips(filepaths):
     """General function to retrieve siemens b0 data from list of filepaths
-
     Returns
     -------
     numpy.ndarray
@@ -528,7 +348,6 @@ def _load_b0_siemens_philips(filepaths):
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
     # Load magnitude, real and imaginary data and corresponding echo times
     data = []
@@ -589,52 +408,27 @@ def _load_b0_siemens_philips(filepaths):
 
 def b0_siemens(dataset_id):
     """Fetches b0/siemens_{dataset_id} dataset
-
     dataset_id : int
         Number of the dataset to load:
         - dataset_id = 1 to load "b0\siemens_1"
         - dataset_id = 2 to load "b0\siemens_2"
-
     Returns
     -------
     See outputs of _load_b0_siemens_philips
-
     """
 
     POSSIBLE_DATASET_IDS = [1, 2]
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in the test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note these file names are sorted alphabetically and may not be sorted
-    # by increasing echo time. The sort by echo time will be done later below.
-    if dataset_id == 1:
-        expected_filenames = ['00010__bh_b0map_3D_default_e1.json',
-                              '00010__bh_b0map_3D_default_e1.nii.gz',
-                              '00010__bh_b0map_3D_default_e2.json',
-                              '00010__bh_b0map_3D_default_e2.nii.gz',
-                              '00011__bh_b0map_3D_default_e1.json',
-                              '00011__bh_b0map_3D_default_e1.nii.gz',
-                              '00011__bh_b0map_3D_default_e2.json',
-                              '00011__bh_b0map_3D_default_e2.nii.gz']
-    elif dataset_id == 2:
-        expected_filenames = ['00044__bh_b0map_fa3_default_e1.json',
-                              '00044__bh_b0map_fa3_default_e1.nii.gz',
-                              '00044__bh_b0map_fa3_default_e2.json',
-                              '00044__bh_b0map_fa3_default_e2.nii.gz',
-                              '00045__bh_b0map_fa3_default_e1.json',
-                              '00045__bh_b0map_fa3_default_e1.nii.gz',
-                              '00045__bh_b0map_fa3_default_e2.json',
-                              '00045__bh_b0map_fa3_default_e2.nii.gz']
-    else:
+    if (dataset_id != 1) and (dataset_id != 2):
         error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
         raise ValueError(error_msg)
 
     # Initialise path to b0/siemens_{dataset_id}
     dir_b0_siemens = os.path.join(DIR_DATA, "b0", "siemens" + f"_{dataset_id}")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_b0_siemens, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_b0_siemens, f) for f in
+                        os.listdir(dir_b0_siemens) if not f.endswith('.py')])
 
     # Load data
     magnitude, phase, affine, echo_times = _load_b0_siemens_philips(filepaths)
@@ -644,49 +438,27 @@ def b0_siemens(dataset_id):
 
 def b0_philips(dataset_id):
     """Fetches b0/philips_{dataset_id} dataset
-
     dataset_id : int
         Number of the dataset to load:
         - dataset_id = 1 to load "b0\philips_1"
         - dataset_id = 2 to load "b0\philips_2"
-
     Returns
     -------
     See outputs of _load_b0_siemens_philips
-
     """
 
     POSSIBLE_DATASET_IDS = [1, 2]
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in the test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note these file names are sorted alphabetically and may not be sorted
-    # by increasing echo time. The sort by echo time will be done later below.
-    if dataset_id == 1:
-        expected_filenames = ['00801__B0_map_expiration_default_e1.json',
-                              '00801__B0_map_expiration_default_e1.nii.gz',
-                              '00801__B0_map_expiration_default_e2_real.json',
-                              '00801__B0_map_expiration_default_e2_real.nii.gz']
-    elif dataset_id == 2:
-        expected_filenames = [
-            '01401__B0_map_expiration_volume_2DMS_product_e1.json',
-            '01401__B0_map_expiration_volume_2DMS_product_e1.nii.gz',
-            '01401__B0_map_expiration_volume_2DMS_product_e1_ph.json',
-            '01401__B0_map_expiration_volume_2DMS_product_e1_ph.nii.gz',
-            '01401__B0_map_expiration_volume_2DMS_product_e2.json',
-            '01401__B0_map_expiration_volume_2DMS_product_e2.nii.gz',
-            '01401__B0_map_expiration_volume_2DMS_product_e2_ph.json',
-            '01401__B0_map_expiration_volume_2DMS_product_e2_ph.nii.gz']
-    else:
+    if (dataset_id != 1) and (dataset_id != 2):
         error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
         raise ValueError(error_msg)
 
     # Initialise path to b0/philips_{dataset_id}
     dir_b0_philips = os.path.join(DIR_DATA, "b0", "philips" + f"_{dataset_id}")
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_b0_philips, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_b0_philips, f) for f in
+                        os.listdir(dir_b0_philips) if not f.endswith('.py')])
 
     # Load data
     if dataset_id == 2:
@@ -702,7 +474,6 @@ def b0_philips(dataset_id):
 
 def t1_philips(dataset_id):
     """Fetches t1/philips_{dataset_id} dataset
-
     dataset_id : int
             Number of the dataset to load:
             - dataset_id = 1 to load "t1\philips_1"
@@ -717,70 +488,22 @@ def t1_philips(dataset_id):
         array of inversion times, in seconds
     float
         temporal slice spacing of image, in seconds
-
     """
 
     POSSIBLE_DATASET_IDS = [1, 2]
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-    if dataset_id == 1:
-        expected_filenames = ['01901__WIP_Ti100_UoN_IREPI_SENSE.json',
-                              '01901__WIP_Ti100_UoN_IREPI_SENSE.nii.gz',
-                              '02001__WIP_Ti200_UoN_IREPI_SENSE.json',
-                              '02001__WIP_Ti200_UoN_IREPI_SENSE.nii.gz',
-                              '02101__WIP_Ti300_UoN_IREPI_SENSE.json',
-                              '02101__WIP_Ti300_UoN_IREPI_SENSE.nii.gz',
-                              '02201__WIP_Ti400_UoN_IREPI_SENSE.json',
-                              '02201__WIP_Ti400_UoN_IREPI_SENSE.nii.gz',
-                              '02301__WIP_Ti500_UoN_IREPI_SENSE.json',
-                              '02301__WIP_Ti500_UoN_IREPI_SENSE.nii.gz',
-                              '02401__WIP_Ti600_UoN_IREPI_SENSE.json',
-                              '02401__WIP_Ti600_UoN_IREPI_SENSE.nii.gz',
-                              '02501__WIP_Ti700_UoN_IREPI_SENSE.json',
-                              '02501__WIP_Ti700_UoN_IREPI_SENSE.nii.gz',
-                              '02601__WIP_Ti800_UoN_IREPI_SENSE.json',
-                              '02601__WIP_Ti800_UoN_IREPI_SENSE.nii.gz',
-                              '02701__WIP_Ti900_UoN_IREPI_SENSE.json',
-                              '02701__WIP_Ti900_UoN_IREPI_SENSE.nii.gz',
-                              '02801__WIP_Ti1000_UoN_IREPI_SENSE.json',
-                              '02801__WIP_Ti1000_UoN_IREPI_SENSE.nii.gz',
-                              '02901__WIP_Ti1100_UoN_IREPI_SENSE.json',
-                              '02901__WIP_Ti1100_UoN_IREPI_SENSE.nii.gz',
-                              '03001__WIP_Ti1200_UoN_IREPI_SENSE.json',
-                              '03001__WIP_Ti1200_UoN_IREPI_SENSE.nii.gz',
-                              '03101__WIP_Ti1300_UoN_IREPI_SENSE.json',
-                              '03101__WIP_Ti1300_UoN_IREPI_SENSE.nii.gz',
-                              '03201__WIP_Ti1400_UoN_IREPI_SENSE.json',
-                              '03201__WIP_Ti1400_UoN_IREPI_SENSE.nii.gz',
-                              '03301__WIP_Ti1500_UoN_IREPI_SENSE.json',
-                              '03301__WIP_Ti1500_UoN_IREPI_SENSE.nii.gz',
-                              '03401__WIP_Ti1600_UoN_IREPI_SENSE.json',
-                              '03401__WIP_Ti1600_UoN_IREPI_SENSE.nii.gz',
-                              '03501__WIP_Ti1700_UoN_IREPI_SENSE.json',
-                              '03501__WIP_Ti1700_UoN_IREPI_SENSE.nii.gz',
-                              '03601__WIP_Ti1800_UoN_IREPI_SENSE.json',
-                              '03601__WIP_Ti1800_UoN_IREPI_SENSE.nii.gz',
-                              '03701__WIP_Ti2000_UoN_IREPI_SENSE.json',
-                              '03701__WIP_Ti2000_UoN_IREPI_SENSE.nii.gz']
-    elif dataset_id == 2:
-        expected_filenames = ['00901__.json',
-                              '00901__.nii.gz',
-                              '00901___ph.json',
-                              '00901___ph.nii.gz']
-    else:
+    if (dataset_id != 1) and (dataset_id != 2):
         error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
         raise ValueError(error_msg)
 
     # Initialise path to t1/philips_{dataset_id}
     dir_t1_philips = os.path.join(DIR_DATA, 't1', 'philips' + f'_{dataset_id}')
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_t1_philips, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_t1_philips, f) for f in
+                        os.listdir(dir_t1_philips) if not f.endswith('.py')])
 
+    # See README.md in ukat\data\t1 for information about the acquisition.
     if dataset_id == 1:
         # Load magnitude data and corresponding inversion times (in the orig)
         image = []
@@ -813,9 +536,12 @@ def t1_philips(dataset_id):
         affine = data.affine
 
     elif dataset_id == 2:
-        magnitude_img = nib.load(filepaths[1])
+        magnitude_path = [f for f in filepaths if ("__ph" not in f)
+                          and f.endswith('.nii.gz')][0]
+        magnitude_img = nib.load(magnitude_path)
         magnitude = magnitude_img.get_fdata()
-        phase_img = nib.load(filepaths[3])
+        phase_path = [f for f in filepaths if f.endswith('__ph.nii.gz')][0]
+        phase_img = nib.load(phase_path)
         phase = phase_img.get_fdata()
         inversion_list = list(np.arange(0.1, 1.801, 0.1))
         tss = 0.0537
@@ -825,7 +551,6 @@ def t1_philips(dataset_id):
 
 def t2_philips(dataset_id):
     """Fetches t2/philips_{dataset_id} dataset
-
     dataset_id : int
             Number of the dataset to load:
             - dataset_id = 1 to load "t2\philips_1"
@@ -837,47 +562,22 @@ def t2_philips(dataset_id):
         affine matrix for image data
     numpy.ndarray
         array of echo times, in seconds
-
     """
-
+    
     POSSIBLE_DATASET_IDS = [1]
 
-    # Initialise hard-coded list of file names that are the expected files
-    # in this test dataset. If the actual files in the directory don't match
-    # this list this means that the test dataset has been corrupted.
-    # Note that these file names are sorted alphabetically and not sorted by
-    # increasing echo time. The sort by echo time will be done later below.
-    if dataset_id == 1:
-        expected_filenames = ['01501__Multi_echo_10_echos_180_RFP_e1.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e1.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e10.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e10.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e11.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e11.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e3.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e3.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e4.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e4.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e5.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e5.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e6.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e6.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e7.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e7.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e8.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e8.nii.gz',
-                              '01501__Multi_echo_10_echos_180_RFP_e9.json',
-                              '01501__Multi_echo_10_echos_180_RFP_e9.nii.gz']
-    else:
+    if dataset_id != 1:
         error_msg = f"`dataset_id` must be one of {POSSIBLE_DATASET_IDS}"
         raise ValueError(error_msg)
 
     # Initialise path to t1/philips_{dataset_id}
     dir_t2_philips = os.path.join(DIR_DATA, 't2', 'philips' + f'_{dataset_id}')
 
-    # Get filepaths in directory and check their names match expected_filenames
-    filepaths = get_filepaths(dir_t2_philips, expected_filenames)
+    # Get filepaths in directory
+    filepaths = sorted([os.path.join(dir_t2_philips, f) for f in
+                        os.listdir(dir_t2_philips) if not f.endswith('.py')])
 
+    # See README.md in ukat\data\t2 for information about the acquisition.
     if dataset_id == 1:
         # Load magnitude data and corresponding echo times (in the orig)
         magnitude = []
