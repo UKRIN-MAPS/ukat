@@ -276,21 +276,33 @@ class T2Star:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["t2star", "m0", "r2star", "mask"].
+            or a list of maps from ["t2star", "t2star_err", "m0",
+            "m0_err", "r2star", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
             maps = ['t2star', 'm0', 'r2star', 'mask']
+            if self.method == '2p_exp':
+                maps += ['t2star_err', 'm0_err']
         if isinstance(maps, list):
             for result in maps:
                 if result == 't2star' or result == 't2star_map':
                     t2star_nifti = nib.Nifti1Image(self.t2star_map,
                                                    affine=self.affine)
                     nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
+                elif result == 't2star_err' or result == 't2star_err_map':
+                    t2star_err_nifti = nib.Nifti1Image(self.t2star_err,
+                                                       affine=self.affine)
+                    nib.save(t2star_err_nifti, base_path +
+                             '_t2star_err.nii.gz')
                 elif result == 'm0' or result == 'm0_map':
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                elif result == 'm0_err' or result == 'm0_err_map':
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                                   affine=self.affine)
+                    nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
                 elif result == 'r2star' or result == 'r2star_map':
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
                                                    affine=self.affine)
@@ -302,7 +314,8 @@ class T2Star:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["t2star", "m0", "r2star", "mask"]".')
+                             '"["t2star", "t2star_err", "m0", "m0_err", '
+                             '"r2star", "mask"]".')
 
         return
 

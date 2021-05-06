@@ -126,10 +126,12 @@ class TestT2Star:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2startest', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 4
+        assert len(output_files) == 6
+        assert 't2startest_m0_err.nii.gz' in output_files
         assert 't2startest_m0_map.nii.gz' in output_files
         assert 't2startest_mask.nii.gz' in output_files
         assert 't2startest_r2star_map.nii.gz' in output_files
+        assert 't2startest_t2star_err.nii.gz' in output_files
         assert 't2startest_t2star_map.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
@@ -159,6 +161,17 @@ class TestT2Star:
             mapper = T2Star(signal_array, self.t, self.affine)
             mapper.to_nifti(output_directory='test_output',
                             base_file_name='t2startest', maps='')
+
+        # Check that error maps arent saved if method is `loglin`
+        mapper = T2Star(signal_array, self.t, self.affine, method='loglin')
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2startest', maps='all')
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 4
+        assert 't2startest_m0_map.nii.gz' in output_files
+        assert 't2startest_mask.nii.gz' in output_files
+        assert 't2startest_r2star_map.nii.gz' in output_files
+        assert 't2startest_t2star_map.nii.gz' in output_files
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
