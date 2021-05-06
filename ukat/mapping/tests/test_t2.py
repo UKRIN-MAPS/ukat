@@ -171,7 +171,7 @@ class TestT2:
                             gold_standard_thresh, rtol=1e-6, atol=1e-4)
 
     def test_to_nifti(self):
-        # Create a T1 map instance and test different export to NIFTI scenarios
+        # Create a T2 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2(signal_array, self.t, self.affine)
 
