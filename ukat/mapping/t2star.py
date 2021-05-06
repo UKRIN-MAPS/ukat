@@ -13,8 +13,14 @@ class T2Star:
     ----------
     t2star_map : np.ndarray
         The estimated T2* values in ms
+    t2star_err : np.ndarray
+        The certainty in the fit of `t2star_map` in ms. Only returned if
+        `2p_exp` method is used, otherwise is an array of nan
     m0_map : np.ndarray
         The estimated M0 values
+    m0_err : np.ndarray
+        The certainty in the fit of `m0_map`. Only returned if `2p_exp`
+        method is used, otherwise is an array of nan
     shape : tuple
         The shape of the T2* map
     n_te : int
@@ -99,7 +105,8 @@ class T2Star:
         self.multithread = multithread
 
         # Fit data
-        self.t2star_map, self.m0_map = self.__fit__()
+        self.t2star_map, self.t2star_err, self.m0_map, self.m0_err\
+            = self.__fit__()
 
         # Warn if using loglin method to produce a map with a large
         # proportion of T2* < 20 ms i.e. where loglin isn't as accurate.
@@ -119,7 +126,9 @@ class T2Star:
 
         # Initialise maps
         t2star_map = np.zeros(self.n_vox)
+        t2star_err = np.zeros(self.n_vox)
         m0_map = np.zeros(self.n_vox)
+        m0_err = np.zeros(self.n_vox)
         mask = self.mask.flatten()
         signal = self.pixel_array.reshape(-1, self.n_te)
         # Get indices of voxels to process
@@ -143,23 +152,26 @@ class T2Star:
                     for future in futures:
                         result = future.result()
                         results.append(result)
-            t2star_map[idx], m0_map[idx] = [np.array(row) for row in zip(
-                *results)]
+            t2star_map[idx], t2star_err[idx], m0_map[idx], m0_err[idx] \
+                = [np.array(row) for row in zip(*results)]
 
         # Single threaded method
         else:
             with tqdm(total=idx.size) as progress:
                 for ind in idx:
                     sig = signal[ind, :]
-                    t2star_map[ind], m0_map[ind] = \
-                        self.__fit_signal__(sig, self.echo_list, self.method)
+                    t2star_map[ind], t2star_err[ind], \
+                        m0_map[ind], m0_err[ind] \
+                        = self.__fit_signal__(sig, self.echo_list, self.method)
                     progress.update(1)
 
         # Reshape results to raw data shape
         t2star_map = t2star_map.reshape(self.shape)
+        t2star_err = t2star_err.reshape(self.shape)
         m0_map = m0_map.reshape(self.shape)
+        m0_err = m0_err.reshape(self.shape)
 
-        return t2star_map, m0_map
+        return t2star_map, t2star_err, m0_map, m0_err
 
     @staticmethod
     def __fit_signal__(sig, te, method):
@@ -205,6 +217,8 @@ class T2Star:
             else:
                 t2star = 0
                 m0 = 0
+            t2star_err = np.nan
+            m0_err = np.nan
 
         elif method == '2p_exp':
             # Initialise parameters
@@ -229,7 +243,7 @@ class T2Star:
             else:
                 t2star, m0, t2star_err, m0_err = 0, 0, 0, 0
 
-        return t2star, m0
+        return t2star, t2star_err, m0, m0_err
 
     def r2star_map(self):
         """
@@ -262,21 +276,43 @@ class T2Star:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["t2star", "m0", "r2star", "mask"].
+            or a list of maps from ["t2star", "t2star_err", "m0",
+            "m0_err", "r2star", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
             maps = ['t2star', 'm0', 'r2star', 'mask']
+            if self.method == '2p_exp':
+                maps += ['t2star_err', 'm0_err']
         if isinstance(maps, list):
             for result in maps:
                 if result == 't2star' or result == 't2star_map':
                     t2star_nifti = nib.Nifti1Image(self.t2star_map,
                                                    affine=self.affine)
                     nib.save(t2star_nifti, base_path + '_t2star_map.nii.gz')
+                elif result == 't2star_err' or result == 't2star_err_map':
+                    t2star_err_nifti = nib.Nifti1Image(self.t2star_err,
+                                                       affine=self.affine)
+                    nib.save(t2star_err_nifti, base_path +
+                             '_t2star_err.nii.gz')
+                    if self.method == 'loglin':
+                        warnings.warn('Saving t2star_error however, '
+                                      'the loglin method does not produce '
+                                      'confidence intervals. As such the '
+                                      'resulting nifti will be all zeros.')
                 elif result == 'm0' or result == 'm0_map':
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
                     nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                elif result == 'm0_err' or result == 'm0_err_map':
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                                   affine=self.affine)
+                    nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
+                    if self.method == 'loglin':
+                        warnings.warn('Saving m0_error however, the loglin '
+                                      'method does not produce confidence '
+                                      'intervals. As such the resulting nifti'
+                                      ' will be all zeros.')
                 elif result == 'r2star' or result == 'r2star_map':
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
                                                    affine=self.affine)
@@ -288,7 +324,8 @@ class T2Star:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["t2star", "m0", "r2star", "mask"]".')
+                             '"["t2star", "t2star_err", "m0", "m0_err", '
+                             '"r2star", "mask"]".')
 
         return
 
