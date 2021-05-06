@@ -103,7 +103,7 @@ class ADC:
         different directions, u_bvals will be [0, 600].
     n_bvals : int
         The number of unique b-values acquired in the experiment.
-    n_grad : 1d numpy array
+    n_grad : int
         Total number of diffusion values/vectors acquired e.g. if the
         experiment acquires six directions at 10 gradient strengths and a
         b-0 volume, n_grad will be 61.
@@ -293,7 +293,7 @@ class DTI:
         6 x 3 numpy array.
     n_bvecs : int
         The number of unique b-vectors acquired in the experiment.
-    n_grad : 1d numpy array
+    n_grad : int
         Total number of diffusion values/vectors acquired e.g. if the
         experiment acquires six directions at 10 gradient strengths and a
         b-0 volume, n_grad will be 61.
