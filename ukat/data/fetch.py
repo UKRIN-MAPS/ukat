@@ -67,7 +67,7 @@ def dwi_philips():
     # Initialise path to dwi/philips
     dir_dwi_philips = os.path.join(DIR_DATA, "dwi", "philips")
 
-    # Get filepaths in directory 
+    # Get filepaths in directory
     filepaths = sorted([os.path.join(dir_dwi_philips, f) for f in
                         os.listdir(dir_dwi_philips) if not f.endswith('.py')])
 
@@ -104,7 +104,7 @@ def dwi_siemens():
     # Initialise path to dwi/siemens
     dir_dwi_siemens = os.path.join(DIR_DATA, "dwi", "siemens")
 
-    # Get filepaths in directory 
+    # Get filepaths in directory
     filepaths = sorted([os.path.join(dir_dwi_siemens, f) for f in
                         os.listdir(dir_dwi_siemens) if not f.endswith('.py')])
 
@@ -133,14 +133,14 @@ def r2star_ge():
     numpy.ndarray
         array of echo times, in seconds
     """
-    
+
     # Initialise path to r2star/ge
     dir_r2star_ge = os.path.join(DIR_DATA, "r2star", "ge")
 
     # Get filepaths in directory
     filepaths = sorted([os.path.join(dir_r2star_ge, f) for f in
                         os.listdir(dir_r2star_ge) if not f.endswith('.py')])
-    
+
     # Load magnitude data and corresponding echo times (in the orig)
     image = []
     echo_list = []
@@ -563,7 +563,7 @@ def t2_philips(dataset_id):
     numpy.ndarray
         array of echo times, in seconds
     """
-    
+
     POSSIBLE_DATASET_IDS = [1]
 
     if dataset_id != 1:
