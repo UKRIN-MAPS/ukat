@@ -5,8 +5,9 @@ import pytest
 
 DIR_DATA = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
+
 class TestFetch:
-    
+
     def test_ge_dwi(self):
 
         # Check if folder exists
@@ -34,7 +35,7 @@ class TestFetch:
         assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)
 
     def test_philips_dwi(self):
-        
+
         # Check if folder exists
         assert os.path.exists(os.path.join(DIR_DATA, "dwi", "philips"))
         directory = os.path.join(DIR_DATA, "dwi", "philips")
@@ -128,7 +129,7 @@ class TestFetch:
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
-        
+
     def test_siemens_r2star(self):
 
         # Check if folder exists
@@ -325,7 +326,7 @@ class TestFetch:
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
             magnitude, phase, affine, inversion_times, tss = fetch.t1_philips(3)
-
+            
     def test_philips_t2(self):
 
         # Check if folder exists
