@@ -10,15 +10,14 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.1.0",
+    version="0.2.0",
     description="UKRIN Kidney Analysis Toolbox",
-    long_description = long_description,
+    long_description=long_description,
     url="https://github.com/UKRIN-MAPS/ukat",
     license="GPL-3.0",
 
-    python_requires='>=3.5, <4',
+    python_requires='>=3.6, <4',
     packages=find_packages(),
-    # packages=find_packages(exclude=("tests*")), # Want to exclude tests?
     install_requires=requirements,
 
     package_data={
@@ -37,7 +36,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
@@ -55,8 +54,5 @@ setup(
 
         # Pick your license as you wish
         'License :: OSI Approved :: GPL-3.0 License',
-        # 'License :: OSI Approved :: Apache Software License',
-
-
     ],
 )

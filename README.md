@@ -1,9 +1,10 @@
-<h2 align="center"><img src="images/logo.png" height="128"></h2>
+<h2 align="center"><img src="images/ukat_logo.png" height="180"></h2>
 <p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
 
 ![Build and Test](https://github.com/UKRIN-MAPS/ukat/workflows/Build%20and%20Test/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/UKRIN-MAPS/ukat/branch/master/graph/badge.svg?token=QJ9DQONJBP)](https://codecov.io/gh/UKRIN-MAPS/ukat)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://zenodo.org/badge/256993671.svg)](https://zenodo.org/badge/latestdoi/256993671)
 
 # Getting started
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
