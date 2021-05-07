@@ -543,7 +543,7 @@ def t1_philips(dataset_id):
         phase_path = [f for f in filepaths if f.endswith('__ph.nii.gz')][0]
         phase_img = nib.load(phase_path)
         phase = phase_img.get_fdata()
-        inversion_list = list(np.arange(0.1, 1.801, 0.1))
+        inversion_list = np.arange(0.1, 1.801, 0.1)
         tss = 0.0537
         affine = magnitude_img.affine
 
