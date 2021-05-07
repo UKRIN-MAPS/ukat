@@ -321,12 +321,12 @@ class TestFetch:
 
         # If no dataset_id is given
         with pytest.raises(TypeError):
-            magnitude, phase, affine, inversion_times, tss = fetch.t1_philips()
+            magnitude, phase, affine, inversion_times, _ = fetch.t1_philips()
 
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
-            magnitude, phase, affine, inversion_times, tss = fetch.t1_philips(3)
-            
+            magnitude, phase, affine, inversion_times, _ = fetch.t1_philips(3)
+        
     def test_philips_t2(self):
 
         # Check if folder exists
