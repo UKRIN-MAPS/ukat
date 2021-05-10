@@ -1,4 +1,4 @@
-<h2 align="center"><img src="images/ukat_logo.png" height="180"></h2>
+<h2 align="center"><img src="https://github.com/UKRIN-MAPS/ukat/blob/master/images/ukat_logo.png" height="180"></h2>
 <p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
 
 ![Build and Test](https://github.com/UKRIN-MAPS/ukat/workflows/Build%20and%20Test/badge.svg?branch=master)
