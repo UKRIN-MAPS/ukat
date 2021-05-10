@@ -54,6 +54,6 @@ setup(
         'Programming Language :: Python :: 3.8',
 
         # Pick your license as you wish
-        'License :: OSI Approved :: GPL-3.0 License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     ],
 )
