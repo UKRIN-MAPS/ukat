@@ -29,3 +29,13 @@ jobs:
           CHANGELOG_FILE: "CHANGELOG.md"
           ALLOW_EMPTY_CHANGELOG: "false"
           ALLOW_TAG_PREFIX: "true"
+
+      - name: Tweet
+        uses: m1ner79/Github-Twittction@{VERSION}
+        with:
+          twitter_status: "Version ${{github.event.release.tag_name}} of ${{github.event.repository.full_name}} has been
+          released. Take a look here ${{github.event.release.html_url}}."
+          twitter_consumer_key: ${{ secrets.TWITTER_API_KEY }}
+          twitter_consumer_secret: ${{ secrets.TWITTER_API_SECRET_KEY }}
+          twitter_access_token_key: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          twitter_access_token_secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
