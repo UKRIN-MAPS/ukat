@@ -13,6 +13,7 @@ setup(
     version="0.2.0",
     description="UKRIN Kidney Analysis Toolbox",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/UKRIN-MAPS/ukat",
     license="GPL-3.0",
 
