@@ -1,4 +1,4 @@
-<h2 align="center"><img src="https://github.com/UKRIN-MAPS/ukat/blob/master/images/ukat_logo.png" height="180"></h2>
+<h2 align="center"><img src="https://raw.githubusercontent.com/UKRIN-MAPS/ukat/master/images/ukat_logo.png" height="180"></h2>
 <p align="center"><strong>UKRIN Kidney Analysis Toolbox (ukat) </strong></p>
 
 ![Build and Test](https://github.com/UKRIN-MAPS/ukat/workflows/Build%20and%20Test/badge.svg?branch=master)
@@ -28,8 +28,7 @@ There are a few different ways you can install `uakt` based on what you want to 
 1. Clone this reposetry with `git clone https://github.com/UKRIN-MAPS/ukat.git`
 2. Change to the `ukat` root directory (the one containing a file named `setup.py`).
 3. Run the following command in your terminal: `pip install -e . `
-4. Install [SimpleElastix](https://simpleelastix.github.io/) ([instructions](https://simpleelastix.readthedocs.
-   io/GettingStarted.html)).
+4. Install [SimpleElastix](https://simpleelastix.github.io/) ([instructions](https://simpleelastix.readthedocs.io/GettingStarted.html)).
 
 Now if you make any changes to the ukat code, they'll permiate into any analysis you perform where you've imported `ukat`.
 
