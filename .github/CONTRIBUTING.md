@@ -8,6 +8,18 @@
 - Make sure you follow the checklists on the [pull request template](PULL_REQUEST_TEMPLATE.md)
 - Branch off and request merges to the `dev` branch
 
+# Workflow
+We generally use the [gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow#:~:text=The%20overall%20flow%20of%20Gitflow,merged%20into%20the%20develop%20branch) workflow. In a nutshell, this means that if you want to add a new feature/modify some existing code, you should make your branch from the `dev` branch, implement your changes, then request that they are merged back into the dev branch. Once enough issues have been closed, a maintainer will make a release branch from `dev` that will then merge into master. To keep things tidy, please follow the branch naming convention below.
+
+### Features
+Adding an entirely new feature to `ukat`. These branches should start with `feature/` e.g. when adding T1 mapping to `ukat` the branch would be called `feature/t1_mapping`
+### Maintenance
+Work on the GitHub repository itself or changes to existing code e.g. updating `README.md` or changing the fitting bounds of a mapping method. These branches should start with `maintenance/`
+### Releases
+Branches taken from `dev` that will merge into `master`. These branches will contain commits changing version numbers and updating `CHANGELOG.md` etc and should conform to the standard `release/vX.Y.Z`
+### Hotfix
+These branches are used for fixing time sensitive bugs in already released code for example, if it was discovered that a previous release accidentally changed the unit T1 was returned in from milliseconds to years, a hotfix branch could be used to correct this mistake, however correcting "form" to "from" in a docstring should be performed on a maintenance branch. Hotfix branches should be forked from `master` and merged into both `master` and `dev`; they should also keep their scope as small as possible, the very bare essentials to fix the bug. These branches should start with `hotfix/` e.g. `hotfix/change_t1_unit_from_years_to_ms`
+
 # Documentation
 Code with bad/non-existent documentation will become useless sooner or later. All modules/classes/functions should be documented following the `numpy` docstring guide ([format](https://numpydoc.readthedocs.io/en/latest/format.html), [example](https://numpydoc.readthedocs.io/en/latest/example.html#example)). Note that adopting good naming practices (e.g. descriptively naming variables, functions, classes, etc...), helps self-documenting the code and reduces the amount of explicit documentation needed.
 
