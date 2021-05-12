@@ -19,3 +19,7 @@ __pycache__/
 # Eggs
 ukat.egg-info/
 .eggs/
+
+# Packaging
+build/
+dist/
