@@ -10,9 +10,10 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.2.0",
+    version="0.2.2",
     description="UKRIN Kidney Analysis Toolbox",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/UKRIN-MAPS/ukat",
     license="GPL-3.0",
 
@@ -53,6 +54,6 @@ setup(
         'Programming Language :: Python :: 3.8',
 
         # Pick your license as you wish
-        'License :: OSI Approved :: GPL-3.0 License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     ],
 )
