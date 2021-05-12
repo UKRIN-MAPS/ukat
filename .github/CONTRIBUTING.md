@@ -1,11 +1,12 @@
 *(This document is work-in-progress)*
 
-# TLDR
+# TL;DR
 - Document all code (`numpy` [format](https://numpydoc.readthedocs.io/en/latest/format.html)).
 - Ensure code follows [PEP8](https://www.python.org/dev/peps/pep-0008/).
 - Provide tests.
 - Ideally, provide examples and/or tutorials.
 - Make sure you follow the checklists on the [pull request template](PULL_REQUEST_TEMPLATE.md)
+- Branch off and request merges to the `dev` branch
 
 # Documentation
 Code with bad/non-existent documentation will become useless sooner or later. All modules/classes/functions should be documented following the `numpy` docstring guide ([format](https://numpydoc.readthedocs.io/en/latest/format.html), [example](https://numpydoc.readthedocs.io/en/latest/example.html#example)). Note that adopting good naming practices (e.g. descriptively naming variables, functions, classes, etc...), helps self-documenting the code and reduces the amount of explicit documentation needed.
@@ -45,10 +46,14 @@ And don't forget about [The Zen of Python](https://www.python.org/dev/peps/pep-0
 
 
 # Versioning
-Use the [semver](https://semver.org/) convention for milestones, releases...
+Use the [semver](https://semver.org/) convention for milestones, releases. More information on creating a new release can 
+be found [here](https://github.com/UKRIN-MAPS/ukat/wiki/Creating-a-New-Release).
 
 # Tests
-*To do* @JSousa-UoL
+We use the [pytest](https://docs.pytest.org/) framework to write tests for our code. These tests can then be run locally 
+while you're developing or, when you open a pull request, via a continuous integration GitHub Action. Additionally [codecov](https://app.codecov.io/gh/UKRIN-MAPS/ukat) will evaluate the coverage of the whole project and your new patch, please try and keep coverage as close to 100% as possible. 
+
+As well as the unit tests used to assess the functionality of the code, we also implement end-to-end tests of each module using 'real' MRI data i.e. data acquired with a scanner rather than generated on a computer. This ensures the results of analysis performed using `ukat` don't change without anyone realising.
 
 # Examples/tutorials
 We should strive to have examples/tutorials for the main methods implemented in this repository. Ideally in jupyter notebook format (`.ipynb` files) in the `tutorials` directory. See [here](/tutorials/t2star_calculation.ipynb) for an example.
