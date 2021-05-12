@@ -72,4 +72,4 @@ We should strive to have examples/tutorials for the main methods implemented in 
 
 # Misc
 - If you are looking for ideas for contributing, look for any open issues.
-- Other contributing guidelines for inspiration: [`dipy`](https://github.com/dipy/dipy/blob/master/CONTRIBUTING.md), [`fslpy`](https://users.fmrib.ox.ac.uk/~paulmc/fsleyes/fslpy/latest/contributing.html).
+- Other contributing guidelines for inspiration: [`dipy`](https://github.com/dipy/dipy/blob/master/.github/CONTRIBUTING.md), [`fslpy`](https://users.fmrib.ox.ac.uk/~paulmc/fsleyes/fslpy/latest/contributing.html).
