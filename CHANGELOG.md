@@ -1,3 +1,13 @@
+## [0.2.3-rc.1] - 2021-05-12
+
+### Added
+* PyPI release badge to readme
+
+### Fixed
+* Test data is now included in pip install #146
+* Link to dypi in `CONTRIBUTING.md` fixed
+
+
 ## [0.2.2] - 2021-05-11
 
 ### Added
