@@ -19,20 +19,19 @@ left generic to enable analysis of data collected using different protocols or o
 More information can be found in [this ISMRM abstract](https://www.researchgate.net/publication/349830229_UKRIN_Kidney_Analysis_Toolbox_UKAT_A_Framework_for_Harmonized_Quantitative_Renal_MRI_Analysis).
 
 # Installing `ukat`
-There are a few different ways you can install `uakt` based on what you want to do with it
+There are a few different ways you can install `ukat` based on what you want to do with it
 ### "I just want to process my data with this package"
 1. Make sure you're running Python >=3.6
 2. Install `ukat` with `pip install ukat`
 
 ### "I want to modify this code to do something a bit different but don't want my modifications to go back into `ukat`"
-1. Clone this reposetry with `git clone https://github.com/UKRIN-MAPS/ukat.git`
+1. Clone this repository with `git clone https://github.com/UKRIN-MAPS/ukat.git`
 2. Change to the `ukat` root directory (the one containing a file named `setup.py`).
 3. Run the following command in your terminal: `pip install -e . `
-4. Install [SimpleElastix](https://simpleelastix.github.io/) ([instructions](https://simpleelastix.readthedocs.io/GettingStarted.html)).
 
-Now if you make any changes to the ukat code, they'll permiate into any analysis you perform where you've imported `ukat`.
+Now if you make any changes to the `ukat` code, they'll permeate into any analysis you perform where you've imported `ukat`.
 
-### "I want to contribute to `ukat` and write code that ends up back on this repository for other to use"
+### "I want to contribute to `ukat` and write code that ends up back on this repository for others to use"
 Great! 
 
 [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the repository to your GitHub account. Then, [clone](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-2-create-a-local-clone-of-your-fork) the repository to your local machine. After doing this, you should see:
@@ -41,7 +40,7 @@ Great!
     origin   https://github.com/<YOUR-GITHUB-USERNAME>/ukat.git (fetch)
     origin   https://github.com/<YOUR-GITHUB-USERNAME>/ukat.git (push)
 
-Now, [configure](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository) git to sync your fork with the original UKRIN-MAPS repository:
+Now, [configure](https://help.github.com/en/github/getting-started-with-github/fork-a-repo#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository) git to sync your fork with the original `ukat` repository:
 
     $ git remote add upstream https://github.com/UKRIN-MAPS/ukat.git
 
@@ -53,7 +52,7 @@ Now the upstream repository should be set:
     upstream   https://github.com/UKRIN-MAPS/ukat.git (fetch)
     upstream   https://github.com/UKRIN-MAPS/ukat.git (push)
 
-Now you can suggest changes (e.g. suggest new code) to be added to the repository via [pull](https://help.github.com/en/github/getting-started-with-github/github-glossary#pull-request) [requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork). Don't forget to keep your fork [in sync](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with the upstream repository (i.e. the UKRIN-MAPS repository in the UKRIN-MAPS organisation).
+Now you can suggest changes (e.g. suggest new code) to be added to the repository via [pull](https://help.github.com/en/github/getting-started-with-github/github-glossary#pull-request) [requests](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork). Don't forget to keep your fork [in sync](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with the upstream repository (i.e. the `ukat` repository in the UKRIN-MAPS organisation).
 
 If you are new to git/GitHub you may find the following cheat sheets handy ([web](https://github.github.com/training-kit/downloads/github-git-cheat-sheet/), [pdf](https://github.github.com/training-kit/downloads/github-git-cheat-sheet.pdf)).
 
