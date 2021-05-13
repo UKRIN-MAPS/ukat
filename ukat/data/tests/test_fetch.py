@@ -34,32 +34,6 @@ class TestFetch:
         assert len(np.shape(bvecs)) == 2
         assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)
 
-    def test_philips_dwi(self):
-
-        # Check if folder exists
-        assert os.path.exists(os.path.join(DIR_DATA, "dwi", "philips"))
-        directory = os.path.join(DIR_DATA, "dwi", "philips")
-
-        # Check if the following extensions exist
-        assert any(f.endswith('.bval') for f in os.listdir(directory))
-        assert any(f.endswith('.bvec') for f in os.listdir(directory))
-        assert any(f.endswith('.nii.gz') for f in os.listdir(directory))
-
-        # Test if the fetch function works
-        magnitude, affine, bvals, bvecs = fetch.dwi_philips()
-
-        # Check the format of the outputs
-        assert isinstance(magnitude, np.ndarray)
-        assert np.unique(np.isnan(magnitude)) != [True]
-        assert isinstance(affine, np.ndarray)
-        assert isinstance(bvals, np.ndarray)
-        assert isinstance(bvecs, np.ndarray)
-        assert len(np.shape(magnitude)) == 4
-        assert np.shape(affine) == (4, 4)
-        assert len(np.shape(bvals)) == 1
-        assert len(np.shape(bvecs)) == 2
-        assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)
-
     def test_siemens_dwi(self):
 
         # Check if folder exists

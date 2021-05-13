@@ -1,7 +1,7 @@
 import os
 import shutil
 from ukat.mapping.diffusion import make_gradient_scheme, ADC, DTI
-from ukat.data import fetch
+from ukat.data import fetcher
 from ukat.utils import arraystats
 import numpy.testing as npt
 import numpy as np
@@ -73,7 +73,7 @@ class TestMakeGradientScheme:
 
 
 class TestADC:
-    pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
+    pixel_array, affine, bvals, bvecs = fetcher.dwi_philips()
     pixel_array = pixel_array[35:95, 40:90, 3:6, :]
     mask = pixel_array[..., 0] > 20000
 
@@ -169,7 +169,7 @@ class TestADC:
 
 
 class TestDTI:
-    pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
+    pixel_array, affine, bvals, bvecs = fetcher.dwi_philips()
     pixel_array = pixel_array[35:95, 40:90, 3:6, :]
     mask = pixel_array[..., 0] > 20000
 
