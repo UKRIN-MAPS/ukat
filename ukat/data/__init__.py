@@ -1,1 +1,1 @@
-from . import fetch
+from . import fetch, fetcher

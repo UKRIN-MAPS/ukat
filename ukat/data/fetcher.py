@@ -38,6 +38,7 @@ def get_fnames(name):
         fbvec = pjoin(folder, '03901__DWI_5slices.bvec')
         return fraw, fjson, fbval, fbvec
 
+
 def dwi_philips():
     fraw, fjson, fbval, fbvec = get_fnames('dwi_philips')
     bvals, bvecs = read_bvals_bvecs(fbval, fbvec)
