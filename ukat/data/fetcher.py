@@ -1,5 +1,7 @@
+import json
 import os
 import nibabel as nib
+import numpy as np
 
 from dipy.data.fetcher import _make_fetcher
 from dipy.io import read_bvals_bvecs
@@ -10,6 +12,21 @@ if 'UKAT_HOME' in os.environ:
 else:
     ukat_home = pjoin(os.path.expanduser('~'), '.ukat')
 
+fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
+                            'https://zenodo.org/record/4758189/files/',
+                            ['00009__3D_B0_map_VOL_e1.json',
+                             '00009__3D_B0_map_VOL_e1.nii.gz',
+                             '00009__3D_B0_map_VOL_e2.json',
+                             '00009__3D_B0_map_VOL_e2.nii.gz'],
+                            ['00009__3D_B0_map_VOL_e1.json',
+                             '00009__3D_B0_map_VOL_e1.nii.gz',
+                             '00009__3D_B0_map_VOL_e2.json',
+                             '00009__3D_B0_map_VOL_e2.nii.gz'],
+                            ['68496d356804e09ab36836a9f6a5c717',
+                             'b8bd073521436c2abaef88c58c04d048',
+                             '193bf6964aeb29b438ea7945b071900a',
+                             '81efa61e7e0d47f897c054f80da9dfd1'],
+                            doc='Downloading GE B0 data')
 fetch_dwi_ge = _make_fetcher('fetch_dwi_ge', pjoin(ukat_home, 'dwi_ge'),
                              'https://zenodo.org/record/4757819/files/',
                              ['00014__Cor_DWI_RT.nii.gz',
@@ -62,6 +79,13 @@ fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens', pjoin(ukat_home,
 
 
 def get_fnames(name):
+    if name == 'b0_ge':
+        files, folder = fetch_b0_ge()
+        fe1_json = pjoin(folder, '00009__3D_B0_map_VOL_e1.json')
+        fe1_raw = pjoin(folder, '00009__3D_B0_map_VOL_e1.nii.gz')
+        fe2_json = pjoin(folder, '00009__3D_B0_map_VOL_e2.json')
+        fe2_raw = pjoin(folder, '00009__3D_B0_map_VOL_e2.nii.gz')
+        return fe1_json, fe1_raw, fe2_json, fe2_raw
     if name == 'dwi_ge':
         files, folder = fetch_dwi_ge()
         fraw = pjoin(folder, '00014__Cor_DWI_RT.nii.gz')
@@ -87,6 +111,44 @@ def get_fnames(name):
         return fraw, fjson, fbval, fbvec
 
 
+def b0_ge():
+    fe1_json, fe1_raw, fe2_json, fe2_raw = get_fnames('b0_ge')
+
+    # Load magnitude, real and imaginary data and corresponding echo times
+    magnitude = []
+    real = []
+    imaginary = []
+    echo_list = []
+    for file in [fe1_raw, fe2_raw]:
+        data = nib.load(file)
+        magnitude.append(data.get_fdata()[..., 0])
+        real.append(data.get_fdata()[..., 1])
+        imaginary.append(data.get_fdata()[..., 2])
+
+    for file in [fe1_json, fe2_json]:
+        # Retrieve list of echo times in the original order
+        with open(file, 'r') as json_file:
+            hdr = json.load(json_file)
+        echo_list.append(hdr['EchoTime'])
+
+    # Move echo dimension to 4th dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    real = np.moveaxis(np.array(real), 0, -1)
+    imaginary = np.moveaxis(np.array(imaginary), 0, -1)
+
+    # Calculate Phase image => tan-1(Im/Re)
+    # np.negative is used to change the sign - as discussed with Andy Priest
+    phase = np.negative(np.arctan2(imaginary, real))
+
+    echo_list = np.array(echo_list)
+
+    # Sort by increasing echo time
+    sort_idxs = np.argsort(echo_list)
+    echo_list = echo_list[sort_idxs]
+    magnitude = magnitude[..., sort_idxs]
+    phase = phase[..., sort_idxs]
+
+    return magnitude, phase, data.affine, echo_list
 def dwi_ge():
     fraw, fjson, fbval, fbvec = get_fnames('dwi_ge')
     bvals, bvecs = read_bvals_bvecs(fbval, fbvec)
