@@ -1,8 +1,8 @@
-# Information about R2* (`r2star`) data
+# Information about T2* (`t2star`) data
 
 ## Information common to all vendors
 
-* All vendors can output (at least) magnitude and phase images. However, given that currently we are not using phase images in T2* processing, the only files that are uploaded to the subdirectories of `r2star/data` are magnitude images.
+* All vendors can output (at least) magnitude and phase images. However, given that currently we are not using phase images in T2* processing, the only files that are uploaded to the subdirectories of `t2star/data` are magnitude images.
 * 1 echo per NIfTI file
 
 ## GE-specific information
