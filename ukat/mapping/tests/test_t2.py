@@ -140,8 +140,7 @@ class TestT2:
         te *= 1000
         # Crop to reduce runtime
         image = image[60:90, 30:70, 2, :]
-        print(te)
-        print(np.mean(image, axis=(0, 1, 2)))
+
         # Gold standard statistics
         gold_standard_2p_exp = [105.63945, 39.616205,
                                 0.0, 568.160604]
