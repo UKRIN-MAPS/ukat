@@ -8,10 +8,14 @@ from dipy.data.fetcher import _make_fetcher
 from dipy.io import read_bvals_bvecs
 from os.path import join as pjoin
 
+# Set up directory to cache data
 if 'UKAT_HOME' in os.environ:
     ukat_home = os.environ['UKAT_HOME']
 else:
     ukat_home = pjoin(os.path.expanduser('~'), '.ukat')
+
+# Create a series of fetcher functions. These will either download or locate
+# the desired files.
 
 fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
                             'https://zenodo.org/record/4758189/files/',
@@ -248,6 +252,17 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
 
 
 def get_fnames(name):
+    """Provide full paths to example or test datasets.
+        Parameters
+        ----------
+        name : str
+            the filename/s of which dataset to return
+
+        Returns
+        -------
+        fnames : list
+            filenames for dataset
+    """
     if name == 'b0_ge':
         files, folder = fetch_b0_ge()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -315,6 +330,19 @@ def get_fnames(name):
 
 
 def b0_ge():
+    """Fetches b0/ge dataset
+
+        Returns
+        -------
+        numpy.ndarray
+            image data - Magnitude
+        numpy.ndarray
+            image data - Phase
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     fnames = get_fnames('b0_ge')
 
     # Load magnitude, real and imaginary data and corresponding echo times
@@ -356,6 +384,19 @@ def b0_ge():
 
 
 def b0_philips():
+    """Fetches b0/philips dataset
+
+        Returns
+        -------
+        numpy.ndarray
+            image data - Magnitude
+        numpy.ndarray
+            image data - Phase
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     return _load_b0_siemens_philips(get_fnames('b0_philips'))
 
 
@@ -367,7 +408,14 @@ def b0_siemens(dataset_id):
             - dataset_id = 2 to load "b0\siemens_2"
         Returns
         -------
-        See outputs of _load_b0_siemens_philips
+        numpy.ndarray
+            image data - Magnitude
+        numpy.ndarray
+            image data - Phase
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
         """
 
     possible_dataset_ids = [1, 2]
@@ -383,6 +431,18 @@ def b0_siemens(dataset_id):
 
 
 def dwi_ge():
+    """Fetches dwi/ge dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.array
+            array of bvalues
+        numpy.array
+            array of bvectors
+        """
     fnames = get_fnames('dwi_ge')
     bval_path = [f for f in fnames if f.endswith('.bval')][0]
     bvec_path = [f for f in fnames if f.endswith('.bvec')][0]
@@ -396,6 +456,18 @@ def dwi_ge():
 
 
 def dwi_philips():
+    """Fetches dwi/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.array
+            array of bvalues
+        numpy.array
+            array of bvectors
+        """
     fnames = get_fnames('dwi_philips')
 
     bval_path = [f for f in fnames if f.endswith('.bval')][0]
@@ -410,6 +482,18 @@ def dwi_philips():
 
 
 def dwi_siemens():
+    """Fetches dwi/siemens dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.array
+            array of bvalues
+        numpy.array
+            array of bvectors
+        """
     fnames = get_fnames('dwi_siemens')
 
     bval_path = [f for f in fnames if f.endswith('.bval')][0]
@@ -551,6 +635,16 @@ def t2_philips(dataset_id=1):
 
 
 def t2star_ge():
+    """Fetches t2star/ge dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     fnames = get_fnames('t2star_ge')
     image = []
     echo_list = []
@@ -582,15 +676,37 @@ def t2star_ge():
 
 
 def t2star_philips():
+    """Fetches t2star/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     return _load_t2star_siemens_philips(get_fnames('t2star_philips'))
 
 
 def t2star_siemens():
+    """Fetches t2star/siemens dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
 
 
 def _load_b0_siemens_philips(fnames):
-    """General function to retrieve siemens b0 data from list of filepaths
+    """General function to retrieve siemens and philips b0 data from list of
+    filepaths
+
     Returns
     -------
     numpy.ndarray
@@ -660,6 +776,17 @@ def _load_b0_siemens_philips(fnames):
 
 
 def _load_t2star_siemens_philips(fnames):
+    """General function to retrieve siemens and philips T2* data from list of
+        filepaths
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
     image = []
     echo_list = []
     for file in fnames:
