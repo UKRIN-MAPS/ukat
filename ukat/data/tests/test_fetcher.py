@@ -186,10 +186,6 @@ class TestFetch:
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
 
-        # If no dataset_id is given
-        with pytest.raises(TypeError):
-            magnitude, affine, echo_times = fetcher.t2_philips()
-
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
             magnitude, affine, echo_times = fetcher.t2_philips(3)

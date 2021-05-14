@@ -29,8 +29,8 @@ fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
                              '81efa61e7e0d47f897c054f80da9dfd1'],
                             doc='Downloading GE B0 data')
 
-fetch_b0_philips = _make_fetcher('fetch_b0_philips', pjoin(ukat_home,
-                                                           'b0_philips'),
+fetch_b0_philips = _make_fetcher('fetch_b0_philips',
+                                 pjoin(ukat_home, 'b0_philips'),
                                  'https://zenodo.org/record/4758303/files/',
                                  ['01401__B0_map_expiration_volume_2DMS_'
                                   'product_e1.json',
@@ -74,8 +74,8 @@ fetch_b0_philips = _make_fetcher('fetch_b0_philips', pjoin(ukat_home,
                                   '270890cf80ebd2d34a1f465e8e7d73f0'],
                                  doc='Downloading Philips B0 dataset')
 
-fetch_b0_siemens_1 = _make_fetcher('fetch_b0_siemens_1', pjoin(ukat_home,
-                                                               'b0_siemens_1'),
+fetch_b0_siemens_1 = _make_fetcher('fetch_b0_siemens_1',
+                                   pjoin(ukat_home, 'b0_siemens_1'),
                                    'https://zenodo.org/record/4761921/files/',
                                    ['00010__bh_b0map_3D_default_e1.json',
                                     '00010__bh_b0map_3D_default_e1.nii.gz',
@@ -103,8 +103,8 @@ fetch_b0_siemens_1 = _make_fetcher('fetch_b0_siemens_1', pjoin(ukat_home,
                                     '0aec402fd96b9bbe35fce5f2e76d96b8'],
                                    doc='Downloading Siemens B0 dataset 1')
 
-fetch_b0_siemens_2 = _make_fetcher('fetch_b0_siemens_2', pjoin(ukat_home,
-                                                               'b0_siemens_2'),
+fetch_b0_siemens_2 = _make_fetcher('fetch_b0_siemens_2',
+                                   pjoin(ukat_home, 'b0_siemens_2'),
                                    'https://zenodo.org/record/4761921/files/',
                                    ['00044__bh_b0map_fa3_default_e1.json',
                                     '00044__bh_b0map_fa3_default_e1.nii.gz',
@@ -148,8 +148,8 @@ fetch_dwi_ge = _make_fetcher('fetch_dwi_ge', pjoin(ukat_home, 'dwi_ge'),
                               'a536341625a299743557e467772a3e46'],
                              doc='Downloading GE DWI data')
 
-fetch_dwi_philips = _make_fetcher('fetch_dwi_philips', pjoin(ukat_home,
-                                                             'dwi_philips'),
+fetch_dwi_philips = _make_fetcher('fetch_dwi_philips',
+                                  pjoin(ukat_home, 'dwi_philips'),
                                   'https://zenodo.org/record/4757139/files/',
                                   ['03901__DWI_5slices.nii.gz',
                                    '03901__DWI_5slices.json',
@@ -165,8 +165,8 @@ fetch_dwi_philips = _make_fetcher('fetch_dwi_philips', pjoin(ukat_home,
                                    'c70d2a49c003dd53d63b9d4cb9388cdb'],
                                   doc='Downloading Philips DWI data')
 
-fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens', pjoin(ukat_home,
-                                                             'dwi_siemens'),
+fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens',
+                                  pjoin(ukat_home, 'dwi_siemens'),
                                   'https://zenodo.org/record/4757887/files/',
                                   ['00042__trig_dwi_13b_06dir.nii.gz',
                                    '00042__trig_dwi_13b_06dir.json',
@@ -181,6 +181,41 @@ fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens', pjoin(ukat_home,
                                    'a57ce54e88c154d06a34722eaabb60fb',
                                    '32d551e73ab6481972a6c8eab44f556d'],
                                   doc='Downloading Siemens DWI data')
+
+fetch_t1_philips_1 = _make_fetcher('fetch_t1_philips_1',
+                                   pjoin(ukat_home, 't1_philips_1'),
+                                   'https://zenodo.org/record/4762285/files/',
+                                   ['philips_1.zip'],
+                                   ['philips_1.zip'],
+                                   ['3928d498b30d811910856e82ac4d406f'],
+                                   unzip=True,
+                                   doc='Downloading Philips T1 dataset 1')
+
+fetch_t1_philips_2 = _make_fetcher('fetch_t1_philips_2',
+                                   pjoin(ukat_home, 't1_philips_2'),
+                                   'https://zenodo.org/record/4762285/files/',
+                                   ['00901__.json',
+                                    '00901__.nii.gz',
+                                    '00901___ph.json',
+                                    '00901___ph.nii.gz'],
+                                   ['00901__.json',
+                                    '00901__.nii.gz',
+                                    '00901___ph.json',
+                                    '00901___ph.nii.gz'],
+                                   ['4ee96f6521fee6ceec9192c1c38abf68',
+                                    'c324dd00cecc9d4b06944b92041ba717',
+                                    '8b16dd5f00abde1aff6845ecd38f74f7',
+                                    'b1bc6c2f6c43e26f4a1d27868eb93df3'],
+                                   doc='Downloading Philips T1 dataset 2')
+
+fetch_t2_philips = _make_fetcher('fetch_t2_philips',
+                                   pjoin(ukat_home, 't2_philips'),
+                                   'https://zenodo.org/record/4762380/files/',
+                                   ['philips_1.zip'],
+                                   ['philips_1.zip'],
+                                   ['a8adc351219339737b3f0a50404e2c54'],
+                                   unzip=True,
+                                   doc='Downloading Philips T2 data')
 
 
 def get_fnames(name):
@@ -216,6 +251,21 @@ def get_fnames(name):
 
     elif name == 'dwi_siemens':
         files, folder = fetch_dwi_siemens()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't1_philips_1':
+        files, folder = fetch_t1_philips_1()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't1_philips_2':
+        files, folder = fetch_t1_philips_2()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't2_philips':
+        files, folder = fetch_t2_philips()
         fnames = glob.glob(pjoin(folder, '*'))
         return fnames
 
@@ -327,6 +377,133 @@ def dwi_siemens():
     data = raw.get_fdata()
     affine = raw.affine
     return data, affine, bvals, bvecs
+
+
+def t1_philips(dataset_id):
+    """Fetches t1/philips_{dataset_id} dataset
+        dataset_id : int
+                Number of the dataset to load:
+                - dataset_id = 1 to load "t1\philips_1"
+                - dataset_id = 2 to load "t1\philips_2"
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of inversion times, in seconds
+        float
+            temporal slice spacing of image, in seconds
+        """
+    possible_dataset_ids = [1, 2]
+
+    if dataset_id not in possible_dataset_ids:
+        error_msg = f"`dataset_id` must be one of {possible_dataset_ids}"
+        raise ValueError(error_msg)
+
+    if dataset_id == 1:
+        fnames = get_fnames('t1_philips_1')
+        image = []
+        inversion_list = []
+        for file in fnames:
+
+            if file.endswith(".nii.gz"):
+
+                # Load NIfTI and only save the magnitude data (index 0)
+                data = nib.load(file)
+                image.append(data.get_fdata())
+
+            elif file.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(file, 'r') as json_file:
+                    hdr = json.load(json_file)
+                inversion_list.append(hdr["InversionTime"])
+
+        # Move inversion dimension to 4th dimension
+        image = np.moveaxis(np.array(image), 0, -1)
+        inversion_list = np.array(inversion_list)
+
+        # Sort by increasing inversion time
+        sort_idxs = np.argsort(inversion_list)
+        inversion_list = inversion_list[sort_idxs]
+        tss = 0
+        magnitude = image[:, :, :, sort_idxs]
+        phase = np.zeros(image.shape)
+        affine = data.affine
+
+        return magnitude, phase, affine, inversion_list, tss
+
+    elif dataset_id == 2:
+        fnames = get_fnames('t1_philips_2')
+        magnitude_path = [f for f in fnames if ("__ph" not in f)
+                          and f.endswith('.nii.gz')][0]
+        magnitude_img = nib.load(magnitude_path)
+        magnitude = magnitude_img.get_fdata()
+        phase_path = [f for f in fnames if f.endswith('__ph.nii.gz')][0]
+        phase_img = nib.load(phase_path)
+        phase = phase_img.get_fdata()
+        inversion_list = np.arange(0.1, 1.801, 0.1)
+        tss = 0.0537
+        affine = magnitude_img.affine
+
+        return magnitude, phase, affine, inversion_list, tss
+
+
+def t2_philips(dataset_id=1):
+    """Fetches t2/philips_{dataset_id} dataset
+    dataset_id : int
+            Number of the dataset to load:
+            - dataset_id = 1 to load "t2\philips_1"
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of echo times, in seconds
+    """
+
+    possible_dataset_ids = [1, 2]
+
+    if dataset_id not in possible_dataset_ids:
+        error_msg = f"`dataset_id` must be one of {possible_dataset_ids}"
+        raise ValueError(error_msg)
+
+    # See README.md in ukat\data\t2 for information about the acquisition.
+    if dataset_id == 1:
+        fnames = get_fnames('t2_philips')
+        # Load magnitude data and corresponding echo times (in the orig)
+        magnitude = []
+        echo_list = []
+        for file in fnames:
+
+            if file.endswith(".nii.gz"):
+
+                # Load NIfTI
+                data = nib.load(file)
+                magnitude.append(data.get_fdata())
+
+            elif file.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(file, 'r') as json_file:
+                    hdr = json.load(json_file)
+                echo_list.append(hdr["EchoTime"])
+
+        # Move echo dimension to 4th dimension
+        magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+        echo_list = np.array(echo_list)
+
+        # Sort by increasing echo time
+        sort_idxs = np.argsort(echo_list)
+        echo_list = echo_list[sort_idxs]
+        magnitude = magnitude[:, :, :, sort_idxs]
+        affine = data.affine
+
+        return magnitude, affine, echo_list
 
 
 def _load_b0_siemens_philips(filepaths):
