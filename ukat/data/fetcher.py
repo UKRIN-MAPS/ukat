@@ -209,13 +209,42 @@ fetch_t1_philips_2 = _make_fetcher('fetch_t1_philips_2',
                                    doc='Downloading Philips T1 dataset 2')
 
 fetch_t2_philips = _make_fetcher('fetch_t2_philips',
-                                   pjoin(ukat_home, 't2_philips'),
-                                   'https://zenodo.org/record/4762380/files/',
-                                   ['philips_1.zip'],
-                                   ['philips_1.zip'],
-                                   ['a8adc351219339737b3f0a50404e2c54'],
-                                   unzip=True,
-                                   doc='Downloading Philips T2 data')
+                                 pjoin(ukat_home, 't2_philips'),
+                                 'https://zenodo.org/record/4762380/files/',
+                                 ['philips_1.zip'],
+                                 ['philips_1.zip'],
+                                 ['a8adc351219339737b3f0a50404e2c54'],
+                                 unzip=True,
+                                 doc='Downloading Philips T2 data')
+
+fetch_t2star_ge = _make_fetcher('fetch_t2star_ge',
+                                pjoin(ukat_home, 't2star_ge'),
+                                'https://zenodo.org/record/4762487/files/',
+                                ['ge.zip'],
+                                ['ge.zip'],
+                                ['7bc144c263444a3841e1c443444ccecb'],
+                                unzip=True,
+                                doc='Downloading GE T2* data')
+
+fetch_t2star_philips = _make_fetcher('fetch_t2star_philips',
+                                     pjoin(ukat_home, 't2star_philips'),
+                                     'https://zenodo.org/record/4762497/'
+                                     'files/',
+                                     ['philips.zip'],
+                                     ['philips.zip'],
+                                     ['396a61bed653dd43d56241ad5b7a9765'],
+                                     unzip=True,
+                                     doc='Downloading Philips T2* data')
+
+fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
+                                     pjoin(ukat_home, 't2star_siemens'),
+                                     'https://zenodo.org/record/4762501/'
+                                     'files/',
+                                     ['siemens.zip'],
+                                     ['siemens.zip'],
+                                     ['f3378e0f1b93e302b6d6fba29bdb7e73'],
+                                     unzip=True,
+                                     doc='Downloading Siemens T2* data')
 
 
 def get_fnames(name):
@@ -266,6 +295,21 @@ def get_fnames(name):
 
     elif name == 't2_philips':
         files, folder = fetch_t2_philips()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't2star_ge':
+        files, folder = fetch_t2star_ge()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't2star_philips':
+        files, folder = fetch_t2star_philips()
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
+
+    elif name == 't2star_siemens':
+        files, folder = fetch_t2star_siemens()
         fnames = glob.glob(pjoin(folder, '*'))
         return fnames
 
@@ -506,7 +550,46 @@ def t2_philips(dataset_id=1):
         return magnitude, affine, echo_list
 
 
-def _load_b0_siemens_philips(filepaths):
+def t2star_ge():
+    fnames = get_fnames('t2star_ge')
+    image = []
+    echo_list = []
+    for file in fnames:
+
+        if file.endswith(".nii.gz"):
+
+            # Load NIfTI and only save the magnitude data (index 0)
+            data = nib.load(file)
+            image.append(data.get_fdata()[..., 0])
+
+        elif file.endswith(".json"):
+
+            # Retrieve list of echo times in the original order
+            with open(file, 'r') as json_file:
+                hdr = json.load(json_file)
+            echo_list.append(hdr['EchoTime'])
+
+    # Move echo dimension to 4th dimension
+    image = np.moveaxis(np.array(image), 0, -1)
+    echo_list = np.array(echo_list)
+
+    # Sort by increasing echo time
+    sort_idxs = np.argsort(echo_list)
+    echo_list = echo_list[sort_idxs]
+    image = image[..., sort_idxs]
+
+    return image, data.affine, echo_list
+
+
+def t2star_philips():
+    return _load_t2star_siemens_philips(get_fnames('t2star_philips'))
+
+
+def t2star_siemens():
+    return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
+
+
+def _load_b0_siemens_philips(fnames):
     """General function to retrieve siemens b0 data from list of filepaths
     Returns
     -------
@@ -525,16 +608,16 @@ def _load_b0_siemens_philips(filepaths):
     image_types = []
     echo_times = []
 
-    for filepath in filepaths:
+    for file in fnames:
 
-        if filepath.endswith(".nii.gz"):
+        if file.endswith(".nii.gz"):
             # Load data in NIfTI files
-            nii = nib.load(filepath)
+            nii = nib.load(file)
             data.append(nii.get_fdata())
             affines.append(nii.affine)
 
             # Load necessary information from corresponding .json files
-            json_path = filepath.replace(".nii.gz", ".json")
+            json_path = file.replace(".nii.gz", ".json")
             with open(json_path, 'r') as json_file:
                 hdr = json.load(json_file)
                 image_types.append(hdr['ImageType'])
@@ -574,3 +657,33 @@ def _load_b0_siemens_philips(filepaths):
         raise ValueError("Affine matrices of input data are not all equal")
 
     return magnitude, phase, affine, echo_times
+
+
+def _load_t2star_siemens_philips(fnames):
+    image = []
+    echo_list = []
+    for file in fnames:
+
+        if file.endswith(".nii.gz"):
+
+            # Load NIfTI and only save the magnitude data (index 0)
+            data = nib.load(file)
+            image.append(data.get_fdata())
+
+        elif file.endswith(".json"):
+
+            # Retrieve list of echo times in the original order
+            with open(file, 'r') as json_file:
+                hdr = json.load(json_file)
+            echo_list.append(hdr['EchoTime'])
+
+    # Move echo dimension to 4th dimension
+    image = np.moveaxis(np.array(image), 0, -1)
+    echo_list = np.array(echo_list)
+
+    # Sort by increasing echo time
+    sort_idxs = np.argsort(echo_list)
+    echo_list = echo_list[sort_idxs]
+    image = image[..., sort_idxs]
+
+    return image, data.affine, echo_list

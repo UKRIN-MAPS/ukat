@@ -190,9 +190,9 @@ class TestFetch:
         with pytest.raises(ValueError):
             magnitude, affine, echo_times = fetcher.t2_philips(3)
 
-    def test_ge_r2star(self):
+    def test_ge_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.r2star_ge()
+        magnitude, affine, echo_times = fetcher.t2star_ge()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -203,9 +203,9 @@ class TestFetch:
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
 
-    def test_philips_r2star(self):
+    def test_philips_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.r2star_philips()
+        magnitude, affine, echo_times = fetcher.t2star_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -216,9 +216,9 @@ class TestFetch:
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
 
-    def test_siemens_r2star(self):
+    def test_siemens_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.r2star_siemens()
+        magnitude, affine, echo_times = fetcher.t2star_siemens()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
