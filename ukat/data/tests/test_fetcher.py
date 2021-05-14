@@ -4,14 +4,14 @@ import os
 import pytest
 
 from importlib import reload
-from ukat.data import fetcher
+from ukat.data import fetch
 
 
 class TestFetch:
 
     def test_ge_b0(self):
         # Test if the fetch function works
-        magnitude, phase, affine, echo_times = fetcher.b0_ge()
+        magnitude, phase, affine, echo_times = fetch.b0_ge()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -28,7 +28,7 @@ class TestFetch:
     def test_philips_b0(self):
 
         # Test if the fetch function works
-        magnitude, phase, affine, echo_times = fetcher.b0_philips()
+        magnitude, phase, affine, echo_times = fetch.b0_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -44,7 +44,7 @@ class TestFetch:
 
     def test_siemens_b0(self):
         # Test if the fetch function works
-        magnitude, phase, affine, echo_times = fetcher.b0_siemens(1)
+        magnitude, phase, affine, echo_times = fetch.b0_siemens(1)
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -59,7 +59,7 @@ class TestFetch:
         assert len(np.shape(echo_times)) == 1
 
         # Test if the fetch function works
-        magnitude, phase, affine, echo_times = fetcher.b0_siemens(2)
+        magnitude, phase, affine, echo_times = fetch.b0_siemens(2)
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -75,15 +75,15 @@ class TestFetch:
 
         # If no dataset_id is given
         with pytest.raises(TypeError):
-            magnitude, phase, affine, echo_times = fetcher.b0_siemens()
+            magnitude, phase, affine, echo_times = fetch.b0_siemens()
 
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
-            magnitude, phase, affine, echo_times = fetcher.b0_siemens(3)
+            magnitude, phase, affine, echo_times = fetch.b0_siemens(3)
 
     def test_ge_dwi(self):
         # Test if the fetch function works
-        magnitude, affine, bvals, bvecs = fetcher.dwi_ge()
+        magnitude, affine, bvals, bvecs = fetch.dwi_ge()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -100,7 +100,7 @@ class TestFetch:
     def test_philips_dwi(self):
 
         # Test if the fetch function works
-        magnitude, affine, bvals, bvecs = fetcher.dwi_philips()
+        magnitude, affine, bvals, bvecs = fetch.dwi_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -116,7 +116,7 @@ class TestFetch:
 
     def test_siemens_dwi(self):
         # Test if the fetch function works
-        magnitude, affine, bvals, bvecs = fetcher.dwi_siemens()
+        magnitude, affine, bvals, bvecs = fetch.dwi_siemens()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -132,7 +132,7 @@ class TestFetch:
 
     def test_philips_t1(self):
         # Test if the fetch function works
-        magnitude, phase, affine, inversion_times, tss = fetcher.t1_philips(1)
+        magnitude, phase, affine, inversion_times, tss = fetch.t1_philips(1)
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -148,7 +148,7 @@ class TestFetch:
         assert len(np.shape(inversion_times)) == 1
 
         # Test if the fetch function works
-        magnitude, phase, affine, inversion_times, tss = fetcher.t1_philips(2)
+        magnitude, phase, affine, inversion_times, tss = fetch.t1_philips(2)
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -166,16 +166,16 @@ class TestFetch:
         # If no dataset_id is given
         with pytest.raises(TypeError):
             magnitude, phase, affine, inversion_times, _ = \
-                fetcher.t1_philips()
+                fetch.t1_philips()
 
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
             magnitude, phase, affine, inversion_times, _ = \
-                fetcher.t1_philips(3)
+                fetch.t1_philips(3)
 
     def test_philips_t2(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.t2_philips(1)
+        magnitude, affine, echo_times = fetch.t2_philips(1)
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -188,11 +188,11 @@ class TestFetch:
 
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
-            magnitude, affine, echo_times = fetcher.t2_philips(3)
+            magnitude, affine, echo_times = fetch.t2_philips(3)
 
     def test_ge_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.t2star_ge()
+        magnitude, affine, echo_times = fetch.t2star_ge()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -205,7 +205,7 @@ class TestFetch:
 
     def test_philips_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.t2star_philips()
+        magnitude, affine, echo_times = fetch.t2star_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -218,7 +218,7 @@ class TestFetch:
 
     def test_siemens_t2star(self):
         # Test if the fetch function works
-        magnitude, affine, echo_times = fetcher.t2star_siemens()
+        magnitude, affine, echo_times = fetch.t2star_siemens()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -228,24 +228,3 @@ class TestFetch:
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
-
-
-def test_ukat_home():
-    test_path = 'TEST_PATH'
-    if 'UKAT_HOME' in os.environ:
-        old_home = os.environ['UKAT_HOME']
-        del os.environ['UKAT_HOME']
-    else:
-        old_home = None
-
-    reload(fetcher)
-
-    npt.assert_string_equal(fetcher.ukat_home,
-                            os.path.join(os.path.expanduser('~'), '.ukat'))
-    os.environ['UKAT_HOME'] = test_path
-    reload(fetcher)
-    npt.assert_string_equal(fetcher.ukat_home, test_path)
-
-    # return to previous state
-    if old_home:
-        os.environ['UKAT_HOME'] = old_home

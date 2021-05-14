@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
-from ukat.data import fetcher
+from ukat.data import fetch
 from ukat.mapping.b0 import B0
 from ukat.utils import arraystats
 
@@ -166,7 +166,7 @@ class TestB0:
 
     def test_real_data(self):
         # Get test data
-        magnitude, phase, affine, te = fetcher.b0_philips()
+        magnitude, phase, affine, te = fetch.b0_philips()
         te *= 1000
 
         # Process on a central slice only
