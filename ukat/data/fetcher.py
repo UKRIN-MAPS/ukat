@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import nibabel as nib
@@ -185,111 +186,60 @@ fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens', pjoin(ukat_home,
 def get_fnames(name):
     if name == 'b0_ge':
         files, folder = fetch_b0_ge()
-        fe1_json = pjoin(folder, '00009__3D_B0_map_VOL_e1.json')
-        fe1_raw = pjoin(folder, '00009__3D_B0_map_VOL_e1.nii.gz')
-        fe2_json = pjoin(folder, '00009__3D_B0_map_VOL_e2.json')
-        fe2_raw = pjoin(folder, '00009__3D_B0_map_VOL_e2.nii.gz')
-        return fe1_json, fe1_raw, fe2_json, fe2_raw
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'b0_philips':
         files, folder = fetch_b0_philips()
-        fe1_ma_json = pjoin(folder,
-                            '01401__B0_map_expiration_volume_2DMS_product_e1'
-                            '.json')
-        fe1_ma_raw = pjoin(folder,
-                           '01401__B0_map_expiration_volume_2DMS_product_e1'
-                           '.nii.gz')
-        fe1_ph_json = pjoin(folder,
-                            '01401__B0_map_expiration_volume_2DMS_product_e1'
-                            '_ph.json')
-        fe1_ph_raw = pjoin(folder,
-                           '01401__B0_map_expiration_volume_2DMS_product_e1_ph'
-                           '.nii.gz')
-        fe2_ma_json = pjoin(folder,
-                            '01401__B0_map_expiration_volume_2DMS_product_e2'
-                            '.json')
-        fe2_ma_raw = pjoin(folder,
-                           '01401__B0_map_expiration_volume_2DMS_product_e2'
-                           '.nii.gz')
-        fe2_ph_json = pjoin(folder,
-                            '01401__B0_map_expiration_volume_2DMS_product_e2'
-                            '_ph.json')
-        fe2_ph_raw = pjoin(folder,
-                           '01401__B0_map_expiration_volume_2DMS_product_e2_ph'
-                           '.nii.gz')
-        return fe1_ma_json, fe1_ma_raw, fe1_ph_json, fe1_ph_raw, \
-            fe2_ma_json, fe2_ma_raw, fe2_ph_json, fe2_ph_raw
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'b0_siemens_1':
         files, folder = fetch_b0_siemens_1()
-        fe1_ma_json = pjoin(folder, '00010__bh_b0map_3D_default_e1.json')
-        fe1_ma_raw = pjoin(folder, '00010__bh_b0map_3D_default_e1.nii.gz')
-        fe1_ph_json = pjoin(folder, '00011__bh_b0map_3D_default_e1.json')
-        fe1_ph_raw = pjoin(folder, '00011__bh_b0map_3D_default_e1.nii.gz')
-        fe2_ma_json = pjoin(folder, '00010__bh_b0map_3D_default_e2.json')
-        fe2_ma_raw = pjoin(folder, '00010__bh_b0map_3D_default_e2.nii.gz')
-        fe2_ph_json = pjoin(folder, '00011__bh_b0map_3D_default_e2.json')
-        fe2_ph_raw = pjoin(folder, '00011__bh_b0map_3D_default_e2.nii.gz')
-        return fe1_ma_json, fe1_ma_raw, fe1_ph_json, fe1_ph_raw, \
-            fe2_ma_json, fe2_ma_raw, fe2_ph_json, fe2_ph_raw
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'b0_siemens_2':
         files, folder = fetch_b0_siemens_2()
-        fe1_ma_json = pjoin(folder, '00044__bh_b0map_fa3_default_e1.json')
-        fe1_ma_raw = pjoin(folder, '00044__bh_b0map_fa3_default_e1.nii.gz')
-        fe1_ph_json = pjoin(folder, '00045__bh_b0map_fa3_default_e1.json')
-        fe1_ph_raw = pjoin(folder, '00045__bh_b0map_fa3_default_e1.nii.gz')
-        fe2_ma_json = pjoin(folder, '00044__bh_b0map_fa3_default_e2.json')
-        fe2_ma_raw = pjoin(folder, '00044__bh_b0map_fa3_default_e2.nii.gz')
-        fe2_ph_json = pjoin(folder, '00045__bh_b0map_fa3_default_e2.json')
-        fe2_ph_raw = pjoin(folder, '00045__bh_b0map_fa3_default_e2.nii.gz')
-        return fe1_ma_json, fe1_ma_raw, fe1_ph_json, fe1_ph_raw, \
-            fe2_ma_json, fe2_ma_raw, fe2_ph_json, fe2_ph_raw
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'dwi_ge':
         files, folder = fetch_dwi_ge()
-        fraw = pjoin(folder, '00014__Cor_DWI_RT.nii.gz')
-        fjson = pjoin(folder, '00014__Cor_DWI_RT.json')
-        fbval = pjoin(folder, '00014__Cor_DWI_RT.bval')
-        fbvec = pjoin(folder, '00014__Cor_DWI_RT.bvec')
-        return fraw, fjson, fbval, fbvec
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'dwi_philips':
         files, folder = fetch_dwi_philips()
-        fraw = pjoin(folder, '03901__DWI_5slices.nii.gz')
-        fjson = pjoin(folder, '03901__DWI_5slices.json')
-        fbval = pjoin(folder, '03901__DWI_5slices.bval')
-        fbvec = pjoin(folder, '03901__DWI_5slices.bvec')
-        return fraw, fjson, fbval, fbvec
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
     elif name == 'dwi_siemens':
         files, folder = fetch_dwi_siemens()
-        fraw = pjoin(folder, '00042__trig_dwi_13b_06dir.nii.gz')
-        fjson = pjoin(folder, '00042__trig_dwi_13b_06dir.json')
-        fbval = pjoin(folder, '00042__trig_dwi_13b_06dir.bval')
-        fbvec = pjoin(folder, '00042__trig_dwi_13b_06dir.bvec')
-        return fraw, fjson, fbval, fbvec
+        fnames = glob.glob(pjoin(folder, '*'))
+        return fnames
 
 
 def b0_ge():
-    fe1_json, fe1_raw, fe2_json, fe2_raw = get_fnames('b0_ge')
+    fnames = get_fnames('b0_ge')
 
     # Load magnitude, real and imaginary data and corresponding echo times
     magnitude = []
     real = []
     imaginary = []
     echo_list = []
-    for file in [fe1_raw, fe2_raw]:
-        data = nib.load(file)
-        magnitude.append(data.get_fdata()[..., 0])
-        real.append(data.get_fdata()[..., 1])
-        imaginary.append(data.get_fdata()[..., 2])
+    for file in fnames:
+        if file.endswith(".nii.gz"):
+            data = nib.load(file)
+            magnitude.append(data.get_fdata()[..., 0])
+            real.append(data.get_fdata()[..., 1])
+            imaginary.append(data.get_fdata()[..., 2])
 
-    for file in [fe1_json, fe2_json]:
-        # Retrieve list of echo times in the original order
-        with open(file, 'r') as json_file:
-            hdr = json.load(json_file)
-        echo_list.append(hdr['EchoTime'])
+        elif file.endswith(".json"):
+            # Retrieve list of echo times in the original order
+            with open(file, 'r') as json_file:
+                hdr = json.load(json_file)
+            echo_list.append(hdr['EchoTime'])
 
     # Move echo dimension to 4th dimension
     magnitude = np.moveaxis(np.array(magnitude), 0, -1)
@@ -312,7 +262,7 @@ def b0_ge():
 
 
 def b0_philips():
-    return _load_b0_siemens_philips(list(get_fnames('b0_philips')))
+    return _load_b0_siemens_philips(get_fnames('b0_philips'))
 
 
 def b0_siemens(dataset_id):
@@ -333,15 +283,18 @@ def b0_siemens(dataset_id):
         raise ValueError(error_msg)
 
     if dataset_id == 1:
-        return _load_b0_siemens_philips(list(get_fnames('b0_siemens_1')))
+        return _load_b0_siemens_philips(get_fnames('b0_siemens_1'))
     elif dataset_id == 2:
-        return _load_b0_siemens_philips(list(get_fnames('b0_siemens_2')))
+        return _load_b0_siemens_philips(get_fnames('b0_siemens_2'))
 
 
 def dwi_ge():
-    fraw, fjson, fbval, fbvec = get_fnames('dwi_ge')
-    bvals, bvecs = read_bvals_bvecs(fbval, fbvec)
-    raw = nib.load(fraw)
+    fnames = get_fnames('dwi_ge')
+    bval_path = [f for f in fnames if f.endswith('.bval')][0]
+    bvec_path = [f for f in fnames if f.endswith('.bvec')][0]
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
+    raw = nib.load(nii_path)
 
     data = raw.get_fdata()
     affine = raw.affine
@@ -349,9 +302,13 @@ def dwi_ge():
 
 
 def dwi_philips():
-    fraw, fjson, fbval, fbvec = get_fnames('dwi_philips')
-    bvals, bvecs = read_bvals_bvecs(fbval, fbvec)
-    raw = nib.load(fraw)
+    fnames = get_fnames('dwi_philips')
+
+    bval_path = [f for f in fnames if f.endswith('.bval')][0]
+    bvec_path = [f for f in fnames if f.endswith('.bvec')][0]
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
+    raw = nib.load(nii_path)
 
     data = raw.get_fdata()
     affine = raw.affine
@@ -359,9 +316,13 @@ def dwi_philips():
 
 
 def dwi_siemens():
-    fraw, fjson, fbval, fbvec = get_fnames('dwi_siemens')
-    bvals, bvecs = read_bvals_bvecs(fbval, fbvec)
-    raw = nib.load(fraw)
+    fnames = get_fnames('dwi_siemens')
+
+    bval_path = [f for f in fnames if f.endswith('.bval')][0]
+    bvec_path = [f for f in fnames if f.endswith('.bvec')][0]
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    bvals, bvecs = read_bvals_bvecs(bval_path, bvec_path)
+    raw = nib.load(nii_path)
 
     data = raw.get_fdata()
     affine = raw.affine
