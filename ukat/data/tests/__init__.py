@@ -1,1 +1,1 @@
-from . import test_fetcher
+from . import test_fetch
