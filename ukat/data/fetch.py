@@ -404,8 +404,8 @@ def b0_siemens(dataset_id):
     """Fetches b0/siemens_{dataset_id} dataset
         dataset_id : int
             Number of the dataset to load:
-            - dataset_id = 1 to load "b0\siemens_1"
-            - dataset_id = 2 to load "b0\siemens_2"
+            - dataset_id = 1 to load "b0/siemens_1"
+            - dataset_id = 2 to load "b0/siemens_2"
         Returns
         -------
         numpy.ndarray
@@ -511,8 +511,8 @@ def t1_philips(dataset_id):
     """Fetches t1/philips_{dataset_id} dataset
         dataset_id : int
                 Number of the dataset to load:
-                - dataset_id = 1 to load "t1\philips_1"
-                - dataset_id = 2 to load "t1\philips_2"
+                - dataset_id = 1 to load "t1/philips_1"
+                - dataset_id = 2 to load "t1/philips_2"
         Returns
         -------
         numpy.ndarray
@@ -583,7 +583,7 @@ def t2_philips(dataset_id=1):
     """Fetches t2/philips_{dataset_id} dataset
     dataset_id : int
             Number of the dataset to load:
-            - dataset_id = 1 to load "t2\philips_1"
+            - dataset_id = 1 to load "t2/philips_1"
     Returns
     -------
     numpy.ndarray
@@ -600,7 +600,7 @@ def t2_philips(dataset_id=1):
         error_msg = f"`dataset_id` must be one of {possible_dataset_ids}"
         raise ValueError(error_msg)
 
-    # See README.md in ukat\data\t2 for information about the acquisition.
+    # See README.md in ukat/data/t2 for information about the acquisition.
     if dataset_id == 1:
         fnames = get_fnames('t2_philips')
         # Load magnitude data and corresponding echo times (in the orig)
