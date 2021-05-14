@@ -1,9 +1,6 @@
 import numpy as np
-import numpy.testing as npt
-import os
 import pytest
 
-from importlib import reload
 from ukat.data import fetch
 
 

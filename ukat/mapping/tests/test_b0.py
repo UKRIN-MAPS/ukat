@@ -134,7 +134,6 @@ class TestB0:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
-
     def test_pixel_array_type_assertion(self):
         # Empty array
         with pytest.raises(ValueError):
