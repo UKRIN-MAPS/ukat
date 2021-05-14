@@ -253,9 +253,11 @@ class TestT2Star:
         # Get test data
         image, affine, te = fetch.t2star_philips()
         te *= 1000
+
         # Crop to reduce runtime
         image = image[30:60, 50:90, 2, :]
-
+        print(te)
+        print(np.mean(image, axis=(0, 1, 2)))
         # Gold standard statistics for each method
         gold_standard_loglin = [32.2660346964308, 18.499243841743308,
                                 0.0, 239.07407841896983]

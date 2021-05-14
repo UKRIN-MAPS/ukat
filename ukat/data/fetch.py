@@ -250,67 +250,67 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
 def get_fnames(name):
     if name == 'b0_ge':
         files, folder = fetch_b0_ge()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'b0_philips':
         files, folder = fetch_b0_philips()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'b0_siemens_1':
         files, folder = fetch_b0_siemens_1()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'b0_siemens_2':
         files, folder = fetch_b0_siemens_2()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'dwi_ge':
         files, folder = fetch_dwi_ge()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'dwi_philips':
         files, folder = fetch_dwi_philips()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 'dwi_siemens':
         files, folder = fetch_dwi_siemens()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't1_philips_1':
         files, folder = fetch_t1_philips_1()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't1_philips_2':
         files, folder = fetch_t1_philips_2()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't2_philips':
         files, folder = fetch_t2_philips()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't2star_ge':
         files, folder = fetch_t2star_ge()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't2star_philips':
         files, folder = fetch_t2star_philips()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't2star_siemens':
         files, folder = fetch_t2star_siemens()
-        fnames = glob.glob(pjoin(folder, '*'))
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
 
