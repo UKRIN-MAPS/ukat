@@ -58,18 +58,17 @@ And don't forget about [The Zen of Python](https://www.python.org/dev/peps/pep-0
 
 
 # Versioning
-Use the [semver](https://semver.org/) convention for milestones, releases. More information on creating a new release can be found [here](https://github.com/UKRIN-MAPS/ukat/wiki/Creating-a-New-Release).
+Use the [semver](https://semver.org/) convention for milestones, releases. More information on creating a new release can 
+be found [here](https://github.com/UKRIN-MAPS/ukat/wiki/Creating-a-New-Release).
 
 # Tests
-We use the [pytest](https://docs.pytest.org/) framework to write tests for our code. These tests can then be run locally while you're developing or, when you open a pull request, via a continuous integration GitHub Action. Additionally [codecov](https://app.codecov.io/gh/UKRIN-MAPS/ukat) will evaluate the coverage of the whole project and your new patch, please try and keep coverage as close to 100% as possible. 
+We use the [pytest](https://docs.pytest.org/) framework to write tests for our code. These tests can then be run locally 
+while you're developing or, when you open a pull request, via a continuous integration GitHub Action. Additionally [codecov](https://app.codecov.io/gh/UKRIN-MAPS/ukat) will evaluate the coverage of the whole project and your new patch, please try and keep coverage as close to 100% as possible. 
 
 As well as the unit tests used to assess the functionality of the code, we also implement end-to-end tests of each module using 'real' MRI data i.e. data acquired with a scanner rather than generated on a computer. This ensures the results of analysis performed using `ukat` don't change without anyone realising.
 
 # Examples/tutorials
 We should strive to have examples/tutorials for the main methods implemented in this repository. Ideally in jupyter notebook format (`.ipynb` files) in the `tutorials` directory. See [here](/tutorials/t2star_calculation.ipynb) for an example.
-
-# Test/Example Data
-MRI data isn't stored in `ukat`, it's stored on external web-hosting and then [downloaded at runtime](https://github.com/UKRIN-MAPS/ukat/blob/master/ukat/data/fetch.py). We recommend the use of Zenodo for online storage as it generates a DOI for each dataset and records usage statistics. We have a [UKRIN community](https://zenodo.org/communities/ukrin/) to help keep data curated. If you want to add data to this community please use [this link](https://zenodo.org/deposit/new?c=ukrin). Alternatively, any public facing link to data can be incorporated into `ukat` i.e. if you would rather keep the data on your institutional web-hosting, that's fine.
 
 # Misc
 - If you are looking for ideas for contributing, look for any open issues.

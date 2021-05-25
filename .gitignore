@@ -19,6 +19,3 @@ __pycache__/
 # Eggs
 ukat.egg-info/
 .eggs/
-
-# Tutorial Outputs
-/tutorials/*output
