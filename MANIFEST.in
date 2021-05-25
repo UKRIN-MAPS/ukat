@@ -1,0 +1,5 @@
+include LICENSE
+global-include *.txt *.dvs
+global-exclude __pycache__
+prune doc
+prune experiments

@@ -10,7 +10,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.2.2",
+    version="0.3.0",
     description="UKRIN Kidney Analysis Toolbox",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -20,16 +20,7 @@ setup(
     python_requires='>=3.6, <4',
     packages=find_packages(),
     install_requires=requirements,
-
-    package_data={
-        # If any package contains files with extensions below, include them:
-        "": ["*.json",
-             "*.nii.gz",
-             "*.bval",
-             "*.bval_before_manual_correction",
-             "*.bvec",
-             "*.png"],
-    },
+    include_package_data=True,
 
     # Classifiers - the purpose is to create a wheel and upload it to PYPI
     classifiers=[
