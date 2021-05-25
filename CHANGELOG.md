@@ -1,3 +1,9 @@
+## [0.2.2] - 2021-05-11
+
+### Added
+* `ukat` is now available on PyPI. Simply run `pip install ukat`
+
+
 ## [0.2.0] - 2021-05-10
 
 ### Added

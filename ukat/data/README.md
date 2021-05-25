@@ -5,7 +5,7 @@ This document contains two types of information:
 1. Origin of test data
 2. Information which is general enough to apply to all types of MR test data
 
-Specific information for each type of MR data lives on the README.md files in each data subdirectory: [`b0`](b0/README.md), [`dwi`](dwi/README.md), [`r2star`](r2star/README.md).
+Specific information for each type of MR data lives on the README.md files in each data subdirectory: [`b0`](b0/README.md), [`dwi`](dwi/README.md), [`t1`](t1/README.md), [`t2`](t2/README.md) and [`t2star`](t2star/README.md). The data itself is in online storage, we recommend the use of Zenodo and have a [UKRIN community](https://zenodo.org/communities/ukrin/) to help keep data curated. If you want to add data to this community please use [this link](https://zenodo.org/deposit/new?c=ukrin).
 
 ## Origin of test data
 
@@ -13,9 +13,9 @@ With the exception of datasets marked with :star:, all test data is from the tra
 
 ### BOLD R2*
 
-* `r2star/ge`: subject 02, session 010, series 16
-* `r2star/philips`: subject 02, session 002, series 14
-* `r2star/siemens`: subject 02, session 007, series 24/25/26/27
+* `t2star/ge`: subject 02, session 010, series 16
+* `t2star/philips`: subject 02, session 002, series 14
+* `t2star/siemens`: subject 02, session 007, series 24/25/26/27
 ### DWI
 
 * `dwi/ge`: subject 04, session 005, series 14. (**ANP checked**)
