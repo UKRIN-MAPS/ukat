@@ -73,4 +73,4 @@ MRI data isn't stored in `ukat`, it's stored on external web-hosting and then [d
 
 # Misc
 - If you are looking for ideas for contributing, look for any open issues.
-- Other contributing guidelines for inspiration: [`dipy`](https://github.com/dipy/dipy/blob/master/CONTRIBUTING.md), [`fslpy`](https://users.fmrib.ox.ac.uk/~paulmc/fsleyes/fslpy/latest/contributing.html).
+- Other contributing guidelines for inspiration: [`dipy`](https://github.com/dipy/dipy/blob/master/.github/CONTRIBUTING.md), [`fslpy`](https://users.fmrib.ox.ac.uk/~paulmc/fsleyes/fslpy/latest/contributing.html).

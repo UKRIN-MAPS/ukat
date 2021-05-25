@@ -1,3 +1,16 @@
+## [0.3.0] - 2021-05-25
+
+## Added 
+* PyPI release badge to readme
+
+### Changed
+* Data is now stored externally and downloaded at runtime #147 #148 #62
+* Manifest added to enable more specific packaging for pypi
+* New release action generates pre-release for tags on branches other than master
+
+### Fixed
+* Link to dipy contribting guidelines
+
 ## [0.2.2] - 2021-05-11
 
 ### Added
