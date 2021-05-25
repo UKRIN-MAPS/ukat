@@ -21,16 +21,17 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Set variables
-       id: setvars
-       run: |
-         if [[ "${{github.base_ref}}" == "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
-           echo "::set-output name=prerelease::false"
-         fi
 
-         if [[ "${{github.base_ref}}" != "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
-           echo "::set-output name=prerelease::true"
-         fi
+      - name: Set variables
+        id: setvars
+        run: |
+          if [[ "${{github.base_ref}}" == "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
+            echo "::set-output name=prerelease::false"
+          fi
+
+          if [[ "${{github.base_ref}}" != "master" || "${{github.ref}}" == "refs/heads/master" ]]; then
+            echo "::set-output name=prerelease::true"
+          fi
       - name: Release
         uses: docker://antonyurchenko/git-release:latest
         env:
