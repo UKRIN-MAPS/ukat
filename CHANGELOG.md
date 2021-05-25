@@ -1,3 +1,9 @@
+## [0.3.0-rc.1] - 2021-05-25
+
+### Changed
+* Data is now stored externally and downloaded at runtime #147 #148 #62
+* Manifest added to enable more specific packaging for pypi
+
 ## [0.2.2] - 2021-05-11
 
 ### Added
