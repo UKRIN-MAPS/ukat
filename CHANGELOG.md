@@ -1,4 +1,4 @@
-## [0.3.0-rc.2] - 2021-05-25
+## [0.3.0] - 2021-05-25
 
 ## Added 
 * PyPI release badge to readme
