@@ -10,7 +10,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name="ukat",
-    version="0.3.0-rc.1",
+    version="0.3.0-rc.2",
     description="UKRIN Kidney Analysis Toolbox",
     long_description=long_description,
     long_description_content_type="text/markdown",
