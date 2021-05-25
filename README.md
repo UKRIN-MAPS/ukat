@@ -3,6 +3,7 @@
 
 ![Build and Test](https://github.com/UKRIN-MAPS/ukat/workflows/Build%20and%20Test/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/UKRIN-MAPS/ukat/branch/master/graph/badge.svg?token=QJ9DQONJBP)](https://codecov.io/gh/UKRIN-MAPS/ukat)
+[![PyPI version](https://badge.fury.io/py/ukat.svg)](https://badge.fury.io/py/ukat)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/256993671.svg)](https://zenodo.org/badge/latestdoi/256993671)
 
