@@ -251,8 +251,9 @@ class TestT2Star:
     def test_real_data(self):
 
         # Get test data
-        image, affine, te = fetch.r2star_philips()
+        image, affine, te = fetch.t2star_philips()
         te *= 1000
+
         # Crop to reduce runtime
         image = image[30:60, 50:90, 2, :]
 
