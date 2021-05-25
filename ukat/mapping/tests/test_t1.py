@@ -325,7 +325,6 @@ class TestT1:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
-
 class TestMagnitudeCorrect:
 
     real = np.array([-43611, -46086, -19840, -14032, 8654])

@@ -134,6 +134,7 @@ class TestB0:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
+
     def test_pixel_array_type_assertion(self):
         # Empty array
         with pytest.raises(ValueError):
@@ -165,7 +166,7 @@ class TestB0:
 
     def test_real_data(self):
         # Get test data
-        magnitude, phase, affine, te = fetch.b0_philips()
+        magnitude, phase, affine, te = fetch.b0_philips(2)
         te *= 1000
 
         # Process on a central slice only
