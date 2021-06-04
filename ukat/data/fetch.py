@@ -250,6 +250,36 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
 
+fetch_total_kidney_weights = _make_fetcher('fetch_total_kidney_weights',
+                                           pjoin(ukat_home,
+                                                 'total_kidney_weights'),
+                                           'https://zenodo.org/record/4894406/'
+                                           'files/',
+                                           ['whole_kidney_cnn.model'],
+                                           ['whole_kidney_cnn.model'],
+                                           ['e9f60f9fe6ad9ece'
+                                            'd8b055bf6792a1d1'],
+                                           doc='Downloading total kidney '
+                                               'model weights')
+
+fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
+                                  pjoin(ukat_home, 't1w_philips'),
+                                  'https://zenodo.org/record/4897994/files/',
+                                  ['03001__sT1W_FFE_IP_60.nii.gz'],
+                                  ['03001__sT1W_FFE_IP_60.nii.gz'],
+                                  ['02f90f0fc8277e09144c21d3fc75a8b7'],
+                                  doc='Downloading Philips T1W data')
+
+fetch_t2w_philips = _make_fetcher('fetch_t2w_philips',
+                                  pjoin(ukat_home, 't2w_philips'),
+                                  'https://zenodo.org/record/4897994/files/',
+                                  ['03301__T2W_TSE_Cor_BH_SENSE2_SPAIR'
+                                   '.nii.gz'],
+                                  ['03301__T2W_TSE_Cor_BH_SENSE2_SPAIR'
+                                   '.nii.gz'],
+                                  ['276b904142677026a04659505d923134'],
+                                  doc='Downloading Philips T2W data')
+
 
 def get_fnames(name):
     """Provide full paths to example or test datasets.
@@ -325,6 +355,21 @@ def get_fnames(name):
 
     elif name == 't2star_siemens':
         files, folder = fetch_t2star_siemens()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'total_kidney_weights':
+        files, folder = fetch_total_kidney_weights()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 't1w_philips':
+        files, folder = fetch_t1w_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 't2w_philips':
+        files, folder = fetch_t2w_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
@@ -428,6 +473,78 @@ def b0_siemens(dataset_id):
         return _load_b0_siemens_philips(get_fnames('b0_siemens_1'))
     elif dataset_id == 2:
         return _load_b0_siemens_philips(get_fnames('b0_siemens_2'))
+
+
+def _load_b0_siemens_philips(fnames):
+    """General function to retrieve siemens and philips b0 data from list of
+    filepaths
+
+    Returns
+    -------
+    numpy.ndarray
+        image data - Magnitude
+    numpy.ndarray
+        image data - Phase
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        array of echo times, in seconds
+    """
+    # Load magnitude, real and imaginary data and corresponding echo times
+    data = []
+    affines = []
+    image_types = []
+    echo_times = []
+
+    for file in fnames:
+
+        if file.endswith(".nii.gz"):
+            # Load data in NIfTI files
+            nii = nib.load(file)
+            data.append(nii.get_fdata())
+            affines.append(nii.affine)
+
+            # Load necessary information from corresponding .json files
+            json_path = file.replace(".nii.gz", ".json")
+            with open(json_path, 'r') as json_file:
+                hdr = json.load(json_file)
+                image_types.append(hdr['ImageType'])
+                echo_times.append(hdr['EchoTime'])
+
+    # Sort by increasing echo time
+    sort_idxs = np.argsort(echo_times)
+    data = np.array([data[i] for i in sort_idxs])
+    echo_times = np.array([echo_times[i] for i in sort_idxs])
+    image_types = [image_types[i] for i in sort_idxs]
+
+    # Move measurements (time) dimension to 4th dimension
+    data = np.moveaxis(data, 0, -1)
+
+    # Separate magnitude and phase images
+    magnitude_idxs = ["M" in i for i in image_types]
+    phase_idxs = ["P" in i for i in image_types]
+
+    magnitude = data[..., magnitude_idxs]
+    phase = data[..., phase_idxs]
+
+    echo_times_magnitude = echo_times[magnitude_idxs]
+    echo_times_phase = echo_times[phase_idxs]
+
+    # Assign unique echo times for output
+    echo_times_are_equal = (echo_times_magnitude == echo_times_phase).all()
+    if echo_times_are_equal:
+        echo_times = echo_times_magnitude
+    else:
+        raise ValueError("Magnitude and phase echo times must be equal")
+
+    # If all affines are equal, initialise the affine for output
+    affines_are_equal = (np.array([i == affines[0] for i in affines])).all()
+    if affines_are_equal:
+        affine = affines[0]
+    else:
+        raise ValueError("Affine matrices of input data are not all equal")
+
+    return magnitude, phase, affine, echo_times
 
 
 def dwi_ge():
@@ -703,78 +820,6 @@ def t2star_siemens():
     return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
 
 
-def _load_b0_siemens_philips(fnames):
-    """General function to retrieve siemens and philips b0 data from list of
-    filepaths
-
-    Returns
-    -------
-    numpy.ndarray
-        image data - Magnitude
-    numpy.ndarray
-        image data - Phase
-    numpy.ndarray
-        affine matrix for image data
-    numpy.ndarray
-        array of echo times, in seconds
-    """
-    # Load magnitude, real and imaginary data and corresponding echo times
-    data = []
-    affines = []
-    image_types = []
-    echo_times = []
-
-    for file in fnames:
-
-        if file.endswith(".nii.gz"):
-            # Load data in NIfTI files
-            nii = nib.load(file)
-            data.append(nii.get_fdata())
-            affines.append(nii.affine)
-
-            # Load necessary information from corresponding .json files
-            json_path = file.replace(".nii.gz", ".json")
-            with open(json_path, 'r') as json_file:
-                hdr = json.load(json_file)
-                image_types.append(hdr['ImageType'])
-                echo_times.append(hdr['EchoTime'])
-
-    # Sort by increasing echo time
-    sort_idxs = np.argsort(echo_times)
-    data = np.array([data[i] for i in sort_idxs])
-    echo_times = np.array([echo_times[i] for i in sort_idxs])
-    image_types = [image_types[i] for i in sort_idxs]
-
-    # Move measurements (time) dimension to 4th dimension
-    data = np.moveaxis(data, 0, -1)
-
-    # Separate magnitude and phase images
-    magnitude_idxs = ["M" in i for i in image_types]
-    phase_idxs = ["P" in i for i in image_types]
-
-    magnitude = data[..., magnitude_idxs]
-    phase = data[..., phase_idxs]
-
-    echo_times_magnitude = echo_times[magnitude_idxs]
-    echo_times_phase = echo_times[phase_idxs]
-
-    # Assign unique echo times for output
-    echo_times_are_equal = (echo_times_magnitude == echo_times_phase).all()
-    if echo_times_are_equal:
-        echo_times = echo_times_magnitude
-    else:
-        raise ValueError("Magnitude and phase echo times must be equal")
-
-    # If all affines are equal, initialise the affine for output
-    affines_are_equal = (np.array([i == affines[0] for i in affines])).all()
-    if affines_are_equal:
-        affine = affines[0]
-    else:
-        raise ValueError("Affine matrices of input data are not all equal")
-
-    return magnitude, phase, affine, echo_times
-
-
 def _load_t2star_siemens_philips(fnames):
     """General function to retrieve siemens and philips T2* data from list of
         filepaths
@@ -814,3 +859,37 @@ def _load_t2star_siemens_philips(fnames):
     image = image[..., sort_idxs]
 
     return image, data.affine, echo_list
+
+
+def t1w_volume_philips():
+    """Fetches segmentation/philips_t1w dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    """
+    fnames = get_fnames('t1w_philips')
+
+    data = nib.load(fnames[0])
+    image = data.get_fdata()
+
+    return image, data.affine
+
+
+def t2w_volume_philips():
+    """Fetches segmentation/philips_t2w dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    """
+    fnames = get_fnames('t2w_philips')
+
+    data = nib.load(fnames[0])
+    image = data.get_fdata()
+
+    return image, data.affine

@@ -1,6 +1,8 @@
 import numpy as np
+import os
 import pytest
 
+from dipy.data.fetcher import _get_file_md5
 from ukat.data import fetch
 
 
@@ -225,3 +227,36 @@ class TestFetch:
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
+
+    def test_total_kidney_weights(self):
+
+        # There isn't a fetch function as loading weights, cost functions
+        # etc is relatively involved and therefore better suited to the
+        # segmentation module itself. Here we just test that the weights
+        # file is downloaded and in the correct path.
+        fnames = fetch.get_fnames('total_kidney_weights')
+
+        assert os.path.isfile(fnames[0])
+        assert _get_file_md5(fnames[0]) == 'e9f60f9fe6ad9eced8b055bf6792a1d1'
+
+    def test_philips_t1w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t1w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
+    def test_philips_t2w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t2w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
