@@ -260,7 +260,8 @@ class T2Star:
             An array containing the R2* map generated
             by the function with R2* measured in ms.
         """
-        return np.nan_to_num(np.reciprocal(self.t2star_map), posinf=0, neginf=0)
+        return np.nan_to_num(np.reciprocal(self.t2star_map),
+                             posinf=0, neginf=0)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
