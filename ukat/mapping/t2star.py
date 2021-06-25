@@ -256,12 +256,12 @@ class T2Star:
 
         Returns
         -------
-        r2star : np.ndarray
+        r2star_map : np.ndarray
             An array containing the R2* map generated
             by the function with R2* measured in ms.
         """
-        r2star = np.reciprocal(self.t2star_map)
-        return r2star
+        return np.nan_to_num(np.reciprocal(self.t2star_map),
+                             posinf=0, neginf=0)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
