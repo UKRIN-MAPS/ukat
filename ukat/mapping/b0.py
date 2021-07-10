@@ -32,7 +32,7 @@ class B0:
 
     def __init__(self, pixel_array, echo_list, affine, mask=None,
                  unwrap=True, wrap_around=False):
-        """Initialise a T1 class instance.
+        """Initialise a B0 class instance.
 
         Parameters
         ----------
