@@ -50,14 +50,12 @@ class MTR:
             else:
                 self.mask = mask
             # The assumption is that MT_ON comes first in `pixel_array`
-            self.mt_on = self.pixel_array[..., 0]
+            self.mt_on = self.pixel_array[..., 0] * self.mask
             # The assumption is that MT_OFF comes second in `pixel_array`
-            self.mt_off = self.pixel_array[..., 1]
-            # Magnetisation Transfer Ratio mathematical expression
-            mtr = np.nan_to_num((self.mt_off - self.mt_on) / self.mt_off,
-                                 posinf=0, neginf=0)
-            # Magnetisation Transfer Ratio Map calculation
-            self.mtr_map = np.ma.masked_array(mtr, mask=self.mask)
+            self.mt_off = self.pixel_array[..., 1] * self.mask
+            # Magnetisation Transfer Ratio calculation
+            self.mtr_map = np.nan_to_num(((self.mt_off - self.mt_on) / 
+                                           self.mt_off), posinf=0, neginf=0)
         else:
             raise ValueError('The input should contain 2 mt values (ON / OFF).'
                              'The last dimension of the input pixel_array must'
