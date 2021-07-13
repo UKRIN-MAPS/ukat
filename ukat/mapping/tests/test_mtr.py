@@ -10,9 +10,9 @@ from ukat.utils import arraystats
 
 class TestMTR:
     # Create arrays for testing
-    array_one = np.arange(0, 200, 2).reshape((10, 10, 1))
+    array_one = np.arange(0, 300, 3).reshape((10, 10, 1))
     array_one[-1] = 0
-    array_two = np.arange(0, 300, 3).reshape((10, 10, 1))
+    array_two = np.arange(0, 200, 2).reshape((10, 10, 1))
     array_two[-1] = 0
     correct_array = np.concatenate((array_one, array_two), axis=2)
     three_mts_array = np.concatenate((array_one, array_two, array_two), axis=2)
@@ -32,8 +32,8 @@ class TestMTR:
         # The purpose of the next assert is to test the infinite situation
         assert (mtr_map_calculated[-1] == 
                 np.zeros(np.shape(mtr_map_calculated[-1]))).all()
-        assert (mapper.mt_on == np.squeeze(self.array_one)).all()
-        assert (mapper.mt_off == np.squeeze(self.array_two)).all()
+        assert (mapper.mt_off == np.squeeze(self.array_one)).all()
+        assert (mapper.mt_on == np.squeeze(self.array_two)).all()
 
 
     def test_inputs(self):
@@ -114,6 +114,7 @@ class TestMTR:
 
         # MTR Map
         mapper = MTR(images, affine)
+        print(arraystats.ArrayStats(mapper.mtr_map).calculate())
 
         # Stats comparison
         mtrmap_stats = arraystats.ArrayStats(mapper.mtr_map).calculate()

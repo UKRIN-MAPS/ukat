@@ -49,10 +49,10 @@ class MTR:
                 self.mask = np.ones(self.shape, dtype=bool)
             else:
                 self.mask = mask
-            # The assumption is that MT_ON comes first in `pixel_array`
-            self.mt_on = self.pixel_array[..., 0] * self.mask
-            # The assumption is that MT_OFF comes second in `pixel_array`
-            self.mt_off = self.pixel_array[..., 1] * self.mask
+            # The assumption is that MT_OFF comes first in `pixel_array`
+            self.mt_off = self.pixel_array[..., 0] * self.mask
+            # The assumption is that MT_ON comes second in `pixel_array`
+            self.mt_on = self.pixel_array[..., 1] * self.mask
             # Magnetisation Transfer Ratio calculation
             self.mtr_map = np.nan_to_num(((self.mt_off - self.mt_on) / 
                                            self.mt_off), posinf=0, neginf=0)
