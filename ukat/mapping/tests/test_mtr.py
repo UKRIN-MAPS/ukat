@@ -110,11 +110,10 @@ class TestMTR:
         images, affine = fetch.mtr_philips()
 
         # Gold standard statistics
-        gold_standard_mtr_real = [-34.174984, 189.285260, -1739.886907, 786.965213]
+        gold_standard_mtr_real = [0.1845690591, 0.6237606679, -73.0, 1.0]
 
         # MTR Map
         mapper = MTR(images, affine)
-        print(arraystats.ArrayStats(mapper.mtr_map).calculate())
 
         # Stats comparison
         mtrmap_stats = arraystats.ArrayStats(mapper.mtr_map).calculate()

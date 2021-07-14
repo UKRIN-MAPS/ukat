@@ -252,11 +252,11 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
 
 fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
                                     pjoin(ukat_home, 'mtr_philips'),
-                                    'https://zenodo.org/record/5094639/'
+                                    'https://zenodo.org/record/5101394/'
                                     'files/',
                                     ['Cor_2D_MTR_BH_3201.nii.gz'],
                                     ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                    ['3f0d98a8d77ccb16d59dce0c58702c0a'],
+                                    ['252fcc0d67feb6ea3a55b850eb1f4477'],
                                     doc='Downloading Philips MT data')
 
 def get_fnames(name):
