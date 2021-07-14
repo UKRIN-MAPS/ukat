@@ -111,6 +111,8 @@ class TestMTR:
 
         # Gold standard statistics
         gold_standard_mtr_real = [0.1845690591, 0.6237606679, -73.0, 1.0]
+        # The minimum should be 0, but the MT_ON and MT_OFF of real data
+        # isn't perfectly aligned, which will result in outliers.
 
         # MTR Map
         mapper = MTR(images, affine)
