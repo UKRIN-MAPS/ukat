@@ -12,6 +12,7 @@ class MTR:
     ----------
     mtr_map : np.ndarray
         The estimated magnetisation transfer ratio values.
+        Each value should be a float between 0 and 1.
     shape : tuple
         The shape of the MTR map.
     mt_on : np.ndarray
