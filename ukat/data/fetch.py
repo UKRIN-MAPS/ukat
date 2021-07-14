@@ -251,13 +251,13 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      doc='Downloading Siemens T2* data')
 
 fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
-                                    pjoin(ukat_home, 'mtr_philips'),
-                                    'https://zenodo.org/record/5101394/'
-                                    'files/',
-                                    ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                    ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                    ['252fcc0d67feb6ea3a55b850eb1f4477'],
-                                    doc='Downloading Philips MT data')
+                                  pjoin(ukat_home, 'mtr_philips'),
+                                  'https://zenodo.org/record/5101394/'
+                                  'files/',
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  doc='Downloading Philips MT data')
 
 def get_fnames(name):
     """Provide full paths to example or test datasets.
@@ -335,7 +335,7 @@ def get_fnames(name):
         files, folder = fetch_t2star_siemens()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
-    
+
     elif name == 'mtr_philips':
         files, folder = fetch_mtr_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))

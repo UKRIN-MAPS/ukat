@@ -30,11 +30,10 @@ class TestMTR:
                             mtrmaps_stats["min"], mtrmaps_stats["max"]],
                             self.gold_standard_mtr, rtol=1e-7, atol=1e-9)
         # The purpose of the next assert is to test the infinite situation
-        assert (mtr_map_calculated[-1] == 
+        assert (mtr_map_calculated[-1] ==
                 np.zeros(np.shape(mtr_map_calculated[-1]))).all()
         assert (mapper.mt_off == np.squeeze(self.array_one)).all()
         assert (mapper.mt_on == np.squeeze(self.array_two)).all()
-
 
     def test_inputs(self):
         # Check that it fails when input pixel_array has incorrect shape
@@ -42,7 +41,6 @@ class TestMTR:
             MTR(self.array_one, self.affine)
         with pytest.raises(ValueError):
             MTR(self.three_mts_array, self.affine)
-
 
     def test_mask(self):
         # Create a mask
@@ -58,9 +56,8 @@ class TestMTR:
         assert (arraystats.ArrayStats(all_pixels.mtr_map).calculate() !=
                 arraystats.ArrayStats(masked_pixels.mtr_map).calculate())
 
-
     def test_to_nifti(self):
-        # Create a MTR map instance and test different export to NIFTI scenarios
+        # Create a MTR map instance and test different export to NIFTI options.
         mapper = MTR(self.correct_array, self.affine)
 
         os.makedirs('test_output', exist_ok=True)
@@ -103,7 +100,6 @@ class TestMTR:
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
-
 
     def test_real_data(self):
         # Get test data
