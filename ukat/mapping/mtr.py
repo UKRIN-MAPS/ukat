@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import nibabel as nib
+import warnings
 
 
 class MTR:
@@ -29,37 +30,44 @@ class MTR:
         Parameters
         ----------
         pixel_array : np.ndarray
-            A 4D/3D array containing the image at each magnetisation transfer
-            value i.e. the dimensions of the array are
-            [x, y, 2] or [x, y, z, 2].
+            A 3D/4D array containing the image at each magnetisation transfer
+            value, i.e. the dimensions of the array are (x, y, 2) or
+            (x, y, z, 2). The assumption is that `mt_off` comes first in
+            `pixel_array` and `mt_on` comes second in `pixel_array`, i.e.
+            `pixel_array[..., 0]` corresponds to `mt_off` and
+            `pixel_array[..., 1]` corresponds to `mt_on`.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. Should be the shape of the
-            desired MTR map rather than the raw data i.e. omit the echo times
+            desired MTR map rather than the raw data i.e. omit the on/off
             dimension.
         """
-        if pixel_array.shape[-1] == 2:
-            self.pixel_array = pixel_array
-            self.shape = pixel_array.shape[:-1]
-            self.affine = affine
-            # Generate a mask if there isn't one specified
-            if mask is None:
-                self.mask = np.ones(self.shape, dtype=bool)
-            else:
-                self.mask = mask
-            # The assumption is that MT_OFF comes first in `pixel_array`
-            self.mt_off = np.squeeze(self.pixel_array[..., 0] * self.mask)
-            # The assumption is that MT_ON comes second in `pixel_array`
-            self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
-            # Magnetisation Transfer Ratio calculation
-            self.mtr_map = np.nan_to_num(((self.mt_off - self.mt_on) /
-                                         self.mt_off), posinf=0, neginf=0)
+        assert (pixel_array.shape[-1] == 2), 'The input should contain 2 MT ' \
+                                             'values (ON / OFF). The last ' \
+                                             'dimension of the input ' \
+                                             'pixel_array must be 2.'
+        if np.sum(pixel_array[..., 1]) >= np.sum(pixel_array[..., 0]):
+            warnings.warn(f'The sum of all MT_ON values should be greater '
+                           'than the sum of all MT_OFF values. Please check '
+                           'that these two are in the correct order in '
+                           '`pixel_array`.')
+        self.pixel_array = pixel_array
+        self.shape = pixel_array.shape[:-1]
+        self.affine = affine
+        # Generate a mask if there isn't one specified
+        if mask is None:
+            self.mask = np.ones(self.shape, dtype=bool)
         else:
-            raise ValueError('The input should contain 2 mt values (ON / OFF).'
-                             'The last dimension of the input pixel_array must'
-                             'be 2.')
+            self.mask = mask
+        # The assumption is that MT_OFF comes first in `pixel_array`
+        self.mt_off = np.squeeze(self.pixel_array[..., 0] * self.mask)
+        # The assumption is that MT_ON comes second in `pixel_array`
+        self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
+        # Magnetisation Transfer Ratio calculation
+        self.mtr_map = np.nan_to_num(((self.mt_off - self.mt_on) /
+                                     self.mt_off), posinf=0, neginf=0)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):

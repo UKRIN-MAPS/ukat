@@ -15,6 +15,7 @@ class TestMTR:
     array_two = np.arange(0, 200, 2).reshape((10, 10, 1))
     array_two[-1] = 0
     correct_array = np.concatenate((array_one, array_two), axis=2)
+    swapped_mts_array = np.concatenate((array_two, array_one), axis=2)
     three_mts_array = np.concatenate((array_one, array_two, array_two), axis=2)
     affine = np.eye(4)
 
@@ -37,10 +38,13 @@ class TestMTR:
 
     def test_inputs(self):
         # Check that it fails when input pixel_array has incorrect shape
-        with pytest.raises(ValueError):
+        with pytest.raises(AssertionError):
             MTR(self.array_one, self.affine)
-        with pytest.raises(ValueError):
+        with pytest.raises(AssertionError):
             MTR(self.three_mts_array, self.affine)
+        # Check if there's a warning if sum(mt_off) > sum(mt_on)
+        with pytest.warns(UserWarning):
+            MTR(self.swapped_mts_array, self.affine)
 
     def test_mask(self):
         # Create a mask
