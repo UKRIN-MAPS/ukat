@@ -50,9 +50,9 @@ class MTR:
                                              'pixel_array must be 2.'
         if np.sum(pixel_array[..., 1]) >= np.sum(pixel_array[..., 0]):
             warnings.warn(f'The sum of all MT_ON values should be greater '
-                           'than the sum of all MT_OFF values. Please check '
-                           'that these two are in the correct order in '
-                           '`pixel_array`.')
+                          'than the sum of all MT_OFF values. Please check '
+                          'that these two are in the correct order in '
+                          '`pixel_array`.')
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.affine = affine
