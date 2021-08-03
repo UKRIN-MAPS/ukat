@@ -49,9 +49,11 @@ class MTR:
                                              'dimension of the input ' \
                                              'pixel_array must be 2.'
         if np.sum(pixel_array[..., 1]) >= np.sum(pixel_array[..., 0]):
-            warnings.warn(f'The sum of all MT_ON values should be greater '
-                          'than the sum of all MT_OFF values. Please check '
-                          'that these two are in the correct order in '
+            warnings.warn(f'The average intensity of the MT_ON image is more '
+                          'than the average intensity of the MT_OFF image. '
+                          'This will lead to negative MTR values which is not '
+                          'usually desirable. Please check that you\'ve input '
+                          'MT_ON and MT_OFF in the correct order in '
                           '`pixel_array`.')
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
