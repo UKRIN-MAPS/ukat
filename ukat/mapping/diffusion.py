@@ -165,6 +165,7 @@ class ADC:
             self.mask = mask
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.mask[np.sum(pixel_array <= 0, axis=-1, dtype=bool)] = False
         self.pixel_array = np.nan_to_num(self.pixel_array)
 
         self.pixel_array_mean = self.__mean_over_directions__()
