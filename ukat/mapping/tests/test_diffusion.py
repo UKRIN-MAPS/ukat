@@ -92,8 +92,7 @@ class TestADC:
         gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
         gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
         negateive_pixel_array = self.pixel_array.copy()
-        negateive_pixel_array[:30, :, :, :] = \
-            negateive_pixel_array[:30, :, :, :] - 40000
+        negateive_pixel_array[:30, :, :, :] -= 40000
         mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
