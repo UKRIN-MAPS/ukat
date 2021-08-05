@@ -250,6 +250,14 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
 
+fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
+                                  pjoin(ukat_home, 'mtr_philips'),
+                                  'https://zenodo.org/record/5101394/'
+                                  'files/',
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  doc='Downloading Philips MT data')
 
 def get_fnames(name):
     """Provide full paths to example or test datasets.
@@ -325,6 +333,11 @@ def get_fnames(name):
 
     elif name == 't2star_siemens':
         files, folder = fetch_t2star_siemens()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'mtr_philips':
+        files, folder = fetch_mtr_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
@@ -702,6 +715,22 @@ def t2star_siemens():
         """
     return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
 
+
+def mtr_philips():
+    """Fetches mtr/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        """
+    fnames = get_fnames('mtr_philips')
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    raw = nib.load(nii_path)
+    data = raw.get_fdata()
+    affine = raw.affine
+    return data, affine
 
 def _load_b0_siemens_philips(fnames):
     """General function to retrieve siemens and philips b0 data from list of
