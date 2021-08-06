@@ -33,14 +33,13 @@ jobs:
             echo "::set-output name=prerelease::true"
           fi
       - name: Release
-        uses: docker://antonyurchenko/git-release:latest
+        uses: docker://antonyurchenko/git-release:v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRAFT_RELEASE: "false"
           PRE_RELEASE: ${{ steps.set_vars.outputs.prerelease }}
           CHANGELOG_FILE: "CHANGELOG.md"
           ALLOW_EMPTY_CHANGELOG: "false"
-          ALLOW_TAG_PREFIX: "true"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
