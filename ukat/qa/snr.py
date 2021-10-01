@@ -1,4 +1,6 @@
+import nibabel as nib
 import numpy as np
+import os
 
 
 class Tsnr:
@@ -67,4 +69,22 @@ class Tsnr:
         # ddof=1 as per Kevins code...
         tsnr_map[tsnr_map > 1000] = 0
         return tsnr_map
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output'):
+        """Exports SNR maps to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        """
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+
+        t1_nifti = nib.Nifti1Image(self.tsnr_map, affine=self.affine)
+        nib.save(t1_nifti, base_path + '_tsnr_map.nii.gz')
+        return
 
