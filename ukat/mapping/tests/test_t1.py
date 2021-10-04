@@ -68,6 +68,7 @@ class TestT1:
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
     affine = np.eye(4)
+
     def test_two_param_eq(self):
         # Without abs
         signal = two_param_eq(self.t, self.t1, self.m0)
