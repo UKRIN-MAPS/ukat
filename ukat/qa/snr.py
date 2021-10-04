@@ -29,7 +29,7 @@ class Tsnr:
             desired tSNR map rather than the raw data i.e. omit the dynamics
             dimension.
         """
-
+        np.seterr(divide='ignore', invalid='ignore')
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.dimensions = len(pixel_array.shape)
