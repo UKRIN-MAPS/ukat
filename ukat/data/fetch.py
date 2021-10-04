@@ -261,7 +261,8 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
 
 fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
                                         pjoin(ukat_home, 'tsnr_high_philips'),
-                                        'https://zenodo.org/record/5544245/files/',
+                                        'https://zenodo.org/record/5544245'
+                                        '/files/',
                                         ['high_tsnr.nii.gz'],
                                         ['high_tsnr.nii.gz'],
                                         ['382bc6850f9462994c723103d3d92ee0'],
@@ -269,7 +270,8 @@ fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
 
 fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
                                        pjoin(ukat_home, 'tsnr_low_philips'),
-                                       'https://zenodo.org/record/5544245/files/',
+                                       'https://zenodo.org/record/5544245'
+                                       '/files/',
                                        ['low_tsnr.nii.gz'],
                                        ['low_tsnr.nii.gz'],
                                        ['050c7ef07574d893b3511796050748fe'],
