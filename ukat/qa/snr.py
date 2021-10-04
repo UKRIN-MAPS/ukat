@@ -43,6 +43,10 @@ class Tsnr:
         # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
 
+        self.pixel_array = self.pixel_array * \
+                           np.repeat(self.mask[..., np.newaxis],
+                                     self.n_d, axis=-1)
+
         # Initialise output attributes
         self.tsnr_map = np.zeros(self.shape)
         self.tsnr_map = self.__tsnr__()
@@ -61,13 +65,15 @@ class Tsnr:
                        np.arange(1, self.n_d + 1),
                        np.arange(1, self.n_d + 1) ** 2]).T
         beta = np.linalg.pinv(x).dot(pixel_array_vector.T)
-        pixel_array_vector_detrended = pixel_array_vector.T - x[:, 1:].dot(beta[1:])
+        pixel_array_vector_detrended = pixel_array_vector.T - \
+                                       x[:, 1:].dot(beta[1:])
         pixel_array_detrended = pixel_array_vector_detrended.T.reshape((
             *self.shape, self.n_d))
-        tsnr_map = pixel_array_detrended.mean( axis=-1) / \
-                   pixel_array_detrended.std(axis=-1) # Might want to try
+        tsnr_map = pixel_array_detrended.mean(axis=-1) / \
+                   pixel_array_detrended.std(axis=-1)  # Might want to try
         # ddof=1 as per Kevins code...
         tsnr_map[tsnr_map > 1000] = 0
+        tsnr_map = np.nan_to_num(tsnr_map)
         return tsnr_map
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output'):
@@ -87,4 +93,3 @@ class Tsnr:
         t1_nifti = nib.Nifti1Image(self.tsnr_map, affine=self.affine)
         nib.save(t1_nifti, base_path + '_tsnr_map.nii.gz')
         return
-
