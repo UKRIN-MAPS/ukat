@@ -2,6 +2,7 @@ import numpy as np
 
 from sklearn.mixture import BayesianGaussianMixture
 
+
 class Isnr:
     """
         Attributes
