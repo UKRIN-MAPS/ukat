@@ -17,10 +17,9 @@ class Tsnr:
         Parameters
         ----------
         pixel_array : np.ndarray
-            A array containing the signal from each voxel at each inversion
-            time with the last dimension being repeated dynamics i.e. the
-            array needed to generate a tSNR map would have dimensions [x,
-            y, z, d].
+            A array containing the signal from each voxel with the last
+            dimension being repeated dynamics i.e. the array needed to
+            generate a tSNR map would have dimensions [x, y, z, d].
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -77,7 +76,7 @@ class Tsnr:
         return tsnr_map
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output'):
-        """Exports SNR maps to NIFTI.
+        """Exports tSNR maps to NIFTI.
 
         Parameters
         ----------
@@ -90,5 +89,5 @@ class Tsnr:
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
 
-        t1_nifti = nib.Nifti1Image(self.tsnr_map, affine=self.affine)
-        nib.save(t1_nifti, base_path + '_tsnr_map.nii.gz')
+        tsnr_nifti = nib.Nifti1Image(self.tsnr_map, affine=self.affine)
+        nib.save(tsnr_nifti, base_path + '_tsnr_map.nii.gz')
