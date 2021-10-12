@@ -1,11 +1,13 @@
 ## [Unmerged] - 2021-X-Y
 
 ### Added
+* iSNR calculations #162
 * tSNR calculations #160 #161
 
 ### Changed
 
 ### Fixed
+* Minor formatting/function order fixes
 
 ## [0.4.0] - 2021-08-05
 
