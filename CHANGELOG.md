@@ -1,6 +1,15 @@
+## [Unmerged] - 2021-X-Y
+
+### Added
+* tSNR calculations #160 #161
+
+### Changed
+
+### Fixed
+
 ## [0.4.0] - 2021-08-05
 
-## Added 
+### Added 
 * Magnetisation Transfer Ratio (MTR) mapping #156 #153
 
 ### Changed
@@ -14,7 +23,7 @@
 
 ## [0.3.0] - 2021-05-25
 
-## Added 
+### Added 
 * PyPI release badge to readme
 
 ### Changed

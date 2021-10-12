@@ -186,6 +186,15 @@ fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens',
                                    '32d551e73ab6481972a6c8eab44f556d'],
                                   doc='Downloading Siemens DWI data')
 
+fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
+                                  pjoin(ukat_home, 'mtr_philips'),
+                                  'https://zenodo.org/record/5101394/'
+                                  'files/',
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  doc='Downloading Philips MT data')
+
 fetch_t1_philips_1 = _make_fetcher('fetch_t1_philips_1',
                                    pjoin(ukat_home, 't1_philips_1'),
                                    'https://zenodo.org/record/4762285/files/',
@@ -250,14 +259,24 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
 
-fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
-                                  pjoin(ukat_home, 'mtr_philips'),
-                                  'https://zenodo.org/record/5101394/'
-                                  'files/',
-                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
-                                  doc='Downloading Philips MT data')
+fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
+                                        pjoin(ukat_home, 'tsnr_high_philips'),
+                                        'https://zenodo.org/record/5544245'
+                                        '/files/',
+                                        ['high_tsnr.nii.gz'],
+                                        ['high_tsnr.nii.gz'],
+                                        ['382bc6850f9462994c723103d3d92ee0'],
+                                        doc='Downloading Philips tSNR data')
+
+fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
+                                       pjoin(ukat_home, 'tsnr_low_philips'),
+                                       'https://zenodo.org/record/5544245'
+                                       '/files/',
+                                       ['low_tsnr.nii.gz'],
+                                       ['low_tsnr.nii.gz'],
+                                       ['050c7ef07574d893b3511796050748fe'],
+                                       doc='Downloading Philips tSNR data')
+
 
 def get_fnames(name):
     """Provide full paths to example or test datasets.
@@ -306,6 +325,11 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
+    elif name == 'mtr_philips':
+        files, folder = fetch_mtr_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
     elif name == 't1_philips_1':
         files, folder = fetch_t1_philips_1()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -336,8 +360,13 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
-    elif name == 'mtr_philips':
-        files, folder = fetch_mtr_philips()
+    elif name == 'tsnr_high_philips':
+        files, folder = fetch_tsnr_high_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'tsnr_low_philips':
+        files, folder = fetch_tsnr_low_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
@@ -518,6 +547,23 @@ def dwi_siemens():
     data = raw.get_fdata()
     affine = raw.affine
     return data, affine, bvals, bvecs
+
+
+def mtr_philips():
+    """Fetches mtr/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        """
+    fnames = get_fnames('mtr_philips')
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    raw = nib.load(nii_path)
+    data = raw.get_fdata()
+    affine = raw.affine
+    return data, affine
 
 
 def t1_philips(dataset_id):
@@ -716,8 +762,8 @@ def t2star_siemens():
     return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
 
 
-def mtr_philips():
-    """Fetches mtr/philips dataset
+def tsnr_high_philips():
+    """Fetches high tSNR/philips datasets
         Returns
         -------
         numpy.ndarray
@@ -725,12 +771,30 @@ def mtr_philips():
         numpy.ndarray
             affine matrix for image data
         """
-    fnames = get_fnames('mtr_philips')
+    fnames = get_fnames('tsnr_high_philips')
     nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
     raw = nib.load(nii_path)
     data = raw.get_fdata()
     affine = raw.affine
     return data, affine
+
+
+def tsnr_low_philips():
+    """Fetches low tSNR/philips datasets
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        """
+    fnames = get_fnames('tsnr_low_philips')
+    nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
+    raw = nib.load(nii_path)
+    data = raw.get_fdata()
+    affine = raw.affine
+    return data, affine
+
 
 def _load_b0_siemens_philips(fnames):
     """General function to retrieve siemens and philips b0 data from list of
