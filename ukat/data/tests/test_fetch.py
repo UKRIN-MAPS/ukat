@@ -246,4 +246,24 @@ class TestFetch:
         assert np.unique(np.isnan(image)) != [True]
         assert isinstance(affine, np.ndarray)
         assert len(np.shape(image)) == 3
+
+    def test_philips_tsnr(self):
+        # Test if the fetch function works with high tSNR data
+        data, affine = fetch.tsnr_high_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
+
+        # Test if the fetch function works with low tSNR data
+        data, affine = fetch.tsnr_low_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
         assert np.shape(affine) == (4, 4)
