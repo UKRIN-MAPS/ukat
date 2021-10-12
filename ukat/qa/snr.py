@@ -53,9 +53,13 @@ class Isnr:
         gmm = BayesianGaussianMixture(n_components=self.n_clusters,
                                       random_state=0,
                                       max_iter=500)
-        fit_prop = (128 ** 2) / np.prod(self.shape)
-        gmm.fit(self.pixel_array.reshape(-1, 1)[::int(1//fit_prop)])
-        clusters = gmm.predict(self.pixel_array.reshape(-1, 1)).reshape(
+        # Because gmm's can get quite slow when fitting to large images,
+        # we randomly sample a number of voxels equivalent to a 128 x 128 x
+        # 3 image to keep runtimes consistent and manageable for large
+        # multi-te/ti/dynamic images.
+        fit_prop = (128 ** 2 * 3) / np.prod(self.shape)
+        fit_mask = np.random.rand(self.pixel_array.size) < fit_prop
+        gmm.fit(self.pixel_array.reshape(-1, 1)[fit_mask])
         self.clusters = gmm.predict(self.pixel_array.reshape(-1, 1)).reshape(
             self.shape)
         bg_label = np.argmin(gmm.means_)
