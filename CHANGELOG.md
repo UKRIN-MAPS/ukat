@@ -5,6 +5,7 @@
 * tSNR calculations #160 #161
 
 ### Changed
+* Codecov updated #167 #168
 
 ### Fixed
 * Minor formatting/function order fixes
