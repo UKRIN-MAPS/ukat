@@ -221,6 +221,14 @@ fetch_t1_philips_2 = _make_fetcher('fetch_t1_philips_2',
                                     'b1bc6c2f6c43e26f4a1d27868eb93df3'],
                                    doc='Downloading Philips T1 dataset 2')
 
+fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
+                                  pjoin(ukat_home, 't1w_philips'),
+                                  'https://zenodo.org/record/4897994/files/',
+                                  ['03001__sT1W_FFE_IP_60.nii.gz'],
+                                  ['03001__sT1W_FFE_IP_60.nii.gz'],
+                                  ['02f90f0fc8277e09144c21d3fc75a8b7'],
+                                  doc='Downloading Philips T1W data')
+
 fetch_t2_philips = _make_fetcher('fetch_t2_philips',
                                  pjoin(ukat_home, 't2_philips'),
                                  'https://zenodo.org/record/4762380/files/',
@@ -258,6 +266,25 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      ['f3378e0f1b93e302b6d6fba29bdb7e73'],
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
+
+fetch_t2w_philips = _make_fetcher('fetch_t2w_philips',
+                                  pjoin(ukat_home, 't2w_philips'),
+                                  'https://zenodo.org/record/4897994/files/',
+                                  ['03301__T2W_TSE_Cor_BH_SENSE2_SPAIR'
+                                   '.nii.gz'],
+                                  ['03301__T2W_TSE_Cor_BH_SENSE2_SPAIR'
+                                   '.nii.gz'],
+                                  ['276b904142677026a04659505d923134'],
+                                  doc='Downloading Philips T2W data')
+
+fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
+                                  pjoin(ukat_home, 'mtr_philips'),
+                                  'https://zenodo.org/record/5101394/'
+                                  'files/',
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  doc='Downloading Philips MT data')
 
 fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
                                         pjoin(ukat_home, 'tsnr_high_philips'),
@@ -340,6 +367,11 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
+    elif name == 't1w_philips':
+        files, folder = fetch_t1w_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
     elif name == 't2_philips':
         files, folder = fetch_t2_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -359,6 +391,14 @@ def get_fnames(name):
         files, folder = fetch_t2star_siemens()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
+
+    elif name == 't2w_philips':
+        files, folder = fetch_t2w_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'mtr_philips':
+        files, folder = fetch_mtr_philips()
 
     elif name == 'tsnr_high_philips':
         files, folder = fetch_tsnr_high_philips()
@@ -638,6 +678,23 @@ def t1_philips(dataset_id):
         return magnitude, phase, affine, inversion_list, tss
 
 
+def t1w_volume_philips():
+    """Fetches segmentation/philips_t1w dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    """
+    fnames = get_fnames('t1w_philips')
+
+    data = nib.load(fnames[0])
+    image = data.get_fdata()
+
+    return image, data.affine
+
+
 def t2_philips(dataset_id=1):
     """Fetches t2/philips_{dataset_id} dataset
     dataset_id : int
@@ -762,8 +819,26 @@ def t2star_siemens():
     return _load_t2star_siemens_philips(get_fnames('t2star_siemens'))
 
 
+def t2w_volume_philips():
+    """Fetches segmentation/philips_t2w dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    """
+    fnames = get_fnames('t2w_philips')
+
+    data = nib.load(fnames[0])
+    image = data.get_fdata()
+
+    return image, data.affine
+
+
 def tsnr_high_philips():
     """Fetches high tSNR/philips datasets
+
         Returns
         -------
         numpy.ndarray
