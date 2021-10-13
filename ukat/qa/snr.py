@@ -30,7 +30,7 @@ class Isnr:
             outside the body, are True. If no mask is supplied, one is
             estimated using a Bayesian Gaussian mixture model to segment
             background voxels.
-        n_clusters : int, optional, optional
+        n_clusters : int, optional
             When using the automatic background segmentation this is the
             total number of componenets the image is segmented into. The
             component with the lowest mean is assumed to be background.

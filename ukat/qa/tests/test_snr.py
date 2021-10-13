@@ -79,7 +79,7 @@ class TestIsnr:
                             gold_standard_clusters, rtol=1e-6, atol=1e-4)
         npt.assert_allclose(isnr_obj.isnr, 45.968827)
 
-        # Two components
+        # Four components
         gold_standard_bg = [0.240496, 0.427385, 0.0, 1.0]
         gold_standard_clusters = [1.164344, 0.994117, 0.0, 3.0]
         isnr_obj = snr.Isnr(data, n_clusters=4)
