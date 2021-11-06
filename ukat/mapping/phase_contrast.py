@@ -99,9 +99,10 @@ class PhaseContrast:
                 max_vel = np.amax(cardiac_cycle_array)
                 self.mean_velocity_cardiac_cycle.append(avrg_vel)
                 self.peak_velocity_cardiac_cycle.append(max_vel)
+                # 10 * cm/s = mm/s ; 1/1000 mm3 = 1 cm3 = 1 ml ; 60 sec = 1 min
                 flow = avrg_vel * np.count_nonzero(cardiac_cycle_array) * \
                        self.pixel_spacing[0] * self.pixel_spacing[1] * \
-                       0.01 / 0.0166667
+                       10 * 0.001 * 60 
                 self.RBF.append(flow)
             
             self.mean_velocity = np.mean(self.mean_velocity_cardiac_cycle)
