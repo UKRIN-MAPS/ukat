@@ -1,3 +1,18 @@
+"""
+The velocity and flow calculations in this Phase Contrast class
+are based on the scientific paper:
+
+"Phase‑contrast magnetic resonance imaging to assess renal perfusion:
+a systematic review and statement paper"
+
+Giulia Villa, Steffen Ringgaard, Ingo Hermann, Rebecca Noble, Paolo Brambilla,
+Dinah S. Khatir, Frank G. Zöllner, Susan T. Francis, Nicholas M. Selby,
+Andrea Remuzzi, Anna Caroli
+
+Magnetic Resonance Materials in Physics, Biology and Medicine (2020) 33:3–21
+https://doi.org/10.1007/s10334-019-00772-0
+"""
+
 import os
 import numpy as np
 import nibabel as nib
@@ -35,9 +50,8 @@ class PhaseContrast:
         Average Renal Blood Flow (ml/min) accross the cardiac cycles.
     """
 
-    def __init__(self, pixel_array, velocity_encoding, affine, mask=None,
-                 unwrap=True, wrap_around=False):
-        """Initialise a Phase Contrast class instance.
+    def __init__(self, pixel_array, velocity_encoding, affine, mask=None):
+        """Initialise a PhaseContrast class instance.
 
         Parameters
         ----------
@@ -84,25 +98,22 @@ class PhaseContrast:
         self.mean_RBF = 0
 
         if len(self.shape) == 3:
+            # v = (phase / np.pi) * v_enc
             self.velocity_array = convert_to_pi_range(self.phase_array) * \
                                     (self.velocity_encoding / 2) * self.mask
-            # Should we include unwrap???
-            if unwrap:
-                # Unwrap the images
-                self.velocity_array = unwrap_phase(self.velocity_array,
-                                                   wrap_around=wrap_around)
             
-            for cardiac_cycle in len(self.shape[-1]):
+            for cardiac_cycle in range(len(self.shape[-1])):
                 cardiac_cycle_array = self.velocity_array[..., cardiac_cycle]
                 avrg_vel = np.nanmean(np.where(cardiac_cycle_array != 0 ,
                                       cardiac_cycle_array, np.nan), 1)
                 max_vel = np.amax(cardiac_cycle_array)
                 self.mean_velocity_cardiac_cycle.append(avrg_vel)
                 self.peak_velocity_cardiac_cycle.append(max_vel)
-                # 10 * cm/s = mm/s ; 1/1000 mm3 = 1 cm3 = 1 ml ; 60 sec = 1 min
+                # Q = 60 * A * v_mean
                 flow = avrg_vel * np.count_nonzero(cardiac_cycle_array) * \
                        self.pixel_spacing[0] * self.pixel_spacing[1] * \
-                       10 * 0.001 * 60 
+                       10 * 0.001 * 60
+                # 10 * cm/s = mm/s ; 0.001 mm3 = 1 cm3 = 1 ml ; 60 sec = 1 min
                 self.RBF.append(flow)
             
             self.mean_velocity = np.mean(self.mean_velocity_cardiac_cycle)

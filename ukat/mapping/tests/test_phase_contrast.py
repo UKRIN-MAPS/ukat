@@ -10,176 +10,172 @@ from ukat.utils import arraystats
 
 class TestPC:
     # Create arrays for testing
-    correct_array = np.arange(200).reshape((10, 10, 2))
-    # `correct_array` is wrapped using the algorithm in
-    # https://scikit-image.org/docs/dev/auto_examples/filters/plot_phase_unwrap.html
-    correct_array = np.angle(np.exp(1j * correct_array))
-    one_echo_array = np.arange(100).reshape((10, 10, 1))
-    multiple_echoes_array = (np.concatenate((correct_array,
-                             np.arange(300).reshape((10, 10, 3))), axis=2))
+    correct_signal = np.arange(2000).reshape((10, 10, 20))
+    two_dim_signal = np.arange(100).reshape((10, 10))
+    vel_encoding = 100
     affine = np.eye(4)
-    correct_echo_list = [4, 7]
-    one_echo_list = [4]
-    multiple_echo_list = [1, 2, 3, 4, 5]
 
-    # Gold standard: [mean, std, min, max] of B0 when input = `correct_array`
+    # Gold standard: [mean, std, min, max] of velocity_array when input
+    # is `correct_signal`
     gold_standard = [13.051648, 108.320512, -280.281686, 53.051648]
 
-    def test_b0_calculation_without_unwrapping(self):
-        b0_map_calculated = B0(self.correct_array,
-                               self.correct_echo_list, self.affine,
-                               unwrap=False).b0_map
-        b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
-        npt.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
-                            b0maps_stats["min"], b0maps_stats["max"]],
+    # Expected average and peak velocity and flow values
+    mean_vel_cycle_standard = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+    mean_vel_standard = 1
+    peak_vel_cycle_standard = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+    peak_vel_standard = 1
+    rbf = [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+    mean_rbf = 7
+
+    def test_velocity_array(self):
+        vel_array_calculated = PhaseContrast(self.correct_signal,
+                               self.vel_encoding, self.affine).velocity_array
+        vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
+        npt.assert_allclose([vel_stats["mean"], vel_stats["std"],
+                            vel_stats["min"], vel_stats["max"]],
                             self.gold_standard, rtol=1e-7, atol=1e-9)
 
-    def test_inputs(self):
+    def test_output_parameters(self):
+        mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                               self.affine)
+        
+        npt.assert_allclose(mapper.mean_velocity_cardiac_cycle,
+                            self.mean_vel_cycle_standard,
+                            rtol=1e-7, atol=1e-9)
+        
+        npt.assert_allclose(mapper.mean_velocity, self.mean_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+                    
+        npt.assert_allclose(mapper.peak_velocity_cardiac_cycle,
+                            self.peak_vel_cycle_standard,
+                            rtol=1e-7, atol=1e-9)
+        
+        npt.assert_allclose(mapper.peak_velocity, self.peak_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        
+        npt.assert_allclose(mapper.RBF, self.rbf, rtol=1e-7, atol=1e-9)
+        
+        npt.assert_allclose(mapper.mean_RBF, self.mean_rbf,
+                            rtol=1e-7, atol=1e-9)
+
+    def test_input_errors(self):
         # Check that it fails when input pixel_array has incorrect shape
         with pytest.raises(ValueError):
-            B0(self.one_echo_array, self.correct_echo_list, self.affine)
-        with pytest.raises(ValueError):
-            B0(self.multiple_echoes_array, self.correct_echo_list, self.affine)
+            PhaseContrast(self.two_dim_signal, self.vel_encoding, self.affine)
 
-        # Check that it fails when input echo_list has incorrect shape
-        with pytest.raises(ValueError):
-            B0(self.correct_array, self.one_echo_list, self.affine)
-        with pytest.raises(ValueError):
-            B0(self.correct_array, self.multiple_echo_list, self.affine)
+        # Check that it fails when velocity_encoding is not a number
+        with pytest.raises(TypeError):
+            PhaseContrast(self.correct_signal, "velocity string", self.affine)
+        
+        # Check that it fails at Pixel Spacing calculation when affine
+        # is not a 4x4 array
+        with pytest.raises(AssertionError):
+            PhaseContrast(self.correct_signal, self.vel_encoding,
+                          self.affine[:3, :3])
+    
+    def test_affine_pixel_spacing(self):
+        affine_test_1 = self.affine
 
-        # And when both input pixel_array and echo_list have incorrect shapes
-        with pytest.raises(ValueError):
-            B0(self.one_echo_array, self.one_echo_list, self.affine)
-        with pytest.raises(ValueError):
-            B0(self.multiple_echoes_array, self.one_echo_list, self.affine)
-        with pytest.raises(ValueError):
-            B0(self.one_echo_array, self.multiple_echo_list, self.affine)
-        with pytest.raises(ValueError):
-            B0(self.multiple_echoes_array, self.multiple_echo_list,
-               self.affine)
+        affine_test_1[:, 0] = [1, 2, 2, 0]
+
+        affine_test_2 = affine_test_1
+
+        affine_test_2[:, 1] = [2, 1, 2, 0]
+
+        mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                               self.affine)
+
+        npt.assert_allclose(mapper.pixel_spacing, [1.0, 1.0],
+                            rtol=1e-7, atol=1e-9)
+
+        mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                               affine_test_1)
+
+        npt.assert_allclose(mapper.pixel_spacing, [3.0, 1.0],
+                            rtol=1e-7, atol=1e-9)
+            
+        mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                               affine_test_2)
+
+        npt.assert_allclose(mapper.pixel_spacing, [3.0, 3.0],
+                            rtol=1e-7, atol=1e-9)
 
     def test_mask(self):
-        # Create a mask where one of the echoes is True and the other is False
-        mask = np.ones(self.correct_array.shape[:-1], dtype=bool)
+        # Create a mask where the first 5 rows of each cardiac cycle
+        # are False and the rest is True.
+        mask = np.ones(self.correct_signal.shape, dtype=bool)
         mask[:5, ...] = False
 
-        all_pixels = B0(self.correct_array, self.correct_echo_list,
-                        self.affine)
-        masked_pixels = B0(self.correct_array, self.correct_echo_list,
-                           self.affine, mask=mask)
+        all_pixels = PhaseContrast(self.correct_signal, self.vel_encoding,
+                                   self.affine)
+        masked_pixels = PhaseContrast(self.correct_signal, self.vel_encoding,
+                                      self.affine, mask=mask)
 
-        assert (all_pixels.phase_difference !=
-                masked_pixels.phase_difference).any()
-        assert (all_pixels.b0_map != masked_pixels.b0_map).any()
-        assert (arraystats.ArrayStats(all_pixels.b0_map).calculate() !=
-                arraystats.ArrayStats(masked_pixels.b0_map).calculate())
-
-    def test_unwrap_phase(self):
-        unwrapped = B0(self.correct_array, self.correct_echo_list, self.affine)
-        wrapped = B0(self.correct_array, self.correct_echo_list, self.affine,
-                     unwrap=False)
-
-        assert (unwrapped.phase_difference != wrapped.phase_difference).any()
-        assert (unwrapped.b0_map != wrapped.b0_map).any()
-        assert (arraystats.ArrayStats(unwrapped.b0_map).calculate() !=
-                arraystats.ArrayStats(wrapped.b0_map).calculate())
+        assert (all_pixels.velocity_array !=
+                masked_pixels.velocity_array).any()
+        assert (all_pixels.mean_velocity_cardiac_cycle !=
+                masked_pixels.mean_velocity_cardiac_cycle).any()
+        assert all_pixels.mean_velocity != masked_pixels.mean_velocity
+        assert (all_pixels.RBF != masked_pixels.RBF).any()
+        assert all_pixels.mean_RBF != masked_pixels.mean_RBF
 
     def test_to_nifti(self):
-        # Create a B0 map instance and test different export to NIFTI scenarios
-        mapper = B0(self.correct_array, self.correct_echo_list,
-                    self.affine, unwrap=False)
+        # Create a PC instance and test different export to NIFTI scenarios
+        mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                               self.affine)
 
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
         mapper.to_nifti(output_directory='test_output',
-                        base_file_name='b0test', maps='all')
+                        base_file_name='pctest', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 5
-        assert 'b0test_b0_map.nii.gz' in output_files
-        assert 'b0test_mask.nii.gz' in output_files
-        assert 'b0test_phase0.nii.gz' in output_files
-        assert 'b0test_phase1.nii.gz' in output_files
-        assert 'b0test_phase_difference.nii.gz' in output_files
+        assert len(output_files) == 3
+        assert 'pctest_phase_array.nii.gz' in output_files
+        assert 'pctest_mask.nii.gz' in output_files
+        assert 'pctest_velocity_array.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         # Check that no files are saved.
         mapper.to_nifti(output_directory='test_output',
-                        base_file_name='b0test', maps=[])
+                        base_file_name='pctest', maps=[])
         output_files = os.listdir('test_output')
         assert len(output_files) == 0
 
-        # Check that only b0, phase0 and phase_difference are saved.
+        # Check that only velocity_array saved.
         mapper.to_nifti(output_directory='test_output',
-                        base_file_name='b0test', maps=['b0', 'phase0',
-                                                       'phase_difference'])
+                        base_file_name='pctest', maps=['velocity_array'])
         output_files = os.listdir('test_output')
-        assert len(output_files) == 3
-        assert 'b0test_b0_map.nii.gz' in output_files
-        assert 'b0test_phase0.nii.gz' in output_files
-        assert 'b0test_phase_difference.nii.gz' in output_files
+        assert len(output_files) == 1
+        assert 'pctest_velocity_array.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         # Check that it fails when no maps are given
         with pytest.raises(ValueError):
-            mapper = B0(self.correct_array, self.correct_echo_list,
-                        self.affine, unwrap=False)
+            mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
+                                   self.affine)
             mapper.to_nifti(output_directory='test_output',
-                            base_file_name='b0test', maps='')
+                            base_file_name='pctest', maps='')
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
-    def test_pixel_array_type_assertion(self):
-        # Empty array
-        with pytest.raises(ValueError):
-            mapper = B0(np.array([]), self.correct_echo_list, self.affine)
-        # No input argument
-        with pytest.raises(AttributeError):
-            mapper = B0(None, self.correct_echo_list, self.affine)
-        # List
-        with pytest.raises(AttributeError):
-            mapper = B0(list([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]),
-                        self.correct_echo_list, self.affine)
-        # String
-        with pytest.raises(AttributeError):
-            mapper = B0("abcdef", self.correct_echo_list, self.affine)
-
-    def test_echo_list_type_assertion(self):
-        # Empty list
-        with pytest.raises(ValueError):
-            mapper = B0(self.correct_array, np.array([]), self.affine)
-        # No input argument
-        with pytest.raises(TypeError):
-            mapper = B0(self.correct_array, None, self.affine)
-        # Float
-        with pytest.raises(TypeError):
-            mapper = B0(self.correct_array, 3.2, self.affine)
-        # String
-        with pytest.raises(ValueError):
-            mapper = B0(self.correct_array, "abcdef", self.affine)
-
     def test_real_data(self):
         # Get test data
-        magnitude, phase, affine, te = fetch.b0_philips()
-        te *= 1000
-
-        # Process on a central slice only
-        images = phase[:, :, 4, :]
+        _, phase, mask, affine, velocity_encoding = fetch.phase_contrast_philips_left()
 
         # Gold standard statistics
-        gold_standard_b0 = [-34.174984, 189.285260, -1739.886907, 786.965213]
+        gold_standard_left = [-34.174984, 189.285260, -1739.886907, 786.965213]
 
-        # B0Map with unwrapping - Consider that unwrapping method may change
-        mapper = B0(images, te, affine, unwrap=True)
-        b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
-        npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
-                            b0map_stats["min"], b0map_stats["max"]],
-                            gold_standard_b0, rtol=0.01, atol=0)
+        mapper = PhaseContrast(phase, velocity_encoding, affine, mask=mask)
+        vel_stats = arraystats.ArrayStats(mapper.velocity_array).calculate()
+        npt.assert_allclose([vel_stats["mean"], vel_stats["std"],
+                            vel_stats["min"], vel_stats["max"]],
+                            gold_standard_left, rtol=0.01, atol=0)
 
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
