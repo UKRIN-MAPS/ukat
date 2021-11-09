@@ -82,7 +82,7 @@ class PhaseContrast:
         self.velocity_encoding = velocity_encoding
         self.shape = pixel_array.shape
         self.affine = affine
-        self.pixel_spacing = [np.linalg.norm(self.affine[:3, 1]), 
+        self.pixel_spacing = [np.linalg.norm(self.affine[:3, 1]),
                               np.linalg.norm(self.affine[:3, 0])]
         # Generate a mask if there isn't one specified
         if mask is None:
@@ -100,19 +100,18 @@ class PhaseContrast:
         if len(self.shape) == 3:
             # v = (phase / np.pi) * v_enc
             self.velocity_array = convert_to_pi_range(self.phase_array) * \
-                                    (self.velocity_encoding / 2) * self.mask
+                                    self.velocity_encoding * self.mask
             
-            for cardiac_cycle in range(len(self.shape[-1])):
+            for cardiac_cycle in range(self.shape[-1]):
                 cardiac_cycle_array = self.velocity_array[..., cardiac_cycle]
-                avrg_vel = np.nanmean(np.where(cardiac_cycle_array != 0 ,
-                                      cardiac_cycle_array, np.nan), 1)
+                avrg_vel = np.nanmean(cardiac_cycle_array)
                 max_vel = np.amax(cardiac_cycle_array)
                 self.mean_velocity_cardiac_cycle.append(avrg_vel)
                 self.peak_velocity_cardiac_cycle.append(max_vel)
                 # Q = 60 * A * v_mean
-                flow = avrg_vel * np.count_nonzero(cardiac_cycle_array) * \
-                       self.pixel_spacing[0] * self.pixel_spacing[1] * \
-                       10 * 0.001 * 60
+                flow = 60 * np.count_nonzero(cardiac_cycle_array) * \
+                       self.pixel_spacing[0] * 10 * self.pixel_spacing[1] * \
+                       10 * avrg_vel
                 # 10 * cm/s = mm/s ; 0.001 mm3 = 1 cm3 = 1 ml ; 60 sec = 1 min
                 self.RBF.append(flow)
             

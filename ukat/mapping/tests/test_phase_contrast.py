@@ -66,37 +66,24 @@ class TestPC:
         # Check that it fails when velocity_encoding is not a number
         with pytest.raises(TypeError):
             PhaseContrast(self.correct_signal, "velocity string", self.affine)
-        
-        # Check that it fails at Pixel Spacing calculation when affine
-        # is not a 4x4 array
-        with pytest.raises(AssertionError):
-            PhaseContrast(self.correct_signal, self.vel_encoding,
-                          self.affine[:3, :3])
     
     def test_affine_pixel_spacing(self):
-        affine_test_1 = self.affine
-
-        affine_test_1[:, 0] = [1, 2, 2, 0]
-
-        affine_test_2 = affine_test_1
-
-        affine_test_2[:, 1] = [2, 1, 2, 0]
-
         mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
                                self.affine)
-
         npt.assert_allclose(mapper.pixel_spacing, [1.0, 1.0],
                             rtol=1e-7, atol=1e-9)
 
+        affine_test_1 = self.affine
+        affine_test_1[:, 0] = [1, 2, 2, 0]
         mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
                                affine_test_1)
-
-        npt.assert_allclose(mapper.pixel_spacing, [3.0, 1.0],
+        npt.assert_allclose(mapper.pixel_spacing, [1.0, 3.0],
                             rtol=1e-7, atol=1e-9)
-            
+        
+        affine_test_2 = affine_test_1
+        affine_test_2[:, 1] = [2, 1, 2, 0]
         mapper = PhaseContrast(self.correct_signal, self.vel_encoding,
                                affine_test_2)
-
         npt.assert_allclose(mapper.pixel_spacing, [3.0, 3.0],
                             rtol=1e-7, atol=1e-9)
 
@@ -113,10 +100,10 @@ class TestPC:
 
         assert (all_pixels.velocity_array !=
                 masked_pixels.velocity_array).any()
-        assert (all_pixels.mean_velocity_cardiac_cycle !=
-                masked_pixels.mean_velocity_cardiac_cycle).any()
+        assert (all_pixels.mean_velocity_cardiac_cycle != 
+                masked_pixels.mean_velocity_cardiac_cycle)
         assert all_pixels.mean_velocity != masked_pixels.mean_velocity
-        assert (all_pixels.RBF != masked_pixels.RBF).any()
+        assert all_pixels.RBF != masked_pixels.RBF
         assert all_pixels.mean_RBF != masked_pixels.mean_RBF
 
     def test_to_nifti(self):
@@ -166,7 +153,7 @@ class TestPC:
 
     def test_real_data(self):
         # Get test data
-        _, phase, mask, affine, velocity_encoding = fetch.phase_contrast_philips_left()
+        _, phase, mask, affine, velocity_encoding = fetch.phase_contrast_left_philips()
 
         # Gold standard statistics
         gold_standard_left = [-34.174984, 189.285260, -1739.886907, 786.965213]
@@ -176,7 +163,6 @@ class TestPC:
         npt.assert_allclose([vel_stats["mean"], vel_stats["std"],
                             vel_stats["min"], vel_stats["max"]],
                             gold_standard_left, rtol=0.01, atol=0)
-
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
