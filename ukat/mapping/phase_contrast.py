@@ -26,10 +26,8 @@ class PhaseContrast:
 
     Attributes
     ----------
-    phase_array : np.ndarray
-        The input pixel array provided to the class initialisation.
     velocity_array : np.ndarray
-        The phase_array converted to velocity based in velocity_encoding.
+        The input velocity array masked.
     shape : tuple
         The shape of the phase and velocity arrays.
     pixel_spacing : list
@@ -50,17 +48,15 @@ class PhaseContrast:
         Average Renal Blood Flow (ml/min) accross the cardiac cycles.
     """
 
-    def __init__(self, pixel_array, velocity_encoding, affine, mask=None):
+    def __init__(self, velocity_array, affine, mask=None):
         """Initialise a PhaseContrast class instance.
 
         Parameters
         ----------
-        pixel_array : np.ndarray
-            A 3D array containing the phase images of the phase contrast
+        velocity_array : np.ndarray
+            A 3D array containing the velocity images of the phase contrast
             sequence, i.e. the dimensions of the array are [x, y, c], where c
             corresponds to the cardica cycle.
-        velocity_encoding : float
-            The value of the velocity encoding in cm/s.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -77,10 +73,7 @@ class PhaseContrast:
             phase unwrapping process.Eg., voxels [0, :, :] are considered to be
             next to voxels [-1, :, :] if wrap_around=True.
         """
-
-        self.phase_array = pixel_array
-        self.velocity_encoding = velocity_encoding
-        self.shape = pixel_array.shape
+        self.shape = velocity_array.shape
         self.affine = affine
         self.pixel_spacing = [np.linalg.norm(self.affine[:3, 1]),
                               np.linalg.norm(self.affine[:3, 0])]
@@ -88,8 +81,10 @@ class PhaseContrast:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = mask
-        self.velocity_array = np.zeros(self.shape)
+            self.mask = np.where(mask == 0, np.nan, mask)
+            # The purpose is for the np.nanmean to work properly later
+            # without including the 0s of the mask
+        self.velocity_array = velocity_array * self.mask
         self.mean_velocity_cardiac_cycle = []
         self.peak_velocity_cardiac_cycle = []
         self.RBF = []
@@ -98,33 +93,32 @@ class PhaseContrast:
         self.mean_RBF = 0
 
         if len(self.shape) == 3:
-            # v = (phase / np.pi) * v_enc
-            self.velocity_array = convert_to_pi_range(self.phase_array) * \
-                                    self.velocity_encoding * self.mask
-            
             for cardiac_cycle in range(self.shape[-1]):
                 cardiac_cycle_array = self.velocity_array[..., cardiac_cycle]
                 avrg_vel = np.nanmean(cardiac_cycle_array)
                 max_vel = np.amax(cardiac_cycle_array)
                 self.mean_velocity_cardiac_cycle.append(avrg_vel)
                 self.peak_velocity_cardiac_cycle.append(max_vel)
-                # Q = 60 * A * v_mean
-                flow = 60 * np.count_nonzero(cardiac_cycle_array) * \
-                       self.pixel_spacing[0] * 10 * self.pixel_spacing[1] * \
-                       10 * avrg_vel
-                # 10 * cm/s = mm/s ; 0.001 mm3 = 1 cm3 = 1 ml ; 60 sec = 1 min
-                self.RBF.append(flow)
-            
+                # Q = 60 * A * v_mean / Q_expected =~ 600 ml/min
+                #num_pixels = np.sum(self.mask[..., cardiac_cycle])
+                num_pixels = np.count_nonzero(~np.isnan(cardiac_cycle_array))
+                # if avrg_vel > 0: Q ; else: -Q?
+                Q = 60 * num_pixels * 0.1 * self.pixel_spacing[0] * \
+                    0.1 * self.pixel_spacing[1] * avrg_vel
+                # (mm * 0.1 * mm * 0.1) = cm2 ; (cm2 * cm/s * 60s) = cm3/min = mm3/min
+                self.RBF.append(Q)
             self.mean_velocity = np.mean(self.mean_velocity_cardiac_cycle)
             self.peak_velocity = np.amax(self.peak_velocity_cardiac_cycle)
             self.mean_RBF = np.mean(self.RBF)
-
+            # Convert any nan values back to 0
+            self.velocity_array = np.nan_to_num(self.velocity_array)
+            self.mask = np.nan_to_num(self.mask)
         else:
-            raise ValueError('The input pixel_array should be 3-dimensional.')
+            raise ValueError('The input velocity_array should be 3-dimensional.')
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """Exports the input pixel array and/or the velocity array to NIFTI.
+        """Exports the velocity array and the renal artery mask to NIFTI.
 
         Parameters
         ----------
@@ -140,24 +134,39 @@ class PhaseContrast:
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ["phase_array", "mask", "velocity_array"]
+            maps = ["velocity_array", "mask"]
         if isinstance(maps, list):
             for result in maps:
-                if result == 'phase_array' or result == 'pixel_array':
-                    phase_nifti = nib.Nifti1Image(self.phase_array,
-                                               affine=self.affine)
-                    nib.save(phase_nifti, base_path + '_phase_array.nii.gz')
+                if result == 'velocity_array' or result == 'velocity array':
+                    velocity_nifti = nib.Nifti1Image(self.velocity_array,
+                                                     affine=self.affine)
+                    nib.save(velocity_nifti, base_path + 
+                             '_velocity_array.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
-                elif result == 'velocity_array' or result == 'velocity array':
-                    velocity_nifti = nib.Nifti1Image(self.velocity_array,
-                                                 affine=self.affine)
-                    nib.save(velocity_nifti, base_path + '_velocity_array.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["phase_array", "mask", "velocity_array"]".')
+                             '"["velocity_array", "mask"]".')
 
-        return
+
+def phase_to_velocity(phase_array, velocity_encoding):
+    """
+    Calculate the velocity array from the given input phase image and velocity.
+
+    Parameters
+    ----------
+    phase_array: np.ndarray
+        A 3D array containing the phase images of the phase contrast sequence.
+    velocity_encoding : float
+        The value of the velocity encoding in cm/s.
+
+    Returns
+    -------
+    velocity_array: np.ndarray
+    """
+    # (v = phase_delta / np.pi ) * velocity_encoding
+    # v_expected =~ 20cm/s
+    return convert_to_pi_range(phase_array) * velocity_encoding
