@@ -284,7 +284,7 @@ class TestFetch:
     def test_philips_pc_left(self):
         # Test if the fetch function works
         magnitude, phase, mask, affine, \
-        velocity_encoding = fetch.phase_contrast_left_philips()
+            velocity_encoding = fetch.phase_contrast_left_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)
@@ -303,7 +303,7 @@ class TestFetch:
     def test_philips_pc_right(self):
         # Test if the fetch function works
         magnitude, phase, mask, affine, \
-        velocity_encoding = fetch.phase_contrast_right_philips()
+            velocity_encoding = fetch.phase_contrast_right_philips()
 
         # Check the format of the outputs
         assert isinstance(magnitude, np.ndarray)

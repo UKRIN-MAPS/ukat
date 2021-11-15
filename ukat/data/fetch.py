@@ -294,7 +294,7 @@ fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
                                        ['low_tsnr.nii.gz'],
                                        ['050c7ef07574d893b3511796050748fe'],
                                        doc='Downloading Philips tSNR data')
-                            
+          
 fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
                                       pjoin(ukat_home, 'pc_left_philips'),
                                       'https://zenodo.org/record/5655752'
@@ -304,7 +304,7 @@ fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
                                       ['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
                                       unzip=True,
                                       doc='Downloading Philips PC Left data')
-                                
+                    
 fetch_pc_right_philips = _make_fetcher('fetch_pc_right_philips',
                                        pjoin(ukat_home, 'pc_right_philips'),
                                        'https://zenodo.org/record/5655752'
@@ -908,7 +908,7 @@ def phase_contrast_left_philips():
     velocity_encoding = 100
     for file in fnames:
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-            file.endswith("_ph.nii.gz")):
+           file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
@@ -948,7 +948,7 @@ def phase_contrast_right_philips():
     for file in fnames:
 
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-            file.endswith("_ph.nii.gz")):
+           file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
