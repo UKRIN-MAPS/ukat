@@ -126,6 +126,18 @@ class TestFetch:
         assert len(np.shape(bvals)) == 1
         assert len(np.shape(bvecs)) == 2
         assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)
+    
+    def test_philips_mtr(self):
+        # Test if the fetch function works
+        images, affine = fetch.mtr_philips()
+
+        # Check the format of the outputs
+        assert isinstance(images, np.ndarray)
+        assert np.unique(np.isnan(images)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert np.shape(images)[-1] == 2
+        assert len(np.shape(images)) == 3
+        assert np.shape(affine) == (4, 4)
 
     def test_philips_t1(self):
         # Test if the fetch function works
@@ -267,4 +279,40 @@ class TestFetch:
         assert np.unique(np.isnan(data)) != [True]
         assert isinstance(affine, np.ndarray)
         assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
+
+    def test_philips_pc_left(self):
+        # Test if the fetch function works
+        magnitude, phase, mask, affine, velocity_encoding = fetch.phase_contrast_left_philips()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(phase, np.ndarray)
+        assert np.unique(np.isnan(phase)) != [True]
+        assert isinstance(mask, np.ndarray)
+        assert len(np.unique(mask)) == 2
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(velocity_encoding, int)
+        assert len(np.shape(magnitude)) == 3
+        assert len(np.shape(phase)) == 3
+        assert len(np.shape(mask)) == 3
+        assert np.shape(affine) == (4, 4)
+    
+    def test_philips_pc_right(self):
+        # Test if the fetch function works
+        magnitude, phase, mask, affine, velocity_encoding = fetch.phase_contrast_right_philips()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(phase, np.ndarray)
+        assert np.unique(np.isnan(phase)) != [True]
+        assert isinstance(mask, np.ndarray)
+        assert len(np.unique(mask)) == 2
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(velocity_encoding, int)
+        assert len(np.shape(magnitude)) == 3
+        assert len(np.shape(phase)) == 3
+        assert len(np.shape(mask)) == 3
         assert np.shape(affine) == (4, 4)

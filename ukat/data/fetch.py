@@ -277,15 +277,6 @@ fetch_t2w_philips = _make_fetcher('fetch_t2w_philips',
                                   ['276b904142677026a04659505d923134'],
                                   doc='Downloading Philips T2W data')
 
-fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
-                                  pjoin(ukat_home, 'mtr_philips'),
-                                  'https://zenodo.org/record/5101394/'
-                                  'files/',
-                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
-                                  doc='Downloading Philips MT data')
-
 fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
                                         pjoin(ukat_home, 'tsnr_high_philips'),
                                         'https://zenodo.org/record/5544245'
@@ -303,6 +294,24 @@ fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
                                        ['low_tsnr.nii.gz'],
                                        ['050c7ef07574d893b3511796050748fe'],
                                        doc='Downloading Philips tSNR data')
+                                    
+fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
+                                 pjoin(ukat_home, 'pc_left_philips'),
+                                 'https://zenodo.org/record/5655752/files/',
+                                 ['philips_pc_left.zip'],
+                                 ['philips_pc_left.zip'],
+                                 ['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
+                                 unzip=True,
+                                 doc='Downloading Philips Phase Contrast Left Renal Artery data')
+                                
+fetch_pc_right_philips = _make_fetcher('fetch_pc_right_philips',
+                                 pjoin(ukat_home, 'pc_right_philips'),
+                                 'https://zenodo.org/record/5655752/files/',
+                                 ['philips_pc_right.zip'],
+                                 ['philips_pc_right.zip'],
+                                 ['d5bcc1d70ff43ecec4f77889099d7055'],
+                                 unzip=True,
+                                 doc='Downloading Philips Phase Contrast Right Renal Artery data')
 
 
 def get_fnames(name):
@@ -397,9 +406,6 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
-    elif name == 'mtr_philips':
-        files, folder = fetch_mtr_philips()
-
     elif name == 'tsnr_high_philips':
         files, folder = fetch_tsnr_high_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -407,6 +413,16 @@ def get_fnames(name):
 
     elif name == 'tsnr_low_philips':
         files, folder = fetch_tsnr_low_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'phase_contrast_left_philips':
+        files, folder = fetch_pc_left_philips()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'phase_contrast_right_philips':
+        files, folder = fetch_pc_right_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
@@ -601,7 +617,7 @@ def mtr_philips():
     fnames = get_fnames('mtr_philips')
     nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
     raw = nib.load(nii_path)
-    data = raw.get_fdata()
+    data = np.squeeze(raw.get_fdata())
     affine = raw.affine
     return data, affine
 
@@ -871,6 +887,85 @@ def tsnr_low_philips():
     return data, affine
 
 
+def phase_contrast_left_philips():
+    """Fetches pc_left/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    """
+    fnames = get_fnames('phase_contrast_left_philips')
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+        if ((file.endswith(".nii.gz") and "_ph_" in file) or
+             file.endswith("_ph.nii.gz")):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+        
+        elif file.endswith(".nii.gz") and "mask_" in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(".nii.gz"):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding
+
+
+def phase_contrast_right_philips():
+    """Fetches pc_right/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    """
+    fnames = get_fnames('phase_contrast_right_philips')
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+
+        if ((file.endswith(".nii.gz") and "_ph_" in file) or
+             file.endswith("_ph.nii.gz")):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+        
+        elif file.endswith(".nii.gz") and "mask_" in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(".nii.gz"):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding
+
+    
 def _load_b0_siemens_philips(fnames):
     """General function to retrieve siemens and philips b0 data from list of
     filepaths
