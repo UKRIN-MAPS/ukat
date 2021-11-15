@@ -10,7 +10,7 @@ from ukat.utils import arraystats
 
 class TestPC:
     # Create arrays for testing
-    correct_signal = np.arange(2000).reshape((10, 10, 20)) # velocity array
+    correct_signal = np.arange(2000).reshape((10, 10, 20))  # velocity array
     two_dim_signal = np.arange(100).reshape((10, 10))
     vel_encoding = 100
     affine = np.eye(4)
@@ -67,7 +67,7 @@ class TestPC:
         # Check that it fails when input pixel_array has incorrect shape
         with pytest.raises(ValueError):
             PhaseContrast(self.two_dim_signal, self.affine)
-    
+
     def test_affine_pixel_spacing(self):
         mapper = PhaseContrast(self.correct_signal, self.affine)
         npt.assert_allclose(mapper.pixel_spacing, [1.0, 1.0],
@@ -78,7 +78,7 @@ class TestPC:
         mapper = PhaseContrast(self.correct_signal, affine_test_1)
         npt.assert_allclose(mapper.pixel_spacing, [1.0, 3.0],
                             rtol=1e-7, atol=1e-9)
-        
+
         affine_test_2 = affine_test_1
         affine_test_2[:, 1] = [2, 1, 2, 0]
         mapper = PhaseContrast(self.correct_signal, affine_test_2)
@@ -97,7 +97,7 @@ class TestPC:
 
         assert (all_pixels.velocity_array !=
                 masked_pixels.velocity_array).any()
-        assert (all_pixels.mean_velocity_cardiac_cycle != 
+        assert (all_pixels.mean_velocity_cardiac_cycle !=
                 masked_pixels.mean_velocity_cardiac_cycle)
         assert all_pixels.mean_velocity != masked_pixels.mean_velocity
         assert all_pixels.RBF != masked_pixels.RBF
@@ -169,7 +169,7 @@ class TestPC:
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],
                             gold_standard_left, rtol=0.01, atol=0)
-        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_left, 
+        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_left,
                             rtol=0.01, atol=0)
 
         # Get right PC test data
@@ -185,8 +185,9 @@ class TestPC:
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],
                             gold_standard_right, rtol=0.01, atol=0)
-        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_right, 
+        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_right,
                             rtol=0.01, atol=0)
+
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):

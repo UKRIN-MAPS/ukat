@@ -100,12 +100,13 @@ class PhaseContrast:
                 self.mean_velocity_cardiac_cycle.append(avrg_vel)
                 self.peak_velocity_cardiac_cycle.append(max_vel)
                 # Q = 60 * A * v_mean / Q_expected =~ 600 ml/min
-                #num_pixels = np.sum(self.mask[..., cardiac_cycle])
+                # num_pixels = np.sum(self.mask[..., cardiac_cycle])
                 num_pixels = np.count_nonzero(~np.isnan(cardiac_cycle_array))
                 # if avrg_vel > 0: Q ; else: -Q?
                 Q = 60 * num_pixels * 0.1 * self.pixel_spacing[0] * \
                     0.1 * self.pixel_spacing[1] * avrg_vel
-                # (mm * 0.1 * mm * 0.1) = cm2 ; (cm2 * cm/s * 60s) = cm3/min = mm3/min
+                # (mm * 0.1 * mm * 0.1) = cm2
+                # (cm2 * cm/s * 60s) = cm3/min = mm3/min
                 self.RBF.append(Q)
             self.mean_velocity = np.mean(self.mean_velocity_cardiac_cycle)
             self.peak_velocity = np.amax(self.peak_velocity_cardiac_cycle)
@@ -114,7 +115,7 @@ class PhaseContrast:
             self.velocity_array = np.nan_to_num(self.velocity_array)
             self.mask = np.nan_to_num(self.mask)
         else:
-            raise ValueError('The input velocity_array should be 3-dimensional.')
+            raise ValueError('The input velocity_array should be 3D.')
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -140,7 +141,7 @@ class PhaseContrast:
                 if result == 'velocity_array' or result == 'velocity array':
                     velocity_nifti = nib.Nifti1Image(self.velocity_array,
                                                      affine=self.affine)
-                    nib.save(velocity_nifti, base_path + 
+                    nib.save(velocity_nifti, base_path +
                              '_velocity_array.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(int),

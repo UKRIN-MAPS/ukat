@@ -294,24 +294,26 @@ fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
                                        ['low_tsnr.nii.gz'],
                                        ['050c7ef07574d893b3511796050748fe'],
                                        doc='Downloading Philips tSNR data')
-                                    
+                            
 fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
-                                 pjoin(ukat_home, 'pc_left_philips'),
-                                 'https://zenodo.org/record/5655752/files/',
-                                 ['philips_pc_left.zip'],
-                                 ['philips_pc_left.zip'],
-                                 ['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
-                                 unzip=True,
-                                 doc='Downloading Philips Phase Contrast Left Renal Artery data')
+                                      pjoin(ukat_home, 'pc_left_philips'),
+                                      'https://zenodo.org/record/5655752'
+                                      '/files/',
+                                      ['philips_pc_left.zip'],
+                                      ['philips_pc_left.zip'],
+                                      ['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
+                                      unzip=True,
+                                      doc='Downloading Philips PC Left data')
                                 
 fetch_pc_right_philips = _make_fetcher('fetch_pc_right_philips',
-                                 pjoin(ukat_home, 'pc_right_philips'),
-                                 'https://zenodo.org/record/5655752/files/',
-                                 ['philips_pc_right.zip'],
-                                 ['philips_pc_right.zip'],
-                                 ['d5bcc1d70ff43ecec4f77889099d7055'],
-                                 unzip=True,
-                                 doc='Downloading Philips Phase Contrast Right Renal Artery data')
+                                       pjoin(ukat_home, 'pc_right_philips'),
+                                       'https://zenodo.org/record/5655752'
+                                       '/files/',
+                                       ['philips_pc_right.zip'],
+                                       ['philips_pc_right.zip'],
+                                       ['d5bcc1d70ff43ecec4f77889099d7055'],
+                                       unzip=True,
+                                       doc='Downloading Philips PC Right data')
 
 
 def get_fnames(name):
@@ -906,11 +908,11 @@ def phase_contrast_left_philips():
     velocity_encoding = 100
     for file in fnames:
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-             file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
-        
+
         elif file.endswith(".nii.gz") and "mask_" in file:
             mask = np.squeeze(nib.load(file).get_fdata())
 
@@ -946,11 +948,11 @@ def phase_contrast_right_philips():
     for file in fnames:
 
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-             file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
-        
+
         elif file.endswith(".nii.gz") and "mask_" in file:
             mask = np.squeeze(nib.load(file).get_fdata())
 
@@ -965,7 +967,7 @@ def phase_contrast_right_philips():
 
     return magnitude, phase, mask, data.affine, velocity_encoding
 
-    
+
 def _load_b0_siemens_philips(fnames):
     """General function to retrieve siemens and philips b0 data from list of
     filepaths
