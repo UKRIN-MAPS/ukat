@@ -22,7 +22,7 @@ class T1:
         The estimated inversion efficiency where 0 represents no inversion
         pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
-        The certianty in the fit of `eff`
+        The certainty in the fit of `eff`
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -53,6 +53,8 @@ class T1:
             The axis over which the temporal slice spacing is applied. This
             axis is relative to the full 4D pixel array i.e. tss_axis=-1
             would be along the TI axis and would be meaningless.
+            If `pixel_array` is single slice (dimensions [x, y, TI]),
+            then this should be set to None.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -91,7 +93,10 @@ class T1:
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.tss = tss
-        self.tss_axis = tss_axis % self.dimensions
+        if tss_axis is not None:
+            self.tss_axis = tss_axis % self.dimensions
+        else:
+            self.tss_axis = None
         self.parameters = parameters
         self.multithread = multithread
 
@@ -105,6 +110,8 @@ class T1:
                 'Temporal slice spacing can\'t be applied to the TI axis.'
             assert (tss_axis < self.dimensions), \
                 'tss_axis must be less than the number of spatial dimensions'
+            assert (self.tss_axis is None), \
+                'tss should be zero for single slice T1 fitting'
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
