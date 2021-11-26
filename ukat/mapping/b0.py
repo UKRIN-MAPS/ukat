@@ -94,6 +94,17 @@ class B0:
             self.phase_difference = self.phase1 - self.phase0
             # B0 Map calculation
             self.b0_map = self.phase_difference / (2 * np.pi * self.delta_te)
+            # Check if the full cycle exists and if so, correct the output
+            # B0 Map based on the dynamic range
+            central_pixel_value = np.mean(self.b0_map[int(self.shape[0] / 2), \
+                                                      int(self.shape[1] / 2), \
+                                                      ...])
+            dynamic_range = 1 / self.delta_te
+            if np.abs(central_pixel_value) > dynamic_range / 2:
+                if central_pixel_value + dynamic_range > dynamic_range / 2:
+                    self.b0_map = self.b0_map - dynamic_range
+                else:
+                    self.b0_map = self.b0_map + dynamic_range
         else:
             raise ValueError('The input should contain 2 echo times.'
                              'The last dimension of the input pixel_array must'
