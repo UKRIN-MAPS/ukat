@@ -97,6 +97,8 @@ class T1:
             self.tss_axis = tss_axis % self.dimensions
         else:
             self.tss_axis = None
+            assert (self.tss == 0), \
+                'tss should be zero for single slice T1 fitting'
         self.parameters = parameters
         self.multithread = multithread
 
@@ -110,8 +112,6 @@ class T1:
                 'Temporal slice spacing can\'t be applied to the TI axis.'
             assert (tss_axis < self.dimensions), \
                 'tss_axis must be less than the number of spatial dimensions'
-            assert (self.tss_axis is None), \
-                'tss should be zero for single slice T1 fitting'
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
