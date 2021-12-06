@@ -96,8 +96,8 @@ class B0:
             self.b0_map = self.phase_difference / (2 * np.pi * self.delta_te)
             # Check if the full cycle exists and if so, correct the output
             # B0 Map based on the dynamic range
-            central_pixel_value = np.mean(self.b0_map[int(self.shape[0] / 2), \
-                                                      int(self.shape[1] / 2), \
+            central_pixel_value = np.mean(self.b0_map[int(self.shape[0] / 2),
+                                                      int(self.shape[1] / 2),
                                                       ...])
             dynamic_range = 1 / self.delta_te
             if np.abs(central_pixel_value) > dynamic_range / 2:
