@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.1" />
+<title>ukat.mapping.t2star API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ukat.mapping.t2star</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import warnings
+import numpy as np
+import nibabel as nib
+import concurrent.futures
+from tqdm import tqdm
+from scipy.optimize import curve_fit
+
+
+class T2Star:
+    &#34;&#34;&#34;
+    Attributes
+    ----------
+    t2star_map : np.ndarray
+        The estimated T2* values in ms
+    t2star_err : np.ndarray
+        The certainty in the fit of `t2star_map` in ms. Only returned if
+        `2p_exp` method is used, otherwise is an array of nan
+    m0_map : np.ndarray
+        The estimated M0 values
+    m0_err : np.ndarray
+        The certainty in the fit of `m0_map`. Only returned if `2p_exp`
+        method is used, otherwise is an array of nan
+    shape : tuple
+        The shape of the T2* map
+    n_te : int
+        The number of TE used to calculate the map
+    n_vox : int
+        The number of voxels in the map i.e. the product of all dimensions
+        apart from TE
+    &#34;&#34;&#34;
+
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
+                 method=&#39;loglin&#39;, multithread=&#39;auto&#39;):
+        &#34;&#34;&#34;Initialise a T2Star class instance.
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            A array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2* map would have dimensions [x, y, z, TE].
+        echo_list : list()
+            An array of the echo times used for the last dimension of the
+            raw data. In milliseconds.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2* map rather than the raw data i.e. omit the time
+            dimension.
+        method : {&#39;loglin&#39;, &#39;2p_exp&#39;}, optional
+            Default `loglin`
+            The method used to estimate T2* values. &#39;loglin&#39; uses a
+            weighted linear fit to the natural logarithm of the
+            signal. &#39;2p_exp&#39; fits the signal to a two parameter
+            exponential (S = S0 * exp(-t / T2*)). `loglin` is far quicker
+            but produces inaccurate results for T2* below 20 ms. `2p_exp` is
+            accurate below 20 ms however this comes at the expense of run time.
+        multithread : bool or &#39;auto&#39;, optional
+            Default &#39;auto&#39;.
+            If True, fitting will be distributed over all cores available on
+            the node. If False, fitting will be carried out on a single thread.
+            &#39;auto&#39; attempts to apply multithreading where appropriate based
+            on the number of voxels being fit and the method being used.
+            Generally &#39;loglin&#39; is quicker running single threaded  due to
+            the additional overheads of multithreading while &#39;2p_exp&#39; is
+            quicker running multithreaded for anything but small numbers of
+            voxels.
+        &#34;&#34;&#34;
+        # Some sanity checks
+        assert (pixel_array.shape[-1]
+                == len(echo_list)), &#39;Number of echoes does not match the &#39; \
+                                    &#39;number of time frames on the last axis &#39; \
+                                    &#39;of pixel_array&#39;
+        assert method == &#39;loglin&#39; \
+            or method == &#39;2p_exp&#39;, &#39;method must be loglin or 2p_exp. You &#39; \
+                                   &#39;entered {}&#39;.format(method)
+        assert multithread is True \
+            or multithread is False \
+            or multithread == &#39;auto&#39;, &#39;multithreaded must be True, False or &#39; \
+                                      &#39;auto. You entered {}&#39;\
+                                      .format(multithread)
+        self.pixel_array = pixel_array
+        self.shape = pixel_array.shape[:-1]
+        self.n_te = pixel_array.shape[-1]
+        self.n_vox = np.prod(self.shape)
+        self.affine = affine
+        # Generate a mask if there isn&#39;t one specified
+        if mask is None:
+            self.mask = np.ones(self.shape, dtype=bool)
+        else:
+            self.mask = mask
+            # Don&#39;t process any nan values
+        self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.echo_list = echo_list
+        self.method = method
+        # Auto multithreading conditions
+        if multithread == &#39;auto&#39;:
+            if self.method == &#39;2p_exp&#39; and self.n_vox &gt; 20:
+                multithread = True
+            else:
+                multithread = False
+        self.multithread = multithread
+
+        # Fit data
+        self.t2star_map, self.t2star_err, self.m0_map, self.m0_err\
+            = self.__fit__()
+
+        # Warn if using loglin method to produce a map with a large
+        # proportion of T2* &lt; 20 ms i.e. where loglin isn&#39;t as accurate.
+        if self.method == &#39;loglin&#39;:
+            proportion_less_than_20 = np.sum((self.t2star_map &gt; 0) &amp;
+                                             (self.t2star_map &lt; 20)) \
+                                      / np.prod(self.n_vox)
+            warn_thresh = 0.3
+            if proportion_less_than_20 &gt; warn_thresh:
+                warnings.warn(&#39;{:%} of voxels in this map have a T2* less &#39;
+                              &#39;than 20 ms. The loglin method is not accurate &#39;
+                              &#39;in this regime. If these voxels are of &#39;
+                              &#39;interest, consider using the 2p_exp fitting&#39;
+                              &#39; method&#39;.format(proportion_less_than_20))
+
+    def __fit__(self):
+
+        # Initialise maps
+        t2star_map = np.zeros(self.n_vox)
+        t2star_err = np.zeros(self.n_vox)
+        m0_map = np.zeros(self.n_vox)
+        m0_err = np.zeros(self.n_vox)
+        mask = self.mask.flatten()
+        signal = self.pixel_array.reshape(-1, self.n_te)
+        # Get indices of voxels to process
+        idx = np.argwhere(mask).squeeze()
+
+        # Multithreaded method
+        if self.multithread:
+            with concurrent.futures.ProcessPoolExecutor() as pool:
+                with tqdm(total=idx.size) as progress:
+                    futures = []
+
+                    for ind in idx:
+                        future = pool.submit(self.__fit_signal__,
+                                             signal[ind, :],
+                                             self.echo_list,
+                                             self.method)
+                        future.add_done_callback(lambda p: progress.update())
+                        futures.append(future)
+
+                    results = []
+                    for future in futures:
+                        result = future.result()
+                        results.append(result)
+            t2star_map[idx], t2star_err[idx], m0_map[idx], m0_err[idx] \
+                = [np.array(row) for row in zip(*results)]
+
+        # Single threaded method
+        else:
+            with tqdm(total=idx.size) as progress:
+                for ind in idx:
+                    sig = signal[ind, :]
+                    t2star_map[ind], t2star_err[ind], \
+                        m0_map[ind], m0_err[ind] \
+                        = self.__fit_signal__(sig, self.echo_list, self.method)
+                    progress.update(1)
+
+        # Reshape results to raw data shape
+        t2star_map = t2star_map.reshape(self.shape)
+        t2star_err = t2star_err.reshape(self.shape)
+        m0_map = m0_map.reshape(self.shape)
+        m0_err = m0_err.reshape(self.shape)
+
+        return t2star_map, t2star_err, m0_map, m0_err
+
+    @staticmethod
+    def __fit_signal__(sig, te, method):
+        if method == &#39;loglin&#39;:
+            s_w = 0.0
+            s_wx = 0.0
+            s_wx2 = 0.0
+            s_wy = 0.0
+            s_wxy = 0.0
+            n_te = len(sig)
+
+            noise = sig.sum() / n_te
+            sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
+            if sd &gt; 1e-10:
+                for t in range(n_te):
+                    if sig[t] &gt; 0:
+                        te_tmp = te[t]
+                        if sig[t] &gt; sd:
+                            sigma = np.log(sig[t] / (sig[t] - sd))
+                        else:
+                            sigma = np.log(sig[t] / 0.0001)
+                        logsig = np.log(sig[t])
+                        weight = 1 / sigma ** 2
+
+                        s_w += weight
+                        s_wx += weight * te_tmp
+                        s_wx2 += weight * te_tmp ** 2
+                        s_wy += weight * logsig
+                        s_wxy += weight * te_tmp * logsig
+
+                delta = (s_w * s_wx2) - (s_wx ** 2)
+                if delta &gt; 1e-5:
+                    a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
+                    b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
+                    t2star = np.real(-1 / b)
+                    m0 = np.real(np.exp(a))
+                    if t2star &lt; 0 or t2star &gt; 700 or np.isnan(t2star):
+                        t2star = 0
+                        m0 = 0
+                else:
+                    t2star = 0
+                    m0 = 0
+            else:
+                t2star = 0
+                m0 = 0
+            t2star_err = np.nan
+            m0_err = np.nan
+
+        elif method == &#39;2p_exp&#39;:
+            # Initialise parameters
+            bounds = ([0, 0], [700, 1000000])
+            initial_guess = [20, 10000]
+
+            # Fit data to equation
+            try:
+                popt, pcov = curve_fit(two_param_eq, te, sig,
+                                       p0=initial_guess, bounds=bounds)
+            except RuntimeError:
+                popt = np.zeros(2)
+                pcov = np.zeros((2, 2))
+
+            # Extract fits and errors from result variables
+            if popt[0] &lt; bounds[1][0] - 1:
+                t2star = popt[0]
+                m0 = popt[1]
+                err = np.sqrt(np.diag(pcov))
+                t2star_err = err[0]
+                m0_err = err[1]
+            else:
+                t2star, m0, t2star_err, m0_err = 0, 0, 0, 0
+
+        return t2star, t2star_err, m0, m0_err
+
+    def r2star_map(self):
+        &#34;&#34;&#34;
+        Generates the R2* map from the T2* map output by initialising this
+        class.
+
+        Parameters
+        ----------
+        See class attributes in __init__
+
+        Returns
+        -------
+        r2star_map : np.ndarray
+            An array containing the R2* map generated
+            by the function with R2* measured in ms.
+        &#34;&#34;&#34;
+        return np.nan_to_num(np.reciprocal(self.t2star_map),
+                             posinf=0, neginf=0)
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
+                 maps=&#39;all&#39;):
+        &#34;&#34;&#34;Exports some of the T2Star class attributes to NIFTI.
+                
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+        maps : list or &#39;all&#39;, optional
+            List of maps to save to NIFTI. This should either the string &#34;all&#34;
+            or a list of maps from [&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;,
+            &#34;m0_err&#34;, &#34;r2star&#34;, &#34;mask&#34;].
+        &#34;&#34;&#34;
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+        if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
+            maps = [&#39;t2star&#39;, &#39;m0&#39;, &#39;r2star&#39;, &#39;mask&#39;]
+            if self.method == &#39;2p_exp&#39;:
+                maps += [&#39;t2star_err&#39;, &#39;m0_err&#39;]
+        if isinstance(maps, list):
+            for result in maps:
+                if result == &#39;t2star&#39; or result == &#39;t2star_map&#39;:
+                    t2star_nifti = nib.Nifti1Image(self.t2star_map,
+                                                   affine=self.affine)
+                    nib.save(t2star_nifti, base_path + &#39;_t2star_map.nii.gz&#39;)
+                elif result == &#39;t2star_err&#39; or result == &#39;t2star_err_map&#39;:
+                    t2star_err_nifti = nib.Nifti1Image(self.t2star_err,
+                                                       affine=self.affine)
+                    nib.save(t2star_err_nifti, base_path +
+                             &#39;_t2star_err.nii.gz&#39;)
+                    if self.method == &#39;loglin&#39;:
+                        warnings.warn(&#39;Saving t2star_error however, &#39;
+                                      &#39;the loglin method does not produce &#39;
+                                      &#39;confidence intervals. As such the &#39;
+                                      &#39;resulting nifti will be all zeros.&#39;)
+                elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
+                    nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+                elif result == &#39;m0_err&#39; or result == &#39;m0_err_map&#39;:
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                                   affine=self.affine)
+                    nib.save(m0_err_nifti, base_path + &#39;_m0_err.nii.gz&#39;)
+                    if self.method == &#39;loglin&#39;:
+                        warnings.warn(&#39;Saving m0_error however, the loglin &#39;
+                                      &#39;method does not produce confidence &#39;
+                                      &#39;intervals. As such the resulting nifti&#39;
+                                      &#39; will be all zeros.&#39;)
+                elif result == &#39;r2star&#39; or result == &#39;r2star_map&#39;:
+                    r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                                   affine=self.affine)
+                    nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
+                elif result == &#39;mask&#39;:
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=self.affine)
+                    nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+        else:
+            raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
+                             &#39;should be &#34;all&#34; or a list of maps from &#39;
+                             &#39;&#34;[&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;, &#39;
+                             &#39;&#34;r2star&#34;, &#34;mask&#34;]&#34;.&#39;)
+
+        return
+
+
+def two_param_eq(t, t2star, m0):
+    &#34;&#34;&#34;
+        Calculate the expected signal from the equation
+        signal = M0 * exp(-t / T2*)
+
+        Parameters
+        ----------
+        t: list
+            The times the signal will be calculated at
+        t2star: float
+            The T2* of the signal
+        m0: float
+            The M0 of the signal
+
+        Returns
+        -------
+        signal: np.ndarray
+        &#34;&#34;&#34;
+    return np.sqrt(np.square(m0 * np.exp(-t / t2star)))</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ukat.mapping.t2star.two_param_eq"><code class="name flex">
+<span>def <span class="ident">two_param_eq</span></span>(<span>t, t2star, m0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Calculate the expected signal from the equation
+signal = M0 * exp(-t / T2*)</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>t</code></strong> :&ensp;<code>list</code></dt>
+<dd>The times the signal will be calculated at</dd>
+<dt><strong><code>t2star</code></strong> :&ensp;<code>float</code></dt>
+<dd>The T2* of the signal</dd>
+<dt><strong><code>m0</code></strong> :&ensp;<code>float</code></dt>
+<dd>The M0 of the signal</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>signal</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def two_param_eq(t, t2star, m0):
+    &#34;&#34;&#34;
+        Calculate the expected signal from the equation
+        signal = M0 * exp(-t / T2*)
+
+        Parameters
+        ----------
+        t: list
+            The times the signal will be calculated at
+        t2star: float
+            The T2* of the signal
+        m0: float
+            The M0 of the signal
+
+        Returns
+        -------
+        signal: np.ndarray
+        &#34;&#34;&#34;
+    return np.sqrt(np.square(m0 * np.exp(-t / t2star)))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ukat.mapping.t2star.T2Star"><code class="flex name class">
+<span>class <span class="ident">T2Star</span></span>
+<span>(</span><span>pixel_array, echo_list, affine, mask=None, method='loglin', multithread='auto')</span>
+</code></dt>
+<dd>
+<div class="desc"><h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>t2star_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The estimated T2* values in ms</dd>
+<dt><strong><code>t2star_err</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The certainty in the fit of <code>t2star_map</code> in ms. Only returned if
+<code>2p_exp</code> method is used, otherwise is an array of nan</dd>
+<dt><strong><code>m0_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The estimated M0 values</dd>
+<dt><strong><code>m0_err</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The certainty in the fit of <code>m0_map</code>. Only returned if <code>2p_exp</code>
+method is used, otherwise is an array of nan</dd>
+<dt><strong><code>shape</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>The shape of the T2* map</dd>
+<dt><strong><code>n_te</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of TE used to calculate the map</dd>
+<dt><strong><code>n_vox</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of voxels in the map i.e. the product of all dimensions
+apart from TE</dd>
+</dl>
+<p>Initialise a T2Star class instance.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>pixel_array</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>A array containing the signal from each voxel at each echo
+time with the last dimension being time i.e. the array needed to
+generate a 3D T2* map would have dimensions [x, y, z, TE].</dd>
+<dt><strong><code>echo_list</code></strong> :&ensp;<code>list()</code></dt>
+<dd>An array of the echo times used for the last dimension of the
+raw data. In milliseconds.</dd>
+<dt><strong><code>affine</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>A matrix giving the relationship between voxel coordinates and
+world coordinates.</dd>
+<dt><strong><code>mask</code></strong> :&ensp;<code>np.ndarray</code>, optional</dt>
+<dd>A boolean mask of the voxels to fit. Should be the shape of the
+desired T2* map rather than the raw data i.e. omit the time
+dimension.</dd>
+<dt><strong><code>method</code></strong> :&ensp;<code>{'loglin', '2p_exp'}</code>, optional</dt>
+<dd>Default <code>loglin</code>
+The method used to estimate T2<em> values. 'loglin' uses a
+weighted linear fit to the natural logarithm of the
+signal. '2p_exp' fits the signal to a two parameter
+exponential (S = S0 * exp(-t / T2</em>)). <code>loglin</code> is far quicker
+but produces inaccurate results for T2* below 20 ms. <code>2p_exp</code> is
+accurate below 20 ms however this comes at the expense of run time.</dd>
+<dt><strong><code>multithread</code></strong> :&ensp;<code>bool</code> or <code>'auto'</code>, optional</dt>
+<dd>Default 'auto'.
+If True, fitting will be distributed over all cores available on
+the node. If False, fitting will be carried out on a single thread.
+'auto' attempts to apply multithreading where appropriate based
+on the number of voxels being fit and the method being used.
+Generally 'loglin' is quicker running single threaded
+due to
+the additional overheads of multithreading while '2p_exp' is
+quicker running multithreaded for anything but small numbers of
+voxels.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class T2Star:
+    &#34;&#34;&#34;
+    Attributes
+    ----------
+    t2star_map : np.ndarray
+        The estimated T2* values in ms
+    t2star_err : np.ndarray
+        The certainty in the fit of `t2star_map` in ms. Only returned if
+        `2p_exp` method is used, otherwise is an array of nan
+    m0_map : np.ndarray
+        The estimated M0 values
+    m0_err : np.ndarray
+        The certainty in the fit of `m0_map`. Only returned if `2p_exp`
+        method is used, otherwise is an array of nan
+    shape : tuple
+        The shape of the T2* map
+    n_te : int
+        The number of TE used to calculate the map
+    n_vox : int
+        The number of voxels in the map i.e. the product of all dimensions
+        apart from TE
+    &#34;&#34;&#34;
+
+    def __init__(self, pixel_array, echo_list, affine, mask=None,
+                 method=&#39;loglin&#39;, multithread=&#39;auto&#39;):
+        &#34;&#34;&#34;Initialise a T2Star class instance.
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            A array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2* map would have dimensions [x, y, z, TE].
+        echo_list : list()
+            An array of the echo times used for the last dimension of the
+            raw data. In milliseconds.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2* map rather than the raw data i.e. omit the time
+            dimension.
+        method : {&#39;loglin&#39;, &#39;2p_exp&#39;}, optional
+            Default `loglin`
+            The method used to estimate T2* values. &#39;loglin&#39; uses a
+            weighted linear fit to the natural logarithm of the
+            signal. &#39;2p_exp&#39; fits the signal to a two parameter
+            exponential (S = S0 * exp(-t / T2*)). `loglin` is far quicker
+            but produces inaccurate results for T2* below 20 ms. `2p_exp` is
+            accurate below 20 ms however this comes at the expense of run time.
+        multithread : bool or &#39;auto&#39;, optional
+            Default &#39;auto&#39;.
+            If True, fitting will be distributed over all cores available on
+            the node. If False, fitting will be carried out on a single thread.
+            &#39;auto&#39; attempts to apply multithreading where appropriate based
+            on the number of voxels being fit and the method being used.
+            Generally &#39;loglin&#39; is quicker running single threaded  due to
+            the additional overheads of multithreading while &#39;2p_exp&#39; is
+            quicker running multithreaded for anything but small numbers of
+            voxels.
+        &#34;&#34;&#34;
+        # Some sanity checks
+        assert (pixel_array.shape[-1]
+                == len(echo_list)), &#39;Number of echoes does not match the &#39; \
+                                    &#39;number of time frames on the last axis &#39; \
+                                    &#39;of pixel_array&#39;
+        assert method == &#39;loglin&#39; \
+            or method == &#39;2p_exp&#39;, &#39;method must be loglin or 2p_exp. You &#39; \
+                                   &#39;entered {}&#39;.format(method)
+        assert multithread is True \
+            or multithread is False \
+            or multithread == &#39;auto&#39;, &#39;multithreaded must be True, False or &#39; \
+                                      &#39;auto. You entered {}&#39;\
+                                      .format(multithread)
+        self.pixel_array = pixel_array
+        self.shape = pixel_array.shape[:-1]
+        self.n_te = pixel_array.shape[-1]
+        self.n_vox = np.prod(self.shape)
+        self.affine = affine
+        # Generate a mask if there isn&#39;t one specified
+        if mask is None:
+            self.mask = np.ones(self.shape, dtype=bool)
+        else:
+            self.mask = mask
+            # Don&#39;t process any nan values
+        self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+        self.echo_list = echo_list
+        self.method = method
+        # Auto multithreading conditions
+        if multithread == &#39;auto&#39;:
+            if self.method == &#39;2p_exp&#39; and self.n_vox &gt; 20:
+                multithread = True
+            else:
+                multithread = False
+        self.multithread = multithread
+
+        # Fit data
+        self.t2star_map, self.t2star_err, self.m0_map, self.m0_err\
+            = self.__fit__()
+
+        # Warn if using loglin method to produce a map with a large
+        # proportion of T2* &lt; 20 ms i.e. where loglin isn&#39;t as accurate.
+        if self.method == &#39;loglin&#39;:
+            proportion_less_than_20 = np.sum((self.t2star_map &gt; 0) &amp;
+                                             (self.t2star_map &lt; 20)) \
+                                      / np.prod(self.n_vox)
+            warn_thresh = 0.3
+            if proportion_less_than_20 &gt; warn_thresh:
+                warnings.warn(&#39;{:%} of voxels in this map have a T2* less &#39;
+                              &#39;than 20 ms. The loglin method is not accurate &#39;
+                              &#39;in this regime. If these voxels are of &#39;
+                              &#39;interest, consider using the 2p_exp fitting&#39;
+                              &#39; method&#39;.format(proportion_less_than_20))
+
+    def __fit__(self):
+
+        # Initialise maps
+        t2star_map = np.zeros(self.n_vox)
+        t2star_err = np.zeros(self.n_vox)
+        m0_map = np.zeros(self.n_vox)
+        m0_err = np.zeros(self.n_vox)
+        mask = self.mask.flatten()
+        signal = self.pixel_array.reshape(-1, self.n_te)
+        # Get indices of voxels to process
+        idx = np.argwhere(mask).squeeze()
+
+        # Multithreaded method
+        if self.multithread:
+            with concurrent.futures.ProcessPoolExecutor() as pool:
+                with tqdm(total=idx.size) as progress:
+                    futures = []
+
+                    for ind in idx:
+                        future = pool.submit(self.__fit_signal__,
+                                             signal[ind, :],
+                                             self.echo_list,
+                                             self.method)
+                        future.add_done_callback(lambda p: progress.update())
+                        futures.append(future)
+
+                    results = []
+                    for future in futures:
+                        result = future.result()
+                        results.append(result)
+            t2star_map[idx], t2star_err[idx], m0_map[idx], m0_err[idx] \
+                = [np.array(row) for row in zip(*results)]
+
+        # Single threaded method
+        else:
+            with tqdm(total=idx.size) as progress:
+                for ind in idx:
+                    sig = signal[ind, :]
+                    t2star_map[ind], t2star_err[ind], \
+                        m0_map[ind], m0_err[ind] \
+                        = self.__fit_signal__(sig, self.echo_list, self.method)
+                    progress.update(1)
+
+        # Reshape results to raw data shape
+        t2star_map = t2star_map.reshape(self.shape)
+        t2star_err = t2star_err.reshape(self.shape)
+        m0_map = m0_map.reshape(self.shape)
+        m0_err = m0_err.reshape(self.shape)
+
+        return t2star_map, t2star_err, m0_map, m0_err
+
+    @staticmethod
+    def __fit_signal__(sig, te, method):
+        if method == &#39;loglin&#39;:
+            s_w = 0.0
+            s_wx = 0.0
+            s_wx2 = 0.0
+            s_wy = 0.0
+            s_wxy = 0.0
+            n_te = len(sig)
+
+            noise = sig.sum() / n_te
+            sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
+            if sd &gt; 1e-10:
+                for t in range(n_te):
+                    if sig[t] &gt; 0:
+                        te_tmp = te[t]
+                        if sig[t] &gt; sd:
+                            sigma = np.log(sig[t] / (sig[t] - sd))
+                        else:
+                            sigma = np.log(sig[t] / 0.0001)
+                        logsig = np.log(sig[t])
+                        weight = 1 / sigma ** 2
+
+                        s_w += weight
+                        s_wx += weight * te_tmp
+                        s_wx2 += weight * te_tmp ** 2
+                        s_wy += weight * logsig
+                        s_wxy += weight * te_tmp * logsig
+
+                delta = (s_w * s_wx2) - (s_wx ** 2)
+                if delta &gt; 1e-5:
+                    a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
+                    b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
+                    t2star = np.real(-1 / b)
+                    m0 = np.real(np.exp(a))
+                    if t2star &lt; 0 or t2star &gt; 700 or np.isnan(t2star):
+                        t2star = 0
+                        m0 = 0
+                else:
+                    t2star = 0
+                    m0 = 0
+            else:
+                t2star = 0
+                m0 = 0
+            t2star_err = np.nan
+            m0_err = np.nan
+
+        elif method == &#39;2p_exp&#39;:
+            # Initialise parameters
+            bounds = ([0, 0], [700, 1000000])
+            initial_guess = [20, 10000]
+
+            # Fit data to equation
+            try:
+                popt, pcov = curve_fit(two_param_eq, te, sig,
+                                       p0=initial_guess, bounds=bounds)
+            except RuntimeError:
+                popt = np.zeros(2)
+                pcov = np.zeros((2, 2))
+
+            # Extract fits and errors from result variables
+            if popt[0] &lt; bounds[1][0] - 1:
+                t2star = popt[0]
+                m0 = popt[1]
+                err = np.sqrt(np.diag(pcov))
+                t2star_err = err[0]
+                m0_err = err[1]
+            else:
+                t2star, m0, t2star_err, m0_err = 0, 0, 0, 0
+
+        return t2star, t2star_err, m0, m0_err
+
+    def r2star_map(self):
+        &#34;&#34;&#34;
+        Generates the R2* map from the T2* map output by initialising this
+        class.
+
+        Parameters
+        ----------
+        See class attributes in __init__
+
+        Returns
+        -------
+        r2star_map : np.ndarray
+            An array containing the R2* map generated
+            by the function with R2* measured in ms.
+        &#34;&#34;&#34;
+        return np.nan_to_num(np.reciprocal(self.t2star_map),
+                             posinf=0, neginf=0)
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
+                 maps=&#39;all&#39;):
+        &#34;&#34;&#34;Exports some of the T2Star class attributes to NIFTI.
+                
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+        maps : list or &#39;all&#39;, optional
+            List of maps to save to NIFTI. This should either the string &#34;all&#34;
+            or a list of maps from [&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;,
+            &#34;m0_err&#34;, &#34;r2star&#34;, &#34;mask&#34;].
+        &#34;&#34;&#34;
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+        if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
+            maps = [&#39;t2star&#39;, &#39;m0&#39;, &#39;r2star&#39;, &#39;mask&#39;]
+            if self.method == &#39;2p_exp&#39;:
+                maps += [&#39;t2star_err&#39;, &#39;m0_err&#39;]
+        if isinstance(maps, list):
+            for result in maps:
+                if result == &#39;t2star&#39; or result == &#39;t2star_map&#39;:
+                    t2star_nifti = nib.Nifti1Image(self.t2star_map,
+                                                   affine=self.affine)
+                    nib.save(t2star_nifti, base_path + &#39;_t2star_map.nii.gz&#39;)
+                elif result == &#39;t2star_err&#39; or result == &#39;t2star_err_map&#39;:
+                    t2star_err_nifti = nib.Nifti1Image(self.t2star_err,
+                                                       affine=self.affine)
+                    nib.save(t2star_err_nifti, base_path +
+                             &#39;_t2star_err.nii.gz&#39;)
+                    if self.method == &#39;loglin&#39;:
+                        warnings.warn(&#39;Saving t2star_error however, &#39;
+                                      &#39;the loglin method does not produce &#39;
+                                      &#39;confidence intervals. As such the &#39;
+                                      &#39;resulting nifti will be all zeros.&#39;)
+                elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
+                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
+                    nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+                elif result == &#39;m0_err&#39; or result == &#39;m0_err_map&#39;:
+                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                                   affine=self.affine)
+                    nib.save(m0_err_nifti, base_path + &#39;_m0_err.nii.gz&#39;)
+                    if self.method == &#39;loglin&#39;:
+                        warnings.warn(&#39;Saving m0_error however, the loglin &#39;
+                                      &#39;method does not produce confidence &#39;
+                                      &#39;intervals. As such the resulting nifti&#39;
+                                      &#39; will be all zeros.&#39;)
+                elif result == &#39;r2star&#39; or result == &#39;r2star_map&#39;:
+                    r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                                   affine=self.affine)
+                    nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
+                elif result == &#39;mask&#39;:
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=self.affine)
+                    nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+        else:
+            raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
+                             &#39;should be &#34;all&#34; or a list of maps from &#39;
+                             &#39;&#34;[&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;, &#39;
+                             &#39;&#34;r2star&#34;, &#34;mask&#34;]&#34;.&#39;)
+
+        return</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ukat.mapping.t2star.T2Star.r2star_map"><code class="name flex">
+<span>def <span class="ident">r2star_map</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generates the R2<em> map from the T2</em> map output by initialising this
+class.</p>
+<h2 id="parameters">Parameters</h2>
+<p>See class attributes in <strong>init</strong></p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>r2star_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>An array containing the R2<em> map generated
+by the function with R2</em> measured in ms.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def r2star_map(self):
+    &#34;&#34;&#34;
+    Generates the R2* map from the T2* map output by initialising this
+    class.
+
+    Parameters
+    ----------
+    See class attributes in __init__
+
+    Returns
+    -------
+    r2star_map : np.ndarray
+        An array containing the R2* map generated
+        by the function with R2* measured in ms.
+    &#34;&#34;&#34;
+    return np.nan_to_num(np.reciprocal(self.t2star_map),
+                         posinf=0, neginf=0)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.t2star.T2Star.to_nifti"><code class="name flex">
+<span>def <span class="ident">to_nifti</span></span>(<span>self, output_directory='C:\\Users\\md1jgra\\Downloads\\ukat', base_file_name='Output', maps='all')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports some of the T2Star class attributes to NIFTI.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>output_directory</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Path to the folder where the NIFTI files will be saved.</dd>
+<dt><strong><code>base_file_name</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Filename of the resulting NIFTI. This code appends the extension.
+Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.</dd>
+<dt><strong><code>maps</code></strong> :&ensp;<code>list</code> or <code>'all'</code>, optional</dt>
+<dd>List of maps to save to NIFTI. This should either the string "all"
+or a list of maps from ["t2star", "t2star_err", "m0",
+"m0_err", "r2star", "mask"].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
+             maps=&#39;all&#39;):
+    &#34;&#34;&#34;Exports some of the T2Star class attributes to NIFTI.
+            
+    Parameters
+    ----------
+    output_directory : string, optional
+        Path to the folder where the NIFTI files will be saved.
+    base_file_name : string, optional
+        Filename of the resulting NIFTI. This code appends the extension.
+        Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+    maps : list or &#39;all&#39;, optional
+        List of maps to save to NIFTI. This should either the string &#34;all&#34;
+        or a list of maps from [&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;,
+        &#34;m0_err&#34;, &#34;r2star&#34;, &#34;mask&#34;].
+    &#34;&#34;&#34;
+    os.makedirs(output_directory, exist_ok=True)
+    base_path = os.path.join(output_directory, base_file_name)
+    if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
+        maps = [&#39;t2star&#39;, &#39;m0&#39;, &#39;r2star&#39;, &#39;mask&#39;]
+        if self.method == &#39;2p_exp&#39;:
+            maps += [&#39;t2star_err&#39;, &#39;m0_err&#39;]
+    if isinstance(maps, list):
+        for result in maps:
+            if result == &#39;t2star&#39; or result == &#39;t2star_map&#39;:
+                t2star_nifti = nib.Nifti1Image(self.t2star_map,
+                                               affine=self.affine)
+                nib.save(t2star_nifti, base_path + &#39;_t2star_map.nii.gz&#39;)
+            elif result == &#39;t2star_err&#39; or result == &#39;t2star_err_map&#39;:
+                t2star_err_nifti = nib.Nifti1Image(self.t2star_err,
+                                                   affine=self.affine)
+                nib.save(t2star_err_nifti, base_path +
+                         &#39;_t2star_err.nii.gz&#39;)
+                if self.method == &#39;loglin&#39;:
+                    warnings.warn(&#39;Saving t2star_error however, &#39;
+                                  &#39;the loglin method does not produce &#39;
+                                  &#39;confidence intervals. As such the &#39;
+                                  &#39;resulting nifti will be all zeros.&#39;)
+            elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
+                m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
+                nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+            elif result == &#39;m0_err&#39; or result == &#39;m0_err_map&#39;:
+                m0_err_nifti = nib.Nifti1Image(self.m0_err,
+                                               affine=self.affine)
+                nib.save(m0_err_nifti, base_path + &#39;_m0_err.nii.gz&#39;)
+                if self.method == &#39;loglin&#39;:
+                    warnings.warn(&#39;Saving m0_error however, the loglin &#39;
+                                  &#39;method does not produce confidence &#39;
+                                  &#39;intervals. As such the resulting nifti&#39;
+                                  &#39; will be all zeros.&#39;)
+            elif result == &#39;r2star&#39; or result == &#39;r2star_map&#39;:
+                r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
+                                               affine=self.affine)
+                nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
+            elif result == &#39;mask&#39;:
+                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                             affine=self.affine)
+                nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+    else:
+        raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
+                         &#39;should be &#34;all&#34; or a list of maps from &#39;
+                         &#39;&#34;[&#34;t2star&#34;, &#34;t2star_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;, &#39;
+                         &#39;&#34;r2star&#34;, &#34;mask&#34;]&#34;.&#39;)
+
+    return</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ukat.mapping" href="index.html">ukat.mapping</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ukat.mapping.t2star.two_param_eq" href="#ukat.mapping.t2star.two_param_eq">two_param_eq</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ukat.mapping.t2star.T2Star" href="#ukat.mapping.t2star.T2Star">T2Star</a></code></h4>
+<ul class="">
+<li><code><a title="ukat.mapping.t2star.T2Star.r2star_map" href="#ukat.mapping.t2star.T2Star.r2star_map">r2star_map</a></code></li>
+<li><code><a title="ukat.mapping.t2star.T2Star.to_nifti" href="#ukat.mapping.t2star.T2Star.to_nifti">to_nifti</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+</footer>
+</body>
+</html>
