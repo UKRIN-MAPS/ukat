@@ -250,18 +250,6 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
 
-fetch_total_kidney_weights = _make_fetcher('fetch_total_kidney_weights',
-                                           pjoin(ukat_home,
-                                                 'total_kidney_weights'),
-                                           'https://zenodo.org/record/4894406/'
-                                           'files/',
-                                           ['whole_kidney_cnn.model'],
-                                           ['whole_kidney_cnn.model'],
-                                           ['e9f60f9fe6ad9ece'
-                                            'd8b055bf6792a1d1'],
-                                           doc='Downloading total kidney '
-                                               'model weights')
-
 fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   pjoin(ukat_home, 't1w_philips'),
                                   'https://zenodo.org/record/4897994/files/',
@@ -355,11 +343,6 @@ def get_fnames(name):
 
     elif name == 't2star_siemens':
         files, folder = fetch_t2star_siemens()
-        fnames = sorted(glob.glob(pjoin(folder, '*')))
-        return fnames
-
-    elif name == 'total_kidney_weights':
-        files, folder = fetch_total_kidney_weights()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
