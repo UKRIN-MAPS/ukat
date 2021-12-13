@@ -1,6 +1,32 @@
+## [Unmerged] - 2021-X-Y
+
+### Added
+* iSNR calculations #162
+* tSNR calculations #160 #161
+
+### Changed
+* Codecov updated #167 #168
+
+### Fixed
+* Minor formatting/function order fixes
+
+## [0.4.0] - 2021-08-05
+
+### Added 
+* Magnetisation Transfer Ratio (MTR) mapping #156 #153
+
+### Changed
+* ADC fitting now uses the full complement of supplied b-values to fit each voxel (or ignores a voxel if any signal is not positive) #157 #158
+* Removed infinite values from R2* maps #154 #155
+
+### Fixed
+* Bump dipy requirement to a minimum of v1.2.0 #152 #155
+* Minor documentation typos
+
+
 ## [0.3.0] - 2021-05-25
 
-## Added 
+### Added 
 * PyPI release badge to readme
 
 ### Changed

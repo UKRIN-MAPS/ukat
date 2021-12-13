@@ -254,7 +254,21 @@ class T1:
             return t1, t1_err, m0, m0_err, eff, eff_err
 
     def r1_map(self):
-        return np.reciprocal(self.t1_map)
+        """
+        Generates the R1 map from the T1 map output by initialising this
+        class.
+
+        Parameters
+        ----------
+        See class attributes in __init__
+
+        Returns
+        -------
+        r1_map : np.ndarray
+            An array containing the R1 map generated
+            by the function with R1 measured in ms.
+        """
+        return np.nan_to_num(np.reciprocal(self.t1_map), posinf=0, neginf=0)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
