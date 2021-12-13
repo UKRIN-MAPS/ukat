@@ -1,8 +1,11 @@
 name: Upload manual to Github Page
 on:
   push:
-    branches:
-      - master
+    tags-ignore:
+      - 'v*rc*'
+    tags:
+      - 'v*'
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
