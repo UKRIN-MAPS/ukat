@@ -982,37 +982,3 @@ def _load_t2star_siemens_philips(fnames):
     image = image[..., sort_idxs]
 
     return image, data.affine, echo_list
-
-
-def t1w_volume_philips():
-    """Fetches segmentation/philips_t1w dataset
-    Returns
-    -------
-    numpy.ndarray
-        image data
-    numpy.ndarray
-        affine matrix for image data
-    """
-    fnames = get_fnames('t1w_philips')
-
-    data = nib.load(fnames[0])
-    image = data.get_fdata()
-
-    return image, data.affine
-
-
-def t2w_volume_philips():
-    """Fetches segmentation/philips_t2w dataset
-    Returns
-    -------
-    numpy.ndarray
-        image data
-    numpy.ndarray
-        affine matrix for image data
-    """
-    fnames = get_fnames('t2w_philips')
-
-    data = nib.load(fnames[0])
-    image = data.get_fdata()
-
-    return image, data.affine
