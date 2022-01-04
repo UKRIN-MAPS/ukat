@@ -4,7 +4,8 @@ on:
     tags-ignore:
       - 'v*rc*'
     tags:
-      - 'v*'
+      - 'v*[!rc]*'
+    workflow_dispatch:
 
 jobs:
   build-and-deploy:
