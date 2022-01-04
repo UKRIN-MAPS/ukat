@@ -1,10 +1,8 @@
 name: Upload manual to Github Page
 on:
   push:
-    tags-ignore:
-      - 'v*rc*'
     tags:
-      - 'v*[!rc]*'
+      - 'v*[^rc]*'
     workflow_dispatch:
 
 jobs:
