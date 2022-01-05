@@ -94,7 +94,7 @@ class B0:
             self.phase_difference = self.phase1 - self.phase0
             # B0 Map calculation
             self.b0_map = self.phase_difference / (2 * np.pi * self.delta_te)
-            # The following step checks in a central bounding box containing 
+            # The following step checks in a central bounding box containing
             # the kidneys if there is an offset in the B0 Map and corrects
             # that offset if it exists. This is due to a jump in phase
             # that can occurr during the unwrapping of the phase images.
