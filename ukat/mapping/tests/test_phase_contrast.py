@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from ukat.data import fetch
-from ukat.mapping.phase_contrast import PhaseContrast, phase_to_velocity
+from ukat.mapping.phase_contrast import PhaseContrast, convert_to_velocity
 from ukat.utils import arraystats
 
 
@@ -145,9 +145,9 @@ class TestPC:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
-    def test_phase_to_velocity(self):
+    def test_convert_to_velocity(self):
         # Assuming that correct_signal is a phase image and not velocity array.
-        vel_array_calculated = phase_to_velocity(self.correct_signal,
+        vel_array_calculated = convert_to_velocity(self.correct_signal,
                                                  self.vel_encoding)
         vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
