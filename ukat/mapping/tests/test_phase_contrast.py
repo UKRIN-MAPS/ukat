@@ -148,7 +148,7 @@ class TestPC:
     def test_convert_to_velocity(self):
         # Assuming that correct_signal is a phase image and not velocity array.
         vel_array_calculated = convert_to_velocity(self.correct_signal,
-                                                 self.vel_encoding)
+                                                   self.vel_encoding)
         vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],

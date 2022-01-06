@@ -103,13 +103,13 @@ class PhaseContrast:
             for phase in range(self.shape[-1]):
                 phase_array = self.velocity_array[..., phase]
                 num_pixels = np.count_nonzero(~np.isnan(phase_array))
-                area = num_pixels * 0.1 * self.pixel_spacing[0] * \
-                       0.1 * self.pixel_spacing[1]  #(0.1*mm * 0.1*mm) = cm2
+                area = (num_pixels * 0.1 * self.pixel_spacing[0] * 
+                        0.1 * self.pixel_spacing[1]) # (0.1*mm * 0.1*mm) = cm2
                 min_vel = np.nanmin(phase_array)
                 avrg_vel = np.nanmean(phase_array)
                 max_vel = np.nanmax(phase_array)
                 std_vel = np.nanstd(phase_array)
-                Q = 60 * area * avrg_vel  #(60s*cm2*cm/s) = cm3/min = ml/min
+                Q = 60 * area * avrg_vel # (60s*cm2*cm/s) = cm3/min = ml/min
                 self.num_pixels_phase.append(num_pixels)
                 self.area_phase.append(area)
                 self.min_velocity_phase.append(min_vel)
@@ -128,21 +128,21 @@ class PhaseContrast:
                                 "Max Vel (cm/s)": self.max_velocity_phase,
                                 "Peak Vel (cm/s)": self.peak_velocity_phase,
                                 "StdDev Vel (cm/s)": self.std_velocity_phase}
-            # Mean velocity and mean flow   
+            # Mean velocity and mean flow
             self.mean_velocity = np.mean(self.mean_velocity_phase)
             self.mean_RBF = np.mean(self.RBF)
             # Restrictive Index
             mean_velocity_systole = np.amax(self.mean_velocity_phase)
             mean_velocity_diastole = np.amin(self.mean_velocity_phase)
-            self.resistive_index = (mean_velocity_systole - \
-                                    mean_velocity_diastole) / \
-                                    mean_velocity_systole
+            self.resistive_index = ((mean_velocity_systole - 
+                                     mean_velocity_diastole) / 
+                                     mean_velocity_systole)
             # Convert any nan values to 0
             self.velocity_array = np.nan_to_num(self.velocity_array)
             self.mask = np.nan_to_num(self.mask)
         else:
             raise ValueError('The input velocity_array should be 3D.')
-    
+
     def save_output_csv(self, path):
         """
         Save most of PhaseContrast class attributes into a csv file.
