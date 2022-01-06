@@ -104,7 +104,7 @@ class PhaseContrast:
                 phase_array = self.velocity_array[..., phase]
                 num_pixels = np.count_nonzero(~np.isnan(phase_array))
                 area = (num_pixels * 0.1 * self.pixel_spacing[0] *
-                       0.1 * self.pixel_spacing[1])  # (0.1*mm * 0.1*mm) = cm2
+                        0.1 * self.pixel_spacing[1])  # (0.1*mm * 0.1*mm) = cm2
                 min_vel = np.nanmin(phase_array)
                 avrg_vel = np.nanmean(phase_array)
                 max_vel = np.nanmax(phase_array)
