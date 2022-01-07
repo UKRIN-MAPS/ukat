@@ -189,8 +189,8 @@ class TestB0:
         images = phase[:, :, 4, :]
         # B0Map with unwrapping
         mapper = B0(images, te, affine, unwrap=True)
-        b0_map_without_offset_correction = mapper.phase_difference / \
-                                           (2 * np.pi * mapper.delta_te)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
         # This assertion proves that no offset correction was performed
         assert (mapper.b0_map == b0_map_without_offset_correction).all()
 
@@ -201,8 +201,8 @@ class TestB0:
         images = phase[:, :, 4, :]
         # B0Map with unwrapping
         mapper = B0(images, te, affine, unwrap=True)
-        b0_map_without_offset_correction = mapper.phase_difference / \
-                                           (2 * np.pi * mapper.delta_te)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
         # This assertion proves that there was offset correction performed
         assert (mapper.b0_map != b0_map_without_offset_correction).any()
 
