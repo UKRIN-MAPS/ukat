@@ -97,8 +97,7 @@ class T1:
             self.tss_axis = tss_axis % self.dimensions
         else:
             self.tss_axis = None
-            assert (self.tss == 0), \
-                'tss should be zero for single slice T1 fitting'
+            self.tss = 0
         self.parameters = parameters
         self.multithread = multithread
 

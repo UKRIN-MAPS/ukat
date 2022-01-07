@@ -246,12 +246,6 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
-        # Single Slice with tss != 0
-        with pytest.raises(AssertionError):
-            mapper = T1(pixel_array=np.zeros((5, 5, 10)),
-                        inversion_list=np.linspace(0, 2000, 10),
-                        affine=self.affine, tss=1, tss_axis=None)
-
     def test_real_data(self):
         # Get test data
         magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
