@@ -28,9 +28,11 @@ def T2Star_ElastixParameters(*argv):
     return elastix_model_parameters
 
 def DWI_Moco(image_array, list_arguments):
-    bvalues_list = list_arguments[0]
-    affine_array = list_arguments[1]
-    adc_mapper = ADC(image_array, affine_array, bvalues_list, ukrin_b=False)
+    affine_array = list_arguments[0]
+    bvalues_list = list_arguments[1]
+    mask = list_arguments[2]
+    b_flag = list_arguments[3]
+    adc_mapper = ADC(image_array, affine_array, bvalues_list, mask=mask, ukrin_b=b_flag)
     ADC_Map = adc_mapper.adc
     M0_Map = image_array[..., 0]
     par = [ADC_Map, M0_Map]
@@ -38,6 +40,7 @@ def DWI_Moco(image_array, list_arguments):
     for b_value in bvalues_list:
         fit.append(M0_Map * np.exp(-b_value * ADC_Map))
     fit = np.stack(fit, axis=-1)
+    print(np.shape(fit))
     return fit , par
 
 def T1_Moco(image_array, list_arguments):
