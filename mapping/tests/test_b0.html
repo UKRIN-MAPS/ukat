@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ukat.mapping.tests.test_b0 API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -209,6 +209,30 @@ class TestB0:
                             b0map_stats[&#34;min&#34;], b0map_stats[&#34;max&#34;]],
                             gold_standard_b0, rtol=0.01, atol=0)
 
+    def test_b0_offset_correction(self):
+        # Get test data that does not require b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_philips()
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that no offset correction was performed
+        assert (mapper.b0_map == b0_map_without_offset_correction).all()
+
+        # Get test data that requires b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_siemens(1)
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that there was offset correction performed
+        assert (mapper.b0_map != b0_map_without_offset_correction).any()
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists(&#39;test_output&#39;):
@@ -404,7 +428,32 @@ if os.path.exists(&#39;test_output&#39;):
         b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
         npt.assert_allclose([b0map_stats[&#34;mean&#34;], b0map_stats[&#34;std&#34;],
                             b0map_stats[&#34;min&#34;], b0map_stats[&#34;max&#34;]],
-                            gold_standard_b0, rtol=0.01, atol=0)</code></pre>
+                            gold_standard_b0, rtol=0.01, atol=0)
+
+    def test_b0_offset_correction(self):
+        # Get test data that does not require b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_philips()
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that no offset correction was performed
+        assert (mapper.b0_map == b0_map_without_offset_correction).all()
+
+        # Get test data that requires b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_siemens(1)
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that there was offset correction performed
+        assert (mapper.b0_map != b0_map_without_offset_correction).any()</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -460,6 +509,41 @@ if os.path.exists(&#39;test_output&#39;):
     npt.assert_allclose([b0maps_stats[&#34;mean&#34;], b0maps_stats[&#34;std&#34;],
                         b0maps_stats[&#34;min&#34;], b0maps_stats[&#34;max&#34;]],
                         self.gold_standard, rtol=1e-7, atol=1e-9)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_b0.TestB0.test_b0_offset_correction"><code class="name flex">
+<span>def <span class="ident">test_b0_offset_correction</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_b0_offset_correction(self):
+    # Get test data that does not require b0_offset correction
+    magnitude, phase, affine, te = fetch.b0_philips()
+    te *= 1000
+    # Process on a central slice only
+    images = phase[:, :, 4, :]
+    # B0Map with unwrapping
+    mapper = B0(images, te, affine, unwrap=True)
+    b0_map_without_offset_correction = (mapper.phase_difference /
+                                        (2 * np.pi * mapper.delta_te))
+    # This assertion proves that no offset correction was performed
+    assert (mapper.b0_map == b0_map_without_offset_correction).all()
+
+    # Get test data that requires b0_offset correction
+    magnitude, phase, affine, te = fetch.b0_siemens(1)
+    te *= 1000
+    # Process on a central slice only
+    images = phase[:, :, 4, :]
+    # B0Map with unwrapping
+    mapper = B0(images, te, affine, unwrap=True)
+    b0_map_without_offset_correction = (mapper.phase_difference /
+                                        (2 * np.pi * mapper.delta_te))
+    # This assertion proves that there was offset correction performed
+    assert (mapper.b0_map != b0_map_without_offset_correction).any()</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_b0.TestB0.test_echo_list_type_assertion"><code class="name flex">
@@ -709,6 +793,7 @@ if os.path.exists(&#39;test_output&#39;):
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.one_echo_array" href="#ukat.mapping.tests.test_b0.TestB0.one_echo_array">one_echo_array</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.one_echo_list" href="#ukat.mapping.tests.test_b0.TestB0.one_echo_list">one_echo_list</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.test_b0_calculation_without_unwrapping" href="#ukat.mapping.tests.test_b0.TestB0.test_b0_calculation_without_unwrapping">test_b0_calculation_without_unwrapping</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_b0.TestB0.test_b0_offset_correction" href="#ukat.mapping.tests.test_b0.TestB0.test_b0_offset_correction">test_b0_offset_correction</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.test_echo_list_type_assertion" href="#ukat.mapping.tests.test_b0.TestB0.test_echo_list_type_assertion">test_echo_list_type_assertion</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.test_inputs" href="#ukat.mapping.tests.test_b0.TestB0.test_inputs">test_inputs</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_b0.TestB0.test_mask" href="#ukat.mapping.tests.test_b0.TestB0.test_mask">test_mask</a></code></li>
@@ -724,7 +809,7 @@ if os.path.exists(&#39;test_output&#39;):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ukat.data.tests.test_fetch API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -198,6 +198,17 @@ class TestFetch:
             magnitude, phase, affine, inversion_times, _ = \
                 fetch.t1_philips(3)
 
+    def test_philips_t1w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t1w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
     def test_philips_t2(self):
         # Test if the fetch function works
         magnitude, affine, echo_times = fetch.t2_philips(1)
@@ -252,7 +263,39 @@ class TestFetch:
         assert isinstance(echo_times, np.ndarray)
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
-        assert len(np.shape(echo_times)) == 1</code></pre>
+        assert len(np.shape(echo_times)) == 1
+
+    def test_philips_t2w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t2w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
+    def test_philips_tsnr(self):
+        # Test if the fetch function works with high tSNR data
+        data, affine = fetch.tsnr_high_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
+
+        # Test if the fetch function works with low tSNR data
+        data, affine = fetch.tsnr_low_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)</code></pre>
 </details>
 </section>
 <section>
@@ -439,6 +482,17 @@ class TestFetch:
             magnitude, phase, affine, inversion_times, _ = \
                 fetch.t1_philips(3)
 
+    def test_philips_t1w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t1w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
     def test_philips_t2(self):
         # Test if the fetch function works
         magnitude, affine, echo_times = fetch.t2_philips(1)
@@ -493,7 +547,39 @@ class TestFetch:
         assert isinstance(echo_times, np.ndarray)
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
-        assert len(np.shape(echo_times)) == 1</code></pre>
+        assert len(np.shape(echo_times)) == 1
+
+    def test_philips_t2w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t2w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
+    def test_philips_tsnr(self):
+        # Test if the fetch function works with high tSNR data
+        data, affine = fetch.tsnr_high_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
+
+        # Test if the fetch function works with low tSNR data
+        data, affine = fetch.tsnr_low_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -679,6 +765,27 @@ class TestFetch:
             fetch.t1_philips(3)</code></pre>
 </details>
 </dd>
+<dt id="ukat.data.tests.test_fetch.TestFetch.test_philips_t1w"><code class="name flex">
+<span>def <span class="ident">test_philips_t1w</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_philips_t1w(self):
+    # Test if the fetch function works
+    image, affine = fetch.t1w_volume_philips()
+
+    # Check the format of the outputs
+    assert isinstance(image, np.ndarray)
+    assert np.unique(np.isnan(image)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert len(np.shape(image)) == 3
+    assert np.shape(affine) == (4, 4)</code></pre>
+</details>
+</dd>
 <dt id="ukat.data.tests.test_fetch.TestFetch.test_philips_t2"><code class="name flex">
 <span>def <span class="ident">test_philips_t2</span></span>(<span>self)</span>
 </code></dt>
@@ -727,6 +834,58 @@ class TestFetch:
     assert len(np.shape(magnitude)) == 4
     assert np.shape(affine) == (4, 4)
     assert len(np.shape(echo_times)) == 1</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.tests.test_fetch.TestFetch.test_philips_t2w"><code class="name flex">
+<span>def <span class="ident">test_philips_t2w</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_philips_t2w(self):
+    # Test if the fetch function works
+    image, affine = fetch.t2w_volume_philips()
+
+    # Check the format of the outputs
+    assert isinstance(image, np.ndarray)
+    assert np.unique(np.isnan(image)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert len(np.shape(image)) == 3
+    assert np.shape(affine) == (4, 4)</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.tests.test_fetch.TestFetch.test_philips_tsnr"><code class="name flex">
+<span>def <span class="ident">test_philips_tsnr</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_philips_tsnr(self):
+    # Test if the fetch function works with high tSNR data
+    data, affine = fetch.tsnr_high_philips()
+
+    # Check the format of the outputs
+    assert isinstance(data, np.ndarray)
+    assert np.unique(np.isnan(data)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert len(np.shape(data)) == 4
+    assert np.shape(affine) == (4, 4)
+
+    # Test if the fetch function works with low tSNR data
+    data, affine = fetch.tsnr_low_philips()
+
+    # Check the format of the outputs
+    assert isinstance(data, np.ndarray)
+    assert np.unique(np.isnan(data)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert len(np.shape(data)) == 4
+    assert np.shape(affine) == (4, 4)</code></pre>
 </details>
 </dd>
 <dt id="ukat.data.tests.test_fetch.TestFetch.test_siemens_b0"><code class="name flex">
@@ -854,8 +1013,11 @@ class TestFetch:
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_b0" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_b0">test_philips_b0</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_dwi" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_dwi">test_philips_dwi</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_t1" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_t1">test_philips_t1</a></code></li>
+<li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_t1w" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_t1w">test_philips_t1w</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_t2" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_t2">test_philips_t2</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_t2star" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_t2star">test_philips_t2star</a></code></li>
+<li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_t2w" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_t2w">test_philips_t2w</a></code></li>
+<li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_tsnr" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_tsnr">test_philips_tsnr</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_b0" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_b0">test_siemens_b0</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_dwi" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_dwi">test_siemens_dwi</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_t2star" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_t2star">test_siemens_t2star</a></code></li>
@@ -867,7 +1029,7 @@ class TestFetch:
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ukat.mapping.tests.test_t1 API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -96,6 +96,7 @@ class TestT1:
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
     affine = np.eye(4)
+
     def test_two_param_eq(self):
         # Without abs
         signal = two_param_eq(self.t, self.t1, self.m0)
@@ -287,6 +288,8 @@ class TestT1:
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
+        gold_standard_3p_single = [1329.543147, 582.270541, 281.406569,
+                                   3334.1764436]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -301,6 +304,14 @@ class TestT1:
         npt.assert_allclose([t1_stats[&#39;mean&#39;][&#39;3D&#39;], t1_stats[&#39;std&#39;][&#39;3D&#39;],
                              t1_stats[&#39;min&#39;][&#39;3D&#39;], t1_stats[&#39;max&#39;][&#39;3D&#39;]],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
+
+        # Three parameter method for first slice only
+        mapper = T1(magnitude[:, :, 0, :], ti, affine, parameters=3,
+                    tss=0, tss_axis=None)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats[&#39;mean&#39;], t1_stats[&#39;std&#39;],
+                             t1_stats[&#39;min&#39;], t1_stats[&#39;max&#39;]],
+                            gold_standard_3p_single, rtol=1e-6, atol=5e-3)
 
     def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
@@ -775,6 +786,7 @@ if os.path.exists(&#39;test_output&#39;):
     # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
     signal_fail_fit = -5000 * np.ones(9)
     affine = np.eye(4)
+
     def test_two_param_eq(self):
         # Without abs
         signal = two_param_eq(self.t, self.t1, self.m0)
@@ -966,6 +978,8 @@ if os.path.exists(&#39;test_output&#39;):
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
+        gold_standard_3p_single = [1329.543147, 582.270541, 281.406569,
+                                   3334.1764436]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -980,6 +994,14 @@ if os.path.exists(&#39;test_output&#39;):
         npt.assert_allclose([t1_stats[&#39;mean&#39;][&#39;3D&#39;], t1_stats[&#39;std&#39;][&#39;3D&#39;],
                              t1_stats[&#39;min&#39;][&#39;3D&#39;], t1_stats[&#39;max&#39;][&#39;3D&#39;]],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
+
+        # Three parameter method for first slice only
+        mapper = T1(magnitude[:, :, 0, :], ti, affine, parameters=3,
+                    tss=0, tss_axis=None)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats[&#39;mean&#39;], t1_stats[&#39;std&#39;],
+                             t1_stats[&#39;min&#39;], t1_stats[&#39;max&#39;]],
+                            gold_standard_3p_single, rtol=1e-6, atol=5e-3)
 
     def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
@@ -1205,6 +1227,8 @@ if os.path.exists(&#39;test_output&#39;):
     # Gold standard statistics
     gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
     gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
+    gold_standard_3p_single = [1329.543147, 582.270541, 281.406569,
+                               3334.1764436]
 
     # Two parameter method
     mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -1218,7 +1242,15 @@ if os.path.exists(&#39;test_output&#39;):
     t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
     npt.assert_allclose([t1_stats[&#39;mean&#39;][&#39;3D&#39;], t1_stats[&#39;std&#39;][&#39;3D&#39;],
                          t1_stats[&#39;min&#39;][&#39;3D&#39;], t1_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_3p, rtol=1e-6, atol=5e-3)</code></pre>
+                        gold_standard_3p, rtol=1e-6, atol=5e-3)
+
+    # Three parameter method for first slice only
+    mapper = T1(magnitude[:, :, 0, :], ti, affine, parameters=3,
+                tss=0, tss_axis=None)
+    t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+    npt.assert_allclose([t1_stats[&#39;mean&#39;], t1_stats[&#39;std&#39;],
+                         t1_stats[&#39;min&#39;], t1_stats[&#39;max&#39;]],
+                        gold_standard_3p_single, rtol=1e-6, atol=5e-3)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_t1.TestT1.test_three_param_eq"><code class="name flex">
@@ -1524,7 +1556,7 @@ if os.path.exists(&#39;test_output&#39;):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>

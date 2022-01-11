@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.1" />
+<meta name="generator" content="pdoc 0.10.0" />
 <title>ukat.mapping.t1 API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -50,7 +50,7 @@ class T1:
         The estimated inversion efficiency where 0 represents no inversion
         pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
-        The certianty in the fit of `eff`
+        The certainty in the fit of `eff`
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -81,6 +81,8 @@ class T1:
             The axis over which the temporal slice spacing is applied. This
             axis is relative to the full 4D pixel array i.e. tss_axis=-1
             would be along the TI axis and would be meaningless.
+            If `pixel_array` is single slice (dimensions [x, y, TI]),
+            then this should be set to None.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -119,7 +121,11 @@ class T1:
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.tss = tss
-        self.tss_axis = tss_axis % self.dimensions
+        if tss_axis is not None:
+            self.tss_axis = tss_axis % self.dimensions
+        else:
+            self.tss_axis = None
+            self.tss = 0
         self.parameters = parameters
         self.multithread = multithread
 
@@ -786,7 +792,7 @@ exp(-t / T1))</p>
 <dd>The estimated inversion efficiency where 0 represents no inversion
 pulse and 2 represents a 180 degree inversion</dd>
 <dt><strong><code>eff_err</code></strong> :&ensp;<code>np.ndarray</code></dt>
-<dd>The certianty in the fit of <code>eff</code></dd>
+<dd>The certainty in the fit of <code>eff</code></dd>
 <dt><strong><code>shape</code></strong> :&ensp;<code>tuple</code></dt>
 <dd>The shape of the T1 map</dd>
 <dt><strong><code>n_ti</code></strong> :&ensp;<code>int</code></dt>
@@ -812,7 +818,9 @@ map. In milliseconds.</dd>
 <dd>Default -2 i.e. last spatial axis
 The axis over which the temporal slice spacing is applied. This
 axis is relative to the full 4D pixel array i.e. tss_axis=-1
-would be along the TI axis and would be meaningless.</dd>
+would be along the TI axis and would be meaningless.
+If <code>pixel_array</code> is single slice (dimensions [x, y, TI]),
+then this should be set to None.</dd>
 <dt><strong><code>affine</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>A matrix giving the relationship between voxel coordinates and
 world coordinates.</dd>
@@ -856,7 +864,7 @@ increase in speed distributing the calculation would generate.</dd>
         The estimated inversion efficiency where 0 represents no inversion
         pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
-        The certianty in the fit of `eff`
+        The certainty in the fit of `eff`
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -887,6 +895,8 @@ increase in speed distributing the calculation would generate.</dd>
             The axis over which the temporal slice spacing is applied. This
             axis is relative to the full 4D pixel array i.e. tss_axis=-1
             would be along the TI axis and would be meaningless.
+            If `pixel_array` is single slice (dimensions [x, y, TI]),
+            then this should be set to None.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -925,7 +935,11 @@ increase in speed distributing the calculation would generate.</dd>
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.inversion_list = inversion_list
         self.tss = tss
-        self.tss_axis = tss_axis % self.dimensions
+        if tss_axis is not None:
+            self.tss_axis = tss_axis % self.dimensions
+        else:
+            self.tss_axis = None
+            self.tss = 0
         self.parameters = parameters
         self.multithread = multithread
 
@@ -1205,7 +1219,7 @@ by the function with R1 measured in ms.</dd>
 </details>
 </dd>
 <dt id="ukat.mapping.t1.T1.to_nifti"><code class="name flex">
-<span>def <span class="ident">to_nifti</span></span>(<span>self, output_directory='C:\\Users\\md1jgra\\Downloads\\ukat', base_file_name='Output', maps='all')</span>
+<span>def <span class="ident">to_nifti</span></span>(<span>self, output_directory='/home/runner/work/ukat/ukat', base_file_name='Output', maps='all')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Exports some of the T1 class attributes to NIFTI.</p>
@@ -1328,7 +1342,7 @@ or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
 </footer>
 </body>
 </html>
