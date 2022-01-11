@@ -1,8 +1,6 @@
 import numpy as np
-import os
 import pytest
 
-from dipy.data.fetcher import _get_file_md5
 from ukat.data import fetch
 
 
