@@ -170,6 +170,17 @@ class TestFetch:
             magnitude, phase, affine, inversion_times, _ = \
                 fetch.t1_philips(3)
 
+    def test_philips_t1w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t1w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
     def test_philips_t2(self):
         # Test if the fetch function works
         magnitude, affine, echo_times = fetch.t2_philips(1)
@@ -225,3 +236,35 @@ class TestFetch:
         assert len(np.shape(magnitude)) == 4
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
+
+    def test_philips_t2w(self):
+        # Test if the fetch function works
+        image, affine = fetch.t2w_volume_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 3
+        assert np.shape(affine) == (4, 4)
+
+    def test_philips_tsnr(self):
+        # Test if the fetch function works with high tSNR data
+        data, affine = fetch.tsnr_high_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
+
+        # Test if the fetch function works with low tSNR data
+        data, affine = fetch.tsnr_low_philips()
+
+        # Check the format of the outputs
+        assert isinstance(data, np.ndarray)
+        assert np.unique(np.isnan(data)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(data)) == 4
+        assert np.shape(affine) == (4, 4)
