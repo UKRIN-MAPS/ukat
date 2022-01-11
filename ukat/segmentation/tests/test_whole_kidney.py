@@ -5,7 +5,7 @@ import numpy.testing as npt
 import pytest
 
 from ukat.data import fetch
-from ukat.segment.whole_kidney import Segmentation
+from ukat.segmentation.whole_kidney import Segmentation
 from ukat.utils import arraystats
 
 

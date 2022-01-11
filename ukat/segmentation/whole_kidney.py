@@ -69,7 +69,7 @@ class Segmentation(nib.Nifti1Image):
     def get_kidneys(self):
         """
         Returns a mask where 0 represents voxels that are not renal tissue,
-        1 represents voxels that are the left kidney and 2 represent voxels
+        1 represents voxels that are the left kidney and 2 represents voxels
         that are the right kidney.
 
         Returns
