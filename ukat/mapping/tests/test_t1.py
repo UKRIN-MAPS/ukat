@@ -260,6 +260,8 @@ class TestT1:
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
+        gold_standard_3p_single = [1329.543147, 582.270541, 281.406569,
+                                   3334.1764436]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -274,6 +276,14 @@ class TestT1:
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
                             gold_standard_3p, rtol=1e-6, atol=5e-3)
+
+        # Three parameter method for first slice only
+        mapper = T1(magnitude[:, :, 0, :], ti, affine, parameters=3,
+                    tss=0, tss_axis=None)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean'], t1_stats['std'],
+                             t1_stats['min'], t1_stats['max']],
+                            gold_standard_3p_single, rtol=1e-6, atol=5e-3)
 
     def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
