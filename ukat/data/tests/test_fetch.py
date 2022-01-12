@@ -127,18 +127,6 @@ class TestFetch:
         assert len(np.shape(bvecs)) == 2
         assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)
 
-    def test_philips_mtr(self):
-        # Test if the fetch function works
-        images, affine = fetch.mtr_philips()
-
-        # Check the format of the outputs
-        assert isinstance(images, np.ndarray)
-        assert np.unique(np.isnan(images)) != [True]
-        assert isinstance(affine, np.ndarray)
-        assert np.shape(images)[-1] == 2
-        assert len(np.shape(images)) == 3
-        assert np.shape(affine) == (4, 4)
-
     def test_philips_t1(self):
         # Test if the fetch function works
         magnitude, phase, affine, inversion_times, tss = fetch.t1_philips(1)

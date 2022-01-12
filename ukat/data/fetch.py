@@ -277,6 +277,15 @@ fetch_t2w_philips = _make_fetcher('fetch_t2w_philips',
                                   ['276b904142677026a04659505d923134'],
                                   doc='Downloading Philips T2W data')
 
+fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
+                                  pjoin(ukat_home, 'mtr_philips'),
+                                  'https://zenodo.org/record/5101394/'
+                                  'files/',
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['Cor_2D_MTR_BH_3201.nii.gz'],
+                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  doc='Downloading Philips MT data')
+
 fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
                                         pjoin(ukat_home, 'tsnr_high_philips'),
                                         'https://zenodo.org/record/5544245'
@@ -408,6 +417,9 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
+    elif name == 'mtr_philips':
+	    files, folder = fetch_mtr_philips()
+    
     elif name == 'tsnr_high_philips':
         files, folder = fetch_tsnr_high_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -619,7 +631,7 @@ def mtr_philips():
     fnames = get_fnames('mtr_philips')
     nii_path = [f for f in fnames if f.endswith('.nii.gz')][0]
     raw = nib.load(nii_path)
-    data = np.squeeze(raw.get_fdata())
+    data = raw.get_fdata()
     affine = raw.affine
     return data, affine
 
