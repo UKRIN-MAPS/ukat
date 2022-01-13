@@ -144,8 +144,8 @@ class T1:
         if self.molli:
             correction_factor = (self.m0_map * self.eff_map) / self.m0_map - 1
             percentage_error = self.t1_err / self.t1_map
-            self.t1_map *= correction_factor
-            self.t1_err = self.t1_map * percentage_error
+            self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
+            self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
