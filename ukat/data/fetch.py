@@ -418,7 +418,7 @@ def get_fnames(name):
         return fnames
 
     elif name == 'mtr_philips':
-	    files, folder = fetch_mtr_philips()
+        files, folder = fetch_mtr_philips()
     
     elif name == 'tsnr_high_philips':
         files, folder = fetch_tsnr_high_philips()

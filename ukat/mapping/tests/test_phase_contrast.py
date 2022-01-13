@@ -1,4 +1,5 @@
 import os
+import csv
 import shutil
 import numpy as np
 import numpy.testing as npt
@@ -20,7 +21,9 @@ class TestPC:
     gold_standard = [999.5, 577.3501970208376, 0, 1999]
 
     # Expected PhaseContrast statistics for ROI, velocity and flow
-    num_pixels_phase = [100.0] * 20
+    phases = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+              15, 16, 17, 18, 19]
+    num_pixels_phase = [100] * 20
     area_phase = [1.0] * 20  # Each pixel is 1mm*1mm, but area is in cm2
     min_vel_phase_standard = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
                               14, 15, 16, 17, 18, 19]
@@ -34,9 +37,9 @@ class TestPC:
     max_vel_phase_standard = peak_vel_phase_standard
     std_vel_phase_standard = [577.3214009544423] * 20
     rbf_standard = [59400.0, 59460.0, 59520.0, 59580.0, 59640.0, 59700.0,
-                     59760.0, 59820.0, 59880.0, 59940.0, 60000.0, 60060.0,
-                     60120.0, 60180.0, 60240.0, 60300.0, 60360.0, 60420.0,
-                     60480.0, 60540.0]
+                    59760.0, 59820.0, 59880.0, 59940.0, 60000.0, 60060.0,
+                    60120.0, 60180.0, 60240.0, 60300.0, 60360.0, 60420.0,
+                    60480.0, 60540.0]
     mean_vel_standard = 999.5
     rbf_mean_standard = 59970.0
     resistive_index_standard = 0.018830525272547076
@@ -84,10 +87,38 @@ class TestPC:
         npt.assert_allclose(mapper.resistive_index,
                             self.resistive_index_standard,
                             rtol=1e-7, atol=1e-9)
-                
+
     def test_save_output_csv(self):
         mapper = PhaseContrast(self.correct_signal, self.affine)
-        # Save CSV and compare if it's the same as expected
+        os.makedirs('test_output', exist_ok=True)
+        # Save .csv and and open it to compare if it's the same as expected.
+        csv_path = os.path.join('test_output', "pc_test_output.csv")
+        mapper.save_output_csv(csv_path)
+        with open(csv_path, 'r') as csv_file:
+            reader = csv.reader(csv_file, quoting=csv.QUOTE_ALL,
+                                skipinitialspace=True)
+            list_rows = [row for row in reader]
+        # Delete 'test_output' folder after reading .csv file into variable.
+        shutil.rmtree('test_output')
+        # Check if the content in the variable 'list_rows' is as expected.
+        assert ([row[0] for row in list_rows[1:]] ==
+                list(map(str, self.phases)))
+        assert ([row[1] for row in list_rows[1:]] ==
+                list(map(str, self.rbf_standard)))
+        assert ([row[2] for row in list_rows[1:]] ==
+                list(map(str, self.area_phase)))
+        assert ([row[3] for row in list_rows[1:]] ==
+                list(map(str, self.num_pixels_phase)))
+        assert ([row[4] for row in list_rows[1:]] ==
+                list(map(str, self.mean_vel_phase_standard)))
+        assert ([row[5] for row in list_rows[1:]] ==
+                list(map(str, self.min_vel_phase_standard)))
+        assert ([row[6] for row in list_rows[1:]] ==
+                list(map(str, self.max_vel_phase_standard)))
+        assert ([row[7] for row in list_rows[1:]] ==
+                list(map(str, self.peak_vel_phase_standard)))
+        assert ([row[8] for row in list_rows[1:]] == 
+                list(map(str, self.std_vel_phase_standard)))
 
     def test_input_errors(self):
         # Check that it fails when input pixel_array has incorrect shape
