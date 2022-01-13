@@ -170,6 +170,18 @@ class TestFetch:
             magnitude, phase, affine, inversion_times, _ = \
                 fetch.t1_philips(3)
 
+    def test_philips_t1_molli(self):
+        # Test if the fetch function works
+        image, affine, inversion_times = fetch.t1_molli_philips()
+
+        # Check the format of the outputs
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert len(np.shape(image)) == 4
+        assert isinstance(affine, np.ndarray)
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(inversion_times)) == 1
+
     def test_philips_t1w(self):
         # Test if the fetch function works
         image, affine = fetch.t1w_volume_philips()
