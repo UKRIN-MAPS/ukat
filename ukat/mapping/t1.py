@@ -234,7 +234,7 @@ class T1:
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [4000, 1000000])
+            bounds = ([0, 0], [5000, 10000000])
             initial_guess = [1000, 30000]
             if sig.min() >= 0:
                 eq = two_param_abs_eq
