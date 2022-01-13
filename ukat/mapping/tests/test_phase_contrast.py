@@ -117,7 +117,7 @@ class TestPC:
                 list(map(str, self.max_vel_phase_standard)))
         assert ([row[7] for row in list_rows[1:]] ==
                 list(map(str, self.peak_vel_phase_standard)))
-        assert ([row[8] for row in list_rows[1:]] == 
+        assert ([row[8] for row in list_rows[1:]] ==
                 list(map(str, self.std_vel_phase_standard)))
 
     def test_input_errors(self):
