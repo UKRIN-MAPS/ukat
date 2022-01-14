@@ -262,9 +262,9 @@ class TestT1:
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
-        gold_standard_3p = [1566.965685, 1050.07673, 0.0, 9689.058939]
-        gold_standard_3p_single = [1562.715181, 1093.104882, 0.0, 9689.085725]
-        gold_standard_molli = [778.197292, 533.152958, 0.0, 5083.186459]
+        gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
+        gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.24814]
+        gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)

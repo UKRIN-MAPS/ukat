@@ -241,7 +241,7 @@ class T1:
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1], [10000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 10000000, 2])
             initial_guess = [1000, 30000, 2]
             if sig.min() >= 0:
                 eq = three_param_abs_eq
