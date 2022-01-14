@@ -246,6 +246,12 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
+    def test_molli_2p_warning(self):
+        with pytest.warns(UserWarning):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5)),
+                        inversion_list=np.linspace(0, 2000, 5),
+                        affine=self.affine, parameters=2, molli=True)
+
     def test_real_data(self):
         # Get test data
         magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
