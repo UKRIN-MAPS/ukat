@@ -21,9 +21,7 @@ def convert_to_pi_range(pixel_array):
         An array containing with the same shape as pixel_array
         scaled to the range [-pi, pi].
     """
-    if (np.amax(pixel_array) > 3.2) or (np.amin(pixel_array) < -3.2):
-        # The value 3.2 was chosen instead of np.pi in order
-        # to give some margin.
+    if (np.amax(pixel_array) > np.pi) or (np.amin(pixel_array) < -np.pi):
         pi_array = np.pi * np.ones(np.shape(pixel_array))
         min_array = np.amin(pixel_array) * np.ones(np.shape(pixel_array))
         max_array = np.amax(pixel_array) * np.ones(np.shape(pixel_array))

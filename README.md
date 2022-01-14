@@ -22,7 +22,7 @@ More information can be found in [this ISMRM abstract](https://www.researchgate.
 # Installing `ukat`
 There are a few different ways you can install `ukat` based on what you want to do with it
 ### "I just want to process my data with this package"
-1. Make sure you're running Python >=3.6
+1. Make sure you're running Python >=3.7
 2. Install `ukat` with `pip install ukat`
 
 ### "I want to modify this code to do something a bit different but don't want my modifications to go back into `ukat`"
