@@ -299,12 +299,12 @@ class T1:
                     'mask']
         if isinstance(maps, list):
             for result in maps:
-                if result == 't1' or result == 't1_map':
+                if result == 't1' or result == 't1_map': 
                     t1_nifti = nib.Nifti1Image(self.t1_map, affine=self.affine)
                     nib.save(t1_nifti, base_path + '_t1_map.nii.gz')
                 elif result == 't1_err':
                     t1_err_nifti = nib.Nifti1Image(self.t1_err,
-                                                   affine=self.affine)
+                                                    affine=self.affine)
                     nib.save(t1_err_nifti, base_path + '_t1_err.nii.gz')
                 elif result == 'm0' or result == 'm0_map':
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
