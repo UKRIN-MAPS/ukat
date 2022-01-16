@@ -61,4 +61,4 @@ jobs:
       if: github.event_name == 'pull_request'
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        arguments: '--max-line-length=80 --max-complexity=10'
+        arguments: '--max-line-length=80'
