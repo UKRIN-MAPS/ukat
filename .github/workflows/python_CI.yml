@@ -46,3 +46,18 @@ jobs:
         env_vars: OS,PYTHON
         fail_ci_if_error: true
         verbose: false
+
+  lint:
+  
+    runs-on: ubuntu-latest
+    steps:
+      - name: PEP8 messages in Pull Requests
+        uses: grantmcconnaughey/lintly-flake8-github-action@v1.0
+        if: github.event_name == 'pull_request'
+          with:
+            # The GitHub API token to create reviews with
+            token: ${{ secrets.GITHUB_TOKEN }}
+            # Fail if "new" violations detected or "any", default "new"
+            failIf: new
+            # Additional arguments to pass to flake8, default "." (current directory)
+            args: "."
