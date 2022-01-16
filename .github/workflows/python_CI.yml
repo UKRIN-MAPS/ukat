@@ -28,7 +28,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest codecov pytest-cov wheel
+        pip install flake8 lintly pytest codecov pytest-cov wheel
         pip install -r requirements.txt
     - name: Lint with flake8
       run: |
@@ -60,6 +60,6 @@ jobs:
         # The GitHub API token to create reviews with
         token: ${{ secrets.GITHUB_TOKEN }}
         # Fail if "new" violations detected or "any", default "new"
-        failIf: any
+        failIf: new
         # Additional arguments to pass to flake8, default "." (current directory)
         args: "."
