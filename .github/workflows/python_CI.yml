@@ -54,13 +54,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: PEP8 messages in Pull Requests
-      uses: tayfun/flake8-your-pr@v1.0
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - name: PEP8 Action
+      uses: quentinguidee/pep8-action@v2.0.13-dev
       if: github.event_name == 'pull_request'
       with:
-        # The GitHub API token to create reviews with
         token: ${{ secrets.GITHUB_TOKEN }}
-        # Fail if "new" violations detected or "any", default "new"
-        #failIf: new
-        # Additional arguments to pass to flake8, default "." (current directory)
-        #args: "."
+        arguments: '--max-line-length=80 --max-complexity=10'
