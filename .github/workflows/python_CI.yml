@@ -54,11 +54,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: PEP8 Action
-      uses: quentinguidee/pep8-action@v2.0.13-dev
+        python-version: 3.8
+    - name: Install dependencies
+      run: pip install flake8 lintly
+    - name: Lint with flake8
       if: github.event_name == 'pull_request'
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        arguments: '--max-line-length=80'
+      run: flake8 | lintly
+      env:
+        LINTLY_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+      
