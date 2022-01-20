@@ -68,7 +68,7 @@ class T1:
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
-        molli : bool
+        molli : bool, optional
             Default False.
             Apply MOLLI corrections to T1.
         multithread : bool, optional
