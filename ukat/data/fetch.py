@@ -221,6 +221,23 @@ fetch_t1_philips_2 = _make_fetcher('fetch_t1_philips_2',
                                     'b1bc6c2f6c43e26f4a1d27868eb93df3'],
                                    doc='Downloading Philips T1 dataset 2')
 
+fetch_t1_molli_philips = _make_fetcher('fetch_t1_molli_philips',
+                                       pjoin(ukat_home, 't1_molli_philips'),
+                                       'https://zenodo.org/record/5846750/'
+                                       'files/',
+                                       ['01101_WIP_Cor_T1_MOLLI_e1.json',
+                                        '01101_WIP_Cor_T1_MOLLI_e1.nii.gz',
+                                        'ti.csv'],
+                                       ['01101_WIP_Cor_T1_MOLLI_e1.json',
+                                        '01101_WIP_Cor_T1_MOLLI_e1.nii.gz',
+                                        'ti.csv'],
+                                       ['31543856a34b1696b5b56af4fb2427c8',
+                                        '42c1dc5c49326fdaeae97d0473b83984',
+                                        '82bf71c1dab4a490f7cdc66d887afb94'],
+                                       doc='Downloading Philips T1 MOLLI '
+                                           'dataset'
+                                       )
+
 fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   pjoin(ukat_home, 't1w_philips'),
                                   'https://zenodo.org/record/4897994/files/',
@@ -355,6 +372,11 @@ def get_fnames(name):
 
     elif name == 't1_philips_2':
         files, folder = fetch_t1_philips_2()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 't1_molli_philips':
+        files, folder = fetch_t1_molli_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
@@ -664,6 +686,26 @@ def t1_philips(dataset_id):
         affine = magnitude_img.affine
 
         return magnitude, phase, affine, inversion_list, tss
+
+
+def t1_molli_philips():
+    """Fetches Philips MOLLI T1 dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        inversion times in seconds
+    """
+    fnames = get_fnames('t1_molli_philips')
+
+    data = nib.load(fnames[1])
+    image = data.get_fdata()
+    inversion_list = np.loadtxt(fnames[2])
+
+    return image, data.affine, inversion_list / 1000
 
 
 def t1w_volume_philips():

@@ -1,7 +1,8 @@
-import os
+import concurrent.futures
 import nibabel as nib
 import numpy as np
-import concurrent.futures
+import os
+import warnings
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
@@ -30,7 +31,7 @@ class T1:
     """
 
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, multithread=True):
+                 mask=None, parameters=2, molli=False, multithread=True):
         """Initialise a T1 class instance.
 
         Parameters
@@ -67,6 +68,9 @@ class T1:
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
+        molli : bool, optional
+            Default False.
+            Apply MOLLI corrections to T1.
         multithread : bool, optional
             Default True.
             If True, fitting will be distributed over all cores available on
@@ -99,6 +103,7 @@ class T1:
             self.tss_axis = None
             self.tss = 0
         self.parameters = parameters
+        self.molli = molli
         self.multithread = multithread
 
         # Some sanity checks
@@ -111,6 +116,12 @@ class T1:
                 'Temporal slice spacing can\'t be applied to the TI axis.'
             assert (tss_axis < self.dimensions), \
                 'tss_axis must be less than the number of spatial dimensions'
+        if self.molli:
+            if self.parameters == 2:
+                self.parameters = 3
+                warnings.warn('MOLLI requires a three parameter fit, '
+                              'using parameters=3.')
+
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
@@ -129,6 +140,12 @@ class T1:
         else:
             raise ValueError('Parameters can be 2 or 3 only. You specified '
                              '{}'.format(self.parameters))
+
+        if self.molli:
+            correction_factor = (self.m0_map * self.eff_map) / self.m0_map - 1
+            percentage_error = self.t1_err / self.t1_map
+            self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
+            self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
@@ -217,16 +234,16 @@ class T1:
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [4000, 1000000])
+            bounds = ([0, 0], [5000, 10000000])
             initial_guess = [1000, 30000]
-            if sig.min() > 0:
+            if sig.min() >= 0:
                 eq = two_param_abs_eq
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1.5], [4000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 10000000, 2])
             initial_guess = [1000, 30000, 2]
-            if sig.min() > 0:
+            if sig.min() >= 0:
                 eq = three_param_abs_eq
             else:
                 eq = three_param_eq
@@ -279,7 +296,7 @@ class T1:
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T1 class attributes to NIFTI.
-        
+
         Parameters
         ----------
         output_directory : string, optional
