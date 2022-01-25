@@ -25,8 +25,8 @@ def DWI_Moco(image_array, list_arguments):
     return fit , par
 
 def T1_Moco(image_array, list_arguments):
-    inversion_list = list_arguments[0]
-    affine_array = list_arguments[1]
+    affine_array = list_arguments[0]
+    inversion_list = list_arguments[1]
     if len(list_arguments) > 2:
         tss = list_arguments[2]
     else:

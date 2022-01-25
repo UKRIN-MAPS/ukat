@@ -43,7 +43,6 @@ def DWI_BSplines(*argv):
         parameter_object.SetParameter(str(list_parameters[0]), str(list_parameters[1]))
     return parameter_object
 
-
 def T1_BSplines(*argv):
     parameter_object = itk.ParameterObject.New()
     parameter_map_bspline = parameter_object.GetDefaultParameterMap('bspline')

@@ -33,7 +33,7 @@ class MotionCorrection:
         self.mdr_results = []
         self.shape = pixel_array.shape
         if mask is None:
-            self.mask = np.ones(self.shape, dtype=bool)
+            self.mask = np.ones(self.shape)
         else:
             self.mask = np.nan_to_num(mask)
         self.pixel_array = pixel_array * self.mask
