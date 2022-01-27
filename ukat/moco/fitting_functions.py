@@ -14,13 +14,12 @@ def DWI_Moco(image_array, list_arguments):
         b_flag = list_arguments[3]
     else:
         b_flag = False
-    adc_mapper = ADC(image_array, affine_array, bvalues_list, mask=mask, ukrin_b=b_flag)
+    adc_mapper = ADC(image_array, affine_array, bvalues_list,
+                     mask=mask, ukrin_b=b_flag)
     ADC_Map = adc_mapper.adc
     M0_Map = image_array[..., 0]
     par = [ADC_Map, M0_Map]
-    fit = []
-    for b_value in bvalues_list:
-        fit.append(M0_Map * np.exp(-b_value * ADC_Map))
+    fit = [M0_Map * np.exp(-b_value * ADC_Map) for b_value in bvalues_list]
     fit = np.stack(fit, axis=-1)
     return fit , par
 
@@ -47,12 +46,17 @@ def T1_Moco(image_array, list_arguments):
         multithread = list_arguments[6]
     else:
         multithread = True
-    mapper = T1(image_array, inversion_list, affine_array, tss=tss, tss_axis=tss_axis, mask=mask, parameters=parameters, multithread=multithread)
-    T1_Map = mapper.t1_map
-    M0_Map = mapper.m0_map
+    t1_mapper = T1(image_array, inversion_list, affine_array, tss=tss,
+                   tss_axis=tss_axis, mask=mask, parameters=parameters,
+                   multithread=multithread)
+    T1_Map = t1_mapper.t1_map
+    M0_Map = t1_mapper.m0_map
     par = [T1_Map, M0_Map]
-    fit = []
-    for ti in inversion_list:
-        fit.append(np.abs(M0_Map * (1 - 2 * np.exp(-ti/T1_Map))))
+    min_value = np.amin(image_array)
+    if min_value > 0:
+        fit = [np.abs(M0_Map * (1 - 2 * np.exp(-ti/T1_Map)))
+               for ti in inversion_list]
+    else:
+        fit = [M0_Map * (1 - 2 * np.exp(-ti/T1_Map)) for ti in inversion_list]
     fit = np.stack(fit, axis=-1)
     return fit , par
