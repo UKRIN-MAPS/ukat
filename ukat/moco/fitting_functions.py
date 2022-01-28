@@ -1,3 +1,9 @@
+"""
+Description about what this file is and why it's necessary.
+
+Describe the input arguments for each individual function.
+"""
+
 import numpy as np
 from ukat.mapping.t1 import T1
 from ukat.mapping.diffusion import ADC
@@ -51,12 +57,19 @@ def T1_Moco(image_array, list_arguments):
                    multithread=multithread)
     T1_Map = t1_mapper.t1_map
     M0_Map = t1_mapper.m0_map
+    if parameters == 3: Eff_Map = t1_mapper.eff_map
     par = [T1_Map, M0_Map]
-    min_value = np.amin(image_array)
-    if min_value > 0:
+    min_value = np.nanmin(image_array)
+    if min_value > 0 and parameters == 2:
         fit = [np.abs(M0_Map * (1 - 2 * np.exp(-ti/T1_Map)))
                for ti in inversion_list]
-    else:
+    elif min_value <= 0 and parameters == 2:
         fit = [M0_Map * (1 - 2 * np.exp(-ti/T1_Map)) for ti in inversion_list]
+    elif min_value > 0 and parameters == 3:
+        fit = [np.abs(M0_Map * (1 - Eff_Map * np.exp(-ti/T1_Map)))
+               for ti in inversion_list]
+    elif min_value <= 0 and parameters == 3:
+        fit = [M0_Map * (1 - Eff_Map * np.exp(-ti/T1_Map))
+               for ti in inversion_list]
     fit = np.stack(fit, axis=-1)
     return fit , par

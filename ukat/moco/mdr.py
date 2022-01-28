@@ -1,9 +1,15 @@
+"""
+Mention Kanishka and Fotis work and paper here.And Github page here. And in the Notebooks.
+"""
+
+
 import os
 import numpy as np
 import nibabel as nib
 from MDR.MDR import model_driven_registration
 import ukat.moco.fitting_functions as fitting_functions
-from ukat.moco.elastix_parameters import DWI_BSplines, T1_BSplines
+from ukat.moco.elastix_parameters import (DWI_BSplines, T1_BSplines,
+                                          Custom_BSplines)
 
 
 class MotionCorrection:
@@ -15,7 +21,8 @@ class MotionCorrection:
     """
 
     def __init__(self, pixel_array, affine, fitting_function_name, model_input,
-                 mask=None, convergence=1, multithread=False, log=False):
+                 mask=None, convergence=1, elastix_params=None,
+                 multithread=False, log=False):
         """Initialise a whole kidney segmentation class instance.
         Parameters
         ----------
@@ -45,8 +52,10 @@ class MotionCorrection:
         self.convergence = convergence
         self.multithread = multithread
         self.log = log
-        if self.function == "DWI_Moco": self.elastix_params = DWI_BSplines()
-        if self.function == "T1_Moco": self.elastix_params = T1_BSplines()
+        if isinstance(elastix_params, dict) == True:
+            self.elastix_params = Custom_BSplines(elastix_params)
+        elif self.function == "DWI_Moco": self.elastix_params = DWI_BSplines()
+        elif self.function == "T1_Moco": self.elastix_params = T1_BSplines()
     
     def run(self):
         """
@@ -165,29 +174,34 @@ class MotionCorrection:
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['mask', 'coregistered', 'fitted', 'deformation_field',
-                    'parameters']
+            maps = ['mask', 'original' 'coregistered', 'fitted',
+                    'deformation_field', 'parameters']
         if isinstance(maps, list):
             for result in maps:
                 if result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask, self.affine)
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                                                 affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
+                elif result == 'original':
+                    original_nifti = nib.Nifti1Image(self.pixel_array,
+                                                     affine=self.affine)
+                    nib.save(original_nifti, base_path + '_original.nii.gz')
                 elif result == 'coregistered':
                     coreg_nifti = nib.Nifti1Image(self.get_coregistered(),
-                                                 self.affine)
+                                                  affine=self.affine)
                     nib.save(coreg_nifti, base_path + '_coregistered.nii.gz')
                 elif result == 'fitted':
                     fit_nifti = nib.Nifti1Image(self.get_fitted(),
-                                                self.affine)
+                                                affine=self.affine)
                     nib.save(fit_nifti, base_path + '_fitted.nii.gz')
                 elif result == 'deformation_field':
                     def_nifti = nib.Nifti1Image(self.get_deformation_field(),
-                                                self.affine)
+                                                affine=self.affine)
                     nib.save(def_nifti, base_path +
                              '_deformation_field.nii.gz')
                 elif result == 'parameters':
                     param_nifti = nib.Nifti1Image(self.get_output_parameters(),
-                                                  self.affine)
+                                                  affine=self.affine)
                     nib.save(param_nifti, base_path + '_parameters.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
