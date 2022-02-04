@@ -78,11 +78,11 @@ class TestPC:
         npt.assert_allclose(mapper.std_velocity_phase,
                             self.std_vel_phase_standard,
                             rtol=1e-7, atol=1e-9)
-        npt.assert_allclose(mapper.RBF, self.rbf_standard,
+        npt.assert_allclose(mapper.rbf, self.rbf_standard,
                             rtol=1e-7, atol=1e-9)
         npt.assert_allclose(mapper.mean_velocity, self.mean_vel_standard,
                             rtol=1e-7, atol=1e-9)
-        npt.assert_allclose(mapper.mean_RBF, self.rbf_mean_standard,
+        npt.assert_allclose(mapper.mean_rbf, self.rbf_mean_standard,
                             rtol=1e-7, atol=1e-9)
         npt.assert_allclose(mapper.resistive_index,
                             self.resistive_index_standard,
@@ -157,8 +157,8 @@ class TestPC:
         assert (all_pixels.mean_velocity_phase !=
                 masked_pixels.mean_velocity_phase)
         assert all_pixels.mean_velocity != masked_pixels.mean_velocity
-        assert all_pixels.RBF != masked_pixels.RBF
-        assert all_pixels.mean_RBF != masked_pixels.mean_RBF
+        assert all_pixels.rbf != masked_pixels.rbf
+        assert all_pixels.mean_rbf != masked_pixels.mean_rbf
 
     def test_to_nifti(self):
         # Create a PC instance and test different export to NIFTI scenarios
@@ -230,7 +230,7 @@ class TestPC:
                             gold_standard_left, rtol=0.01, atol=0)
         npt.assert_allclose(mapper.mean_velocity, avrg_vel_left,
                             rtol=0.01, atol=0)
-        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_left,
+        npt.assert_allclose(mapper.mean_rbf, rbf_mean_standard_left,
                             rtol=0.01, atol=0)
         npt.assert_allclose(mapper.resistive_index, resistive_index_left,
                             rtol=0.01, atol=0)
@@ -252,7 +252,7 @@ class TestPC:
                             gold_standard_right, rtol=0.01, atol=0)
         npt.assert_allclose(mapper.mean_velocity, avrg_vel_right,
                             rtol=0.01, atol=0)
-        npt.assert_allclose(mapper.mean_RBF, rbf_mean_standard_right,
+        npt.assert_allclose(mapper.mean_rbf, rbf_mean_standard_right,
                             rtol=0.01, atol=0)
         npt.assert_allclose(mapper.resistive_index, resistive_index_right,
                             rtol=0.01, atol=0)

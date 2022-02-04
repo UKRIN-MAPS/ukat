@@ -48,13 +48,13 @@ class PhaseContrast:
         List containing the maximum velocity values (cm/s) per phase.
     std_velocity_phase : list
         List containing the std dev of the velocity values (cm/s) per phase.
-    RBF : list
+    rbf : list
         List containing the Renal Blood Flow values (ml/min) per phase.
     stats_table : dictionary
         A dictionary containing all class attributes that are a list.
     mean_velocity : float
         Average velocity (cm/s) accross the different phases.
-    mean_RBF : float
+    mean_rbf : float
         Average Renal Blood Flow (ml/min) accross the different phases.
     resistive_index : float
         A prognostic marker in renal vascular diseases which range is [0, 1].
@@ -84,9 +84,9 @@ class PhaseContrast:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = np.where(mask == 0, np.nan, mask)
-            # The purpose is for the np.nanmean to work properly later
-            # without including the 0s of the mask
+            # Set masked areas to np.nan to enable differentiation between
+            # masked voxels and voxels where data is zero using np.nanmean.
+            self.mask = np.where(mask == False, np.nan, mask)
         self.velocity_array = np.abs(velocity_array * self.mask)
         self.num_pixels_phase = []
         self.area_phase = []
@@ -95,9 +95,9 @@ class PhaseContrast:
         self.max_velocity_phase = []
         self.peak_velocity_phase = []
         self.std_velocity_phase = []
-        self.RBF = []
+        self.rbf = []
         self.mean_velocity = 0
-        self.mean_RBF = 0
+        self.mean_rbf = 0
         self.resistive_index = 0
         if len(self.shape) == 3:
             for phase in range(self.shape[-1]):
@@ -109,7 +109,7 @@ class PhaseContrast:
                 avrg_vel = np.nanmean(phase_array)
                 max_vel = np.nanmax(phase_array)
                 std_vel = np.nanstd(phase_array)
-                Q = 60 * area * avrg_vel  # (60s*cm2*cm/s) = cm3/min = ml/min
+                q = 60 * area * avrg_vel  # (60s*cm2*cm/s) = cm3/min = ml/min
                 self.num_pixels_phase.append(num_pixels)
                 self.area_phase.append(area)
                 self.min_velocity_phase.append(min_vel)
@@ -117,10 +117,10 @@ class PhaseContrast:
                 self.max_velocity_phase.append(max_vel)
                 self.peak_velocity_phase.append(max_vel)
                 self.std_velocity_phase.append(std_vel)
-                self.RBF.append(Q)
+                self.rbf.append(q)
             # Build table with the results per phase (list of lists)
             self.stats_table = {"Phase": list(np.arange(self.shape[-1])),
-                                "RBF (ml/min)": self.RBF,
+                                "RBF (ml/min)": self.rbf,
                                 "Area (cm2)": self.area_phase,
                                 "Nr Pixels": self.num_pixels_phase,
                                 "Mean Vel (cm/s)": self.mean_velocity_phase,
@@ -130,10 +130,10 @@ class PhaseContrast:
                                 "StdDev Vel (cm/s)": self.std_velocity_phase}
             # Mean velocity and mean flow
             self.mean_velocity = np.mean(self.mean_velocity_phase)
-            self.mean_RBF = np.mean(self.RBF)
+            self.mean_rbf = np.mean(self.rbf)
             # Restrictive Index
-            mean_velocity_systole = np.amax(self.mean_velocity_phase)
-            mean_velocity_diastole = np.amin(self.mean_velocity_phase)
+            mean_velocity_systole = np.max(self.mean_velocity_phase)
+            mean_velocity_diastole = np.min(self.mean_velocity_phase)
             self.resistive_index = ((mean_velocity_systole -
                                      mean_velocity_diastole) /
                                     mean_velocity_systole)
