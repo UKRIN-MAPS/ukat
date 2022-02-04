@@ -86,7 +86,7 @@ class PhaseContrast:
         else:
             # Set masked areas to np.nan to enable differentiation between
             # masked voxels and voxels where data is zero using np.nanmean.
-            self.mask = np.where(mask is False, np.nan, mask)
+            self.mask = np.where(mask, mask, np.nan)
         self.velocity_array = np.abs(velocity_array * self.mask)
         self.num_pixels_phase = []
         self.area_phase = []
