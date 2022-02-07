@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from ukat.data import fetch
-from ukat.mapping.phase_contrast import PhaseContrast, convert_to_velocity
+from ukat.vessels.phase_contrast import PhaseContrast, convert_to_velocity
 from ukat.utils import arraystats
 
 
