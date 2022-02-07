@@ -33,6 +33,7 @@ With the exception of datasets marked with :star:, all test data is from the tra
 ### T1
 * `t1/philips_1`: NIST Phantom
 * `t1/philips_2`: not part of travelling kidney pilot study 2019, data acquired on 20 Oct 2020 in Nottingham
+* `t1_molli_philips`: dataset collected as part of the second travelling kidney study on 27/10/2021 in Nottingham 
 
 ### T2
 * `t2/philips_1`: not part of travelling kidney pilot study 2019, data acquired on 06 Aug 2020 in Nottingham

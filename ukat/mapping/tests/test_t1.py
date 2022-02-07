@@ -246,22 +246,31 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
+    def test_molli_2p_warning(self):
+        with pytest.warns(UserWarning):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5)),
+                        inversion_list=np.linspace(0, 2000, 5),
+                        affine=self.affine, parameters=2, molli=True)
+
     def test_real_data(self):
         # Get test data
         magnitude, phase, affine, ti, tss = fetch.t1_philips(2)
+        image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
 
         # Convert times to ms
         ti = np.array(ti) * 1000
         tss *= 1000
+        ti_molli *= 1000
 
         # Crop to reduce runtime
         magnitude = magnitude[37:55, 65:85, :2, :]
+        image_molli = image_molli[37:55, 65:85, :2, :]
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
-        gold_standard_3p = [1405.617672, 596.71554, 281.406566, 3759.175897]
-        gold_standard_3p_single = [1329.543147, 582.270541, 281.406569,
-                                   3334.1764436]
+        gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
+        gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
+        gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -275,7 +284,7 @@ class TestT1:
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
                              t1_stats['min']['3D'], t1_stats['max']['3D']],
-                            gold_standard_3p, rtol=1e-6, atol=5e-3)
+                            gold_standard_3p, rtol=1e-4, atol=5e-2)
 
         # Three parameter method for first slice only
         mapper = T1(magnitude[:, :, 0, :], ti, affine, parameters=3,
@@ -283,7 +292,15 @@ class TestT1:
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         npt.assert_allclose([t1_stats['mean'], t1_stats['std'],
                              t1_stats['min'], t1_stats['max']],
-                            gold_standard_3p_single, rtol=1e-6, atol=5e-3)
+                            gold_standard_3p_single, rtol=1e-6, atol=5e-2)
+
+        # MOLLI corrections/data
+        mapper = T1(image_molli, ti_molli, affine_molli, parameters=3,
+                    molli=True)
+        t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
+        npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
+                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                            gold_standard_molli, rtol=1e-6, atol=5e-3)
 
     def test_to_nifti(self):
         # Create a T1 map instance and test different export to NIFTI scenarios
