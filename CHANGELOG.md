@@ -1,14 +1,21 @@
-## [Unmerged] - 2021-X-Y
+## [0.5.0] - 2022-01-11
 
 ### Added
+* Automated kidney segmentation #163 #175
 * iSNR calculations #162
 * tSNR calculations #160 #161
+* Reference manual is now available [online](https://ukrin-maps.github.io/ukat/) #173 #174
 
 ### Changed
+* B0 offset minimisation #42 #172
+* Single slice T1 mapping is now possible #177
+* Removed redundant directories #176
 * Codecov updated #167 #168
+* Bump Python requirement to 3.7
 
 ### Fixed
 * Minor formatting/function order fixes
+
 
 ## [0.4.0] - 2021-08-05
 

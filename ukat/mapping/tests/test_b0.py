@@ -181,6 +181,30 @@ class TestB0:
                             b0map_stats["min"], b0map_stats["max"]],
                             gold_standard_b0, rtol=0.01, atol=0)
 
+    def test_b0_offset_correction(self):
+        # Get test data that does not require b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_philips()
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that no offset correction was performed
+        assert (mapper.b0_map == b0_map_without_offset_correction).all()
+
+        # Get test data that requires b0_offset correction
+        magnitude, phase, affine, te = fetch.b0_siemens(1)
+        te *= 1000
+        # Process on a central slice only
+        images = phase[:, :, 4, :]
+        # B0Map with unwrapping
+        mapper = B0(images, te, affine, unwrap=True)
+        b0_map_without_offset_correction = (mapper.phase_difference /
+                                            (2 * np.pi * mapper.delta_te))
+        # This assertion proves that there was offset correction performed
+        assert (mapper.b0_map != b0_map_without_offset_correction).any()
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
