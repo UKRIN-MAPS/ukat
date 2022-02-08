@@ -213,7 +213,7 @@ fetch_pc_right_philips = _make_fetcher('fetch_pc_right_philips',
                                        ['philips_pc_right.zip'],
                                        ['d5bcc1d70ff43ecec4f77889099d7055'],
                                        unzip=True,
-                                       doc='Downloading Philips PC Right data')                                 
+                                       doc='Downloading Philips PC Right data')
 
 fetch_t1_philips_1 = _make_fetcher('fetch_t1_philips_1',
                                    pjoin(ukat_home, 't1_philips_1'),
@@ -384,7 +384,7 @@ def get_fnames(name):
         files, folder = fetch_mtr_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
-    
+
     elif name == 'phase_contrast_left_philips':
         files, folder = fetch_pc_left_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
