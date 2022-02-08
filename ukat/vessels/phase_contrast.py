@@ -14,9 +14,10 @@ https://doi.org/10.1007/s10334-019-00772-0
 """
 
 import os
-import csv
+import pandas as pd
 import numpy as np
 import nibabel as nib
+from tabulate import tabulate
 from ukat.utils.tools import convert_to_pi_range
 
 
@@ -43,8 +44,6 @@ class PhaseContrast:
     mean_velocity_phase : list
         List containing the average velocity values (cm/s) per phase.
     max_velocity_phase : list
-        List containing the maximum velocity values (cm/s) per phase.
-    peak_velocity_phase : list
         List containing the maximum velocity values (cm/s) per phase.
     std_velocity_phase : list
         List containing the std dev of the velocity values (cm/s) per phase.
@@ -93,7 +92,6 @@ class PhaseContrast:
         self.min_velocity_phase = []
         self.mean_velocity_phase = []
         self.max_velocity_phase = []
-        self.peak_velocity_phase = []
         self.std_velocity_phase = []
         self.rbf = []
         self.mean_velocity = 0
@@ -115,19 +113,8 @@ class PhaseContrast:
                 self.min_velocity_phase.append(min_vel)
                 self.mean_velocity_phase.append(avrg_vel)
                 self.max_velocity_phase.append(max_vel)
-                self.peak_velocity_phase.append(max_vel)
                 self.std_velocity_phase.append(std_vel)
                 self.rbf.append(q)
-            # Build table with the results per phase (list of lists)
-            self.stats_table = {"Phase": list(np.arange(self.shape[-1])),
-                                "RBF (ml/min)": self.rbf,
-                                "Area (cm2)": self.area_phase,
-                                "Nr Pixels": self.num_pixels_phase,
-                                "Mean Vel (cm/s)": self.mean_velocity_phase,
-                                "Min Vel (cm/s)": self.min_velocity_phase,
-                                "Max Vel (cm/s)": self.max_velocity_phase,
-                                "Peak Vel (cm/s)": self.peak_velocity_phase,
-                                "StdDev Vel (cm/s)": self.std_velocity_phase}
             # Mean velocity and mean flow
             self.mean_velocity = np.mean(self.mean_velocity_phase)
             self.mean_rbf = np.mean(self.rbf)
@@ -142,8 +129,36 @@ class PhaseContrast:
             self.mask = np.nan_to_num(self.mask)
         else:
             raise ValueError('The input velocity_array should be 3D.')
+        
+    def get_stats_table(self):
+        """
+        Save most of PhaseContrast class attributes into a csv file.
 
-    def save_output_csv(self, path):
+        Returns
+        ----------
+        table : pandas.DataFrame
+            Returns a table with the results/stats of each output per phase.
+        """
+        stats = {"Phase": list(np.arange(self.shape[-1])),
+                 "RBF (ml/min)": self.rbf,
+                 "Area (cm2)": self.area_phase,
+                 "Nr Pixels": self.num_pixels_phase,
+                 "Mean Vel (cm/s)": self.mean_velocity_phase,
+                 "Min Vel (cm/s)": self.min_velocity_phase,
+                 "Max Vel (cm/s)": self.max_velocity_phase,
+                 "StdDev Vel (cm/s)": self.std_velocity_phase}
+        table = pd.DataFrame(data=stats)
+        return table
+    
+    def print_stats_table(self):
+        """
+        Prints the table with the stats for each output per phase.
+        """
+        stats_table = self.get_stats_table()
+        print(tabulate(stats_table, headers='keys', tablefmt='github',
+              floatfmt='.3f'))
+
+    def save_stats_table_to_csv(self, path):
         """
         Save most of PhaseContrast class attributes into a csv file.
 
@@ -152,15 +167,8 @@ class PhaseContrast:
         path : str
             Path to the desired csv file.
         """
-        with open(path, 'w', newline='') as f:
-            w = csv.DictWriter(f, self.stats_table.keys())
-            w.writeheader()
-            for index in range(self.shape[-1]):
-                temp_dict = {}
-                for key in self.stats_table.keys():
-                    temp_dict[key] = self.stats_table[key][index]
-                w.writerow(temp_dict)
-        del temp_dict
+        stats_table = self.get_stats_table()
+        stats_table.to_csv(path)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -198,17 +206,20 @@ class PhaseContrast:
                              '"["velocity_array", "mask"]".')
 
 
-def convert_to_velocity(image_array, velocity_encoding):
+def convert_to_velocity(pixel_array, velocity_encoding, velocity_encode_scale=None):
     """
-    Calculate the velocity array from the given input phase image and
-    velocity encoding value.
+    Calculate the velocity array from the given input image and
+    velocity encoding. If a velocity encode scale is given then it is
+    used to convert the pixel_value to radians.
 
     Parameters
     ----------
-    image_array: np.ndarray
+    pixel_array: np.ndarray
         A 3D array containing the phase images of the phase contrast sequence.
     velocity_encoding : float
         The value of the velocity encoding in cm/s.
+    velocity_encode_scale : float, optional
+        If given, this value is used to scale from image intensity to radians.
 
     Returns
     -------
@@ -217,5 +228,9 @@ def convert_to_velocity(image_array, velocity_encoding):
         sequence, i.e. the dimensions of the array are [x, y, p], where p
         corresponds to the phase (or trigger delay).
     """
-    # velocity_encoding_expected =~ 20cm/s
-    return convert_to_pi_range(image_array) * velocity_encoding
+    if velocity_encode_scale is not None:
+        pi_range_array = pixel_array / velocity_encode_scale
+    else:
+        pi_range_array = convert_to_pi_range(pixel_array)
+    velocity_array = pi_range_array * velocity_encoding
+    return velocity_array

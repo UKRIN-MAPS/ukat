@@ -88,12 +88,12 @@ class TestPC:
                             self.resistive_index_standard,
                             rtol=1e-7, atol=1e-9)
 
-    def test_save_output_csv(self):
+    def test_save_stats_table_to_csv(self):
         mapper = PhaseContrast(self.correct_signal, self.affine)
         os.makedirs('test_output', exist_ok=True)
         # Save .csv and and open it to compare if it's the same as expected.
         csv_path = os.path.join('test_output', "pc_test_output.csv")
-        mapper.save_output_csv(csv_path)
+        mapper.save_stats_table_to_csv(csv_path)
         with open(csv_path, 'r') as csv_file:
             reader = csv.reader(csv_file, quoting=csv.QUOTE_ALL,
                                 skipinitialspace=True)
