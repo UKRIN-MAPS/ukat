@@ -101,9 +101,9 @@ class PhaseContrast:
             # and renal blood flow (RBF)
             self.num_pixels = np.count_nonzero(~np.isnan(self.velocity_array),
                                                axis=(0, 1))
-            # area = num_pixels * mm * mm * 0.01) = cm2
-            self.area = self.num_pixels * self.pixel_spacing[0] * \
-                        self.pixel_spacing[1] * 0.01
+            # area = (num_pixels * mm * mm * 0.01) = cm2
+            self.area = (self.num_pixels * self.pixel_spacing[0] *
+                         self.pixel_spacing[1] * 0.01)
             self.min_velocity = np.nanmin(self.velocity_array, axis=(0, 1))
             self.mean_velocity = np.nanmean(self.velocity_array, axis=(0, 1))
             self.max_velocity = np.nanmax(self.velocity_array, axis=(0, 1))
@@ -118,7 +118,7 @@ class PhaseContrast:
             mean_velocity_diastole = np.min(self.mean_velocity)
             self.resistive_index = ((mean_velocity_systole -
                                      mean_velocity_diastole) /
-                                     mean_velocity_systole)
+                                    mean_velocity_systole)
             # Convert any nan values to 0
             self.velocity_array = np.nan_to_num(self.velocity_array)
             self.mask = np.nan_to_num(self.mask)
@@ -163,7 +163,7 @@ class PhaseContrast:
         """
         stats_table = self.get_stats_table()
         stats_table.to_csv(path)
-    
+
     def plot(self, stat='default'):
         """
         This method plots the output PhaseContrast stats per phase.

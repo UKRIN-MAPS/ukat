@@ -24,14 +24,14 @@ class TestPC:
     num_pixels_standard = [100] * 20
     area_standard = [1.0] * 20  # Each pixel is 1mm*1mm, but area is in cm2
     min_vel_standard = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                              14, 15, 16, 17, 18, 19]
+                        14, 15, 16, 17, 18, 19]
     mean_vel_standard = [990.0, 991.0, 992.0, 993.0, 994.0, 995.0, 996.0,
-                               997.0, 998.0, 999.0, 1000.0, 1001.0, 1002.0,
-                               1003.0, 1004.0, 1005.0, 1006.0, 1007.0, 1008.0,
-                               1009.0]
+                         997.0, 998.0, 999.0, 1000.0, 1001.0, 1002.0,
+                         1003.0, 1004.0, 1005.0, 1006.0, 1007.0, 1008.0,
+                         1009.0]
     max_vel_standard = [1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987,
-                               1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
-                               1996, 1997, 1998, 1999]
+                        1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
+                        1996, 1997, 1998, 1999]
     std_vel_standard = [577.3214009544423] * 20
     rbf_standard = [59400.0, 59460.0, 59520.0, 59580.0, 59640.0, 59700.0,
                     59760.0, 59820.0, 59880.0, 59940.0, 60000.0, 60060.0,
@@ -125,7 +125,7 @@ class TestPC:
     def test_get_stats_table(self):
         pc_obj = PhaseContrast(self.correct_signal, self.affine)
         stats_table = pc_obj.get_stats_table()
-        assert isinstance(stats_table, pd.DataFrame) == True
+        assert type(stats_table) == pd.DataFrame
         number_rows = len(stats_table)
         number_columns = len(stats_table.columns)
         assert number_rows == 20
