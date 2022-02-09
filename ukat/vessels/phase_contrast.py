@@ -36,22 +36,20 @@ class PhaseContrast:
         The pixel spacing of the acquisition estimated from the affine.
     mask : np.ndarray
         A boolean mask of the voxels to fit.
-    num_pixels : list
+    num_pixels : np.ndarray
         List containing the number of True values in the mask per phase.
-    area : list
+    area : np.ndarray
         List containing the area (cm2) of the mask per phase.
-    min_velocity : list
+    min_velocity : np.ndarray
         List containing the minimum velocity values (cm/s) per phase.
-    mean_velocity : list
+    mean_velocity : np.ndarray
         List containing the average velocity values (cm/s) per phase.
-    max_velocity : list
+    max_velocity : np.ndarray
         List containing the maximum velocity values (cm/s) per phase.
-    std_velocity : list
+    std_velocity : np.ndarray
         List containing the std dev of the velocity values (cm/s) per phase.
-    rbf : list
+    rbf : np.ndarray
         List containing the Renal Blood Flow values (ml/min) per phase.
-    stats_table : dictionary
-        A dictionary containing all class attributes that are a list.
     mean_velocity_global : float
         Average velocity (cm/s) accross the different phases.
     mean_rbf : float
@@ -111,7 +109,7 @@ class PhaseContrast:
             self.max_velocity = np.nanmax(self.velocity_array, axis=(0, 1))
             self.std_velocity = np.nanstd(self.velocity_array, axis=(0, 1))
             # q = (60s * cm2 * cm/s) = cm3/min = ml/min
-            self.rbf = 60 * self.area * self.mean_velocity
+            self.rbf = 60 * np.array(self.area * self.mean_velocity)
             # Mean velocity global and mean flow
             self.mean_velocity_global = np.mean(self.mean_velocity)
             self.mean_rbf = np.mean(self.rbf)
@@ -168,7 +166,13 @@ class PhaseContrast:
     
     def plot(self, stat='default'):
         """
-        
+        This method plots the output PhaseContrast stats per phase.
+
+        Parameters
+        ----------
+        stat : str, optional
+            Name of the output stat variable. This method plots mean velocity
+            and the RBF by default.
         """
         if stat == 'default':
             _, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
@@ -207,14 +211,15 @@ class PhaseContrast:
                 title = 'Number of Pixels in the Region Of Interest (ROI)'
             elif stat == 'area':
                 stat_variable = self.area
-                y_label = 'Area (cm2)'
+                y_label = 'Area ($cm^2$)'
                 title = 'Area of the Region Of Interest (ROI)'
+            else:
+                raise ValueError('The stat provided is not valid.')
             _, ax = plt.subplots(figsize=(10, 10))
             ax.plot(stat_variable, 'ro-')
             ax.set_ylabel(y_label)
             ax.set_xlabel('Phase')
             ax.set_title(title)
-        return
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
