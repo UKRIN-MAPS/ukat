@@ -58,7 +58,7 @@ class PhaseContrast:
         A prognostic marker in renal vascular diseases which range is [0, 1].
     """
 
-    def __init__(self, velocity_array, affine, mask=None):
+    def __init__(self, velocity_array, affine, mask):
         """Initialise a PhaseContrast class instance.
 
         Parameters
@@ -78,13 +78,7 @@ class PhaseContrast:
         self.affine = affine
         self.pixel_spacing = (np.linalg.norm(self.affine[:3, 1]),
                               np.linalg.norm(self.affine[:3, 0]))
-        # Generate a mask if there isn't one specified
-        if mask is None:
-            self.mask = np.ones(self.shape, dtype=bool)
-        else:
-            # Set masked areas to np.nan to enable differentiation between
-            # masked voxels and voxels where data is zero using np.nanmean.
-            self.mask = np.where(mask, mask, np.nan)
+        self.mask = np.where(mask, mask, np.nan)
         self.velocity_array = np.abs(velocity_array * self.mask)
         self.num_pixels = []
         self.area = []

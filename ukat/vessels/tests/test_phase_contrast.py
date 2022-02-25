@@ -1,13 +1,25 @@
 import os
-import pandas as pd
+import sys
 import shutil
+import hashlib
 import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import pytest
 from ukat.data import fetch
 from ukat.vessels.phase_contrast import PhaseContrast, convert_to_velocity
 from ukat.utils import arraystats
 
+def hashfile(file):
+    BUF_SIZE = 65536
+    sha256 = hashlib.sha256()
+    with open(file, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha256.update(data)
+    return sha256.hexdigest()
 
 class TestPC:
     # Create arrays for testing
@@ -131,12 +143,12 @@ class TestPC:
         assert number_rows == 20
         assert number_columns == 7
 
-    def test_save_stats_table_to_csv(self):
+    def test_to_csv(self):
         os.makedirs('test_output', exist_ok=True)
         csv_path = os.path.join('test_output', "pc_test_output.csv")
         pc_obj = PhaseContrast(self.correct_signal, self.affine)
         # Save .csv and and open it to compare if it's the same as expected.
-        pc_obj.save_stats_table_to_csv(csv_path)
+        pc_obj.to_csv(csv_path)
         df = pd.read_csv(csv_path)
         shutil.rmtree('test_output')
         list_rows = df.values.tolist()
@@ -150,6 +162,17 @@ class TestPC:
         assert [row[7] for row in list_rows] == self.std_vel_standard
 
     def test_plot(self):
+        # This test compares if the saved JPG file in the plot() call 
+        # is the same as the reference file in the ukat/vessels/tests folder
+        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        os.makedirs('test_output', exist_ok=True)
+        jpg_path = os.path.join(os.getcwd(), 'test_output', "pc_test_output.jpg")
+        ref_path = os.path.join(os.getcwd(), "ukat", "vessels", "tests", "pc_test_reference.jpg")
+        pc_obj.plot(file_name=jpg_path)
+        output_hash = hashfile(jpg_path)
+        reference_hash = hashfile(ref_path)
+        assert output_hash == reference_hash
+        shutil.rmtree('test_output')
         # Since we cannot see the actual plots during the testing, the best
         # approach is to check if it fails with an incorrect stat call.
         with pytest.raises(ValueError):
