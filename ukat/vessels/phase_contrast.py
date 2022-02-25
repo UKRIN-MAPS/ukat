@@ -51,9 +51,9 @@ class PhaseContrast:
     rbf : np.ndarray
         List containing the Renal Blood Flow values (ml/min) per phase.
     mean_velocity_global : float
-        Average velocity (cm/s) accross the different phases.
+        Average velocity (cm/s) across the different phases.
     mean_rbf : float
-        Average Renal Blood Flow (ml/min) accross the different phases.
+        Average Renal Blood Flow (ml/min) across the different phases.
     resistive_index : float
         A prognostic marker in renal vascular diseases which range is [0, 1].
     """
@@ -71,7 +71,7 @@ class PhaseContrast:
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
         mask : np.ndarray, optional
-            A boolean mask of the voxels to fit. Should be the shape of the
+            A boolean mask of the voxels to fit. Should be the shape of
             the raw data.
         """
         self.shape = velocity_array.shape
@@ -108,7 +108,7 @@ class PhaseContrast:
             self.mean_velocity = np.nanmean(self.velocity_array, axis=(0, 1))
             self.max_velocity = np.nanmax(self.velocity_array, axis=(0, 1))
             self.std_velocity = np.nanstd(self.velocity_array, axis=(0, 1))
-            # q = (60s * cm2 * cm/s) = cm3/min = ml/min
+            # q = (60 * cm2 * cm/s) = ml/min
             self.rbf = 60 * np.array(self.area * self.mean_velocity)
             # Mean velocity global and mean flow
             self.mean_velocity_global = np.mean(self.mean_velocity)
@@ -127,7 +127,7 @@ class PhaseContrast:
 
     def get_stats_table(self):
         """
-        Save most of PhaseContrast class attributes into a csv file.
+        Stores most of PhaseContrast class attributes into a pandas DataFrame.
 
         Returns
         ----------
@@ -144,7 +144,7 @@ class PhaseContrast:
         table = pd.DataFrame(data=stats)
         return table
 
-    def print_stats_table(self):
+    def print_stats(self):
         """
         Prints the table with the stats for each output per phase.
         """
@@ -152,9 +152,9 @@ class PhaseContrast:
         print(tabulate(stats_table, headers='keys', tablefmt='github',
               floatfmt='.3f'))
 
-    def save_stats_table_to_csv(self, path):
+    def to_csv(self, path):
         """
-        Save most of PhaseContrast class attributes into a csv file.
+        Saves the stats_table into a csv file.
 
         Parameters
         ----------
@@ -164,7 +164,7 @@ class PhaseContrast:
         stats_table = self.get_stats_table()
         stats_table.to_csv(path)
 
-    def plot(self, stat='default'):
+    def plot(self, stat='default', file_name=None):
         """
         This method plots the output PhaseContrast stats per phase.
 
@@ -175,7 +175,7 @@ class PhaseContrast:
             and the RBF by default.
         """
         if stat == 'default':
-            _, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
             ax1.plot(self.mean_velocity, 'ro-')
             ax1.set_ylabel('Velocity (cm/sec)')
             ax1.set_xlabel('Phase')
@@ -215,11 +215,14 @@ class PhaseContrast:
                 title = 'Area of the Region Of Interest (ROI)'
             else:
                 raise ValueError('The stat provided is not valid.')
-            _, ax = plt.subplots(figsize=(10, 10))
+            fig, ax = plt.subplots(figsize=(10, 10))
             ax.plot(stat_variable, 'ro-')
             ax.set_ylabel(y_label)
             ax.set_xlabel('Phase')
             ax.set_title(title)
+        # The following saves the plot(s) to file_name, if given.
+        if file_name is not None:
+            fig.savefig(file_name)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
