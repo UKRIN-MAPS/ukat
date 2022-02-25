@@ -49,7 +49,7 @@ class TestPC:
 
     def test_velocity_array(self):
         vel_array_whole_mask = PhaseContrast(self.correct_signal,
-                                             self.affine, 
+                                             self.affine,
                                              self.mask).velocity_array
         vel_stats = arraystats.ArrayStats(vel_array_whole_mask).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
