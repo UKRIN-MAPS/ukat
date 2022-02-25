@@ -10,6 +10,7 @@ from ukat.data import fetch
 from ukat.vessels.phase_contrast import PhaseContrast, convert_to_velocity
 from ukat.utils import arraystats
 
+
 def hashfile(file):
     BUF_SIZE = 65536
     sha256 = hashlib.sha256()
@@ -21,12 +22,14 @@ def hashfile(file):
             sha256.update(data)
     return sha256.hexdigest()
 
+
 class TestPC:
     # Create arrays for testing
     correct_signal = np.arange(2000).reshape((10, 10, 20))  # velocity array
     two_dim_signal = np.arange(100).reshape((10, 10))
     vel_encoding = 100
     affine = np.eye(4)
+    mask = np.ones(correct_signal.shape, dtype=bool)
 
     # Gold standard: [mean, std, min, max] of velocity_array when input
     # is `correct_signal`
@@ -60,7 +63,8 @@ class TestPC:
 
     def test_velocity_array(self):
         vel_array_whole_mask = PhaseContrast(self.correct_signal,
-                                             self.affine).velocity_array
+                                             self.affine, 
+                                             self.mask).velocity_array
         vel_stats = arraystats.ArrayStats(vel_array_whole_mask).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],
@@ -69,32 +73,32 @@ class TestPC:
     def test_input_errors(self):
         # Check that it fails when input pixel_array has incorrect shape
         with pytest.raises(ValueError):
-            PhaseContrast(self.two_dim_signal, self.affine)
+            PhaseContrast(self.two_dim_signal, self.affine, self.mask)
 
     def test_affine_pixel_spacing(self):
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 1.0],
                             rtol=1e-7, atol=1e-9)
         affine_test_1 = np.eye(4)
         affine_test_1[:, 0] = [1, 2, 2, 0]
-        pc_obj = PhaseContrast(self.correct_signal, affine_test_1)
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_1, self.mask)
         npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 3.0],
                             rtol=1e-7, atol=1e-9)
         affine_test_2 = affine_test_1
         affine_test_2[:, 1] = [2, 1, 2, 0]
-        pc_obj = PhaseContrast(self.correct_signal, affine_test_2)
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_2, self.mask)
         npt.assert_allclose(pc_obj.pixel_spacing, [3.0, 3.0],
                             rtol=1e-7, atol=1e-9)
 
     def test_mask(self):
         # Create a mask where the first 5 rows of each phase
         # are False and the rest is True.
-        mask = np.ones(self.correct_signal.shape, dtype=bool)
-        mask[:5, ...] = False
+        partial_mask = np.ones(self.correct_signal.shape, dtype=bool)
+        partial_mask[:5, ...] = False
 
-        all_pixels = PhaseContrast(self.correct_signal, self.affine)
+        all_pixels = PhaseContrast(self.correct_signal, self.affine, self.mask)
         masked_pixels = PhaseContrast(self.correct_signal,
-                                      self.affine, mask=mask)
+                                      self.affine, partial_mask)
 
         assert (all_pixels.velocity_array !=
                 masked_pixels.velocity_array).any()
@@ -106,7 +110,7 @@ class TestPC:
         assert all_pixels.mean_rbf != masked_pixels.mean_rbf
 
     def test_output_parameters(self):
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         npt.assert_allclose(pc_obj.num_pixels, self.num_pixels_standard,
                             rtol=1e-7, atol=1e-9)
         npt.assert_allclose(pc_obj.area, self.area_standard,
@@ -135,7 +139,7 @@ class TestPC:
                             rtol=1e-7, atol=1e-9)
 
     def test_get_stats_table(self):
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         stats_table = pc_obj.get_stats_table()
         assert type(stats_table) == pd.DataFrame
         number_rows = len(stats_table)
@@ -146,7 +150,7 @@ class TestPC:
     def test_to_csv(self):
         os.makedirs('test_output', exist_ok=True)
         csv_path = os.path.join('test_output', "pc_test_output.csv")
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         # Save .csv and and open it to compare if it's the same as expected.
         pc_obj.to_csv(csv_path)
         df = pd.read_csv(csv_path)
@@ -162,12 +166,14 @@ class TestPC:
         assert [row[7] for row in list_rows] == self.std_vel_standard
 
     def test_plot(self):
-        # This test compares if the saved JPG file in the plot() call 
+        # This test compares if the saved JPG file in the plot() call
         # is the same as the reference file in the ukat/vessels/tests folder
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         os.makedirs('test_output', exist_ok=True)
-        jpg_path = os.path.join(os.getcwd(), 'test_output', "pc_test_output.jpg")
-        ref_path = os.path.join(os.getcwd(), "ukat", "vessels", "tests", "pc_test_reference.jpg")
+        jpg_path = os.path.join(os.getcwd(), 'test_output',
+                                "pc_test_output.jpg")
+        ref_path = os.path.join(os.getcwd(), "ukat", "vessels", "tests",
+                                "pc_test_reference.jpg")
         pc_obj.plot(file_name=jpg_path)
         output_hash = hashfile(jpg_path)
         reference_hash = hashfile(ref_path)
@@ -176,15 +182,13 @@ class TestPC:
         # Since we cannot see the actual plots during the testing, the best
         # approach is to check if it fails with an incorrect stat call.
         with pytest.raises(ValueError):
-            pc_obj = PhaseContrast(self.correct_signal, self.affine)
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
             pc_obj.plot('incorrect_stat_name')
 
     def test_to_nifti(self):
         # Create a PC instance and test different export to NIFTI scenarios
-        pc_obj = PhaseContrast(self.correct_signal, self.affine)
-
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
         os.makedirs('test_output', exist_ok=True)
-
         # Check all is saved.
         pc_obj.to_nifti(output_directory='test_output',
                         base_file_name='pctest', maps='all')
@@ -214,7 +218,7 @@ class TestPC:
 
         # Check that it fails when no maps are given
         with pytest.raises(ValueError):
-            pc_obj = PhaseContrast(self.correct_signal, self.affine)
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
             pc_obj.to_nifti(output_directory='test_output',
                             base_file_name='pctest', maps='')
 
@@ -242,7 +246,7 @@ class TestPC:
         rbf_mean_standard_left = 448.3799164652045
         resistive_index_left = 0.6089871033735511
 
-        pc_obj = PhaseContrast(velocity, affine, mask=mask)
+        pc_obj = PhaseContrast(velocity, affine, mask)
         vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],
@@ -264,7 +268,7 @@ class TestPC:
         rbf_mean_standard_right = 685.880219
         resistive_index_right = 0.6713997583484632
 
-        pc_obj = PhaseContrast(velocity, affine, mask=mask)
+        pc_obj = PhaseContrast(velocity, affine, mask)
         vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
         npt.assert_allclose([vel_stats["mean"]["3D"], vel_stats["std"]["3D"],
                             vel_stats["min"]["3D"], vel_stats["max"]["3D"]],
