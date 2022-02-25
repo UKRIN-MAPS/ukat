@@ -1,7 +1,5 @@
 import os
-import sys
 import shutil
-import hashlib
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
@@ -9,18 +7,6 @@ import pytest
 from ukat.data import fetch
 from ukat.vessels.phase_contrast import PhaseContrast, convert_to_velocity
 from ukat.utils import arraystats
-
-
-def hashfile(file):
-    BUF_SIZE = 65536
-    sha256 = hashlib.sha256()
-    with open(file, 'rb') as f:
-        while True:
-            data = f.read(BUF_SIZE)
-            if not data:
-                break
-            sha256.update(data)
-    return sha256.hexdigest()
 
 
 class TestPC:
@@ -166,19 +152,6 @@ class TestPC:
         assert [row[7] for row in list_rows] == self.std_vel_standard
 
     def test_plot(self):
-        # This test compares if the saved JPG file in the plot() call
-        # is the same as the reference file in the ukat/vessels/tests folder
-        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
-        os.makedirs('test_output', exist_ok=True)
-        jpg_path = os.path.join(os.getcwd(), 'test_output',
-                                "pc_test_output.jpg")
-        ref_path = os.path.join(os.getcwd(), "ukat", "vessels", "tests",
-                                "pc_test_reference.jpg")
-        pc_obj.plot(file_name=jpg_path)
-        output_hash = hashfile(jpg_path)
-        reference_hash = hashfile(ref_path)
-        assert output_hash == reference_hash
-        shutil.rmtree('test_output')
         # Since we cannot see the actual plots during the testing, the best
         # approach is to check if it fails with an incorrect stat call.
         with pytest.raises(ValueError):
