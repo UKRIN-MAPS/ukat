@@ -40,3 +40,7 @@ With the exception of datasets marked with :star:, all test data is from the tra
 
 ### MT
 * `mt/philips`: Part of travelling kidney study 2021, data acquired on 05 July 2021 in Nottingham
+
+### Phase Contrast
+* `phase_contrast/philips_left`: Part of travelling kidney study 2021, data acquired on 05th July 2021 in Nottingham. Subject 004, series 1901.
+* `phase_contrast/philips_right`: Part of travelling kidney study 2021, data acquired on 05th July 2021 in Nottingham. Subject 004, series 2001.
