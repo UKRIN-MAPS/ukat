@@ -70,7 +70,7 @@ class PhaseContrast:
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
-        mask : np.ndarray, optional
+        mask : np.ndarray
             A boolean mask of the voxels to fit. Should be the shape of
             the raw data.
         """
@@ -167,6 +167,9 @@ class PhaseContrast:
         stat : str, optional
             Name of the output stat variable. This method plots mean velocity
             and the RBF by default.
+        file_name : str, optional
+            Path to the image file (*.jpg, *.png, etc.)
+            in which the plot will be saved.
         """
         if stat == 'default':
             fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
