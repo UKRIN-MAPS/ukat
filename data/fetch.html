@@ -223,6 +223,26 @@ fetch_mtr_philips = _make_fetcher(&#39;fetch_mtr_philips&#39;,
                                   [&#39;252fcc0d67feb6ea3a55b850eb1f4477&#39;],
                                   doc=&#39;Downloading Philips MT data&#39;)
 
+fetch_pc_left_philips = _make_fetcher(&#39;fetch_pc_left_philips&#39;,
+                                      pjoin(ukat_home, &#39;pc_left_philips&#39;),
+                                      &#39;https://zenodo.org/record/5655752&#39;
+                                      &#39;/files/&#39;,
+                                      [&#39;philips_pc_left.zip&#39;],
+                                      [&#39;philips_pc_left.zip&#39;],
+                                      [&#39;97550f62e0a6c9cc0bc4ac2f1c52a7ea&#39;],
+                                      unzip=True,
+                                      doc=&#39;Downloading Philips PC Left data&#39;)
+
+fetch_pc_right_philips = _make_fetcher(&#39;fetch_pc_right_philips&#39;,
+                                       pjoin(ukat_home, &#39;pc_right_philips&#39;),
+                                       &#39;https://zenodo.org/record/5655752&#39;
+                                       &#39;/files/&#39;,
+                                       [&#39;philips_pc_right.zip&#39;],
+                                       [&#39;philips_pc_right.zip&#39;],
+                                       [&#39;d5bcc1d70ff43ecec4f77889099d7055&#39;],
+                                       unzip=True,
+                                       doc=&#39;Downloading Philips PC Right data&#39;)
+
 fetch_t1_philips_1 = _make_fetcher(&#39;fetch_t1_philips_1&#39;,
                                    pjoin(ukat_home, &#39;t1_philips_1&#39;),
                                    &#39;https://zenodo.org/record/4762285/files/&#39;,
@@ -248,6 +268,23 @@ fetch_t1_philips_2 = _make_fetcher(&#39;fetch_t1_philips_2&#39;,
                                     &#39;8b16dd5f00abde1aff6845ecd38f74f7&#39;,
                                     &#39;b1bc6c2f6c43e26f4a1d27868eb93df3&#39;],
                                    doc=&#39;Downloading Philips T1 dataset 2&#39;)
+
+fetch_t1_molli_philips = _make_fetcher(&#39;fetch_t1_molli_philips&#39;,
+                                       pjoin(ukat_home, &#39;t1_molli_philips&#39;),
+                                       &#39;https://zenodo.org/record/5846750/&#39;
+                                       &#39;files/&#39;,
+                                       [&#39;01101_WIP_Cor_T1_MOLLI_e1.json&#39;,
+                                        &#39;01101_WIP_Cor_T1_MOLLI_e1.nii.gz&#39;,
+                                        &#39;ti.csv&#39;],
+                                       [&#39;01101_WIP_Cor_T1_MOLLI_e1.json&#39;,
+                                        &#39;01101_WIP_Cor_T1_MOLLI_e1.nii.gz&#39;,
+                                        &#39;ti.csv&#39;],
+                                       [&#39;31543856a34b1696b5b56af4fb2427c8&#39;,
+                                        &#39;42c1dc5c49326fdaeae97d0473b83984&#39;,
+                                        &#39;82bf71c1dab4a490f7cdc66d887afb94&#39;],
+                                       doc=&#39;Downloading Philips T1 MOLLI &#39;
+                                           &#39;dataset&#39;
+                                       )
 
 fetch_t1w_philips = _make_fetcher(&#39;fetch_t1w_philips&#39;,
                                   pjoin(ukat_home, &#39;t1w_philips&#39;),
@@ -304,15 +341,6 @@ fetch_t2w_philips = _make_fetcher(&#39;fetch_t2w_philips&#39;,
                                    &#39;.nii.gz&#39;],
                                   [&#39;276b904142677026a04659505d923134&#39;],
                                   doc=&#39;Downloading Philips T2W data&#39;)
-
-fetch_mtr_philips = _make_fetcher(&#39;fetch_mtr_philips&#39;,
-                                  pjoin(ukat_home, &#39;mtr_philips&#39;),
-                                  &#39;https://zenodo.org/record/5101394/&#39;
-                                  &#39;files/&#39;,
-                                  [&#39;Cor_2D_MTR_BH_3201.nii.gz&#39;],
-                                  [&#39;Cor_2D_MTR_BH_3201.nii.gz&#39;],
-                                  [&#39;252fcc0d67feb6ea3a55b850eb1f4477&#39;],
-                                  doc=&#39;Downloading Philips MT data&#39;)
 
 fetch_tsnr_high_philips = _make_fetcher(&#39;fetch_tsnr_high_philips&#39;,
                                         pjoin(ukat_home, &#39;tsnr_high_philips&#39;),
@@ -385,6 +413,16 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
 
+    elif name == &#39;phase_contrast_left_philips&#39;:
+        files, folder = fetch_pc_left_philips()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
+    elif name == &#39;phase_contrast_right_philips&#39;:
+        files, folder = fetch_pc_right_philips()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
     elif name == &#39;t1_philips_1&#39;:
         files, folder = fetch_t1_philips_1()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
@@ -392,6 +430,11 @@ def get_fnames(name):
 
     elif name == &#39;t1_philips_2&#39;:
         files, folder = fetch_t1_philips_2()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
+    elif name == &#39;t1_molli_philips&#39;:
+        files, folder = fetch_t1_molli_philips()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
 
@@ -424,9 +467,6 @@ def get_fnames(name):
         files, folder = fetch_t2w_philips()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
-
-    elif name == &#39;mtr_philips&#39;:
-        files, folder = fetch_mtr_philips()
 
     elif name == &#39;tsnr_high_philips&#39;:
         files, folder = fetch_tsnr_high_philips()
@@ -629,9 +669,88 @@ def mtr_philips():
     fnames = get_fnames(&#39;mtr_philips&#39;)
     nii_path = [f for f in fnames if f.endswith(&#39;.nii.gz&#39;)][0]
     raw = nib.load(nii_path)
-    data = raw.get_fdata()
+    data = np.squeeze(raw.get_fdata())
     affine = raw.affine
     return data, affine
+
+
+def phase_contrast_left_philips():
+    &#34;&#34;&#34;Fetches pc_left/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;phase_contrast_left_philips&#39;)
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+        if ((file.endswith(&#34;.nii.gz&#34;) and &#34;_ph_&#34; in file) or
+           file.endswith(&#34;_ph.nii.gz&#34;)):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+
+        elif file.endswith(&#34;.nii.gz&#34;) and &#34;mask_&#34; in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(&#34;.nii.gz&#34;):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding
+
+
+def phase_contrast_right_philips():
+    &#34;&#34;&#34;Fetches pc_right/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;phase_contrast_right_philips&#39;)
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+
+        if ((file.endswith(&#34;.nii.gz&#34;) and &#34;_ph_&#34; in file) or
+           file.endswith(&#34;_ph.nii.gz&#34;)):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+
+        elif file.endswith(&#34;.nii.gz&#34;) and &#34;mask_&#34; in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(&#34;.nii.gz&#34;):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding
 
 
 def t1_philips(dataset_id):
@@ -704,6 +823,26 @@ def t1_philips(dataset_id):
         affine = magnitude_img.affine
 
         return magnitude, phase, affine, inversion_list, tss
+
+
+def t1_molli_philips():
+    &#34;&#34;&#34;Fetches Philips MOLLI T1 dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        inversion times in seconds
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;t1_molli_philips&#39;)
+
+    data = nib.load(fnames[1])
+    image = data.get_fdata()
+    inversion_list = np.loadtxt(fnames[2])
+
+    return image, data.affine, inversion_list / 1000
 
 
 def t1w_volume_philips():
@@ -1397,6 +1536,16 @@ Parameters</p>
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
 
+    elif name == &#39;phase_contrast_left_philips&#39;:
+        files, folder = fetch_pc_left_philips()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
+    elif name == &#39;phase_contrast_right_philips&#39;:
+        files, folder = fetch_pc_right_philips()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
     elif name == &#39;t1_philips_1&#39;:
         files, folder = fetch_t1_philips_1()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
@@ -1404,6 +1553,11 @@ Parameters</p>
 
     elif name == &#39;t1_philips_2&#39;:
         files, folder = fetch_t1_philips_2()
+        fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
+        return fnames
+
+    elif name == &#39;t1_molli_philips&#39;:
+        files, folder = fetch_t1_molli_philips()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
 
@@ -1436,9 +1590,6 @@ Parameters</p>
         files, folder = fetch_t2w_philips()
         fnames = sorted(glob.glob(pjoin(folder, &#39;*&#39;)))
         return fnames
-
-    elif name == &#39;mtr_philips&#39;:
-        files, folder = fetch_mtr_philips()
 
     elif name == &#39;tsnr_high_philips&#39;:
         files, folder = fetch_tsnr_high_philips()
@@ -1480,9 +1631,169 @@ Returns</p>
     fnames = get_fnames(&#39;mtr_philips&#39;)
     nii_path = [f for f in fnames if f.endswith(&#39;.nii.gz&#39;)][0]
     raw = nib.load(nii_path)
-    data = raw.get_fdata()
+    data = np.squeeze(raw.get_fdata())
     affine = raw.affine
     return data, affine</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.fetch.phase_contrast_left_philips"><code class="name flex">
+<span>def <span class="ident">phase_contrast_left_philips</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetches pc_left/philips dataset
+Returns</p>
+<hr>
+<dl>
+<dt><code>numpy.ndarray</code></dt>
+<dd>image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>boolean mask for image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>affine matrix for image data</dd>
+<dt><code>float</code></dt>
+<dd>velocity encoding of the phase contrast scan data</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def phase_contrast_left_philips():
+    &#34;&#34;&#34;Fetches pc_left/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;phase_contrast_left_philips&#39;)
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+        if ((file.endswith(&#34;.nii.gz&#34;) and &#34;_ph_&#34; in file) or
+           file.endswith(&#34;_ph.nii.gz&#34;)):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+
+        elif file.endswith(&#34;.nii.gz&#34;) and &#34;mask_&#34; in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(&#34;.nii.gz&#34;):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.fetch.phase_contrast_right_philips"><code class="name flex">
+<span>def <span class="ident">phase_contrast_right_philips</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetches pc_right/philips dataset
+Returns</p>
+<hr>
+<dl>
+<dt><code>numpy.ndarray</code></dt>
+<dd>image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>boolean mask for image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>affine matrix for image data</dd>
+<dt><code>float</code></dt>
+<dd>velocity encoding of the phase contrast scan data</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def phase_contrast_right_philips():
+    &#34;&#34;&#34;Fetches pc_right/philips dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            boolean mask for image data
+        numpy.ndarray
+            affine matrix for image data
+        float
+            velocity encoding of the phase contrast scan data
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;phase_contrast_right_philips&#39;)
+    magnitude = []
+    phase = []
+    velocity_encoding = 100
+    for file in fnames:
+
+        if ((file.endswith(&#34;.nii.gz&#34;) and &#34;_ph_&#34; in file) or
+           file.endswith(&#34;_ph.nii.gz&#34;)):
+            # Load NIfTI and only save the phase data
+            data = nib.load(file)
+            phase.append(np.squeeze(data.get_fdata()))
+
+        elif file.endswith(&#34;.nii.gz&#34;) and &#34;mask_&#34; in file:
+            mask = np.squeeze(nib.load(file).get_fdata())
+
+        elif file.endswith(&#34;.nii.gz&#34;):
+            # Load NIfTI and only save the magnitude data
+            data = nib.load(file)
+            magnitude.append(np.squeeze(data.get_fdata()[..., 0]))
+
+    # Move cardiac cycle dimension to 3rd (and last) dimension
+    magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+    phase = np.moveaxis(np.array(phase), 0, -1)
+
+    return magnitude, phase, mask, data.affine, velocity_encoding</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.fetch.t1_molli_philips"><code class="name flex">
+<span>def <span class="ident">t1_molli_philips</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetches Philips MOLLI T1 dataset
+Returns</p>
+<hr>
+<dl>
+<dt><code>numpy.ndarray</code></dt>
+<dd>image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>affine matrix for image data</dd>
+<dt><code>numpy.ndarray</code></dt>
+<dd>inversion times in seconds</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def t1_molli_philips():
+    &#34;&#34;&#34;Fetches Philips MOLLI T1 dataset
+    Returns
+    -------
+    numpy.ndarray
+        image data
+    numpy.ndarray
+        affine matrix for image data
+    numpy.ndarray
+        inversion times in seconds
+    &#34;&#34;&#34;
+    fnames = get_fnames(&#39;t1_molli_philips&#39;)
+
+    data = nib.load(fnames[1])
+    image = data.get_fdata()
+    inversion_list = np.loadtxt(fnames[2])
+
+    return image, data.affine, inversion_list / 1000</code></pre>
 </details>
 </dd>
 <dt id="ukat.data.fetch.t1_philips"><code class="name flex">
@@ -1938,7 +2249,7 @@ Returns</p>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="ukat.data.fetch.b0_ge" href="#ukat.data.fetch.b0_ge">b0_ge</a></code></li>
 <li><code><a title="ukat.data.fetch.b0_philips" href="#ukat.data.fetch.b0_philips">b0_philips</a></code></li>
 <li><code><a title="ukat.data.fetch.b0_siemens" href="#ukat.data.fetch.b0_siemens">b0_siemens</a></code></li>
@@ -1947,6 +2258,9 @@ Returns</p>
 <li><code><a title="ukat.data.fetch.dwi_siemens" href="#ukat.data.fetch.dwi_siemens">dwi_siemens</a></code></li>
 <li><code><a title="ukat.data.fetch.get_fnames" href="#ukat.data.fetch.get_fnames">get_fnames</a></code></li>
 <li><code><a title="ukat.data.fetch.mtr_philips" href="#ukat.data.fetch.mtr_philips">mtr_philips</a></code></li>
+<li><code><a title="ukat.data.fetch.phase_contrast_left_philips" href="#ukat.data.fetch.phase_contrast_left_philips">phase_contrast_left_philips</a></code></li>
+<li><code><a title="ukat.data.fetch.phase_contrast_right_philips" href="#ukat.data.fetch.phase_contrast_right_philips">phase_contrast_right_philips</a></code></li>
+<li><code><a title="ukat.data.fetch.t1_molli_philips" href="#ukat.data.fetch.t1_molli_philips">t1_molli_philips</a></code></li>
 <li><code><a title="ukat.data.fetch.t1_philips" href="#ukat.data.fetch.t1_philips">t1_philips</a></code></li>
 <li><code><a title="ukat.data.fetch.t1w_volume_philips" href="#ukat.data.fetch.t1w_volume_philips">t1w_volume_philips</a></code></li>
 <li><code><a title="ukat.data.fetch.t2_philips" href="#ukat.data.fetch.t2_philips">t2_philips</a></code></li>

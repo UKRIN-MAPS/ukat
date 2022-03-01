@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>ukat.vessels.tests.test_phase_contrast API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ukat.vessels.tests.test_phase_contrast</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+import shutil
+import numpy as np
+import numpy.testing as npt
+import pandas as pd
+import pytest
+from ukat.data import fetch
+from ukat.vessels.phase_contrast import PhaseContrast, convert_to_velocity
+from ukat.utils import arraystats
+
+
+class TestPC:
+    # Create arrays for testing
+    correct_signal = np.arange(2000).reshape((10, 10, 20))  # velocity array
+    two_dim_signal = np.arange(100).reshape((10, 10))
+    vel_encoding = 100
+    affine = np.eye(4)
+    mask = np.ones(correct_signal.shape, dtype=bool)
+
+    # Gold standard: [mean, std, min, max] of velocity_array when input
+    # is `correct_signal`
+    gold_standard = [999.5, 577.3501970208376, 0, 1999]
+
+    # Expected PhaseContrast statistics for ROI, velocity and flow
+    num_pixels_standard = [100] * 20
+    area_standard = [1.0] * 20  # Each pixel is 1mm*1mm, but area is in cm2
+    min_vel_standard = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                        14, 15, 16, 17, 18, 19]
+    mean_vel_standard = [990.0, 991.0, 992.0, 993.0, 994.0, 995.0, 996.0,
+                         997.0, 998.0, 999.0, 1000.0, 1001.0, 1002.0,
+                         1003.0, 1004.0, 1005.0, 1006.0, 1007.0, 1008.0,
+                         1009.0]
+    max_vel_standard = [1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987,
+                        1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
+                        1996, 1997, 1998, 1999]
+    std_vel_standard = [577.3214009544423] * 20
+    rbf_standard = [59400.0, 59460.0, 59520.0, 59580.0, 59640.0, 59700.0,
+                    59760.0, 59820.0, 59880.0, 59940.0, 60000.0, 60060.0,
+                    60120.0, 60180.0, 60240.0, 60300.0, 60360.0, 60420.0,
+                    60480.0, 60540.0]
+    mean_vel_global_standard = 999.5
+    rbf_mean_standard = 59970.0
+    resistive_index_standard = 0.018830525272547076
+
+    # Velocity array gold standard stats assuming the `correct_signal`
+    # is a phase image.
+    artificial_vel_array_standard = [0.0, 181.47064907546604,
+                                     -314.1592653589793, 314.1592653589793]
+
+    def test_velocity_array(self):
+        vel_array_whole_mask = PhaseContrast(self.correct_signal,
+                                             self.affine,
+                                             self.mask).velocity_array
+        vel_stats = arraystats.ArrayStats(vel_array_whole_mask).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            self.gold_standard, rtol=1e-7, atol=1e-9)
+
+    def test_input_errors(self):
+        # Check that it fails when input pixel_array has incorrect shape
+        with pytest.raises(ValueError):
+            PhaseContrast(self.two_dim_signal, self.affine, self.mask)
+
+    def test_affine_pixel_spacing(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 1.0],
+                            rtol=1e-7, atol=1e-9)
+        affine_test_1 = np.eye(4)
+        affine_test_1[:, 0] = [1, 2, 2, 0]
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_1, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 3.0],
+                            rtol=1e-7, atol=1e-9)
+        affine_test_2 = affine_test_1
+        affine_test_2[:, 1] = [2, 1, 2, 0]
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_2, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [3.0, 3.0],
+                            rtol=1e-7, atol=1e-9)
+
+    def test_mask(self):
+        # Create a mask where the first 5 rows of each phase
+        # are False and the rest is True.
+        partial_mask = np.ones(self.correct_signal.shape, dtype=bool)
+        partial_mask[:5, ...] = False
+
+        all_pixels = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        masked_pixels = PhaseContrast(self.correct_signal,
+                                      self.affine, partial_mask)
+
+        assert (all_pixels.velocity_array !=
+                masked_pixels.velocity_array).any()
+        assert (all_pixels.mean_velocity !=
+                masked_pixels.mean_velocity).any()
+        assert (all_pixels.mean_velocity_global !=
+                masked_pixels.mean_velocity_global)
+        assert (all_pixels.rbf != masked_pixels.rbf).any()
+        assert all_pixels.mean_rbf != masked_pixels.mean_rbf
+
+    def test_output_parameters(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        npt.assert_allclose(pc_obj.num_pixels, self.num_pixels_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.area, self.area_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.min_velocity,
+                            self.min_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_velocity,
+                            self.mean_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.max_velocity,
+                            self.max_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.std_velocity,
+                            self.std_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.rbf, self.rbf_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_velocity_global,
+                            self.mean_vel_global_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_rbf, self.rbf_mean_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.resistive_index,
+                            self.resistive_index_standard,
+                            rtol=1e-7, atol=1e-9)
+
+    def test_get_stats_table(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        stats_table = pc_obj.get_stats_table()
+        assert type(stats_table) == pd.DataFrame
+        number_rows = len(stats_table)
+        number_columns = len(stats_table.columns)
+        assert number_rows == 20
+        assert number_columns == 7
+
+    def test_to_csv(self):
+        os.makedirs(&#39;test_output&#39;, exist_ok=True)
+        csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        # Save .csv and and open it to compare if it&#39;s the same as expected.
+        pc_obj.to_csv(csv_path)
+        df = pd.read_csv(csv_path)
+        shutil.rmtree(&#39;test_output&#39;)
+        list_rows = df.values.tolist()
+        # Check if the content in the variable &#39;list_rows&#39; is as expected.
+        assert [row[1] for row in list_rows] == self.rbf_standard
+        assert [row[2] for row in list_rows] == self.area_standard
+        assert [row[3] for row in list_rows] == self.num_pixels_standard
+        assert [row[4] for row in list_rows] == self.mean_vel_standard
+        assert [row[5] for row in list_rows] == self.min_vel_standard
+        assert [row[6] for row in list_rows] == self.max_vel_standard
+        assert [row[7] for row in list_rows] == self.std_vel_standard
+
+    def test_plot(self):
+        # Since we cannot see the actual plots during the testing, the best
+        # approach is to check if it fails with an incorrect stat call.
+        with pytest.raises(ValueError):
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+            pc_obj.plot(&#39;incorrect_stat_name&#39;)
+
+    def test_to_nifti(self):
+        # Create a PC instance and test different export to NIFTI scenarios
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        os.makedirs(&#39;test_output&#39;, exist_ok=True)
+        # Check all is saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 2
+        assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+        assert &#39;pctest_mask.nii.gz&#39; in output_files
+
+        for f in os.listdir(&#39;test_output&#39;):
+            os.remove(os.path.join(&#39;test_output&#39;, f))
+
+        # Check that no files are saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=[])
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 0
+
+        # Check that only velocity_array saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=[&#39;velocity_array&#39;])
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 1
+        assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+
+        for f in os.listdir(&#39;test_output&#39;):
+            os.remove(os.path.join(&#39;test_output&#39;, f))
+
+        # Check that it fails when no maps are given
+        with pytest.raises(ValueError):
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+            pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                            base_file_name=&#39;pctest&#39;, maps=&#39;&#39;)
+
+        # Delete &#39;test_output&#39; folder
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_convert_to_velocity(self):
+        # Assuming that correct_signal is a phase image and not velocity array.
+        vel_array_calculated = convert_to_velocity(self.correct_signal,
+                                                   self.vel_encoding)
+        vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            self.artificial_vel_array_standard,
+                            rtol=1e-7, atol=1e-9)
+
+    def test_real_data(self):
+        # Get left PC test data
+        _, velocity, mask, affine, _ = fetch.phase_contrast_left_philips()
+
+        # Gold standard statistics
+        gold_standard_left = [0.009531885391710501, 0.5249643990944701,
+                              0.0, 61.17216385900974]
+        avrg_vel_left = 25.57730254026419
+        rbf_mean_standard_left = 448.3799164652045
+        resistive_index_left = 0.6089871033735511
+
+        pc_obj = PhaseContrast(velocity, affine, mask)
+        vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            gold_standard_left, rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_left,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_left,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.resistive_index, resistive_index_left,
+                            rtol=0.01, atol=0)
+
+        # Get right PC test data
+        _, velocity, mask, affine, _ = fetch.phase_contrast_right_philips()
+
+        # Gold standard statistics
+        gold_standard_right = [0.014580785805088049, 0.7169850435217269,
+                               0.0, 97.36264065280557]
+        avrg_vel_right = 28.752678965667474
+        rbf_mean_standard_right = 685.880219
+        resistive_index_right = 0.6713997583484632
+
+        pc_obj = PhaseContrast(velocity, affine, mask)
+        vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            gold_standard_right, rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_right,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_right,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.resistive_index, resistive_index_right,
+                            rtol=0.01, atol=0)
+
+
+# Delete the NIFTI test folder recursively if any of the unit tests failed
+if os.path.exists(&#39;test_output&#39;):
+    shutil.rmtree(&#39;test_output&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC"><code class="flex name class">
+<span>class <span class="ident">TestPC</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TestPC:
+    # Create arrays for testing
+    correct_signal = np.arange(2000).reshape((10, 10, 20))  # velocity array
+    two_dim_signal = np.arange(100).reshape((10, 10))
+    vel_encoding = 100
+    affine = np.eye(4)
+    mask = np.ones(correct_signal.shape, dtype=bool)
+
+    # Gold standard: [mean, std, min, max] of velocity_array when input
+    # is `correct_signal`
+    gold_standard = [999.5, 577.3501970208376, 0, 1999]
+
+    # Expected PhaseContrast statistics for ROI, velocity and flow
+    num_pixels_standard = [100] * 20
+    area_standard = [1.0] * 20  # Each pixel is 1mm*1mm, but area is in cm2
+    min_vel_standard = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                        14, 15, 16, 17, 18, 19]
+    mean_vel_standard = [990.0, 991.0, 992.0, 993.0, 994.0, 995.0, 996.0,
+                         997.0, 998.0, 999.0, 1000.0, 1001.0, 1002.0,
+                         1003.0, 1004.0, 1005.0, 1006.0, 1007.0, 1008.0,
+                         1009.0]
+    max_vel_standard = [1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987,
+                        1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
+                        1996, 1997, 1998, 1999]
+    std_vel_standard = [577.3214009544423] * 20
+    rbf_standard = [59400.0, 59460.0, 59520.0, 59580.0, 59640.0, 59700.0,
+                    59760.0, 59820.0, 59880.0, 59940.0, 60000.0, 60060.0,
+                    60120.0, 60180.0, 60240.0, 60300.0, 60360.0, 60420.0,
+                    60480.0, 60540.0]
+    mean_vel_global_standard = 999.5
+    rbf_mean_standard = 59970.0
+    resistive_index_standard = 0.018830525272547076
+
+    # Velocity array gold standard stats assuming the `correct_signal`
+    # is a phase image.
+    artificial_vel_array_standard = [0.0, 181.47064907546604,
+                                     -314.1592653589793, 314.1592653589793]
+
+    def test_velocity_array(self):
+        vel_array_whole_mask = PhaseContrast(self.correct_signal,
+                                             self.affine,
+                                             self.mask).velocity_array
+        vel_stats = arraystats.ArrayStats(vel_array_whole_mask).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            self.gold_standard, rtol=1e-7, atol=1e-9)
+
+    def test_input_errors(self):
+        # Check that it fails when input pixel_array has incorrect shape
+        with pytest.raises(ValueError):
+            PhaseContrast(self.two_dim_signal, self.affine, self.mask)
+
+    def test_affine_pixel_spacing(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 1.0],
+                            rtol=1e-7, atol=1e-9)
+        affine_test_1 = np.eye(4)
+        affine_test_1[:, 0] = [1, 2, 2, 0]
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_1, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 3.0],
+                            rtol=1e-7, atol=1e-9)
+        affine_test_2 = affine_test_1
+        affine_test_2[:, 1] = [2, 1, 2, 0]
+        pc_obj = PhaseContrast(self.correct_signal, affine_test_2, self.mask)
+        npt.assert_allclose(pc_obj.pixel_spacing, [3.0, 3.0],
+                            rtol=1e-7, atol=1e-9)
+
+    def test_mask(self):
+        # Create a mask where the first 5 rows of each phase
+        # are False and the rest is True.
+        partial_mask = np.ones(self.correct_signal.shape, dtype=bool)
+        partial_mask[:5, ...] = False
+
+        all_pixels = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        masked_pixels = PhaseContrast(self.correct_signal,
+                                      self.affine, partial_mask)
+
+        assert (all_pixels.velocity_array !=
+                masked_pixels.velocity_array).any()
+        assert (all_pixels.mean_velocity !=
+                masked_pixels.mean_velocity).any()
+        assert (all_pixels.mean_velocity_global !=
+                masked_pixels.mean_velocity_global)
+        assert (all_pixels.rbf != masked_pixels.rbf).any()
+        assert all_pixels.mean_rbf != masked_pixels.mean_rbf
+
+    def test_output_parameters(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        npt.assert_allclose(pc_obj.num_pixels, self.num_pixels_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.area, self.area_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.min_velocity,
+                            self.min_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_velocity,
+                            self.mean_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.max_velocity,
+                            self.max_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.std_velocity,
+                            self.std_vel_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.rbf, self.rbf_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_velocity_global,
+                            self.mean_vel_global_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.mean_rbf, self.rbf_mean_standard,
+                            rtol=1e-7, atol=1e-9)
+        npt.assert_allclose(pc_obj.resistive_index,
+                            self.resistive_index_standard,
+                            rtol=1e-7, atol=1e-9)
+
+    def test_get_stats_table(self):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        stats_table = pc_obj.get_stats_table()
+        assert type(stats_table) == pd.DataFrame
+        number_rows = len(stats_table)
+        number_columns = len(stats_table.columns)
+        assert number_rows == 20
+        assert number_columns == 7
+
+    def test_to_csv(self):
+        os.makedirs(&#39;test_output&#39;, exist_ok=True)
+        csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        # Save .csv and and open it to compare if it&#39;s the same as expected.
+        pc_obj.to_csv(csv_path)
+        df = pd.read_csv(csv_path)
+        shutil.rmtree(&#39;test_output&#39;)
+        list_rows = df.values.tolist()
+        # Check if the content in the variable &#39;list_rows&#39; is as expected.
+        assert [row[1] for row in list_rows] == self.rbf_standard
+        assert [row[2] for row in list_rows] == self.area_standard
+        assert [row[3] for row in list_rows] == self.num_pixels_standard
+        assert [row[4] for row in list_rows] == self.mean_vel_standard
+        assert [row[5] for row in list_rows] == self.min_vel_standard
+        assert [row[6] for row in list_rows] == self.max_vel_standard
+        assert [row[7] for row in list_rows] == self.std_vel_standard
+
+    def test_plot(self):
+        # Since we cannot see the actual plots during the testing, the best
+        # approach is to check if it fails with an incorrect stat call.
+        with pytest.raises(ValueError):
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+            pc_obj.plot(&#39;incorrect_stat_name&#39;)
+
+    def test_to_nifti(self):
+        # Create a PC instance and test different export to NIFTI scenarios
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        os.makedirs(&#39;test_output&#39;, exist_ok=True)
+        # Check all is saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 2
+        assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+        assert &#39;pctest_mask.nii.gz&#39; in output_files
+
+        for f in os.listdir(&#39;test_output&#39;):
+            os.remove(os.path.join(&#39;test_output&#39;, f))
+
+        # Check that no files are saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=[])
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 0
+
+        # Check that only velocity_array saved.
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=[&#39;velocity_array&#39;])
+        output_files = os.listdir(&#39;test_output&#39;)
+        assert len(output_files) == 1
+        assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+
+        for f in os.listdir(&#39;test_output&#39;):
+            os.remove(os.path.join(&#39;test_output&#39;, f))
+
+        # Check that it fails when no maps are given
+        with pytest.raises(ValueError):
+            pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+            pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                            base_file_name=&#39;pctest&#39;, maps=&#39;&#39;)
+
+        # Delete &#39;test_output&#39; folder
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_convert_to_velocity(self):
+        # Assuming that correct_signal is a phase image and not velocity array.
+        vel_array_calculated = convert_to_velocity(self.correct_signal,
+                                                   self.vel_encoding)
+        vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            self.artificial_vel_array_standard,
+                            rtol=1e-7, atol=1e-9)
+
+    def test_real_data(self):
+        # Get left PC test data
+        _, velocity, mask, affine, _ = fetch.phase_contrast_left_philips()
+
+        # Gold standard statistics
+        gold_standard_left = [0.009531885391710501, 0.5249643990944701,
+                              0.0, 61.17216385900974]
+        avrg_vel_left = 25.57730254026419
+        rbf_mean_standard_left = 448.3799164652045
+        resistive_index_left = 0.6089871033735511
+
+        pc_obj = PhaseContrast(velocity, affine, mask)
+        vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            gold_standard_left, rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_left,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_left,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.resistive_index, resistive_index_left,
+                            rtol=0.01, atol=0)
+
+        # Get right PC test data
+        _, velocity, mask, affine, _ = fetch.phase_contrast_right_philips()
+
+        # Gold standard statistics
+        gold_standard_right = [0.014580785805088049, 0.7169850435217269,
+                               0.0, 97.36264065280557]
+        avrg_vel_right = 28.752678965667474
+        rbf_mean_standard_right = 685.880219
+        resistive_index_right = 0.6713997583484632
+
+        pc_obj = PhaseContrast(velocity, affine, mask)
+        vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+        npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                            vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                            gold_standard_right, rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_right,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_right,
+                            rtol=0.01, atol=0)
+        npt.assert_allclose(pc_obj.resistive_index, resistive_index_right,
+                            rtol=0.01, atol=0)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.affine"><code class="name">var <span class="ident">affine</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.area_standard"><code class="name">var <span class="ident">area_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.artificial_vel_array_standard"><code class="name">var <span class="ident">artificial_vel_array_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.correct_signal"><code class="name">var <span class="ident">correct_signal</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.gold_standard"><code class="name">var <span class="ident">gold_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.mask"><code class="name">var <span class="ident">mask</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.max_vel_standard"><code class="name">var <span class="ident">max_vel_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_global_standard"><code class="name">var <span class="ident">mean_vel_global_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_standard"><code class="name">var <span class="ident">mean_vel_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.min_vel_standard"><code class="name">var <span class="ident">min_vel_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.num_pixels_standard"><code class="name">var <span class="ident">num_pixels_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.rbf_mean_standard"><code class="name">var <span class="ident">rbf_mean_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.rbf_standard"><code class="name">var <span class="ident">rbf_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.resistive_index_standard"><code class="name">var <span class="ident">resistive_index_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.std_vel_standard"><code class="name">var <span class="ident">std_vel_standard</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.two_dim_signal"><code class="name">var <span class="ident">two_dim_signal</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.vel_encoding"><code class="name">var <span class="ident">vel_encoding</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_affine_pixel_spacing"><code class="name flex">
+<span>def <span class="ident">test_affine_pixel_spacing</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_affine_pixel_spacing(self):
+    pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 1.0],
+                        rtol=1e-7, atol=1e-9)
+    affine_test_1 = np.eye(4)
+    affine_test_1[:, 0] = [1, 2, 2, 0]
+    pc_obj = PhaseContrast(self.correct_signal, affine_test_1, self.mask)
+    npt.assert_allclose(pc_obj.pixel_spacing, [1.0, 3.0],
+                        rtol=1e-7, atol=1e-9)
+    affine_test_2 = affine_test_1
+    affine_test_2[:, 1] = [2, 1, 2, 0]
+    pc_obj = PhaseContrast(self.correct_signal, affine_test_2, self.mask)
+    npt.assert_allclose(pc_obj.pixel_spacing, [3.0, 3.0],
+                        rtol=1e-7, atol=1e-9)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_convert_to_velocity"><code class="name flex">
+<span>def <span class="ident">test_convert_to_velocity</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_convert_to_velocity(self):
+    # Assuming that correct_signal is a phase image and not velocity array.
+    vel_array_calculated = convert_to_velocity(self.correct_signal,
+                                               self.vel_encoding)
+    vel_stats = arraystats.ArrayStats(vel_array_calculated).calculate()
+    npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                        vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                        self.artificial_vel_array_standard,
+                        rtol=1e-7, atol=1e-9)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_get_stats_table"><code class="name flex">
+<span>def <span class="ident">test_get_stats_table</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_stats_table(self):
+    pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    stats_table = pc_obj.get_stats_table()
+    assert type(stats_table) == pd.DataFrame
+    number_rows = len(stats_table)
+    number_columns = len(stats_table.columns)
+    assert number_rows == 20
+    assert number_columns == 7</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_input_errors"><code class="name flex">
+<span>def <span class="ident">test_input_errors</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_input_errors(self):
+    # Check that it fails when input pixel_array has incorrect shape
+    with pytest.raises(ValueError):
+        PhaseContrast(self.two_dim_signal, self.affine, self.mask)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_mask"><code class="name flex">
+<span>def <span class="ident">test_mask</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_mask(self):
+    # Create a mask where the first 5 rows of each phase
+    # are False and the rest is True.
+    partial_mask = np.ones(self.correct_signal.shape, dtype=bool)
+    partial_mask[:5, ...] = False
+
+    all_pixels = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    masked_pixels = PhaseContrast(self.correct_signal,
+                                  self.affine, partial_mask)
+
+    assert (all_pixels.velocity_array !=
+            masked_pixels.velocity_array).any()
+    assert (all_pixels.mean_velocity !=
+            masked_pixels.mean_velocity).any()
+    assert (all_pixels.mean_velocity_global !=
+            masked_pixels.mean_velocity_global)
+    assert (all_pixels.rbf != masked_pixels.rbf).any()
+    assert all_pixels.mean_rbf != masked_pixels.mean_rbf</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_output_parameters"><code class="name flex">
+<span>def <span class="ident">test_output_parameters</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_output_parameters(self):
+    pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    npt.assert_allclose(pc_obj.num_pixels, self.num_pixels_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.area, self.area_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.min_velocity,
+                        self.min_vel_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.mean_velocity,
+                        self.mean_vel_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.max_velocity,
+                        self.max_vel_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.std_velocity,
+                        self.std_vel_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.rbf, self.rbf_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.mean_velocity_global,
+                        self.mean_vel_global_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.mean_rbf, self.rbf_mean_standard,
+                        rtol=1e-7, atol=1e-9)
+    npt.assert_allclose(pc_obj.resistive_index,
+                        self.resistive_index_standard,
+                        rtol=1e-7, atol=1e-9)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_plot"><code class="name flex">
+<span>def <span class="ident">test_plot</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_plot(self):
+    # Since we cannot see the actual plots during the testing, the best
+    # approach is to check if it fails with an incorrect stat call.
+    with pytest.raises(ValueError):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        pc_obj.plot(&#39;incorrect_stat_name&#39;)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_real_data"><code class="name flex">
+<span>def <span class="ident">test_real_data</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_real_data(self):
+    # Get left PC test data
+    _, velocity, mask, affine, _ = fetch.phase_contrast_left_philips()
+
+    # Gold standard statistics
+    gold_standard_left = [0.009531885391710501, 0.5249643990944701,
+                          0.0, 61.17216385900974]
+    avrg_vel_left = 25.57730254026419
+    rbf_mean_standard_left = 448.3799164652045
+    resistive_index_left = 0.6089871033735511
+
+    pc_obj = PhaseContrast(velocity, affine, mask)
+    vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+    npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                        vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                        gold_standard_left, rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_left,
+                        rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_left,
+                        rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.resistive_index, resistive_index_left,
+                        rtol=0.01, atol=0)
+
+    # Get right PC test data
+    _, velocity, mask, affine, _ = fetch.phase_contrast_right_philips()
+
+    # Gold standard statistics
+    gold_standard_right = [0.014580785805088049, 0.7169850435217269,
+                           0.0, 97.36264065280557]
+    avrg_vel_right = 28.752678965667474
+    rbf_mean_standard_right = 685.880219
+    resistive_index_right = 0.6713997583484632
+
+    pc_obj = PhaseContrast(velocity, affine, mask)
+    vel_stats = arraystats.ArrayStats(pc_obj.velocity_array).calculate()
+    npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                        vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                        gold_standard_right, rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.mean_velocity_global, avrg_vel_right,
+                        rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.mean_rbf, rbf_mean_standard_right,
+                        rtol=0.01, atol=0)
+    npt.assert_allclose(pc_obj.resistive_index, resistive_index_right,
+                        rtol=0.01, atol=0)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_to_csv"><code class="name flex">
+<span>def <span class="ident">test_to_csv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_to_csv(self):
+    os.makedirs(&#39;test_output&#39;, exist_ok=True)
+    csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
+    pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    # Save .csv and and open it to compare if it&#39;s the same as expected.
+    pc_obj.to_csv(csv_path)
+    df = pd.read_csv(csv_path)
+    shutil.rmtree(&#39;test_output&#39;)
+    list_rows = df.values.tolist()
+    # Check if the content in the variable &#39;list_rows&#39; is as expected.
+    assert [row[1] for row in list_rows] == self.rbf_standard
+    assert [row[2] for row in list_rows] == self.area_standard
+    assert [row[3] for row in list_rows] == self.num_pixels_standard
+    assert [row[4] for row in list_rows] == self.mean_vel_standard
+    assert [row[5] for row in list_rows] == self.min_vel_standard
+    assert [row[6] for row in list_rows] == self.max_vel_standard
+    assert [row[7] for row in list_rows] == self.std_vel_standard</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_to_nifti"><code class="name flex">
+<span>def <span class="ident">test_to_nifti</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_to_nifti(self):
+    # Create a PC instance and test different export to NIFTI scenarios
+    pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+    os.makedirs(&#39;test_output&#39;, exist_ok=True)
+    # Check all is saved.
+    pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                    base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)
+    output_files = os.listdir(&#39;test_output&#39;)
+    assert len(output_files) == 2
+    assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+    assert &#39;pctest_mask.nii.gz&#39; in output_files
+
+    for f in os.listdir(&#39;test_output&#39;):
+        os.remove(os.path.join(&#39;test_output&#39;, f))
+
+    # Check that no files are saved.
+    pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                    base_file_name=&#39;pctest&#39;, maps=[])
+    output_files = os.listdir(&#39;test_output&#39;)
+    assert len(output_files) == 0
+
+    # Check that only velocity_array saved.
+    pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                    base_file_name=&#39;pctest&#39;, maps=[&#39;velocity_array&#39;])
+    output_files = os.listdir(&#39;test_output&#39;)
+    assert len(output_files) == 1
+    assert &#39;pctest_velocity_array.nii.gz&#39; in output_files
+
+    for f in os.listdir(&#39;test_output&#39;):
+        os.remove(os.path.join(&#39;test_output&#39;, f))
+
+    # Check that it fails when no maps are given
+    with pytest.raises(ValueError):
+        pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+        pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
+                        base_file_name=&#39;pctest&#39;, maps=&#39;&#39;)
+
+    # Delete &#39;test_output&#39; folder
+    shutil.rmtree(&#39;test_output&#39;)</code></pre>
+</details>
+</dd>
+<dt id="ukat.vessels.tests.test_phase_contrast.TestPC.test_velocity_array"><code class="name flex">
+<span>def <span class="ident">test_velocity_array</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_velocity_array(self):
+    vel_array_whole_mask = PhaseContrast(self.correct_signal,
+                                         self.affine,
+                                         self.mask).velocity_array
+    vel_stats = arraystats.ArrayStats(vel_array_whole_mask).calculate()
+    npt.assert_allclose([vel_stats[&#34;mean&#34;][&#34;3D&#34;], vel_stats[&#34;std&#34;][&#34;3D&#34;],
+                        vel_stats[&#34;min&#34;][&#34;3D&#34;], vel_stats[&#34;max&#34;][&#34;3D&#34;]],
+                        self.gold_standard, rtol=1e-7, atol=1e-9)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ukat.vessels.tests" href="index.html">ukat.vessels.tests</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC" href="#ukat.vessels.tests.test_phase_contrast.TestPC">TestPC</a></code></h4>
+<ul class="">
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.affine" href="#ukat.vessels.tests.test_phase_contrast.TestPC.affine">affine</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.area_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.area_standard">area_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.artificial_vel_array_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.artificial_vel_array_standard">artificial_vel_array_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.correct_signal" href="#ukat.vessels.tests.test_phase_contrast.TestPC.correct_signal">correct_signal</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.gold_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.gold_standard">gold_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.mask" href="#ukat.vessels.tests.test_phase_contrast.TestPC.mask">mask</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.max_vel_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.max_vel_standard">max_vel_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_global_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_global_standard">mean_vel_global_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.mean_vel_standard">mean_vel_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.min_vel_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.min_vel_standard">min_vel_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.num_pixels_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.num_pixels_standard">num_pixels_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.rbf_mean_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.rbf_mean_standard">rbf_mean_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.rbf_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.rbf_standard">rbf_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.resistive_index_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.resistive_index_standard">resistive_index_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.std_vel_standard" href="#ukat.vessels.tests.test_phase_contrast.TestPC.std_vel_standard">std_vel_standard</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_affine_pixel_spacing" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_affine_pixel_spacing">test_affine_pixel_spacing</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_convert_to_velocity" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_convert_to_velocity">test_convert_to_velocity</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_get_stats_table" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_get_stats_table">test_get_stats_table</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_input_errors" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_input_errors">test_input_errors</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_mask" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_mask">test_mask</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_output_parameters" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_output_parameters">test_output_parameters</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_plot" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_plot">test_plot</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_real_data" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_real_data">test_real_data</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_to_csv" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_to_csv">test_to_csv</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_to_nifti" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_to_nifti">test_to_nifti</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.test_velocity_array" href="#ukat.vessels.tests.test_phase_contrast.TestPC.test_velocity_array">test_velocity_array</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.two_dim_signal" href="#ukat.vessels.tests.test_phase_contrast.TestPC.two_dim_signal">two_dim_signal</a></code></li>
+<li><code><a title="ukat.vessels.tests.test_phase_contrast.TestPC.vel_encoding" href="#ukat.vessels.tests.test_phase_contrast.TestPC.vel_encoding">vel_encoding</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

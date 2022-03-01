@@ -26,10 +26,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">import concurrent.futures
 import nibabel as nib
 import numpy as np
-import concurrent.futures
+import os
+import warnings
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
@@ -58,7 +59,7 @@ class T1:
     &#34;&#34;&#34;
 
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, multithread=True):
+                 mask=None, parameters=2, molli=False, multithread=True):
         &#34;&#34;&#34;Initialise a T1 class instance.
 
         Parameters
@@ -95,6 +96,9 @@ class T1:
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
+        molli : bool, optional
+            Default False.
+            Apply MOLLI corrections to T1.
         multithread : bool, optional
             Default True.
             If True, fitting will be distributed over all cores available on
@@ -127,6 +131,7 @@ class T1:
             self.tss_axis = None
             self.tss = 0
         self.parameters = parameters
+        self.molli = molli
         self.multithread = multithread
 
         # Some sanity checks
@@ -139,6 +144,12 @@ class T1:
                 &#39;Temporal slice spacing can\&#39;t be applied to the TI axis.&#39;
             assert (tss_axis &lt; self.dimensions), \
                 &#39;tss_axis must be less than the number of spatial dimensions&#39;
+        if self.molli:
+            if self.parameters == 2:
+                self.parameters = 3
+                warnings.warn(&#39;MOLLI requires a three parameter fit, &#39;
+                              &#39;using parameters=3.&#39;)
+
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
@@ -157,6 +168,12 @@ class T1:
         else:
             raise ValueError(&#39;Parameters can be 2 or 3 only. You specified &#39;
                              &#39;{}&#39;.format(self.parameters))
+
+        if self.molli:
+            correction_factor = (self.m0_map * self.eff_map) / self.m0_map - 1
+            percentage_error = self.t1_err / self.t1_map
+            self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
+            self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
@@ -245,16 +262,16 @@ class T1:
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [4000, 1000000])
+            bounds = ([0, 0], [5000, 10000000])
             initial_guess = [1000, 30000]
-            if sig.min() &gt; 0:
+            if sig.min() &gt;= 0:
                 eq = two_param_abs_eq
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1.5], [4000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 10000000, 2])
             initial_guess = [1000, 30000, 2]
-            if sig.min() &gt; 0:
+            if sig.min() &gt;= 0:
                 eq = three_param_abs_eq
             else:
                 eq = three_param_eq
@@ -307,7 +324,7 @@ class T1:
     def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
                  maps=&#39;all&#39;):
         &#34;&#34;&#34;Exports some of the T1 class attributes to NIFTI.
-        
+
         Parameters
         ----------
         output_directory : string, optional
@@ -775,7 +792,7 @@ exp(-t / T1))</p>
 <dl>
 <dt id="ukat.mapping.t1.T1"><code class="flex name class">
 <span>class <span class="ident">T1</span></span>
-<span>(</span><span>pixel_array, inversion_list, affine, tss=0, tss_axis=-2, mask=None, parameters=2, multithread=True)</span>
+<span>(</span><span>pixel_array, inversion_list, affine, tss=0, tss_axis=-2, mask=None, parameters=2, molli=False, multithread=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="attributes">Attributes</h2>
@@ -833,6 +850,9 @@ dimension.</dd>
 The number of parameters to fit the data to. A two parameter fit
 will estimate S0 and T1 while a three parameter fit will also
 estimate the inversion efficiency.</dd>
+<dt><strong><code>molli</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Default False.
+Apply MOLLI corrections to T1.</dd>
 <dt><strong><code>multithread</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Default True.
 If True, fitting will be distributed over all cores available on
@@ -872,7 +892,7 @@ increase in speed distributing the calculation would generate.</dd>
     &#34;&#34;&#34;
 
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, multithread=True):
+                 mask=None, parameters=2, molli=False, multithread=True):
         &#34;&#34;&#34;Initialise a T1 class instance.
 
         Parameters
@@ -909,6 +929,9 @@ increase in speed distributing the calculation would generate.</dd>
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
+        molli : bool, optional
+            Default False.
+            Apply MOLLI corrections to T1.
         multithread : bool, optional
             Default True.
             If True, fitting will be distributed over all cores available on
@@ -941,6 +964,7 @@ increase in speed distributing the calculation would generate.</dd>
             self.tss_axis = None
             self.tss = 0
         self.parameters = parameters
+        self.molli = molli
         self.multithread = multithread
 
         # Some sanity checks
@@ -953,6 +977,12 @@ increase in speed distributing the calculation would generate.</dd>
                 &#39;Temporal slice spacing can\&#39;t be applied to the TI axis.&#39;
             assert (tss_axis &lt; self.dimensions), \
                 &#39;tss_axis must be less than the number of spatial dimensions&#39;
+        if self.molli:
+            if self.parameters == 2:
+                self.parameters = 3
+                warnings.warn(&#39;MOLLI requires a three parameter fit, &#39;
+                              &#39;using parameters=3.&#39;)
+
 
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
@@ -971,6 +1001,12 @@ increase in speed distributing the calculation would generate.</dd>
         else:
             raise ValueError(&#39;Parameters can be 2 or 3 only. You specified &#39;
                              &#39;{}&#39;.format(self.parameters))
+
+        if self.molli:
+            correction_factor = (self.m0_map * self.eff_map) / self.m0_map - 1
+            percentage_error = self.t1_err / self.t1_map
+            self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
+            self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
 
     def __fit__(self):
         n_vox = np.prod(self.shape)
@@ -1059,16 +1095,16 @@ increase in speed distributing the calculation would generate.</dd>
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [4000, 1000000])
+            bounds = ([0, 0], [5000, 10000000])
             initial_guess = [1000, 30000]
-            if sig.min() &gt; 0:
+            if sig.min() &gt;= 0:
                 eq = two_param_abs_eq
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1.5], [4000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 10000000, 2])
             initial_guess = [1000, 30000, 2]
-            if sig.min() &gt; 0:
+            if sig.min() &gt;= 0:
                 eq = three_param_abs_eq
             else:
                 eq = three_param_eq
@@ -1121,7 +1157,7 @@ increase in speed distributing the calculation would generate.</dd>
     def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
                  maps=&#39;all&#39;):
         &#34;&#34;&#34;Exports some of the T1 class attributes to NIFTI.
-        
+
         Parameters
         ----------
         output_directory : string, optional
@@ -1242,7 +1278,7 @@ or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
 <pre><code class="python">def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
              maps=&#39;all&#39;):
     &#34;&#34;&#34;Exports some of the T1 class attributes to NIFTI.
-    
+
     Parameters
     ----------
     output_directory : string, optional
