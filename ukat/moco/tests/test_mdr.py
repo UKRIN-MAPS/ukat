@@ -21,20 +21,19 @@ class TestMotionCorrection:
     image_dwi_2 = pixel_array[:, :, 4:6, :]
     dwi_input_list = [affine, bvals]
     # Create MotionCorrection instance for each dataset
-    registration_slice = MotionCorrection(image_dwi_1, affine, 'DWI_Moco',
-                                          dwi_input_list)
-    registration_volume = MotionCorrection(image_dwi_2, affine, 'DWI_Moco',
-                                           dwi_input_list)
+    #registration_slice = MotionCorrection(image_dwi_1, affine, 'DWI_Moco',
+                                          #dwi_input_list)
+    #registration_volume = MotionCorrection(image_dwi_2, affine, 'DWI_Moco',
+                                           #dwi_input_list)
 
-    def test_results_pre_run(self):
-        assert self.registration_slice.mdr_results == []
-        assert self.registration_volume.mdr_results == []
 
     def test_run_registration(self):
-        self.registration_slice.run()
-        self.registration_volume.run()
+        #self.registration_slice.mdr_results != []
+        #self.registration_volume.mdr_results != []
+        self.__class__.new_test_variable = 1000101
 
     def test_results_post_run(self):
+        print(self.new_test_variable)
         assert len(self.registration_slice.mdr_results) == 5
         assert len(self.registration_volume.mdr_results) == 2
         assert len(self.registration_volume.mdr_results[0]) == 5

@@ -5,6 +5,7 @@ Very short description for DWI_Splines + T1.
 
 Longer description for Custom_BSplines
 """
+
 import itk
 
 
@@ -52,6 +53,7 @@ def DWI_BSplines(*argv):
         param_obj.SetParameter(parameter, value)
     return param_obj
 
+
 def T1_BSplines(*argv):
     param_obj = itk.ParameterObject.New()
     parameter_map_bspline = param_obj.GetDefaultParameterMap('bspline')
@@ -96,6 +98,7 @@ def T1_BSplines(*argv):
         value = str(list_arguments[1])
         param_obj.SetParameter(parameter, value)
     return param_obj
+
 
 def Custom_BSplines(dictionary):
     param_obj = itk.ParameterObject.New()

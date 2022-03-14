@@ -1,5 +1,13 @@
 """
-Mention Kanishka and Fotis work and paper here.And Github page here. And in the Notebooks.
+The MotionCorrection class uses the MDR_Library Python Package
+(https://github.com/QIB-Sheffield/MDR_Library),
+which is based on the scientific work:
+
+"Model-driven registration outperforms groupwise model-free registration for
+motion correction of quantitative renal MRI"
+
+Fotios Tagkalakis, Kanishka Sharma, Steven Sourbron, Sven Plein
+https://etheses.whiterose.ac.uk/28869/
 """
 
 
@@ -37,7 +45,7 @@ class MotionCorrection:
             this may cause issue with subjects that have more or less than
             two kidneys.
         """
-        self.mdr_results = []
+        self._mdr_results = []
         self.shape = pixel_array.shape
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
@@ -56,19 +64,7 @@ class MotionCorrection:
             self.elastix_params = Custom_BSplines(elastix_params)
         elif self.function == "DWI_Moco": self.elastix_params = DWI_BSplines()
         elif self.function == "T1_Moco": self.elastix_params = T1_BSplines()
-    
-    def run(self):
-        """
-        Returns a mask where 0 represents voxels that are not renal tissue,
-        1 represents voxels that are the left kidney and 2 represents voxels
-        that are the right kidney.
-
-        Returns
-        -------
-        mask : np.ndarray
-            Mask with each kidney represented by a different int.
-        """
-        self.mdr_results = []
+        # Perform motion correction
         if len(self.shape) == 3:
             output = model_driven_registration(self.pixel_array,
                                                self.pixel_spacing,
@@ -79,7 +75,7 @@ class MotionCorrection:
                                                parallel=self.multithread,
                                                function=self.function,
                                                log=self.log)
-            self.mdr_results = output
+            self._mdr_results = output
         if len(self.shape) == 4:
             for index in range(self.shape[2]):
                 pixel_array_3D = self.pixel_array[: , :, index, :]
@@ -92,68 +88,59 @@ class MotionCorrection:
                                                    parallel=self.multithread,
                                                    function=self.function,
                                                    log=self.log)
-                self.mdr_results.append(output)
-
-    def get_results(self):
-        """
-        Returns a mask where 0 represents voxels that are not renal tissue,
-        1 represents voxels that are the left kidney and 2 represents voxels
-        that are the right kidney.
-
-        Returns
-        -------
-        mask : np.ndarray
-            Mask with each kidney represented by a different int.
-        """
-        return self.mdr_results
+                self._mdr_results.append(output)
     
     def get_coregistered(self):
         if len(self.shape) == 3:
-            coregistered = np.array(self.mdr_results[0])
+            coregistered = np.array(self._mdr_results[0])
         if len(self.shape) == 4:
             coregistered_list = []
-            for individual_slice in self.mdr_results:
+            for individual_slice in self._mdr_results:
                 coregistered_list.append(individual_slice[0])
             coregistered = np.stack(np.array(coregistered_list), axis=-2)
         return coregistered
 
     def get_fitted(self):
         if len(self.shape) == 3:
-            fitted = np.array(self.mdr_results[1])
+            fitted = np.array(self._mdr_results[1])
         if len(self.shape) == 4:
             fitted_list = []
-            for individual_slice in self.mdr_results:
+            for individual_slice in self._mdr_results:
                 fitted_list.append(individual_slice[1])
             fitted = np.stack(np.array(fitted_list), axis=-2)
         return fitted
 
     def get_deformation_field(self):
         if len(self.shape) == 3:
-            deformation_field = np.array(self.mdr_results[2])
+            deformation_field = np.array(self._mdr_results[2])
         if len(self.shape) == 4:
             deformation_list = []
-            for individual_slice in self.mdr_results:
+            for individual_slice in self._mdr_results:
                 deformation_list.append(individual_slice[2])
             deformation_field = np.stack(np.array(deformation_list), axis=-3)
         return deformation_field
 
     def get_output_parameters(self):
         if len(self.shape) == 3:
-            parameters = np.array(self.mdr_results[3])
+            parameters = np.array(self._mdr_results[3])
         if len(self.shape) == 4:
             parameters_list = []
-            for individual_slice in self.mdr_results:
+            for individual_slice in self._mdr_results:
                 parameters_list.append(individual_slice[3])
             parameters = np.stack(np.array(parameters_list), axis=-2)
         return parameters
 
     def get_improvements(self):
         if len(self.shape) == 3:
-            improvements = self.mdr_results[4]
+            improvements = self._mdr_results[4]
         if len(self.shape) == 4:
             improvements = [individual_slice[4] \
-                            for individual_slice in self.mdr_results]
+                            for individual_slice in self._mdr_results]
         return improvements
+
+    def get_diff_orig_coreg(self):
+        difference = self.pixel_array - self.get_coregistered()
+        return difference
     
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -168,14 +155,14 @@ class MotionCorrection:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["mask", "coregistered", "fitted",
-            "deformation_field", "parameters"]
+            or a list of maps from ["mask", "coregistered", "difference",
+            "fitted", "deformation_field", "parameters"]
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['mask', 'original' 'coregistered', 'fitted',
-                    'deformation_field', 'parameters']
+            maps = ['mask', 'original', 'coregistered', 'difference',
+                    'fitted', 'deformation_field', 'parameters']
         if isinstance(maps, list):
             for result in maps:
                 if result == 'mask':
@@ -190,6 +177,10 @@ class MotionCorrection:
                     coreg_nifti = nib.Nifti1Image(self.get_coregistered(),
                                                   affine=self.affine)
                     nib.save(coreg_nifti, base_path + '_coregistered.nii.gz')
+                elif result == 'difference':
+                    diff_nifti = nib.Nifti1Image(self.get_diff_orig_coreg(),
+                                                 affine=self.affine)
+                    nib.save(diff_nifti, base_path + '_difference.nii.gz')
                 elif result == 'fitted':
                     fit_nifti = nib.Nifti1Image(self.get_fitted(),
                                                 affine=self.affine)
@@ -206,5 +197,5 @@ class MotionCorrection:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["mask", "coregistered", "fitted", '
-                             '"deformation_field", "parameters"]".')
+                             '"["mask", "coregistered", "difference", '
+                             '"fitted", "deformation_field", "parameters"]".')
