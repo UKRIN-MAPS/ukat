@@ -16,7 +16,7 @@ class TestMotionCorrection:
     # This will affect code coverage metrics
     # Single-slice
     # Maybe use a custom elastix parameter?
-    image_dwi_1 = np.squeeze(pixel_array[:, :, 2, :])
+    image_dwi_1 = np.squeeze(pixel_array[:, :, 2, :]) # can use T1 phantom instead
     # 2 Central slices
     image_dwi_2 = pixel_array[:, :, 4:6, :]
     dwi_input_list = [affine, bvals]
