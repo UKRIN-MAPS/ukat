@@ -5,7 +5,6 @@ Describe the input arguments for each individual function.
 """
 
 import numpy as np
-import copy
 from ukat.mapping.t1 import T1
 from ukat.mapping.diffusion import ADC
 

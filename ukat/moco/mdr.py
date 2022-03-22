@@ -33,6 +33,7 @@ class MotionCorrection:
                  mask=None, convergence=1, elastix_params=None,
                  multithread=False, log=False):
         """Initialise a whole kidney segmentation class instance.
+        
         Parameters
         ----------
         pixel_array : np.ndarray
@@ -168,8 +169,8 @@ class MotionCorrection:
                     'fitted', 'deformation_field', 'parameters']
         if isinstance(maps, list):
             for result in maps:
-                if result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                if result == 'mask' and self.mask is not None:
+                    mask_nifti = nib.Nifti1Image(self.mask[..., 0].astype(int),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
                 elif result == 'original':
