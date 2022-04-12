@@ -13,7 +13,7 @@ import itk
 def DWI_BSplines(*argv):
     """
     Returns the default UKRIN registration parameters for MRI DWI sequences.
-    
+
     Parameters
     ----------
     *argv : list, optional
@@ -23,7 +23,7 @@ def DWI_BSplines(*argv):
         Eg., param_obj = DWI_BSplines(["FixedImageDimension", "3"]). This
         command returns the default DWI registration parameter, but it has
         "FixedImageDimension" set to "3" instead of "2".
-        
+
     Returns
     -------
     param_obj : itk.ParameterObject
@@ -76,7 +76,7 @@ def DWI_BSplines(*argv):
 def T1_BSplines(*argv):
     """
     Returns the default UKRIN registration parameters for MRI T1 sequences.
-    
+
     Parameters
     ----------
     *argv : list, optional
@@ -86,7 +86,7 @@ def T1_BSplines(*argv):
         Eg., param_obj = T1_BSplines(["ErodeMask", "true"]). This
         command returns the default T1 registration parameter, but it has
         "ErodeMask" set to "true" instead of "false".
-        
+
     Returns
     -------
     param_obj : itk.ParameterObject
@@ -140,17 +140,17 @@ def T1_BSplines(*argv):
 def Custom_BSplines(dict_elastix):
     """
     Converts "dict_elastix" to an elastix registration parameter object.
-    
+
     Parameters
     ----------
     dict_elastix : dict
         A python dictionary where the key is the parameter name and the value
         corresponds to the parameter value.
-        Eg., param_obj = Custom_BSplines({"ErodeMask": "true", 
+        Eg., param_obj = Custom_BSplines({"ErodeMask": "true",
                                           "FixedImageDimension": "3"})
         This command returns an elastix parameter object of 2 parameters,
         with "ErodeMask" set to "true" and "FixedImageDimension" set to "3".
-        
+
     Returns
     -------
     param_obj : itk.ParameterObject

@@ -32,7 +32,7 @@ class MotionCorrection:
                  mask=None, convergence=1.0, elastix_params=None,
                  multithread=True, log=True):
         """Initialise a MotionCorrection class instance.
-        
+
         Parameters
         ----------
         pixel_array : np.ndarray
@@ -44,7 +44,7 @@ class MotionCorrection:
         fitting_function_name : string
             String containing the name of the model fit python class.
         model_input : list
-            List containing the input arguments of the model fit python class. 
+            List containing the input arguments of the model fit python class.
         mask : np.ndarray, optional
             A boolean mask of the voxels to fit. It must have the same shape as
             the 'pixel_array'.
@@ -140,7 +140,7 @@ class MotionCorrection:
         else:
             coregistered = np.array(self._mdr_results.coreg)
         return coregistered
-    
+
     def get_diff_orig_coreg(self):
         """
         Returns the difference between 'pixel_array' and 'coregistered'.
@@ -249,7 +249,7 @@ class MotionCorrection:
                 file_path = os.path.join(output_directory, "improvements.csv")
                 improvements.to_csv(file_path)
         return improvements
-    
+
     def get_elastix_parameters(self, export=False,
                                output_directory=os.getcwd()):
         """
@@ -271,7 +271,8 @@ class MotionCorrection:
             that is returned if this getter function is called.
         """
         if export:
-            file_path = os.path.join(output_directory, "Elastix_Parameters.txt")
+            file_path = os.path.join(output_directory,
+                                     "Elastix_Parameters.txt")
             text_file = open(file_path, "w")
             print(self._elastix_params, file=text_file)
             text_file.close()
