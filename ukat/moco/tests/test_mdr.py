@@ -90,8 +90,8 @@ class TestMotionCorrection:
     def test_output_parameters(self):
         expected_dwi_1 = []
         expected_dwi_2 = []
-        parameter_dwi_1 = self.registration_slice.get_output_parameters()
-        parameter_dwi_2 = self.registration_volume.get_output_parameters()
+        parameter_dwi_1 = self.registration_slice.get_parameters()
+        parameter_dwi_2 = self.registration_volume.get_parameters()
         dwi_1_stats = arraystats.ArrayStats(parameter_dwi_1).calculate()
         dwi_2_stats = arraystats.ArrayStats(parameter_dwi_2).calculate()
         print([dwi_2_stats["mean"]["3D"], dwi_2_stats["std"]["3D"], dwi_2_stats["min"]["3D"], dwi_2_stats["max"]["3D"]])

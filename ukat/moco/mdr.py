@@ -1,6 +1,6 @@
 """
-The MotionCorrection class uses the MDR_Library Python Package
-(https://github.com/QIB-Sheffield/MDR_Library),
+The MotionCorrection class uses the `mdreg` Python Package
+(https://github.com/QIB-Sheffield/mdreg),
 which is based on the scientific work:
 
 "Model-driven registration outperforms groupwise model-free registration for
@@ -18,8 +18,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mdreg import MDReg
 import mdreg.models as mdl
-#from MDR.MDR import model_driven_registration
-#from MDR.Tools import export_animation
 from ukat.moco.fitting_functions import DWI_Moco, T1_Moco
 from ukat.moco.elastix_parameters import (DWI_BSplines, T1_BSplines,
                                           Custom_BSplines)
@@ -27,29 +25,45 @@ from ukat.moco.elastix_parameters import (DWI_BSplines, T1_BSplines,
 
 class MotionCorrection:
     """
-    Attributes
-    ----------
-    volumes : dict
-        Total, left and right kidney volumes in milliliters.
+    Performs Model-Driven Registration in a volume or series of volumes.
     """
 
     def __init__(self, pixel_array, affine, fitting_function_name, model_input,
-                 mask=None, convergence=1, elastix_params=None,
-                 multithread=False, log=False):
-        """Initialise a whole kidney segmentation class instance.
+                 mask=None, convergence=1.0, elastix_params=None,
+                 multithread=True, log=True):
+        """Initialise a MotionCorrection class instance.
         
         Parameters
         ----------
         pixel_array : np.ndarray
-            Array containing a T2-weighted FSE image.
+            Array containing the MRI volume(s) acquired at different
+            time points. Its expected shape should be 3 or 4.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
-        post_process : bool, optional
-            Default True
-            Keep only the two largest connected volumes in the mask. Note
-            this may cause issue with subjects that have more or less than
-            two kidneys.
+        fitting_function_name : string
+            String containing the name of the model fit python class.
+        model_input : list
+            List containing the input arguments of the model fit python class. 
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. It must have the same shape as
+            the 'pixel_array'.
+        convergence : float, optional
+            Stopping criteria value, i.e. the condition that must be reached
+            in order to stop the execution of the algorithm. If the improvement
+            value after co-registration is lower than the convergence value,
+            then the model-driven registration is concluded.
+        elastix_params : dict, optional
+            If a dictionary is provided, then an elastix registration parameter
+            object will be created based on the dictionary and used in the
+            model-driven motion correction process.
+        multithread : bool, optional
+            If True (default), co-registration by `itk-elastix` will be
+            distributed over all cores available on the node.
+        log : bool, optional
+            If True (default is False), the `itk-elastix` co-registration
+            process output is printed in the terminal and
+            saved to a text file.
         """
         self._mdr_results = []
         self.pixel_array = pixel_array
@@ -59,57 +73,65 @@ class MotionCorrection:
         else:
             self.mask = np.array(np.nan_to_num(mask), dtype=int)
         self.affine = affine
-        self.pixel_spacing = (np.linalg.norm(self.affine[:3, 1]),
-                              np.linalg.norm(self.affine[:3, 0]))
+        self._pixel_spacing = (np.linalg.norm(self.affine[:3, 1]),
+                               np.linalg.norm(self.affine[:3, 0]))
         self.function = fitting_function_name
-        self.input_list = model_input
+        self.model_input = model_input
         self.convergence = convergence
         self.multithread = multithread
         self.log = log
         if self.function == "DWI_Moco":
-            self.fitting_function = DWI_Moco
-            self.elastix_params = DWI_BSplines()
+            self._fitting_function = DWI_Moco
+            self._elastix_params = DWI_BSplines()
         elif self.function == "T1_Moco":
-            self.fitting_function = T1_Moco
-            self.elastix_params = T1_BSplines()
+            self._fitting_function = T1_Moco
+            self._elastix_params = T1_BSplines()
         else:
-            self.fitting_function = mdl.constant
-        if isinstance(elastix_params, dict) == True:
-            self.elastix_params = Custom_BSplines(elastix_params)
-        
+            self._fitting_function = mdl.constant
+        if isinstance(elastix_params, dict):
+            self._elastix_params = Custom_BSplines(elastix_params)
+
         # Perform motion correction
         if len(self.shape) == 3:
             mdr = MDReg()
             mdr.set_array(self.pixel_array)
             mdr.set_mask(self.mask)
-            mdr.pixel_spacing = self.pixel_spacing
-            mdr.signal_model = self.fitting_function
-            mdr.signal_parameters = self.input_list
-            mdr.elastix = self.elastix_params
+            mdr.pixel_spacing = self._pixel_spacing
+            mdr.signal_model = self._fitting_function
+            mdr.signal_parameters = self.model_input
+            mdr.elastix = self._elastix_params
             mdr.convergence = self.convergence
             mdr.parallel = self.multithread
             mdr.log = self.log
             mdr.fit()
             self._mdr_results = mdr
-        if len(self.shape) == 4:
+        elif len(self.shape) == 4:
             for index in range(self.shape[2]):
-                pixel_array_3D = self.pixel_array[: , :, index, :]
-                mask_3D = self.mask[: , :, index, :]
+                pixel_array_3D = self.pixel_array[:, :, index, :]
+                mask_3D = self.mask[:, :, index, :]
                 mdr = MDReg()
                 mdr.set_array(pixel_array_3D)
                 mdr.set_mask(mask_3D)
-                mdr.pixel_spacing = self.pixel_spacing
-                mdr.signal_model = self.fitting_function
-                mdr.signal_parameters = self.input_list
-                mdr.elastix = self.elastix_params
+                mdr.pixel_spacing = self._pixel_spacing
+                mdr.signal_model = self._fitting_function
+                mdr.signal_parameters = self.model_input
+                mdr.elastix = self._elastix_params
                 mdr.convergence = self.convergence
                 mdr.parallel = self.multithread
                 mdr.log = self.log
                 mdr.fit()
                 self._mdr_results.append(mdr)
-    
+
     def get_coregistered(self):
-        # mdr.coreg
+        """
+        Returns the motion corrected images from
+        the provided input 'pixel_array'.
+
+        Returns
+        -------
+        coregistered : np.ndarray
+            The co-registered image array.
+        """
         if isinstance(self._mdr_results, list):
             coregistered_list = []
             for individual_slice in self._mdr_results:
@@ -118,9 +140,30 @@ class MotionCorrection:
         else:
             coregistered = np.array(self._mdr_results.coreg)
         return coregistered
+    
+    def get_diff_orig_coreg(self):
+        """
+        Returns the difference between 'pixel_array' and 'coregistered'.
+
+        Returns
+        -------
+        difference : np.ndarray
+            The difference image array between the input image and the motion
+            corrected image.
+        """
+        difference = self.pixel_array - self.get_coregistered()
+        return difference
 
     def get_model_fit(self):
-        # mdr.model_fit
+        """
+        Returns the signal model fit images from
+        the provided input 'pixel_array'.
+
+        Returns
+        -------
+        model_fit : np.ndarray
+            The signal model fit image array.
+        """
         if isinstance(self._mdr_results, list):
             model_fit_list = []
             for individual_slice in self._mdr_results:
@@ -131,7 +174,16 @@ class MotionCorrection:
         return model_fit
 
     def get_deformation_field(self):
-        # mdr.deformation
+        """
+        Returns the deformation field that results from the co-registration
+        part of the model-driven registration process. The shape should be
+        the same as 'pixel_array' + (,2).
+
+        Returns
+        -------
+        deformation_field : np.ndarray
+            The deformation field image array.
+        """
         if isinstance(self._mdr_results, list):
             deformation_list = []
             for individual_slice in self._mdr_results:
@@ -141,8 +193,16 @@ class MotionCorrection:
             deformation_field = np.array(self._mdr_results.deformation)
         return deformation_field
 
-    def get_output_parameters(self):
-        # mdr.pars
+    def get_parameters(self):
+        """
+        Returns the fitted parameters of the signal model fit from
+        the provided input 'pixel_array'.
+
+        Returns
+        -------
+        parameters : list
+            List containing the output fitted parameter images.
+        """
         if isinstance(self._mdr_results, list):
             parameters_list = []
             for individual_slice in self._mdr_results:
@@ -153,29 +213,73 @@ class MotionCorrection:
         return parameters
 
     def get_improvements(self, export=False, output_directory=os.getcwd()):
-        # mdr.iter
+        """
+        Returns a pandas DataFrame and it represents the maximum deformation
+        per co-registration iteration calculated as the euclidean distance of
+        difference between old and new deformation field in each iteration.
+
+        Parameters
+        ----------
+        export : bool, optional
+            If True (default is False), the table with the improvements values
+            is saved as "improvements.csv" or "improvements_slice_x.csv" if the
+            images are volumetric in the 'output_directory'.
+        output_directory : string, optional
+            Path to the folder that will contain the CSV file to be saved,
+            if export=True.
+
+        Returns
+        -------
+        improvements : pandas.DataFrame
+            The table with the improvements values per iteration. The last
+            value of the table should be lower than self.convergence.
+        """
         if isinstance(self._mdr_results, list):
             improvements = []
             for index, individual_slice in self._mdr_results:
                 improvements.append(individual_slice.iter)
                 if export:
-                    individual_slice.iter.to_csv(os.path.join(output_directory,
-                                                 "improvements_slice_" + \
-                                                 str(index) + ".csv"))
+                    file_path = os.path.join(output_directory,
+                                             "improvements_slice_" +
+                                             str(index) + ".csv")
+                    individual_slice.iter.to_csv(file_path)
         else:
             improvements = self._mdr_results.iter
             if export:
-                improvements.to_csv(os.path.join(output_directory,
-                                                 "improvements.csv"))
+                file_path = os.path.join(output_directory, "improvements.csv")
+                improvements.to_csv(file_path)
         return improvements
-
-    def get_diff_orig_coreg(self):
-        difference = self.pixel_array - self.get_coregistered()
-        return difference
     
+    def get_elastix_parameters(self, export=False,
+                               output_directory=os.getcwd()):
+        """
+        Returns a itk.ParameterObject with the elastix registration parameters.
+
+        Parameters
+        ----------
+        export : bool, optional
+            If True (default is False), the elastix registration parameters
+            are saved as "Elastix_Parameters.txt" in the 'output_directory'.
+        output_directory : string, optional
+            Path to the folder that will contain the TXT file to be saved,
+            if export=True.
+
+        Returns
+        -------
+        self._elastix_params : itk.ParameterObject
+            Private attribute with the elastix registration parameters
+            that is returned if this getter function is called.
+        """
+        if export:
+            file_path = os.path.join(output_directory, "Elastix_Parameters.txt")
+            text_file = open(file_path, "w")
+            print(self._elastix_params, file=text_file)
+            text_file.close()
+        return self._elastix_params
+
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """Exports masks to NIFTI.
+        """Exports some of the MotionCorrection class results to NIFTI.
 
         Parameters
         ----------
@@ -186,8 +290,8 @@ class MotionCorrection:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["mask", "coregistered", "difference",
-            "model_fit", "deformation_field", "parameters"]
+            or a list of maps from ["mask", "original", "coregistered",
+            "difference", "model_fit", "deformation_field", "parameters"]
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
@@ -222,19 +326,19 @@ class MotionCorrection:
                     nib.save(def_nifti, base_path +
                              '_deformation_field.nii.gz')
                 elif result == 'parameters':
-                    param_nifti = nib.Nifti1Image(self.get_output_parameters(),
+                    param_nifti = nib.Nifti1Image(self.get_parameters(),
                                                   affine=self.affine)
                     nib.save(param_nifti, base_path + '_parameters.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["mask", "coregistered", "difference", '
-                             '"model_fit", "deformation_field", '
+                             '"["mask", "original", "coregistered", '
+                             '"difference", "model_fit", "deformation_field", '
                              '"parameters"]".')
 
     def to_gif(self, output_directory=os.getcwd(), base_file_name='Output',
                slice_number=None, maps='all'):
-        """Exports masks to GIF.
+        """Exports some of the MotionCorrection class results to GIF.
 
         Parameters
         ----------
@@ -244,11 +348,13 @@ class MotionCorrection:
             Filename of the resulting GIF. This code appends the extension.
             Eg., base_file_name = 'Output' will result in 'Output.gif'.
         slice_number : int, optional
-            dfsdfgdsgdsgdsg
+            If the image is volumetric, this value is the index of the
+            slice chosen for the GIF animation. The central slice
+            is the one used by default.
         maps : list or 'all', optional
             List of maps to save to GIF. This should either the string "all"
-            or a list of maps from ["mask", "coregistered", "difference",
-            "model_fit", "deformation_field", "parameters"]
+            or a list of maps from ["mask", "original", "coregistered",
+            "difference", "model_fit", "deformation_field", "parameters"]
         """
         os.makedirs(output_directory, exist_ok=True)
         if maps == 'all' or maps == ['all']:
@@ -273,14 +379,14 @@ class MotionCorrection:
                     file_name = base_file_name + '_model_fit'
                 elif result == 'deformation_field':
                     array = self.get_deformation_field()
-                    # Merge the last 2 dimensions. 
+                    # Merge the last 2 dimensions.
                     # The penultimate dimension (position -2) has length = 2.
                     array = np.squeeze(np.reshape(array, array.shape[:-2] +
                                                   (-1, array.shape[-2] *
                                                    array.shape[-1])))
                     file_name = base_file_name + '_deformation_field'
                 elif result == 'parameters':
-                    array = self.get_output_parameters()
+                    array = self.get_parameters()
                     file_name = base_file_name + '_parameters'
                 if len(np.shape(array)) == 4:
                     if ~isinstance(slice_number, int):
@@ -288,15 +394,16 @@ class MotionCorrection:
                     array = array[:, :, slice_number, :]
                 array = np.rot90(array)
                 fig = plt.figure()
-                im = plt.imshow(np.squeeze(array[:,:,0]), animated=True)
+                im = plt.imshow(np.squeeze(array[:, :, 0]), animated=True)
+
                 def updatefig(i):
-                    im.set_array(np.squeeze(array[:,:,i]))
-                anim = animation.FuncAnimation(fig, updatefig,interval=50,
+                    im.set_array(np.squeeze(array[:, :, i]))
+                anim = animation.FuncAnimation(fig, updatefig, interval=50,
                                                frames=array.shape[2])
                 anim.save(os.path.join(output_directory, file_name + '.gif'))
         else:
             raise ValueError('No GIF file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["mask", "coregistered", "difference", '
-                             '"model_fit", "deformation_field", '
+                             '"["mask", "original", "coregistered", '
+                             '"difference", "model_fit", "deformation_field", '
                              '"parameters"]".')
