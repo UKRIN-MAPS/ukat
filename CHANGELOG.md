@@ -1,3 +1,15 @@
+## [0.6.0] - 2022-02-28
+
+### Added
+* Phase contrast analysis #169 #171
+* MOLLI T1 mapping #179
+
+### Changed
+
+### Fixed
+* Bugs in MTR #182
+* Segmentation import #184
+
 ## [0.5.0] - 2022-01-11
 
 ### Added
