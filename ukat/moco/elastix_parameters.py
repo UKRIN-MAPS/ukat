@@ -139,7 +139,8 @@ def T1_BSplines(*argv):
 
 def Custom_BSplines(dict_elastix):
     """
-    Converts "dict_elastix" to an elastix registration parameter object.
+    Converts "dict_elastix" to an elastix registration parameter object
+    with bspline transformation.
 
     Parameters
     ----------
@@ -154,10 +155,38 @@ def Custom_BSplines(dict_elastix):
     Returns
     -------
     param_obj : itk.ParameterObject
-        The itk-elastix registration parameter map.
+        The itk-elastix registration parameter map with bspline transformation.
     """
     param_obj = itk.ParameterObject.New()
     parameter_map_bspline = param_obj.GetDefaultParameterMap('bspline')
+    param_obj.AddParameterMap(parameter_map_bspline)
+    for key, value in dict_elastix:
+        param_obj.SetParameter(key, value)
+    return param_obj
+
+
+def Custom_Rigid(dict_elastix):
+    """
+    Converts "dict_elastix" to an elastix registration parameter object
+    with rigid transformation.
+
+    Parameters
+    ----------
+    dict_elastix : dict
+        A python dictionary where the key is the parameter name and the value
+        corresponds to the parameter value.
+        Eg., param_obj = Custom_Rigid({"ErodeMask": "true",
+                                          "FixedImageDimension": "3"})
+        This command returns an elastix parameter object of 2 parameters,
+        with "ErodeMask" set to "true" and "FixedImageDimension" set to "3".
+
+    Returns
+    -------
+    param_obj : itk.ParameterObject
+        The itk-elastix registration parameter map with rigid transformation.
+    """
+    param_obj = itk.ParameterObject.New()
+    parameter_map_bspline = param_obj.GetDefaultParameterMap('rigid')
     param_obj.AddParameterMap(parameter_map_bspline)
     for key, value in dict_elastix:
         param_obj.SetParameter(key, value)

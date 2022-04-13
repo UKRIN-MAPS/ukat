@@ -20,7 +20,7 @@ from mdreg import MDReg
 import mdreg.models as mdl
 from ukat.moco.fitting_functions import DWI_Moco, T1_Moco
 from ukat.moco.elastix_parameters import (DWI_BSplines, T1_BSplines,
-                                          Custom_BSplines)
+                                          Custom_BSplines, Custom_Rigid)
 
 
 class MotionCorrection:
@@ -88,6 +88,7 @@ class MotionCorrection:
             self._elastix_params = T1_BSplines()
         else:
             self._fitting_function = mdl.constant
+            self._elastix_params = Custom_Rigid({})
         if isinstance(elastix_params, dict):
             self._elastix_params = Custom_BSplines(elastix_params)
 
@@ -212,7 +213,9 @@ class MotionCorrection:
             parameters = np.array(self._mdr_results.pars)
         return parameters
 
-    def get_improvements(self, export=False, output_directory=os.getcwd()):
+    def get_improvements(self, output_directory=os.getcwd(),
+                               base_file_name='improvements',
+                               export=False):
         """
         Returns a pandas DataFrame and it represents the maximum deformation
         per co-registration iteration calculated as the euclidean distance of
@@ -220,13 +223,17 @@ class MotionCorrection:
 
         Parameters
         ----------
+        output_directory : string, optional
+            Path to the folder that will contain the CSV file to be saved,
+            if export=True.
+        base_file_name : string, optional
+            Filename of the exported CSV. This code appends the extension.
+            Eg., base_file_name = 'improvements' will result in 
+            'improvements.csv'.
         export : bool, optional
             If True (default is False), the table with the improvements values
             is saved as "improvements.csv" or "improvements_slice_x.csv" if the
             images are volumetric in the 'output_directory'.
-        output_directory : string, optional
-            Path to the folder that will contain the CSV file to be saved,
-            if export=True.
 
         Returns
         -------
@@ -236,33 +243,39 @@ class MotionCorrection:
         """
         if isinstance(self._mdr_results, list):
             improvements = []
-            for index, individual_slice in self._mdr_results:
+            for index, individual_slice in enumerate(self._mdr_results):
                 improvements.append(individual_slice.iter)
                 if export:
                     file_path = os.path.join(output_directory,
-                                             "improvements_slice_" +
+                                             base_file_name + "_slice_" +
                                              str(index) + ".csv")
                     individual_slice.iter.to_csv(file_path)
         else:
             improvements = self._mdr_results.iter
             if export:
-                file_path = os.path.join(output_directory, "improvements.csv")
+                file_path = os.path.join(output_directory,
+                                         base_file_name + ".csv")
                 improvements.to_csv(file_path)
         return improvements
 
-    def get_elastix_parameters(self, export=False,
-                               output_directory=os.getcwd()):
+    def get_elastix_parameters(self, output_directory=os.getcwd(),
+                               base_file_name='Elastix_Parameters',
+                               export=False):
         """
         Returns a itk.ParameterObject with the elastix registration parameters.
 
         Parameters
         ----------
-        export : bool, optional
-            If True (default is False), the elastix registration parameters
-            are saved as "Elastix_Parameters.txt" in the 'output_directory'.
         output_directory : string, optional
             Path to the folder that will contain the TXT file to be saved,
             if export=True.
+        base_file_name : string, optional
+            Filename of the exported TXT. This code appends the extension.
+            Eg., base_file_name = 'Elastix_Parameters' will result in 
+            'Elastix_Parameters.txt'.
+        export : bool, optional
+            If True (default is False), the elastix registration parameters
+            are saved as "Elastix_Parameters.txt" in the 'output_directory'.
 
         Returns
         -------
@@ -272,7 +285,7 @@ class MotionCorrection:
         """
         if export:
             file_path = os.path.join(output_directory,
-                                     "Elastix_Parameters.txt")
+                                     base_file_name + ".txt")
             text_file = open(file_path, "w")
             print(self._elastix_params, file=text_file)
             text_file.close()
