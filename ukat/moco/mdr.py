@@ -214,8 +214,8 @@ class MotionCorrection:
         return parameters
 
     def get_improvements(self, output_directory=os.getcwd(),
-                               base_file_name='improvements',
-                               export=False):
+                         base_file_name='improvements',
+                         export=False):
         """
         Returns a pandas DataFrame and it represents the maximum deformation
         per co-registration iteration calculated as the euclidean distance of
@@ -228,7 +228,7 @@ class MotionCorrection:
             if export=True.
         base_file_name : string, optional
             Filename of the exported CSV. This code appends the extension.
-            Eg., base_file_name = 'improvements' will result in 
+            Eg., base_file_name = 'improvements' will result in
             'improvements.csv'.
         export : bool, optional
             If True (default is False), the table with the improvements values
@@ -271,7 +271,7 @@ class MotionCorrection:
             if export=True.
         base_file_name : string, optional
             Filename of the exported TXT. This code appends the extension.
-            Eg., base_file_name = 'Elastix_Parameters' will result in 
+            Eg., base_file_name = 'Elastix_Parameters' will result in
             'Elastix_Parameters.txt'.
         export : bool, optional
             If True (default is False), the elastix registration parameters
