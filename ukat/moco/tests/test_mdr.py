@@ -61,12 +61,15 @@ class TestMotionCorrection:
         difference_t1 = self.mdr_t1.get_coregistered()
 
         # The following asserts check if the difference image is different to 0
+        assert np.shape(coregistered_t1_slice) == np.shape(self.image_t1_slice)
+        assert np.shape(coregistered_dwi) == np.shape(self.image_dwi)
+        assert np.shape(coregistered_t1) == np.shape(self.image_t1)
         assert np.nanmedian(difference_t1_slice) != 0
         assert np.nanmedian(difference_dwi) != 0
         assert np.nanmedian(difference_t1) != 0
-        assert np.unique(difference_t1_slice) != [0.0]
-        assert np.unique(difference_dwi) != [0.0]
-        assert np.unique(difference_t1) != [0.0]
+        assert list(np.unique(difference_t1_slice)) != [0.0]
+        assert list(np.unique(difference_dwi)) != [0.0]
+        assert list(np.unique(difference_t1)) != [0.0]
 
     def test_model_fit(self):
         # Regardless of the co-registration result, it's expected that the
@@ -99,9 +102,6 @@ class TestMotionCorrection:
         deformation_t1_slice = self.mdr_t1_slice.get_deformation_field()
         deformation_dwi = self.mdr_dwi.get_deformation_field()
         deformation_t1 = self.mdr_t1.get_deformation_field()
-        print(np.shape(deformation_t1_slice))
-        print(np.shape(deformation_dwi))
-        print(np.shape(deformation_t1))
         assert np.shape(deformation_t1_slice) == (128, 128, 2, 18)
         assert np.shape(deformation_dwi) == (128, 128, 2, 79)
         assert np.shape(deformation_t1) == (128, 128, 5, 2, 18)
@@ -109,30 +109,33 @@ class TestMotionCorrection:
     def test_parameters(self):
         # Regardless of the co-registration result, it's expected that the
         # parameters outputs are consistently the same.
-        m0_t1_slice = self.mdr_t1_slice.get_parameters()[1]
-        adc_dwi = self.mdr_dwi.get_parameters()[0]
-        t1map_t1 = self.mdr_t1.get_parameters()[0]
+        m0_t1_slice = self.mdr_t1_slice.get_parameters()[..., 1]
+        adc_dwi = self.mdr_dwi.get_parameters()[..., 0]
+        t1map_t1 = self.mdr_t1.get_parameters()[..., 0]
         m0_t1_slice_stats = arraystats.ArrayStats(m0_t1_slice).calculate()
         adc_dwi_stats = arraystats.ArrayStats(adc_dwi).calculate()
         t1map_stats = arraystats.ArrayStats(t1map_t1).calculate()
-        print([m0_t1_slice_stats["mean"]["2D"], m0_t1_slice_stats["std"]["2D"], m0_t1_slice_stats["min"]["2D"], m0_t1_slice_stats["max"]["2D"]])
-        m0_t1_slice_expected = []
-        print([adc_dwi_stats["mean"]["2D"], adc_dwi_stats["std"]["2D"], adc_dwi_stats["min"]["2D"], adc_dwi_stats["max"]["2D"]])
-        adc_dwi_expected = []
-        print([t1map_stats["mean"]["3D"], t1map_stats["std"]["3D"], t1map_stats["min"]["3D"], t1map_stats["max"]["3D"]])
+        m0_t1_slice_expected = [226.9385545370194, 205.3015563617244,
+                                0.0, 1704.2773369869285]
+        adc_dwi_expected = [0.0009300494403978001, 0.0008151759723633144,
+                            0.0, 0.004510848135583435]
+        print([t1map_stats["mean"]["3D"], t1map_stats["std"]["3D"],
+               t1map_stats["min"]["3D"], t1map_stats["max"]["3D"]])
         t1map_expected = []
-        npt.assert_allclose([m0_t1_slice_stats["mean"]["3D"],
-                             m0_t1_slice_stats["std"]["3D"],
-                             m0_t1_slice_stats["min"]["3D"],
-                             m0_t1_slice_stats["max"]["3D"]],
+        npt.assert_allclose([m0_t1_slice_stats["mean"],
+                             m0_t1_slice_stats["std"],
+                             m0_t1_slice_stats["min"],
+                             m0_t1_slice_stats["max"]],
                             m0_t1_slice_expected, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([adc_dwi_stats["mean"]["3D"],
-                             adc_dwi_stats["std"]["3D"],
-                             adc_dwi_stats["min"]["3D"], adc_dwi_stats["max"]["3D"]],
+        npt.assert_allclose([adc_dwi_stats["mean"],
+                             adc_dwi_stats["std"],
+                             adc_dwi_stats["min"],
+                             adc_dwi_stats["max"]],
                             adc_dwi_expected, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([t1map_stats["mean"]["4D"],
-                             t1map_stats["std"]["4D"],
-                             t1map_stats["min"]["4D"], t1map_stats["max"]["4D"]],
+        npt.assert_allclose([t1map_stats["mean"]["3D"],
+                             t1map_stats["std"]["3D"],
+                             t1map_stats["min"]["3D"],
+                             t1map_stats["max"]["3D"]],
                             t1map_expected, rtol=1e-6, atol=1e-4)
 
     def test_improvements(self):
@@ -142,7 +145,6 @@ class TestMotionCorrection:
                                                 base_file_name='improvements',
                                                 export=True)
         output_files = os.listdir('test_output')
-        print(len(output_files))
         assert len(output_files) == 5
         assert 'improvements_slice_0.csv' in output_files
         assert 'improvements_slice_1.csv' in output_files
@@ -166,15 +168,14 @@ class TestMotionCorrection:
                       base_file_name='elastix',
                       export=True))
         output_files = os.listdir('test_output')
-        print(len(output_files))
         assert len(output_files) == 1
         assert 'elastix.txt' in output_files
-        assert elastix_dwi['Transform'] == ['BSplineTransform']
-        assert elastix_t1['Transform'] == ['EulerTransform']
- 
+        assert elastix_dwi.GetParameterMap(0)['Transform'] == ('BSplineTransform',)
+        assert elastix_t1.GetParameterMap(0)['Transform'] == ('EulerTransform',)
+
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
-   
+
     def test_to_nifti(self):
         os.makedirs('test_output', exist_ok=True)
         # Check all is saved for DWI Moco.
