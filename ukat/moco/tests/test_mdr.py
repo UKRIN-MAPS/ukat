@@ -1,155 +1,258 @@
 import os
 import shutil
 import numpy as np
+import pandas as pd
 import numpy.testing as npt
 import pytest
+import itk
 
 from ukat.data import fetch
 from ukat.moco.mdr import MotionCorrection
+from ukat.mapping.t1 import magnitude_correct
+from ukat.utils.tools import convert_to_pi_range
 from ukat.utils import arraystats
 
 
 class TestMotionCorrection:
-    pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
-    # To avoid long processing times, we will process the DWI data only.
-    # This will affect code coverage metrics
-    # Single-slice
-    # Maybe use a custom elastix parameter?
-    image_dwi_1 = np.squeeze(pixel_array[:, :, 2, :]) # can use T1 phantom instead
-    # 2 Central slices
-    image_dwi_2 = pixel_array[:, :, 4:6, :]
-    dwi_input_list = [affine, bvals]
-    # Create MotionCorrection instance for each dataset
-    #registration_slice = MotionCorrection(image_dwi_1, affine, 'DWI_Moco',
-                                          #dwi_input_list)
-    #registration_volume = MotionCorrection(image_dwi_2, affine, 'DWI_Moco',
-                                           #dwi_input_list)
+    magnitude, phase, affine_t1, ti, tss = fetch.t1_philips(2)
+    ti = np.array(ti) * 1000  # convert TIs to ms
+    pixel_array, affine_dwi, bvals, bvecs = fetch.dwi_philips()
+    # Preprocess T1 images
+    phase = convert_to_pi_range(phase)
+    complex_data = magnitude * (np.cos(phase) + 1j * np.sin(phase))
+    magnitude_corrected = np.squeeze(magnitude_correct(complex_data))
+    # Single-slice + T1/DWI Model Fitting
+    image_t1_slice = np.nan_to_num(np.squeeze(magnitude_corrected[:, :, 2, :]))
+    t1_slice_input = [affine_t1, ti, 0, None]
+    image_dwi = np.nan_to_num(pixel_array[:, :, 5, :])
+    dwi_input = [affine_dwi, bvals]
+    # Multiple slices + Constant Model Fitting
+    image_t1 = np.nan_to_num(magnitude_corrected)
+    t1_input = [affine_t1, ti, tss]
 
+    def test_run_mdr(self):
+        self.__class__.mdr_t1_slice = MotionCorrection(self.image_t1_slice,
+                                                       self.affine_t1,
+                                                       'T1_Moco',
+                                                       self.t1_slice_input,
+                                                       log=False)
+        self.__class__.mdr_dwi = MotionCorrection(self.image_dwi,
+                                                  self.affine_dwi, 'DWI_Moco',
+                                                  self.dwi_input,
+                                                  log=False)
+        self.__class__.mdr_t1 = MotionCorrection(self.image_t1,
+                                                 self.affine_t1,
+                                                 'No Fit',
+                                                 self.t1_input,
+                                                 log=False)
 
-    def test_run_registration(self):
-        #self.registration_slice.mdr_results != []
-        #self.registration_volume.mdr_results != []
-        self.__class__.new_test_variable = 1000101
-
-    def test_results_post_run(self):
-        print(self.new_test_variable)
-        assert len(self.registration_slice.mdr_results) == 5
-        assert len(self.registration_volume.mdr_results) == 2
-        assert len(self.registration_volume.mdr_results[0]) == 5
-        # Test that the first element of the results is np.ndarray
-        # for 3D input images
-        assert isinstance(self.registration_slice.mdr_results[0], np.ndarray) == True
-        # Test that the first element of the results is a list
-        # for 4D input images
-        assert isinstance(self.registration_volume.mdr_results[0], list) == True
-        
     # Test individual outputs in terms of stats
-    def test_coregistered(self):
-        expected_dwi_1 = []
-        expected_dwi_2 = []
-        coregistered_dwi_1 = self.registration_slice.get_coregistered()
-        coregistered_dwi_2 = self.registration_volume.get_coregistered()
-        dwi_1_stats = arraystats.ArrayStats(coregistered_dwi_1).calculate()
-        dwi_2_stats = arraystats.ArrayStats(coregistered_dwi_2).calculate()
-        print([dwi_2_stats["mean"]["4D"], dwi_2_stats["std"]["4D"], dwi_2_stats["min"]["4D"], dwi_2_stats["max"]["4D"]])
-        # [15978.658318769889, 20792.03407953149, -6.882346781367232e-08, 383545.53125]
-        print([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"], dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]])
-        # [14463.805083112677, 16900.571491925268, -2.0136616285526543e-07, 361176.40625]
-        npt.assert_allclose([dwi_2_stats["mean"]["4D"], dwi_2_stats["std"]["4D"],
-                             dwi_2_stats["min"]["4D"], dwi_2_stats["max"]["4D"]],
-                             expected_dwi_2, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"],
-                             dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]],
-                             expected_dwi_1, rtol=1e-6, atol=1e-4)
+    def test_coregistered_and_difference(self):
+        # It's challenging to set metrics and determine what is a successful
+        # motion correction result. One option for the future is to create 
+        # digital phantoms for `ukat`. At this moment in time, these tests
+        # will check the difference image calculation and inspect if it's
+        # different to zero to prove that the MDR did something to the input.
+        coregistered_t1_slice = self.mdr_t1_slice.get_coregistered()
+        coregistered_dwi = self.mdr_dwi.get_coregistered()
+        coregistered_t1 = self.mdr_t1.get_coregistered()
+        difference_t1_slice = self.mdr_t1_slice.get_coregistered()
+        difference_dwi = self.mdr_dwi.get_coregistered()
+        difference_t1 = self.mdr_t1.get_coregistered()
 
-    def test_fitted(self):
-        expected_dwi_1 = []
-        expected_dwi_2 = []
-        fitted_dwi_1 = self.registration_slice.get_fitted()
-        fitted_dwi_2 = self.registration_volume.get_fitted()
-        dwi_1_stats = arraystats.ArrayStats(fitted_dwi_1).calculate()
-        dwi_2_stats = arraystats.ArrayStats(fitted_dwi_2).calculate()
-        print([dwi_2_stats["mean"]["4D"], dwi_2_stats["std"]["4D"], dwi_2_stats["min"]["4D"], dwi_2_stats["max"]["4D"]])
-        # [17603.118467089615, 22408.50537554064, -6.882346781367232e-08, 365905.34375]
-        print([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"], dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]])
-        # [15749.459371950186, 17950.82478985577, -2.0136616285526543e-07, 337065.5]
-        npt.assert_allclose([dwi_2_stats["mean"]["4D"], dwi_2_stats["std"]["4D"],
-                             dwi_2_stats["min"]["4D"], dwi_2_stats["max"]["4D"]],
-                             expected_dwi_2, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"],
-                             dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]],
-                             expected_dwi_1, rtol=1e-6, atol=1e-4)
+        # The following asserts check if the difference image is different to 0
+        assert np.nanmedian(difference_t1_slice) != 0
+        assert np.nanmedian(difference_dwi) != 0
+        assert np.nanmedian(difference_t1) != 0
+        assert np.unique(difference_t1_slice) != [0.0]
+        assert np.unique(difference_dwi) != [0.0]
+        assert np.unique(difference_t1) != [0.0]
+
+    def test_model_fit(self):
+        # Regardless of the co-registration result, it's expected that the
+        # model_fit output is consistently the same.
+        fitted_t1_slice = self.mdr_t1_slice.get_model_fit()
+        fitted_dwi = self.mdr_dwi.get_model_fit()
+        fitted_t1 = self.mdr_t1.get_model_fit()
+        t1_slice_stats = arraystats.ArrayStats(fitted_t1_slice).calculate()
+        dwi_stats = arraystats.ArrayStats(fitted_dwi).calculate()
+        t1_stats = arraystats.ArrayStats(fitted_t1).calculate()
+        t1_slice_expected = [56.368349731354584, 154.9382840328853,
+                             -1477.105499971348, 1349.2699472113275]
+        dwi_expected = [16589.810320854365, 22772.03431902955,
+                        -6.882346781367232e-08, 364102.84375]
+        t1_expected = [59.375521241962176, 115.06861216994638,
+                       -722.2862304051718, 3007.8351923624673]
+        npt.assert_allclose([t1_slice_stats["mean"]["3D"], t1_slice_stats["std"]["3D"],
+                             t1_slice_stats["min"]["3D"], t1_slice_stats["max"]["3D"]],
+                             t1_slice_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([dwi_stats["mean"]["3D"], dwi_stats["std"]["3D"],
+                             dwi_stats["min"]["3D"], dwi_stats["max"]["3D"]],
+                             dwi_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([t1_stats["mean"]["4D"], t1_stats["std"]["4D"],
+                             t1_stats["min"]["4D"], t1_stats["max"]["4D"]],
+                             t1_expected, rtol=1e-6, atol=1e-4)
 
     def test_deformation_field(self):
-        deformation_dwi_1 = self.registration_slice.get_deformation_field()
-        deformation_dwi_2 = self.registration_volume.get_deformation_field()
-        print(np.shape(deformation_dwi_1))
-        print(np.shape(deformation_dwi_2))
-        assert 1 == 1
+        deformation_t1_slice = self.mdr_t1_slice.get_deformation_field()
+        deformation_dwi = self.mdr_dwi.get_deformation_field()
+        deformation_t1 = self.mdr_t1.get_deformation_field()
+        print(np.shape(deformation_t1_slice))
+        print(np.shape(deformation_dwi))
+        print(np.shape(deformation_t1))
+        assert np.shape(deformation_t1_slice) == (128, 128, 2, 18)
+        assert np.shape(deformation_dwi) == (128, 128, 2, 79)
+        assert np.shape(deformation_t1) == (128, 128, 5, 2, 18)
     
-    def test_output_parameters(self):
-        expected_dwi_1 = []
-        expected_dwi_2 = []
-        parameter_dwi_1 = self.registration_slice.get_parameters()
-        parameter_dwi_2 = self.registration_volume.get_parameters()
-        dwi_1_stats = arraystats.ArrayStats(parameter_dwi_1).calculate()
-        dwi_2_stats = arraystats.ArrayStats(parameter_dwi_2).calculate()
-        print([dwi_2_stats["mean"]["3D"], dwi_2_stats["std"]["3D"], dwi_2_stats["min"]["3D"], dwi_2_stats["max"]["3D"]])
-        print([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"], dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]])
-        npt.assert_allclose([dwi_2_stats["mean"]["3D"], dwi_2_stats["std"]["3D"],
-                             dwi_2_stats["min"]["3D"], dwi_2_stats["max"]["3D"]],
-                             expected_dwi_2, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([dwi_1_stats["mean"]["3D"], dwi_1_stats["std"]["3D"],
-                             dwi_1_stats["min"]["3D"], dwi_1_stats["max"]["3D"]],
-                             expected_dwi_1, rtol=1e-6, atol=1e-4)
+    def test_parameters(self):
+        # Regardless of the co-registration result, it's expected that the
+        # parameters outputs are consistently the same.
+        m0_t1_slice = self.mdr_t1_slice.get_parameters()[1]
+        adc_dwi = self.mdr_dwi.get_parameters()[0]
+        t1map_t1 = self.mdr_t1.get_parameters()[0]
+        m0_t1_slice_stats = arraystats.ArrayStats(m0_t1_slice).calculate()
+        adc_dwi_stats = arraystats.ArrayStats(adc_dwi).calculate()
+        t1map_stats = arraystats.ArrayStats(t1map_t1).calculate()
+        print([m0_t1_slice_stats["mean"]["2D"], m0_t1_slice_stats["std"]["2D"], m0_t1_slice_stats["min"]["2D"], m0_t1_slice_stats["max"]["2D"]])
+        m0_t1_slice_expected = []
+        print([adc_dwi_stats["mean"]["2D"], adc_dwi_stats["std"]["2D"], adc_dwi_stats["min"]["2D"], adc_dwi_stats["max"]["2D"]])
+        adc_dwi_expected = []
+        print([t1map_stats["mean"]["3D"], t1map_stats["std"]["3D"], t1map_stats["min"]["3D"], t1map_stats["max"]["3D"]])
+        t1map_expected = []
+        npt.assert_allclose([m0_t1_slice_stats["mean"]["3D"], m0_t1_slice_stats["std"]["3D"],
+                             m0_t1_slice_stats["min"]["3D"], m0_t1_slice_stats["max"]["3D"]],
+                             m0_t1_slice_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([adc_dwi_stats["mean"]["3D"], adc_dwi_stats["std"]["3D"],
+                             adc_dwi_stats["min"]["3D"], adc_dwi_stats["max"]["3D"]],
+                             adc_dwi_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([t1map_stats["mean"]["4D"], t1map_stats["std"]["4D"],
+                             t1map_stats["min"]["4D"], t1map_stats["max"]["4D"]],
+                             t1map_expected, rtol=1e-6, atol=1e-4)
 
     def test_improvements(self):
-        improvements_dwi_1 = self.registration_slice.get_improvements()
-        improvements_dwi_2 = self.registration_volume.get_improvements()
-        print(improvements_dwi_1)
-        print(improvements_dwi_2)
-        assert 1 == 1
+        os.makedirs('test_output', exist_ok=True)
+        imprv_dwi = self.mdr_dwi.get_improvements()
+        imprv_t1 = self.mdr_t1.get_improvements(output_directory='test_output',
+                                                base_file_name='improvements',
+                                                export=True)
+        output_files = os.listdir('test_output')
+        print(len(output_files))
+        assert len(output_files) == 5
+        assert 'improvements_slice_0.csv' in output_files
+        assert 'improvements_slice_1.csv' in output_files
+        assert 'improvements_slice_2.csv' in output_files
+        assert 'improvements_slice_3.csv' in output_files
+        assert 'improvements_slice_4.csv' in output_files
+        assert (float(imprv_dwi['Maximum deformation'].iloc[-1]) < \
+                self.mdr_dwi.convergence)
+        for imprv_slc in imprv_t1:
+            assert (float(imprv_slc['Maximum deformation'].iloc[-1]) < \
+                    self.mdr_t1.convergence)
+        
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
+    
+    def test_elastix_parameters(self):
+        os.makedirs('test_output', exist_ok=True)
+        elastix_dwi = self.mdr_dwi.get_elastix_parameters()
+        elastix_t1 = (self.mdr_t1.get_elastix_parameters(
+                      output_directory='test_output',
+                      base_file_name='elastix',
+                      export=True))
+        output_files = os.listdir('test_output')
+        print(len(output_files))
+        assert len(output_files) == 1
+        assert 'elastix.txt' in output_files
+        assert elastix_dwi['Transform'] == ['BSplineTransform']
+        assert elastix_t1['Transform'] == ['EulerTransform']
+        
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
         
     def test_to_nifti(self):
         os.makedirs('test_output', exist_ok=True)
-
-        # Check all is saved for T1 Moco.
-        self.registration_slice.to_nifti(output_directory='test_output',
-                                         base_file_name='test_dwi_1',
-                                         maps='all')
+        # Check all is saved for DWI Moco.
+        self.mdr_dwi.to_nifti(output_directory='test_output',
+                              base_file_name='test_dwi',
+                              maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 6
-        assert 'test_dwi_1_mask.nii.gz' in output_files
-        assert 'test_dwi_1_original.nii.gz' in output_files
-        assert 'test_dwi_1_coregistered.nii.gz' in output_files
-        assert 'test_dwi_1_fitted.nii.gz' in output_files
-        assert 'test_dwi_1_deformation_field.nii.gz' in output_files
-        assert 'test_dwi_1_parameters.nii.gz' in output_files
+        assert len(output_files) == 7
+        assert 'test_dwi_mask.nii.gz' in output_files
+        assert 'test_dwi_original.nii.gz' in output_files
+        assert 'test_dwi_coregistered.nii.gz' in output_files
+        assert 'test_dwi_difference.nii.gz' in output_files
+        assert 'test_dwi_model_fit.nii.gz' in output_files
+        assert 'test_dwi_deformation_field.nii.gz' in output_files
+        assert 'test_dwi_parameters.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         with pytest.raises(ValueError):
-            self.registration_slice.to_nifti(output_directory='test_output',
-                                             base_file_name='test_dwi_1',
-                                             maps='not_an_option')
-                            
-        # Check coregistered and fiited are saved for DWI Moco.
-        self.registration_volume.to_nifti(output_directory='test_output',
-                                          base_file_name='test_dwi_2',
-                                          maps=['original', 'coregistered'])
+            self.mdr_dwi.to_nifti(output_directory='test_output',
+                                  base_file_name='test_dwi',
+                                  maps='not_an_option')
+
+        # Check coregistered and fitted are saved for T1 Moco.
+        self.mdr_t1.to_nifti(output_directory='test_output',
+                             base_file_name='test_t1',
+                             maps=['model_fit', 'coregistered'])
         output_files = os.listdir('test_output')
         assert len(output_files) == 2
-        assert 'test_dwi_2_original.nii.gz' in output_files
-        assert 'test_dwi_2_coregistered.nii.gz' in output_files
+        assert 'test_t1_model_fit.nii.gz' in output_files
+        assert 'test_t1_coregistered.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
 
         with pytest.raises(ValueError):
-            self.registration_volume.to_nifti(output_directory='test_output',
-                                              base_file_name='test_dwi_2',
-                                              maps='not_an_option')
+            self.mdr_t1.to_nifti(output_directory='test_output',
+                                 base_file_name='test_t1',
+                                 maps='not_an_option')
+
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
+    
+    def test_to_gif(self):
+        os.makedirs('test_output', exist_ok=True)
+        # Check all is saved for DWI Moco.
+        self.mdr_dwi.to_gif(output_directory='test_output',
+                            base_file_name='test_dwi',
+                            maps='all')
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 7
+        assert 'test_dwi_mask.gif' in output_files
+        assert 'test_dwi_original.gif' in output_files
+        assert 'test_dwi_coregistered.gif' in output_files
+        assert 'test_dwi_difference.gif' in output_files
+        assert 'test_dwi_model_fit.gif' in output_files
+        assert 'test_dwi_deformation_field.gif' in output_files
+        assert 'test_dwi_parameters.gif' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        with pytest.raises(ValueError):
+            self.mdr_dwi.to_gif(output_directory='test_output',
+                                base_file_name='test_dwi',
+                                maps='not_an_option')
+
+        # Check coregistered and fitted are saved for T1 Moco.
+        self.mdr_t1.to_gif(output_directory='test_output',
+                           base_file_name='test_t1',
+                           maps=['model_fit', 'coregistered'])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 2
+        assert 'test_t1_model_fit.gif' in output_files
+        assert 'test_t1_coregistered.gif' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        with pytest.raises(ValueError):
+            self.mdr_t1.to_gif(output_directory='test_output',
+                               base_file_name='test_t1',
+                               maps='not_an_option')
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
