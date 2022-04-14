@@ -20,7 +20,7 @@ from mdreg import MDReg
 import mdreg.models as mdl
 from ukat.moco.fitting_functions import DWI_Moco, T1_Moco
 from ukat.moco.elastix_parameters import (DWI_BSplines, T1_BSplines,
-                                          Custom_BSplines, Custom_Rigid)
+                                          Custom_Parameter_Map)
 
 
 class MotionCorrection:
@@ -61,7 +61,7 @@ class MotionCorrection:
             If True (default), co-registration by `itk-elastix` will be
             distributed over all cores available on the node.
         log : bool, optional
-            If True (default is False), the `itk-elastix` co-registration
+            If True (default), the `itk-elastix` co-registration
             process output is printed in the terminal and
             saved to a text file.
         """
@@ -69,7 +69,7 @@ class MotionCorrection:
         self.pixel_array = pixel_array
         self.shape = self.pixel_array.shape
         if mask is None:
-            self.mask = None
+            self.mask = np.ones(np.shape(self.pixel_array), dtype=int)
         else:
             self.mask = np.array(np.nan_to_num(mask), dtype=int)
         self.affine = affine
@@ -88,9 +88,10 @@ class MotionCorrection:
             self._elastix_params = T1_BSplines()
         else:
             self._fitting_function = mdl.constant
-            self._elastix_params = Custom_Rigid({})
+            self._elastix_params = Custom_Parameter_Map({}, 'rigid')
+        # The user may provide a python dictionary with the elastix parameters.
         if isinstance(elastix_params, dict):
-            self._elastix_params = Custom_BSplines(elastix_params)
+            self._elastix_params = Custom_Parameter_Map(elastix_params)
 
         # Perform motion correction
         if len(self.shape) == 3:

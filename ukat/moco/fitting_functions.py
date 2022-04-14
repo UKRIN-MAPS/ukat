@@ -169,5 +169,4 @@ class T1_Moco:
                     fit[tuple(i)] = np.abs(m0 * (1 - eff * np.exp(-ti/t1)))
                 elif min_value < 0 and parameters == 3:
                     fit[tuple(i)] = m0 * (1 - eff * np.exp(-ti/t1))
-
         return fit, par

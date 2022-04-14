@@ -49,7 +49,7 @@ class TestMotionCorrection:
     # Test individual outputs in terms of stats
     def test_coregistered_and_difference(self):
         # It's challenging to set metrics and determine what is a successful
-        # motion correction result. One option for the future is to create 
+        # motion correction result. One option for the future is to create
         # digital phantoms for `ukat`. At this moment in time, these tests
         # will check the difference image calculation and inspect if it's
         # different to zero to prove that the MDR did something to the input.
@@ -83,15 +83,17 @@ class TestMotionCorrection:
                         -6.882346781367232e-08, 364102.84375]
         t1_expected = [59.375521241962176, 115.06861216994638,
                        -722.2862304051718, 3007.8351923624673]
-        npt.assert_allclose([t1_slice_stats["mean"]["3D"], t1_slice_stats["std"]["3D"],
-                             t1_slice_stats["min"]["3D"], t1_slice_stats["max"]["3D"]],
-                             t1_slice_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([t1_slice_stats["mean"]["3D"],
+                             t1_slice_stats["std"]["3D"],
+                             t1_slice_stats["min"]["3D"],
+                             t1_slice_stats["max"]["3D"]],
+                            t1_slice_expected, rtol=1e-6, atol=1e-4)
         npt.assert_allclose([dwi_stats["mean"]["3D"], dwi_stats["std"]["3D"],
                              dwi_stats["min"]["3D"], dwi_stats["max"]["3D"]],
-                             dwi_expected, rtol=1e-6, atol=1e-4)
+                            dwi_expected, rtol=1e-6, atol=1e-4)
         npt.assert_allclose([t1_stats["mean"]["4D"], t1_stats["std"]["4D"],
                              t1_stats["min"]["4D"], t1_stats["max"]["4D"]],
-                             t1_expected, rtol=1e-6, atol=1e-4)
+                            t1_expected, rtol=1e-6, atol=1e-4)
 
     def test_deformation_field(self):
         deformation_t1_slice = self.mdr_t1_slice.get_deformation_field()
@@ -103,7 +105,7 @@ class TestMotionCorrection:
         assert np.shape(deformation_t1_slice) == (128, 128, 2, 18)
         assert np.shape(deformation_dwi) == (128, 128, 2, 79)
         assert np.shape(deformation_t1) == (128, 128, 5, 2, 18)
-    
+
     def test_parameters(self):
         # Regardless of the co-registration result, it's expected that the
         # parameters outputs are consistently the same.
@@ -119,15 +121,19 @@ class TestMotionCorrection:
         adc_dwi_expected = []
         print([t1map_stats["mean"]["3D"], t1map_stats["std"]["3D"], t1map_stats["min"]["3D"], t1map_stats["max"]["3D"]])
         t1map_expected = []
-        npt.assert_allclose([m0_t1_slice_stats["mean"]["3D"], m0_t1_slice_stats["std"]["3D"],
-                             m0_t1_slice_stats["min"]["3D"], m0_t1_slice_stats["max"]["3D"]],
-                             m0_t1_slice_expected, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([adc_dwi_stats["mean"]["3D"], adc_dwi_stats["std"]["3D"],
+        npt.assert_allclose([m0_t1_slice_stats["mean"]["3D"],
+                             m0_t1_slice_stats["std"]["3D"],
+                             m0_t1_slice_stats["min"]["3D"],
+                             m0_t1_slice_stats["max"]["3D"]],
+                            m0_t1_slice_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([adc_dwi_stats["mean"]["3D"],
+                             adc_dwi_stats["std"]["3D"],
                              adc_dwi_stats["min"]["3D"], adc_dwi_stats["max"]["3D"]],
-                             adc_dwi_expected, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([t1map_stats["mean"]["4D"], t1map_stats["std"]["4D"],
+                            adc_dwi_expected, rtol=1e-6, atol=1e-4)
+        npt.assert_allclose([t1map_stats["mean"]["4D"],
+                             t1map_stats["std"]["4D"],
                              t1map_stats["min"]["4D"], t1map_stats["max"]["4D"]],
-                             t1map_expected, rtol=1e-6, atol=1e-4)
+                            t1map_expected, rtol=1e-6, atol=1e-4)
 
     def test_improvements(self):
         os.makedirs('test_output', exist_ok=True)
@@ -143,15 +149,15 @@ class TestMotionCorrection:
         assert 'improvements_slice_2.csv' in output_files
         assert 'improvements_slice_3.csv' in output_files
         assert 'improvements_slice_4.csv' in output_files
-        assert (float(imprv_dwi['Maximum deformation'].iloc[-1]) < \
+        assert (float(imprv_dwi['Maximum deformation'].iloc[-1]) <
                 self.mdr_dwi.convergence)
         for imprv_slc in imprv_t1:
-            assert (float(imprv_slc['Maximum deformation'].iloc[-1]) < \
+            assert (float(imprv_slc['Maximum deformation'].iloc[-1]) <
                     self.mdr_t1.convergence)
-        
+
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
-    
+
     def test_elastix_parameters(self):
         os.makedirs('test_output', exist_ok=True)
         elastix_dwi = self.mdr_dwi.get_elastix_parameters()
@@ -165,10 +171,10 @@ class TestMotionCorrection:
         assert 'elastix.txt' in output_files
         assert elastix_dwi['Transform'] == ['BSplineTransform']
         assert elastix_t1['Transform'] == ['EulerTransform']
-        
+ 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
-        
+   
     def test_to_nifti(self):
         os.makedirs('test_output', exist_ok=True)
         # Check all is saved for DWI Moco.
@@ -212,7 +218,7 @@ class TestMotionCorrection:
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
-    
+
     def test_to_gif(self):
         os.makedirs('test_output', exist_ok=True)
         # Check all is saved for DWI Moco.
