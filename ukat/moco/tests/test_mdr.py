@@ -80,23 +80,23 @@ class TestMotionCorrection:
         t1_slice_stats = arraystats.ArrayStats(fitted_t1_slice).calculate()
         dwi_stats = arraystats.ArrayStats(fitted_dwi).calculate()
         t1_stats = arraystats.ArrayStats(fitted_t1).calculate()
-        t1_slice_expected = [56.368349731354584, 154.9382840328853,
-                             -1477.105499971348, 1349.2699472113275]
-        dwi_expected = [16589.810320854365, 22772.03431902955,
-                        -6.882346781367232e-08, 364102.84375]
-        t1_expected = [59.375521241962176, 115.06861216994638,
-                       -722.2862304051718, 3007.8351923624673]
+        t1_slice_expected = [56.368350, 154.938284,
+                             -1477.105500, 1349.269947]
+        dwi_expected = [16589.810321, 22772.034319,
+                        -6.8823468e-08, 364102.843750]
+        t1_expected = [59.375521, 115.068612,
+                       -722.286230, 3007.835192]
         npt.assert_allclose([t1_slice_stats["mean"]["3D"],
                              t1_slice_stats["std"]["3D"],
                              t1_slice_stats["min"]["3D"],
                              t1_slice_stats["max"]["3D"]],
-                            t1_slice_expected, rtol=1e-6, atol=1e-4)
+                            t1_slice_expected, rtol=1e-5, atol=1e-4)
         npt.assert_allclose([dwi_stats["mean"]["3D"], dwi_stats["std"]["3D"],
                              dwi_stats["min"]["3D"], dwi_stats["max"]["3D"]],
-                            dwi_expected, rtol=1e-6, atol=1e-4)
+                            dwi_expected, rtol=1e-5, atol=1e-2)
         npt.assert_allclose([t1_stats["mean"]["4D"], t1_stats["std"]["4D"],
                              t1_stats["min"]["4D"], t1_stats["max"]["4D"]],
-                            t1_expected, rtol=1e-6, atol=1e-4)
+                            t1_expected, rtol=1e-5, atol=1e-4)
 
     def test_deformation_field(self):
         deformation_t1_slice = self.mdr_t1_slice.get_deformation_field()
@@ -115,27 +115,27 @@ class TestMotionCorrection:
         m0_t1_slice_stats = arraystats.ArrayStats(m0_t1_slice).calculate()
         adc_dwi_stats = arraystats.ArrayStats(adc_dwi).calculate()
         t1map_stats = arraystats.ArrayStats(t1map_t1).calculate()
-        m0_t1_slice_expected = [226.9385545370194, 205.3015563617244,
-                                0.0, 1704.2773369869285]
-        adc_dwi_expected = [0.0009300494403978001, 0.0008151759723633144,
-                            0.0, 0.004510848135583435]
-        t1map_expected = [59.37552124196213, 115.06861216994639,
-                          -722.2862304051718, 3007.8351923624673]
+        m0_t1_slice_expected = [226.938555, 205.301556,
+                                0.0, 1704.277337]
+        adc_dwi_expected = [0.000930, 0.000815,
+                            0.0, 0.004511]
+        t1map_expected = [59.375521, 115.068612,
+                          -722.286230, 3007.835192]
         npt.assert_allclose([m0_t1_slice_stats["mean"],
                              m0_t1_slice_stats["std"],
                              m0_t1_slice_stats["min"],
                              m0_t1_slice_stats["max"]],
-                            m0_t1_slice_expected, rtol=1e-6, atol=1e-4)
+                            m0_t1_slice_expected, rtol=1e-5, atol=1e-2)
         npt.assert_allclose([adc_dwi_stats["mean"],
                              adc_dwi_stats["std"],
                              adc_dwi_stats["min"],
                              adc_dwi_stats["max"]],
-                            adc_dwi_expected, rtol=1e-6, atol=1e-4)
+                            adc_dwi_expected, rtol=1e-5, atol=1e-4)
         npt.assert_allclose([t1map_stats["mean"]["3D"],
                              t1map_stats["std"]["3D"],
                              t1map_stats["min"]["3D"],
                              t1map_stats["max"]["3D"]],
-                            t1map_expected, rtol=1e-6, atol=1e-4)
+                            t1map_expected, rtol=1e-5, atol=1e-4)
 
     def test_improvements(self):
         os.makedirs('test_output', exist_ok=True)
