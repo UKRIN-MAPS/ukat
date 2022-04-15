@@ -119,9 +119,8 @@ class TestMotionCorrection:
                                 0.0, 1704.2773369869285]
         adc_dwi_expected = [0.0009300494403978001, 0.0008151759723633144,
                             0.0, 0.004510848135583435]
-        print([t1map_stats["mean"]["3D"], t1map_stats["std"]["3D"],
-               t1map_stats["min"]["3D"], t1map_stats["max"]["3D"]])
-        t1map_expected = []
+        t1map_expected = [59.37552124196213, 115.06861216994639,
+                          -722.2862304051718, 3007.8351923624673]
         npt.assert_allclose([m0_t1_slice_stats["mean"],
                              m0_t1_slice_stats["std"],
                              m0_t1_slice_stats["min"],
@@ -170,8 +169,10 @@ class TestMotionCorrection:
         output_files = os.listdir('test_output')
         assert len(output_files) == 1
         assert 'elastix.txt' in output_files
-        assert elastix_dwi.GetParameterMap(0)['Transform'] == ('BSplineTransform',)
-        assert elastix_t1.GetParameterMap(0)['Transform'] == ('EulerTransform',)
+        assert (elastix_dwi.GetParameterMap(0)['Transform'] ==
+                ('BSplineTransform',))
+        assert (elastix_t1.GetParameterMap(0)['Transform'] ==
+                ('EulerTransform',))
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
