@@ -1,3 +1,13 @@
+## [0.6.1] - 2022-08-03
+
+### Added
+* Whole kidney segmentation can now be performed using custom models. #187
+
+### Changed
+* Python 3.7 is no longer supported.
+
+### Fixed
+
 ## [0.6.0] - 2022-02-28
 
 ### Added
