@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Daniel"
+  given-names: "Alexander J"
+  orcid: "https://orcid.org/0000-0003-2353-3283"
+- family-names: "Nery"
+  given-names: "Fabio"
+  orcid: "https://orcid.org/0000-0002-4220-0997"
+- family-names: "Almeida e Sousa"
+  given-names: "Joao"
+  orcid: "https://orcid.org/0000-0002-6668-7613"
+- family-names: "Buchanan"
+  given-names: "Charlotte E"
+  orcid: "https://orcid.org/0000-0003-3010-6079"
+- family-names: "Francis"
+  given-names: "Susan T"
+  orcid: "https://orcid.org/0000-0003-0903-7507"
+title: "UKRIN Kidney Analysis Toolbox"
+version: 0.6.1
+doi: 10.5281/zenodo.4742470
+date-released: 2022-08-03
+url: "https://github.com/UKRIN-MAPS/ukat"
