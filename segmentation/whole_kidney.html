@@ -42,7 +42,8 @@ class Segmentation(nib.Nifti1Image):
         Total, left and right kidney volumes in milliliters.
     &#34;&#34;&#34;
 
-    def __init__(self, pixel_array, affine, post_process=True):
+    def __init__(self, pixel_array, affine, post_process=True, binary=True,
+                 weights=None):
         &#34;&#34;&#34;Initialise a whole kidney segmentation class instance.
 
         Parameters
@@ -57,42 +58,42 @@ class Segmentation(nib.Nifti1Image):
             Keep only the two largest connected volumes in the mask. Note
             this may cause issue with subjects that have more or less than
             two kidneys.
+        binary : bool, optional
+            Default True.
+            If True, the mask returned will be an array of ints, where 1
+            represents voxels that are renal tissue and 0 represents
+            voxels that are not renal tissue. If False, the mask returned
+            will be the probability that each voxel is renal tissue.
+        weights : str, optional
+            Default &#39;none&#39;.
+            The path to custom neural network weights. If &#39;none&#39;,
+            the default, all-purpose, weights will be downloaded from the
+            internet and used.
         &#34;&#34;&#34;
 
         super().__init__(pixel_array, affine)
         self.pixel_array = pixel_array
         self._nifti = nib.Nifti1Image(self.pixel_array, self.affine)
         self._seg_obj = Tkv(self._nifti)
-        self._mask = self._seg_obj.get_mask(post_process=post_process)
+        self._mask = self._seg_obj.get_mask(post_process=post_process,
+                                            binary=binary,
+                                            weights_path=weights)
         self._kidneys = (self._mask &gt; 0.5) * 1
         self._kidneys[:self.shape[0]//2] *= 2
         self.volumes = {&#39;total&#39;: self._calculate_volume(self._mask &gt; 0.5),
                         &#39;left&#39;: self._calculate_volume(self._kidneys == 1),
                         &#39;right&#39;: self._calculate_volume(self._kidneys == 2)}
 
-    def get_mask(self, binary=True):
+    def get_mask(self):
         &#34;&#34;&#34;
         Returns the estimated mask from the provided input data.
-
-        Parameters
-        ----------
-        binary : bool, optional
-            Default True.
-            If True, the mask returned will be an array of bools, where True
-            represents voxels that are renal tissue and False represents
-            voxels that are not renal tissue. If False, the mask returned
-            will be the probability that each voxel is renal tissue.
 
         Returns
         -------
         mask : np.ndarray
             The estimated mask.
         &#34;&#34;&#34;
-        if binary:
-            mask = self._mask &gt; 0.5
-        else:
-            mask = self._mask
-        return mask
+        return self._mask
 
     def get_kidneys(self):
         &#34;&#34;&#34;
@@ -246,7 +247,7 @@ class Segmentation(nib.Nifti1Image):
 <dl>
 <dt id="ukat.segmentation.whole_kidney.Segmentation"><code class="flex name class">
 <span>class <span class="ident">Segmentation</span></span>
-<span>(</span><span>pixel_array, affine, post_process=True)</span>
+<span>(</span><span>pixel_array, affine, post_process=True, binary=True, weights=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="attributes">Attributes</h2>
@@ -267,6 +268,17 @@ world coordinates.</dd>
 Keep only the two largest connected volumes in the mask. Note
 this may cause issue with subjects that have more or less than
 two kidneys.</dd>
+<dt><strong><code>binary</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Default True.
+If True, the mask returned will be an array of ints, where 1
+represents voxels that are renal tissue and 0 represents
+voxels that are not renal tissue. If False, the mask returned
+will be the probability that each voxel is renal tissue.</dd>
+<dt><strong><code>weights</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Default 'none'.
+The path to custom neural network weights. If 'none',
+the default, all-purpose, weights will be downloaded from the
+internet and used.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -280,7 +292,8 @@ two kidneys.</dd>
         Total, left and right kidney volumes in milliliters.
     &#34;&#34;&#34;
 
-    def __init__(self, pixel_array, affine, post_process=True):
+    def __init__(self, pixel_array, affine, post_process=True, binary=True,
+                 weights=None):
         &#34;&#34;&#34;Initialise a whole kidney segmentation class instance.
 
         Parameters
@@ -295,42 +308,42 @@ two kidneys.</dd>
             Keep only the two largest connected volumes in the mask. Note
             this may cause issue with subjects that have more or less than
             two kidneys.
+        binary : bool, optional
+            Default True.
+            If True, the mask returned will be an array of ints, where 1
+            represents voxels that are renal tissue and 0 represents
+            voxels that are not renal tissue. If False, the mask returned
+            will be the probability that each voxel is renal tissue.
+        weights : str, optional
+            Default &#39;none&#39;.
+            The path to custom neural network weights. If &#39;none&#39;,
+            the default, all-purpose, weights will be downloaded from the
+            internet and used.
         &#34;&#34;&#34;
 
         super().__init__(pixel_array, affine)
         self.pixel_array = pixel_array
         self._nifti = nib.Nifti1Image(self.pixel_array, self.affine)
         self._seg_obj = Tkv(self._nifti)
-        self._mask = self._seg_obj.get_mask(post_process=post_process)
+        self._mask = self._seg_obj.get_mask(post_process=post_process,
+                                            binary=binary,
+                                            weights_path=weights)
         self._kidneys = (self._mask &gt; 0.5) * 1
         self._kidneys[:self.shape[0]//2] *= 2
         self.volumes = {&#39;total&#39;: self._calculate_volume(self._mask &gt; 0.5),
                         &#39;left&#39;: self._calculate_volume(self._kidneys == 1),
                         &#39;right&#39;: self._calculate_volume(self._kidneys == 2)}
 
-    def get_mask(self, binary=True):
+    def get_mask(self):
         &#34;&#34;&#34;
         Returns the estimated mask from the provided input data.
-
-        Parameters
-        ----------
-        binary : bool, optional
-            Default True.
-            If True, the mask returned will be an array of bools, where True
-            represents voxels that are renal tissue and False represents
-            voxels that are not renal tissue. If False, the mask returned
-            will be the probability that each voxel is renal tissue.
 
         Returns
         -------
         mask : np.ndarray
             The estimated mask.
         &#34;&#34;&#34;
-        if binary:
-            mask = self._mask &gt; 0.5
-        else:
-            mask = self._mask
-        return mask
+        return self._mask
 
     def get_kidneys(self):
         &#34;&#34;&#34;
@@ -568,19 +581,10 @@ Returns</p>
 </details>
 </dd>
 <dt id="ukat.segmentation.whole_kidney.Segmentation.get_mask"><code class="name flex">
-<span>def <span class="ident">get_mask</span></span>(<span>self, binary=True)</span>
+<span>def <span class="ident">get_mask</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the estimated mask from the provided input data.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>binary</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>Default True.
-If True, the mask returned will be an array of bools, where True
-represents voxels that are renal tissue and False represents
-voxels that are not renal tissue. If False, the mask returned
-will be the probability that each voxel is renal tissue.</dd>
-</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><strong><code>mask</code></strong> :&ensp;<code>np.ndarray</code></dt>
@@ -590,29 +594,16 @@ will be the probability that each voxel is renal tissue.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_mask(self, binary=True):
+<pre><code class="python">def get_mask(self):
     &#34;&#34;&#34;
     Returns the estimated mask from the provided input data.
-
-    Parameters
-    ----------
-    binary : bool, optional
-        Default True.
-        If True, the mask returned will be an array of bools, where True
-        represents voxels that are renal tissue and False represents
-        voxels that are not renal tissue. If False, the mask returned
-        will be the probability that each voxel is renal tissue.
 
     Returns
     -------
     mask : np.ndarray
         The estimated mask.
     &#34;&#34;&#34;
-    if binary:
-        mask = self._mask &gt; 0.5
-    else:
-        mask = self._mask
-    return mask</code></pre>
+    return self._mask</code></pre>
 </details>
 </dd>
 <dt id="ukat.segmentation.whole_kidney.Segmentation.get_right_kidney"><code class="name flex">

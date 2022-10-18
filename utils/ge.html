@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>ukat.utils API documentation</title>
+<title>ukat.utils.ge API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,47 +19,95 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>ukat.utils</code></h1>
+<h1 class="title">Module <code>ukat.utils.ge</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from . import arraystats, ge, siemens, tools</code></pre>
+<pre><code class="python">def scale_b1(data, flip_angle):
+    &#34;&#34;&#34;
+    Scale the B1 map produced by GE scanners to be a percentage of the
+    nominal flip angle.
+
+    Its advisable to verify the velocity encode scale (dicom tag (0019,
+    10E2)) is 299.97.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        The B1 map to be scaled.
+    flip_angle : float
+        The flip angle of the sequence.
+
+    Returns
+    -------
+    scaled_data : np.ndarray
+        The scaled B1 map.
+    &#34;&#34;&#34;
+    norm_factor = 10 / flip_angle
+    b1_scaled = data * norm_factor
+    return b1_scaled</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="ukat.utils.arraystats" href="arraystats.html">ukat.utils.arraystats</a></code></dt>
+<dt id="ukat.utils.ge.scale_b1"><code class="name flex">
+<span>def <span class="ident">scale_b1</span></span>(<span>data, flip_angle)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>This module implements the ArrayStats class which calculates several
-descriptive statistics of 2, 3 or 4D input arrays. That is, if the input array
-is …</p></div>
-</dd>
-<dt><code class="name"><a title="ukat.utils.ge" href="ge.html">ukat.utils.ge</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="ukat.utils.siemens" href="siemens.html">ukat.utils.siemens</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="ukat.utils.tests" href="tests/index.html">ukat.utils.tests</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt><code class="name"><a title="ukat.utils.tools" href="tools.html">ukat.utils.tools</a></code></dt>
-<dd>
-<div class="desc"><p>This module contains multiple auxiliary functions that might be used by
-multiple algorithms</p></div>
+<div class="desc"><p>Scale the B1 map produced by GE scanners to be a percentage of the
+nominal flip angle.</p>
+<p>Its advisable to verify the velocity encode scale (dicom tag (0019,
+10E2)) is 299.97.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>data</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The B1 map to be scaled.</dd>
+<dt><strong><code>flip_angle</code></strong> :&ensp;<code>float</code></dt>
+<dd>The flip angle of the sequence.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>scaled_data</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The scaled B1 map.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scale_b1(data, flip_angle):
+    &#34;&#34;&#34;
+    Scale the B1 map produced by GE scanners to be a percentage of the
+    nominal flip angle.
+
+    Its advisable to verify the velocity encode scale (dicom tag (0019,
+    10E2)) is 299.97.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        The B1 map to be scaled.
+    flip_angle : float
+        The flip angle of the sequence.
+
+    Returns
+    -------
+    scaled_data : np.ndarray
+        The scaled B1 map.
+    &#34;&#34;&#34;
+    norm_factor = 10 / flip_angle
+    b1_scaled = data * norm_factor
+    return b1_scaled</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -72,16 +120,12 @@ multiple algorithms</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="ukat" href="../index.html">ukat</a></code></li>
+<li><code><a title="ukat.utils" href="index.html">ukat.utils</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
-<ul>
-<li><code><a title="ukat.utils.arraystats" href="arraystats.html">ukat.utils.arraystats</a></code></li>
-<li><code><a title="ukat.utils.ge" href="ge.html">ukat.utils.ge</a></code></li>
-<li><code><a title="ukat.utils.siemens" href="siemens.html">ukat.utils.siemens</a></code></li>
-<li><code><a title="ukat.utils.tests" href="tests/index.html">ukat.utils.tests</a></code></li>
-<li><code><a title="ukat.utils.tools" href="tools.html">ukat.utils.tools</a></code></li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ukat.utils.ge.scale_b1" href="#ukat.utils.ge.scale_b1">scale_b1</a></code></li>
 </ul>
 </li>
 </ul>
