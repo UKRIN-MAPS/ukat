@@ -1,3 +1,13 @@
+## [0.6.1] - 2022-10-18
+
+### Added
+* Rescaling of GE B1 maps. #190
+
+### Changed
+
+### Fixed
+* Hopefully reference manual now works, built using Python 3.9. #189
+
 ## [0.6.1] - 2022-08-03
 
 ### Added
