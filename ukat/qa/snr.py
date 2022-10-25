@@ -11,6 +11,8 @@ class Isnr:
         ----------
         isnr : float
             Image signal to noise ratio.
+        isnr_map : np.ndarray
+            A map of the image signal to noise ratio.
         noise_mask : np.ndarray
             Mask of the ROI used to measure noise levels. Should be voxels
             outside the body.
@@ -20,7 +22,7 @@ class Isnr:
         """
 
     def __init__(self, pixel_array, noise_mask=None, n_clusters=3):
-        """Initialise a image signal to noise ratio (iSNR) class instance.
+        """Initialise an image signal to noise ratio (iSNR) class instance.
         Parameters
         ----------
         pixel_array : np.ndarray
@@ -48,6 +50,7 @@ class Isnr:
             self.clusters = np.nan
 
         self.isnr = np.nan
+        self.isnr_map = np.zeros(self.shape)
         self.__snr__()
 
     def __mask_background__(self):
@@ -70,7 +73,8 @@ class Isnr:
     def __snr__(self):
         noise = np.std(self.pixel_array[self.noise_mask])
         signal = np.mean(self.pixel_array[~self.noise_mask])
-        self.isnr = (signal/noise) * np.sqrt(2-(np.pi/2))
+        self.isnr = (signal / noise) * np.sqrt(2 - (np.pi / 2))
+        self.isnr_map = (self.pixel_array / noise) * np.sqrt(2 - (np.pi / 2))
 
 
 class Tsnr:
