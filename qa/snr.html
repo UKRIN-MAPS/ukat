@@ -39,6 +39,8 @@ class Isnr:
         ----------
         isnr : float
             Image signal to noise ratio.
+        isnr_map : np.ndarray
+            A map of the image signal to noise ratio.
         noise_mask : np.ndarray
             Mask of the ROI used to measure noise levels. Should be voxels
             outside the body.
@@ -47,12 +49,15 @@ class Isnr:
             segmentation. This can be useful for debugging.
         &#34;&#34;&#34;
 
-    def __init__(self, pixel_array, noise_mask=None, n_clusters=3):
-        &#34;&#34;&#34;Initialise a image signal to noise ratio (iSNR) class instance.
+    def __init__(self, pixel_array, affine, noise_mask=None, n_clusters=3):
+        &#34;&#34;&#34;Initialise an image signal to noise ratio (iSNR) class instance.
         Parameters
         ----------
         pixel_array : np.ndarray
             Array of voxels over which iSNR should be calculated.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         noise_mask : np.ndarray, optional
             A binary voxel mask where voxels representing background i.e.
             outside the body, are True. If no mask is supplied, one is
@@ -65,6 +70,7 @@ class Isnr:
             Default 3.
         &#34;&#34;&#34;
         self.pixel_array = pixel_array
+        self.affine = affine
         self.n_clusters = n_clusters
         self.shape = pixel_array.shape
         self.dimensions = len(pixel_array.shape)
@@ -76,6 +82,7 @@ class Isnr:
             self.clusters = np.nan
 
         self.isnr = np.nan
+        self.isnr_map = np.zeros(self.shape)
         self.__snr__()
 
     def __mask_background__(self):
@@ -98,7 +105,25 @@ class Isnr:
     def __snr__(self):
         noise = np.std(self.pixel_array[self.noise_mask])
         signal = np.mean(self.pixel_array[~self.noise_mask])
-        self.isnr = (signal/noise) * np.sqrt(2-(np.pi/2))
+        self.isnr = (signal / noise) * np.sqrt(2 - (np.pi / 2))
+        self.isnr_map = (self.pixel_array / noise) * np.sqrt(2 - (np.pi / 2))
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;):
+        &#34;&#34;&#34;Exports iSNR maps to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+        &#34;&#34;&#34;
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+
+        isnr_nifti = nib.Nifti1Image(self.isnr_map, affine=self.affine)
+        nib.save(isnr_nifti, base_path + &#39;_isnr_map.nii.gz&#39;)
 
 
 class Tsnr:
@@ -202,13 +227,15 @@ class Tsnr:
 <dl>
 <dt id="ukat.qa.snr.Isnr"><code class="flex name class">
 <span>class <span class="ident">Isnr</span></span>
-<span>(</span><span>pixel_array, noise_mask=None, n_clusters=3)</span>
+<span>(</span><span>pixel_array, affine, noise_mask=None, n_clusters=3)</span>
 </code></dt>
 <dd>
 <div class="desc"><h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>isnr</code></strong> :&ensp;<code>float</code></dt>
 <dd>Image signal to noise ratio.</dd>
+<dt><strong><code>isnr_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>A map of the image signal to noise ratio.</dd>
 <dt><strong><code>noise_mask</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>Mask of the ROI used to measure noise levels. Should be voxels
 outside the body.</dd>
@@ -216,12 +243,15 @@ outside the body.</dd>
 <dd>The labels assigned to each voxel during automatic background
 segmentation. This can be useful for debugging.</dd>
 </dl>
-<p>Initialise a image signal to noise ratio (iSNR) class instance.
+<p>Initialise an image signal to noise ratio (iSNR) class instance.
 Parameters</p>
 <hr>
 <dl>
 <dt><strong><code>pixel_array</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>Array of voxels over which iSNR should be calculated.</dd>
+<dt><strong><code>affine</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>A matrix giving the relationship between voxel coordinates and
+world coordinates.</dd>
 <dt><strong><code>noise_mask</code></strong> :&ensp;<code>np.ndarray</code>, optional</dt>
 <dd>A binary voxel mask where voxels representing background i.e.
 outside the body, are True. If no mask is supplied, one is
@@ -243,6 +273,8 @@ Default 3.</dd>
         ----------
         isnr : float
             Image signal to noise ratio.
+        isnr_map : np.ndarray
+            A map of the image signal to noise ratio.
         noise_mask : np.ndarray
             Mask of the ROI used to measure noise levels. Should be voxels
             outside the body.
@@ -251,12 +283,15 @@ Default 3.</dd>
             segmentation. This can be useful for debugging.
         &#34;&#34;&#34;
 
-    def __init__(self, pixel_array, noise_mask=None, n_clusters=3):
-        &#34;&#34;&#34;Initialise a image signal to noise ratio (iSNR) class instance.
+    def __init__(self, pixel_array, affine, noise_mask=None, n_clusters=3):
+        &#34;&#34;&#34;Initialise an image signal to noise ratio (iSNR) class instance.
         Parameters
         ----------
         pixel_array : np.ndarray
             Array of voxels over which iSNR should be calculated.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         noise_mask : np.ndarray, optional
             A binary voxel mask where voxels representing background i.e.
             outside the body, are True. If no mask is supplied, one is
@@ -269,6 +304,7 @@ Default 3.</dd>
             Default 3.
         &#34;&#34;&#34;
         self.pixel_array = pixel_array
+        self.affine = affine
         self.n_clusters = n_clusters
         self.shape = pixel_array.shape
         self.dimensions = len(pixel_array.shape)
@@ -280,6 +316,7 @@ Default 3.</dd>
             self.clusters = np.nan
 
         self.isnr = np.nan
+        self.isnr_map = np.zeros(self.shape)
         self.__snr__()
 
     def __mask_background__(self):
@@ -302,8 +339,64 @@ Default 3.</dd>
     def __snr__(self):
         noise = np.std(self.pixel_array[self.noise_mask])
         signal = np.mean(self.pixel_array[~self.noise_mask])
-        self.isnr = (signal/noise) * np.sqrt(2-(np.pi/2))</code></pre>
+        self.isnr = (signal / noise) * np.sqrt(2 - (np.pi / 2))
+        self.isnr_map = (self.pixel_array / noise) * np.sqrt(2 - (np.pi / 2))
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;):
+        &#34;&#34;&#34;Exports iSNR maps to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+        &#34;&#34;&#34;
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+
+        isnr_nifti = nib.Nifti1Image(self.isnr_map, affine=self.affine)
+        nib.save(isnr_nifti, base_path + &#39;_isnr_map.nii.gz&#39;)</code></pre>
 </details>
+<h3>Methods</h3>
+<dl>
+<dt id="ukat.qa.snr.Isnr.to_nifti"><code class="name flex">
+<span>def <span class="ident">to_nifti</span></span>(<span>self, output_directory='/home/runner/work/ukat/ukat', base_file_name='Output')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Exports iSNR maps to NIFTI.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>output_directory</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Path to the folder where the NIFTI files will be saved.</dd>
+<dt><strong><code>base_file_name</code></strong> :&ensp;<code>string</code>, optional</dt>
+<dd>Filename of the resulting NIFTI. This code appends the extension.
+Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;):
+    &#34;&#34;&#34;Exports iSNR maps to NIFTI.
+
+    Parameters
+    ----------
+    output_directory : string, optional
+        Path to the folder where the NIFTI files will be saved.
+    base_file_name : string, optional
+        Filename of the resulting NIFTI. This code appends the extension.
+        Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
+    &#34;&#34;&#34;
+    os.makedirs(output_directory, exist_ok=True)
+    base_path = os.path.join(output_directory, base_file_name)
+
+    isnr_nifti = nib.Nifti1Image(self.isnr_map, affine=self.affine)
+    nib.save(isnr_nifti, base_path + &#39;_isnr_map.nii.gz&#39;)</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 <dt id="ukat.qa.snr.Tsnr"><code class="flex name class">
 <span>class <span class="ident">Tsnr</span></span>
@@ -480,6 +573,9 @@ Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.</dd>
 <ul>
 <li>
 <h4><code><a title="ukat.qa.snr.Isnr" href="#ukat.qa.snr.Isnr">Isnr</a></code></h4>
+<ul class="">
+<li><code><a title="ukat.qa.snr.Isnr.to_nifti" href="#ukat.qa.snr.Isnr.to_nifti">to_nifti</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="ukat.qa.snr.Tsnr" href="#ukat.qa.snr.Tsnr">Tsnr</a></code></h4>
