@@ -11,6 +11,8 @@ class Isnr:
         ----------
         isnr : float
             Image signal to noise ratio.
+        isnr_map : np.ndarray
+            A map of the image signal to noise ratio.
         noise_mask : np.ndarray
             Mask of the ROI used to measure noise levels. Should be voxels
             outside the body.
@@ -19,12 +21,15 @@ class Isnr:
             segmentation. This can be useful for debugging.
         """
 
-    def __init__(self, pixel_array, noise_mask=None, n_clusters=3):
-        """Initialise a image signal to noise ratio (iSNR) class instance.
+    def __init__(self, pixel_array, affine, noise_mask=None, n_clusters=3):
+        """Initialise an image signal to noise ratio (iSNR) class instance.
         Parameters
         ----------
         pixel_array : np.ndarray
             Array of voxels over which iSNR should be calculated.
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
         noise_mask : np.ndarray, optional
             A binary voxel mask where voxels representing background i.e.
             outside the body, are True. If no mask is supplied, one is
@@ -37,6 +42,7 @@ class Isnr:
             Default 3.
         """
         self.pixel_array = pixel_array
+        self.affine = affine
         self.n_clusters = n_clusters
         self.shape = pixel_array.shape
         self.dimensions = len(pixel_array.shape)
@@ -48,6 +54,7 @@ class Isnr:
             self.clusters = np.nan
 
         self.isnr = np.nan
+        self.isnr_map = np.zeros(self.shape)
         self.__snr__()
 
     def __mask_background__(self):
@@ -70,7 +77,25 @@ class Isnr:
     def __snr__(self):
         noise = np.std(self.pixel_array[self.noise_mask])
         signal = np.mean(self.pixel_array[~self.noise_mask])
-        self.isnr = (signal/noise) * np.sqrt(2-(np.pi/2))
+        self.isnr = (signal / noise) * np.sqrt(2 - (np.pi / 2))
+        self.isnr_map = (self.pixel_array / noise) * np.sqrt(2 - (np.pi / 2))
+
+    def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output'):
+        """Exports iSNR maps to NIFTI.
+
+        Parameters
+        ----------
+        output_directory : string, optional
+            Path to the folder where the NIFTI files will be saved.
+        base_file_name : string, optional
+            Filename of the resulting NIFTI. This code appends the extension.
+            Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
+        """
+        os.makedirs(output_directory, exist_ok=True)
+        base_path = os.path.join(output_directory, base_file_name)
+
+        isnr_nifti = nib.Nifti1Image(self.isnr_map, affine=self.affine)
+        nib.save(isnr_nifti, base_path + '_isnr_map.nii.gz')
 
 
 class Tsnr:
