@@ -80,10 +80,10 @@ class B0:
             # [-pi, pi] if not in that range already.
             self.phase0 = np.ma.masked_array(
                             convert_to_pi_range(np.squeeze(
-                                self.pixel_array[..., 0])), mask=mask)
+                                self.pixel_array[..., 0])), mask=~self.mask)
             self.phase1 = np.ma.masked_array(
                             convert_to_pi_range(np.squeeze(
-                                self.pixel_array[..., 1])), mask=mask)
+                                self.pixel_array[..., 1])), mask=~self.mask)
             if unwrap:
                 # Unwrap each phase image
                 self.phase0 = unwrap_phase(self.phase0,
@@ -110,6 +110,9 @@ class B0:
             b0_offset_step = 1 / self.delta_te
             # B0 Map Offset Correction
             self.b0_map -= (mean_central_b0 // b0_offset_step) * b0_offset_step
+            
+            # Mask B0 Map
+            self.b0_map[~self.mask] = 0
         else:
             raise ValueError('The input should contain 2 echo times.'
                              'The last dimension of the input pixel_array must'
