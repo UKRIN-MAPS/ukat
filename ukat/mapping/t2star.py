@@ -222,7 +222,7 @@ class T2Star:
 
         elif method == '2p_exp':
             # Initialise parameters
-            bounds = ([0, 0], [700, 1000000])
+            bounds = ([0, 0], [700, 100000000])
             initial_guess = [20, 10000]
 
             # Fit data to equation
