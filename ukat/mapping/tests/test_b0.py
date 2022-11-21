@@ -3,6 +3,8 @@ import shutil
 import numpy as np
 import numpy.testing as npt
 import pytest
+
+from skimage.restoration import unwrap_phase
 from ukat.data import fetch
 from ukat.mapping.b0 import B0
 from ukat.utils import arraystats
@@ -197,8 +199,12 @@ class TestB0:
         # Get test data that requires b0_offset correction
         magnitude, phase, affine, te = fetch.b0_siemens(1)
         te *= 1000
+        # Add some extra offset to second TE. B0 maps will be corrupted,
+        # but this still causes the offset correction to be applied.
+        phase[..., 1] = np.angle(
+            np.exp(1j * (unwrap_phase(phase[..., 1]) + np.pi * 1.3)))
         # Process on a central slice only
-        images = phase[:, :, 4, :]
+        images = phase[:, 4, :, :]
         # B0Map with unwrapping
         mapper = B0(images, te, affine, unwrap=True)
         b0_map_without_offset_correction = (mapper.phase_difference /

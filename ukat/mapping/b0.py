@@ -80,10 +80,10 @@ class B0:
             # [-pi, pi] if not in that range already.
             self.phase0 = np.ma.masked_array(
                             convert_to_pi_range(np.squeeze(
-                                self.pixel_array[..., 0])), mask=mask)
+                                self.pixel_array[..., 0])), mask=~self.mask)
             self.phase1 = np.ma.masked_array(
                             convert_to_pi_range(np.squeeze(
-                                self.pixel_array[..., 1])), mask=mask)
+                                self.pixel_array[..., 1])), mask=~self.mask)
             if unwrap:
                 # Unwrap each phase image
                 self.phase0 = unwrap_phase(self.phase0,
@@ -97,19 +97,23 @@ class B0:
             # The following step checks in a central bounding box containing
             # the kidneys if there is an offset in the B0 Map and corrects
             # that offset if it exists. This is due to a jump in phase
-            # that can occurr during the unwrapping of the phase images.
+            # that can occur during the unwrapping of the phase images.
             # Bounding Box
             prop = 0.5
             bx0 = int(self.shape[0] / 2 - prop / 2 * self.shape[0])
             bxf = int(self.shape[0] / 2 + prop / 2 * self.shape[0])
             by0 = int(self.shape[1] / 2 - prop / 2 * self.shape[1])
             byf = int(self.shape[1] / 2 + prop / 2 * self.shape[1])
-            # B0 Map Mean inside the bounding box accross the slices
+            # B0 Map Mean inside the bounding box across the slices
             mean_central_b0 = np.mean(self.b0_map[bx0:bxf, by0:byf, ...])
             # B0 Map Offset Step
             b0_offset_step = 1 / self.delta_te
             # B0 Map Offset Correction
-            self.b0_map -= (mean_central_b0 // b0_offset_step) * b0_offset_step
+            self.b0_map -= (np.round(mean_central_b0 / b0_offset_step)) * \
+                           b0_offset_step
+            
+            # Mask B0 Map
+            self.b0_map[np.squeeze(~self.mask)] = 0
         else:
             raise ValueError('The input should contain 2 echo times.'
                              'The last dimension of the input pixel_array must'
