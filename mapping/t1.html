@@ -262,14 +262,14 @@ class T1:
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [5000, 10000000])
+            bounds = ([0, 0], [5000, 1000000000])
             initial_guess = [1000, 30000]
             if sig.min() &gt;= 0:
                 eq = two_param_abs_eq
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1], [5000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 1000000000, 2])
             initial_guess = [1000, 30000, 2]
             if sig.min() &gt;= 0:
                 eq = three_param_abs_eq
@@ -1095,14 +1095,14 @@ increase in speed distributing the calculation would generate.</dd>
 
         # Initialise parameters and specify equation to fit to
         if parameters == 2:
-            bounds = ([0, 0], [5000, 10000000])
+            bounds = ([0, 0], [5000, 1000000000])
             initial_guess = [1000, 30000]
             if sig.min() &gt;= 0:
                 eq = two_param_abs_eq
             else:
                 eq = two_param_eq
         elif parameters == 3:
-            bounds = ([0, 0, 1], [5000, 10000000, 2])
+            bounds = ([0, 0, 1], [5000, 1000000000, 2])
             initial_guess = [1000, 30000, 2]
             if sig.min() &gt;= 0:
                 eq = three_param_abs_eq
