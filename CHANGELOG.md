@@ -1,6 +1,7 @@
 ## [0.6.4] - 2022-11-21
 
 ### Added
+* Python 3.10 is now supported.
 
 ### Changed
 * Increased upper bounds of M0 in T1, T2 and T2* exponential fit. #196 #199
