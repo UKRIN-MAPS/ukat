@@ -1,3 +1,14 @@
+## [0.6.4] - 2022-11-21
+
+### Added
+
+### Changed
+* Increased upper bounds of M0 in T1, T2 and T2* exponential fit. #196 #199
+* B0 mask now keeps True voxels rather than False voxels, making it align with the rest of UKAT. #194 #195
+
+### Fixed
+* Fixed bug in B0 offset calculation. #200
+
 ## [0.6.3] - 2022-10-26
 
 ### Added
