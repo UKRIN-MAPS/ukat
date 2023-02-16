@@ -64,7 +64,7 @@ class MTR:
         else:
             self.mask = mask
         # The assumption is that MT_OFF comes first in `pixel_array`
-        self.mt_off = np.sequeeze(self.pixel_array[..., 0] * self.mask)
+        self.mt_off = np.squeeze(self.pixel_array[..., 0] * self.mask)
         # The assumption is that MT_ON comes second in `pixel_array`
         self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
