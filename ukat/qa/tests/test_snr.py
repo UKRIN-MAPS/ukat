@@ -136,7 +136,11 @@ class TestIsnr:
     def test_to_nifti(self):
         data, affine = fetch.t2w_volume_philips()
         isnr_obj = snr.Isnr(data, affine)
+
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
+
         isnr_obj.to_nifti('test_output', base_file_name='T2w')
         output_files = os.listdir('test_output')
         assert len(output_files) == 1
@@ -214,7 +218,11 @@ class TestTsnr:
 
     def test_to_nifti(self):
         tsnr_obj = snr.Tsnr(self.data, self.affine)
+
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
+
         tsnr_obj.to_nifti('test_output', base_file_name='synthetic_data')
         output_files = os.listdir('test_output')
         assert len(output_files) == 1

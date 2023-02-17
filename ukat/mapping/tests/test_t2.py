@@ -176,6 +176,8 @@ class TestT2:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2(signal_array, self.t, self.affine)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.

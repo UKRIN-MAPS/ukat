@@ -91,6 +91,8 @@ class TestB0:
         mapper = B0(self.correct_array, self.correct_echo_list,
                     self.affine, unwrap=False)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.

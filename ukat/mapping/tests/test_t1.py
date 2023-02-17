@@ -307,6 +307,8 @@ class TestT1:
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         mapper = T1(signal_array, self.t, self.affine, parameters=3)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.

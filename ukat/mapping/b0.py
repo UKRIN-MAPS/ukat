@@ -145,7 +145,7 @@ class B0:
                     b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
                     nib.save(b0_nifti, base_path + '_b0_map.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
                 elif result == 'phase0':

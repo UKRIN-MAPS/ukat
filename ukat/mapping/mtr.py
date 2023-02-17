@@ -94,18 +94,21 @@ class MTR:
             for result in maps:
                 if result == 'mtr' or result == 'mtr_map':
                     mtr_nifti = nib.Nifti1Image(self.mtr_map,
-                                                affine=self.affine)
+                                                affine=self.affine,
+                                                dtype=float)
                     nib.save(mtr_nifti, base_path + '_mtr_map.nii.gz')
                 elif result == 'mt_on':
                     mt_on_nifti = nib.Nifti1Image(self.mt_on,
-                                                  affine=self.affine)
+                                                  affine=self.affine,
+                                                  dtype=float)
                     nib.save(mt_on_nifti, base_path + '_mt_on.nii.gz')
                 elif result == 'mt_off':
                     mt_off_nifti = nib.Nifti1Image(self.mt_off,
-                                                   affine=self.affine)
+                                                   affine=self.affine,
+                                                   dtype=float)
                     nib.save(mt_off_nifti, base_path + '_mt_off.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:

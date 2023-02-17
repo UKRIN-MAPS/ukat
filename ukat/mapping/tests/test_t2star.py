@@ -120,6 +120,8 @@ class TestT2Star:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp')
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
