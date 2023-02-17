@@ -255,7 +255,7 @@ class ADC:
                                                     affine=self.affine)
                     nib.save(adc_err_nifti, base_path + '_adc_err.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
@@ -406,7 +406,7 @@ class DTI:
                     nib.save(color_fa_nifti, base_path +
                              '_color_fa_map.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:

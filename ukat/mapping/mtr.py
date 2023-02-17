@@ -105,7 +105,7 @@ class MTR:
                                                    affine=self.affine)
                     nib.save(mt_off_nifti, base_path + '_mt_off.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
