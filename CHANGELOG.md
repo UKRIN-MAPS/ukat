@@ -1,3 +1,15 @@
+## [0.6.5] - 2023-02-17
+
+### Added
+* Number of downloads badge to readme
+
+### Changed
+* Lots of dependencies have been updated to their latest versions #203
+* Dependencies are now set to be compatible versions (~=) rather than greater than a specific version (>=) #203
+
+### Fixed
+* MTR outputs are now squeezed to remove bonus dimensions #202
+
 ## [0.6.4] - 2022-11-21
 
 ### Added
