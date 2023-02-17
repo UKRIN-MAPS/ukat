@@ -134,6 +134,8 @@ class TestPC:
         assert number_columns == 7
 
     def test_to_csv(self):
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
         csv_path = os.path.join('test_output', "pc_test_output.csv")
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
@@ -161,7 +163,11 @@ class TestPC:
     def test_to_nifti(self):
         # Create a PC instance and test different export to NIFTI scenarios
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
+
         # Check all is saved.
         pc_obj.to_nifti(output_directory='test_output',
                         base_file_name='pctest', maps='all')

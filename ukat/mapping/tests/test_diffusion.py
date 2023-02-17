@@ -146,6 +146,8 @@ class TestADC:
     def test_to_nifti(self):
         mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
@@ -263,6 +265,8 @@ class TestDTI:
         mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
                      self.mask)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.
