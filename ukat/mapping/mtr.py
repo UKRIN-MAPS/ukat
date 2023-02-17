@@ -62,7 +62,7 @@ class MTR:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = mask
+            self.mask = mask.astype(bool)
         # The assumption is that MT_OFF comes first in `pixel_array`
         self.mt_off = self.pixel_array[..., 0] * self.mask
         # The assumption is that MT_ON comes second in `pixel_array`
