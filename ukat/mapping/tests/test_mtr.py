@@ -64,6 +64,8 @@ class TestMTR:
         # Create a MTR map instance and test different export to NIFTI options.
         mapper = MTR(self.correct_array, self.affine)
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.

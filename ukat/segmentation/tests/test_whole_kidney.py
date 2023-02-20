@@ -70,7 +70,10 @@ class TestSegmentation:
                      '118.19352480602264',
                      '121.80702174282074']]
 
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
+
         self.segmentation.save_volumes_csv('test_output/volumes.csv')
         output_files = os.listdir('test_output')
 
@@ -86,6 +89,8 @@ class TestSegmentation:
         shutil.rmtree('test_output')
 
     def test_to_nifti(self):
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
         os.makedirs('test_output', exist_ok=True)
 
         # Check all is saved.

@@ -183,19 +183,24 @@ class Segmentation(nib.Nifti1Image):
         if isinstance(maps, list):
             for result in maps:
                 if result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self._mask, self.affine)
+                    mask_nifti = nib.Nifti1Image(self.get_mask(),
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
                 elif result == 'left':
                     left_nifti = nib.Nifti1Image(self.get_left_kidney(),
-                                                 self.affine)
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(left_nifti, base_path + '_left_kidney.nii.gz')
                 elif result == 'right':
                     right_nifti = nib.Nifti1Image(self.get_right_kidney(),
-                                                  self.affine)
+                                                  self.affine,
+                                                  dtype=np.uint16)
                     nib.save(right_nifti, base_path + '_right_kidney.nii.gz')
                 elif result == 'individual':
                     ind_nifti = nib.Nifti1Image(self.get_kidneys(),
-                                                self.affine)
+                                                self.affine,
+                                                dtype=np.uint16)
                     nib.save(ind_nifti, base_path +
                              '_individual_kidneys.nii.gz')
         else:

@@ -64,12 +64,12 @@ class MTR:
         else:
             self.mask = mask
         # The assumption is that MT_OFF comes first in `pixel_array`
-        self.mt_off = self.pixel_array[..., 0] * self.mask
+        self.mt_off = np.squeeze(self.pixel_array[..., 0] * self.mask)
         # The assumption is that MT_ON comes second in `pixel_array`
-        self.mt_on = self.pixel_array[..., 1] * self.mask
+        self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
-        self.mtr_map = np.nan_to_num(((self.mt_off - self.mt_on) /
-                                     self.mt_off), posinf=0, neginf=0)
+        self.mtr_map = np.squeeze(np.nan_to_num(((self.mt_off - self.mt_on) /
+                                     self.mt_off), posinf=0, neginf=0))
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -94,18 +94,21 @@ class MTR:
             for result in maps:
                 if result == 'mtr' or result == 'mtr_map':
                     mtr_nifti = nib.Nifti1Image(self.mtr_map,
-                                                affine=self.affine)
+                                                affine=self.affine,
+                                                dtype=float)
                     nib.save(mtr_nifti, base_path + '_mtr_map.nii.gz')
                 elif result == 'mt_on':
                     mt_on_nifti = nib.Nifti1Image(self.mt_on,
-                                                  affine=self.affine)
+                                                  affine=self.affine,
+                                                  dtype=float)
                     nib.save(mt_on_nifti, base_path + '_mt_on.nii.gz')
                 elif result == 'mt_off':
                     mt_off_nifti = nib.Nifti1Image(self.mt_off,
-                                                   affine=self.affine)
+                                                   affine=self.affine,
+                                                   dtype=float)
                     nib.save(mt_off_nifti, base_path + '_mt_off.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
