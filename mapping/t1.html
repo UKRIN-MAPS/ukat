@@ -372,7 +372,7 @@ class T1:
                                                affine=self.affine)
                     nib.save(r1_nifti, base_path + &#39;_r1_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -1205,7 +1205,7 @@ increase in speed distributing the calculation would generate.</dd>
                                                affine=self.affine)
                     nib.save(r1_nifti, base_path + &#39;_r1_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -1326,7 +1326,7 @@ or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
                                            affine=self.affine)
                 nib.save(r1_nifti, base_path + &#39;_r1_map.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
     else:

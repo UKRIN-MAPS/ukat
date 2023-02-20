@@ -284,7 +284,7 @@ class ADC:
                                                     affine=self.affine)
                     nib.save(adc_err_nifti, base_path + &#39;_adc_err.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -435,7 +435,7 @@ class DTI:
                     nib.save(color_fa_nifti, base_path +
                              &#39;_color_fa_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -811,7 +811,7 @@ If False, all b-values supplied will be used to fit ADC.</dd>
                                                     affine=self.affine)
                     nib.save(adc_err_nifti, base_path + &#39;_adc_err.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -870,7 +870,7 @@ or a list of maps from ["adc", "adc_err", "mask"].</dd>
                                                 affine=self.affine)
                 nib.save(adc_err_nifti, base_path + &#39;_adc_err.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
     else:
@@ -1097,7 +1097,7 @@ If False, all b-values supplied will be used.</dd>
                     nib.save(color_fa_nifti, base_path +
                              &#39;_color_fa_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -1160,7 +1160,7 @@ or a list of maps from ["md", "fa", "color_fa", "mask"].</dd>
                 nib.save(color_fa_nifti, base_path +
                          &#39;_color_fa_map.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
     else:

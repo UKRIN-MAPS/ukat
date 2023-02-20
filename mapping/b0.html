@@ -173,7 +173,7 @@ class B0:
                     b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
                     nib.save(b0_nifti, base_path + &#39;_b0_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
                 elif result == &#39;phase0&#39;:
@@ -404,7 +404,7 @@ next to voxels [-1, :, :] if wrap_around=True.</dd>
                     b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
                     nib.save(b0_nifti, base_path + &#39;_b0_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
                 elif result == &#39;phase0&#39;:
@@ -477,7 +477,7 @@ or a list of maps from ["b0", "mask", "phase0", "phase1",
                 b0_nifti = nib.Nifti1Image(self.b0_map, affine=self.affine)
                 nib.save(b0_nifti, base_path + &#39;_b0_map.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
             elif result == &#39;phase0&#39;:

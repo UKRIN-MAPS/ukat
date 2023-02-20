@@ -346,7 +346,7 @@ class T2Star:
                                                    affine=self.affine)
                     nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -813,7 +813,7 @@ voxels.</dd>
                                                    affine=self.affine)
                     nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -939,7 +939,7 @@ or a list of maps from ["t2star", "t2star_err", "m0",
                                                affine=self.affine)
                 nib.save(r2star_nifti, base_path + &#39;_r2star_map.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
     else:

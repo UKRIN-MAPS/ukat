@@ -286,7 +286,7 @@ class PhaseContrast:
                     nib.save(velocity_nifti, base_path +
                              &#39;_velocity_array.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -677,7 +677,7 @@ the raw data.</dd>
                     nib.save(velocity_nifti, base_path +
                              &#39;_velocity_array.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
         else:
@@ -895,7 +895,7 @@ or a list of maps from ["phase_array", "mask", "velocity_array"].</dd>
                 nib.save(velocity_nifti, base_path +
                          &#39;_velocity_array.nii.gz&#39;)
             elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(int),
+                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
     else:

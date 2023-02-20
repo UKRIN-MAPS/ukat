@@ -164,7 +164,11 @@ class TestIsnr:
     def test_to_nifti(self):
         data, affine = fetch.t2w_volume_philips()
         isnr_obj = snr.Isnr(data, affine)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         isnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;T2w&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
         assert len(output_files) == 1
@@ -242,7 +246,11 @@ class TestTsnr:
 
     def test_to_nifti(self):
         tsnr_obj = snr.Tsnr(self.data, self.affine)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         tsnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;synthetic_data&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
         assert len(output_files) == 1
@@ -404,7 +412,11 @@ if os.path.exists(&#39;test_output&#39;):
     def test_to_nifti(self):
         data, affine = fetch.t2w_volume_philips()
         isnr_obj = snr.Isnr(data, affine)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         isnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;T2w&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
         assert len(output_files) == 1
@@ -581,7 +593,11 @@ if os.path.exists(&#39;test_output&#39;):
 <pre><code class="python">def test_to_nifti(self):
     data, affine = fetch.t2w_volume_philips()
     isnr_obj = snr.Isnr(data, affine)
+
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
     isnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;T2w&#39;)
     output_files = os.listdir(&#39;test_output&#39;)
     assert len(output_files) == 1
@@ -670,7 +686,11 @@ if os.path.exists(&#39;test_output&#39;):
 
     def test_to_nifti(self):
         tsnr_obj = snr.Tsnr(self.data, self.affine)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         tsnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;synthetic_data&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
         assert len(output_files) == 1
@@ -779,7 +799,11 @@ if os.path.exists(&#39;test_output&#39;):
 </summary>
 <pre><code class="python">def test_to_nifti(self):
     tsnr_obj = snr.Tsnr(self.data, self.affine)
+
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
     tsnr_obj.to_nifti(&#39;test_output&#39;, base_file_name=&#39;synthetic_data&#39;)
     output_files = os.listdir(&#39;test_output&#39;)
     assert len(output_files) == 1

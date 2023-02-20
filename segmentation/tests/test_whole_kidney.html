@@ -98,7 +98,10 @@ class TestSegmentation:
                      &#39;118.19352480602264&#39;,
                      &#39;121.80702174282074&#39;]]
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         self.segmentation.save_volumes_csv(&#39;test_output/volumes.csv&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
 
@@ -114,6 +117,8 @@ class TestSegmentation:
         shutil.rmtree(&#39;test_output&#39;)
 
     def test_to_nifti(self):
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -221,7 +226,10 @@ if os.path.exists(&#39;test_output&#39;):
                      &#39;118.19352480602264&#39;,
                      &#39;121.80702174282074&#39;]]
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         self.segmentation.save_volumes_csv(&#39;test_output/volumes.csv&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
 
@@ -237,6 +245,8 @@ if os.path.exists(&#39;test_output&#39;):
         shutil.rmtree(&#39;test_output&#39;)
 
     def test_to_nifti(self):
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -423,7 +433,10 @@ if os.path.exists(&#39;test_output&#39;):
                  &#39;118.19352480602264&#39;,
                  &#39;121.80702174282074&#39;]]
 
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
     self.segmentation.save_volumes_csv(&#39;test_output/volumes.csv&#39;)
     output_files = os.listdir(&#39;test_output&#39;)
 
@@ -449,6 +462,8 @@ if os.path.exists(&#39;test_output&#39;):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def test_to_nifti(self):
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
     # Check all is saved.

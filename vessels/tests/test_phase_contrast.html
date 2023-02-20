@@ -162,6 +162,8 @@ class TestPC:
         assert number_columns == 7
 
     def test_to_csv(self):
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
         csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
@@ -189,7 +191,11 @@ class TestPC:
     def test_to_nifti(self):
         # Create a PC instance and test different export to NIFTI scenarios
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         # Check all is saved.
         pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)
@@ -430,6 +436,8 @@ if os.path.exists(&#39;test_output&#39;):
         assert number_columns == 7
 
     def test_to_csv(self):
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
         csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
@@ -457,7 +465,11 @@ if os.path.exists(&#39;test_output&#39;):
     def test_to_nifti(self):
         # Create a PC instance and test different export to NIFTI scenarios
         pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
         # Check all is saved.
         pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)
@@ -851,6 +863,8 @@ if os.path.exists(&#39;test_output&#39;):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def test_to_csv(self):
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
     csv_path = os.path.join(&#39;test_output&#39;, &#34;pc_test_output.csv&#34;)
     pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
@@ -881,7 +895,11 @@ if os.path.exists(&#39;test_output&#39;):
 <pre><code class="python">def test_to_nifti(self):
     # Create a PC instance and test different export to NIFTI scenarios
     pc_obj = PhaseContrast(self.correct_signal, self.affine, self.mask)
+
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
+
     # Check all is saved.
     pc_obj.to_nifti(output_directory=&#39;test_output&#39;,
                     base_file_name=&#39;pctest&#39;, maps=&#39;all&#39;)

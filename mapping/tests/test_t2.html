@@ -204,6 +204,8 @@ class TestT2:
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2(signal_array, self.t, self.affine)
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -440,6 +442,8 @@ if os.path.exists(&#39;test_output&#39;):
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
         mapper = T2(signal_array, self.t, self.affine)
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -752,6 +756,8 @@ if os.path.exists(&#39;test_output&#39;):
     signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
     mapper = T2(signal_array, self.t, self.affine)
 
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
     # Check all is saved.

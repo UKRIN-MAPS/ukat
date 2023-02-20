@@ -119,6 +119,8 @@ class TestB0:
         mapper = B0(self.correct_array, self.correct_echo_list,
                     self.affine, unwrap=False)
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -344,6 +346,8 @@ if os.path.exists(&#39;test_output&#39;):
         mapper = B0(self.correct_array, self.correct_echo_list,
                     self.affine, unwrap=False)
 
+        if os.path.exists(&#39;test_output&#39;):
+            shutil.rmtree(&#39;test_output&#39;)
         os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
         # Check all is saved.
@@ -711,6 +715,8 @@ if os.path.exists(&#39;test_output&#39;):
     mapper = B0(self.correct_array, self.correct_echo_list,
                 self.affine, unwrap=False)
 
+    if os.path.exists(&#39;test_output&#39;):
+        shutil.rmtree(&#39;test_output&#39;)
     os.makedirs(&#39;test_output&#39;, exist_ok=True)
 
     # Check all is saved.

@@ -211,19 +211,24 @@ class Segmentation(nib.Nifti1Image):
         if isinstance(maps, list):
             for result in maps:
                 if result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self._mask, self.affine)
+                    mask_nifti = nib.Nifti1Image(self.get_mask(),
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
                 elif result == &#39;left&#39;:
                     left_nifti = nib.Nifti1Image(self.get_left_kidney(),
-                                                 self.affine)
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(left_nifti, base_path + &#39;_left_kidney.nii.gz&#39;)
                 elif result == &#39;right&#39;:
                     right_nifti = nib.Nifti1Image(self.get_right_kidney(),
-                                                  self.affine)
+                                                  self.affine,
+                                                  dtype=np.uint16)
                     nib.save(right_nifti, base_path + &#39;_right_kidney.nii.gz&#39;)
                 elif result == &#39;individual&#39;:
                     ind_nifti = nib.Nifti1Image(self.get_kidneys(),
-                                                self.affine)
+                                                self.affine,
+                                                dtype=np.uint16)
                     nib.save(ind_nifti, base_path +
                              &#39;_individual_kidneys.nii.gz&#39;)
         else:
@@ -461,19 +466,24 @@ internet and used.</dd>
         if isinstance(maps, list):
             for result in maps:
                 if result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self._mask, self.affine)
+                    mask_nifti = nib.Nifti1Image(self.get_mask(),
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
                 elif result == &#39;left&#39;:
                     left_nifti = nib.Nifti1Image(self.get_left_kidney(),
-                                                 self.affine)
+                                                 self.affine,
+                                                 dtype=np.uint16)
                     nib.save(left_nifti, base_path + &#39;_left_kidney.nii.gz&#39;)
                 elif result == &#39;right&#39;:
                     right_nifti = nib.Nifti1Image(self.get_right_kidney(),
-                                                  self.affine)
+                                                  self.affine,
+                                                  dtype=np.uint16)
                     nib.save(right_nifti, base_path + &#39;_right_kidney.nii.gz&#39;)
                 elif result == &#39;individual&#39;:
                     ind_nifti = nib.Nifti1Image(self.get_kidneys(),
-                                                self.affine)
+                                                self.affine,
+                                                dtype=np.uint16)
                     nib.save(ind_nifti, base_path +
                              &#39;_individual_kidneys.nii.gz&#39;)
         else:
@@ -495,6 +505,22 @@ internet and used.</dd>
 <li>nibabel.filebasedimages.SerializableImage</li>
 <li>nibabel.filebasedimages.FileBasedImage</li>
 </ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="ukat.segmentation.whole_kidney.Segmentation.header_class"><code class="name">var <span class="ident">header_class</span> : Type[Nifti1Header]</code></dt>
+<dd>
+<div class="desc"><p>Class for NIfTI1 header</p>
+<p>The NIfTI1 header has many more coded fields than the simpler Analyze
+variants.
+NIfTI1 headers also have extensions.</p>
+<p>Nifti allows the header to be a separate file, as part of a nifti image /
+header pair, or to precede the data in a single file.
+The object needs to
+know which type it is, in order to manage the voxel offset pointing to the
+data, extension reading, and writing the correct magic string.</p>
+<p>This class handles the header-preceding-data case.</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="ukat.segmentation.whole_kidney.Segmentation.get_kidneys"><code class="name flex">
@@ -785,19 +811,24 @@ or a list of maps from ["mask", "left", "right", "individual"]</dd>
     if isinstance(maps, list):
         for result in maps:
             if result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self._mask, self.affine)
+                mask_nifti = nib.Nifti1Image(self.get_mask(),
+                                             self.affine,
+                                             dtype=np.uint16)
                 nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
             elif result == &#39;left&#39;:
                 left_nifti = nib.Nifti1Image(self.get_left_kidney(),
-                                             self.affine)
+                                             self.affine,
+                                             dtype=np.uint16)
                 nib.save(left_nifti, base_path + &#39;_left_kidney.nii.gz&#39;)
             elif result == &#39;right&#39;:
                 right_nifti = nib.Nifti1Image(self.get_right_kidney(),
-                                              self.affine)
+                                              self.affine,
+                                              dtype=np.uint16)
                 nib.save(right_nifti, base_path + &#39;_right_kidney.nii.gz&#39;)
             elif result == &#39;individual&#39;:
                 ind_nifti = nib.Nifti1Image(self.get_kidneys(),
-                                            self.affine)
+                                            self.affine,
+                                            dtype=np.uint16)
                 nib.save(ind_nifti, base_path +
                          &#39;_individual_kidneys.nii.gz&#39;)
     else:
@@ -835,6 +866,7 @@ or a list of maps from ["mask", "left", "right", "individual"]</dd>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_rkv" href="#ukat.segmentation.whole_kidney.Segmentation.get_rkv">get_rkv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_tkv" href="#ukat.segmentation.whole_kidney.Segmentation.get_tkv">get_tkv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_volumes" href="#ukat.segmentation.whole_kidney.Segmentation.get_volumes">get_volumes</a></code></li>
+<li><code><a title="ukat.segmentation.whole_kidney.Segmentation.header_class" href="#ukat.segmentation.whole_kidney.Segmentation.header_class">header_class</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.save_volumes_csv" href="#ukat.segmentation.whole_kidney.Segmentation.save_volumes_csv">save_volumes_csv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.to_nifti" href="#ukat.segmentation.whole_kidney.Segmentation.to_nifti">to_nifti</a></code></li>
 </ul>
