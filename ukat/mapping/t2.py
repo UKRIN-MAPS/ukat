@@ -2,8 +2,55 @@ import os
 import nibabel as nib
 import numpy as np
 import concurrent.futures
+
+from . import fitting
+from itertools import compress
+from numba import njit
 from tqdm import tqdm
 from scipy.optimize import curve_fit
+
+
+class T2Model:
+    def __init__(self, pixel_array, te, method='2p_exp', mask=None,
+                 multithread=True):
+        self.pixel_array = pixel_array
+        self.map_shape = pixel_array.shape[:-1]
+        self.x = te
+        self.method = method
+        self.mask = mask
+        self.multithread = multithread
+        self.n_x = pixel_array.shape[-1]
+
+        if method == '2p_exp':
+            self.eq = two_param_eq
+            self.n_params = 2
+            self.bounds = ([0, 0], [1000, 100000000])
+            self.initial_guess = [20, 10000]
+        elif self.method == '3p_exp':
+            self.eq = three_param_eq
+            self.n_params = 3
+            self.bounds = ([0, 0, 0], [1000, 100000000, 1000000])
+            self.initial_guess = [20, 10000, 500]
+
+        self.signal_list = self.pixel_array.reshape(-1, self.n_x).tolist()
+        self.x_list = [self.x] * len(self.signal_list)
+        self.p0_list = [self.initial_guess] * len(self.signal_list)
+
+        if self.mask is None:
+            self.mask_list = [True] * len(self.signal_list)
+        else:
+            self.mask_list = self.mask.reshape(-1).tolist()
+
+    def threshold_noise(self, threshold=0):
+        for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
+                                                self.x_list,
+                                                self.p0_list)):
+            self.signal_list[ind] = np.array(list(compress(sig, np.array(sig) >
+                                                  threshold)))
+            self.x_list[ind] = np.array(list(compress(te, np.array(sig) >
+                                             threshold)))
+            self.p0_list[ind] = np.array(list(compress(p0, np.array(sig) >
+                                              threshold)))
 
 
 class T2:
@@ -71,13 +118,14 @@ class T2:
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
         assert multithread is True \
-            or multithread is False \
-            or multithread == 'auto', 'multithreaded must be True, ' \
-                                      'False or auto. You entered {}' \
-            .format(multithread)
+               or multithread is False \
+               or multithread == 'auto', f'multithreaded must be True,' \
+                                         f'False or auto. You entered ' \
+                                         f'{multithread}'
+
         if method != '2p_exp' and method != '3p_exp':
-            raise ValueError('method can be 2p_exp or 3p_exp only. You '
-                             'specified {}'.format(method))
+            raise ValueError(f'method can be 2p_exp or 3p_exp only. You '
+                             f'specified {method}')
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
@@ -88,7 +136,7 @@ class T2:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = mask
+            self.mask = mask.astype(bool)
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.noise_threshold = noise_threshold
@@ -103,15 +151,33 @@ class T2:
         self.multithread = multithread
 
         # Fit data
-        if self.method == '2p_exp':
-            self.t2_map, self.t2_err, \
-                self.m0_map, self.m0_err \
-                = self.__fit__()
-        elif self.method == '3p_exp':
-            self.t2_map, self.t2_err, \
-                self.m0_map, self.m0_err, \
-                self.b_map, self.b_err \
-                = self.__fit__()
+        fitting_model = T2Model(self.pixel_array, self.echo_list,
+                                self.method, self.mask, self.multithread)
+
+        if self.noise_threshold > 0:
+            fitting_model.threshold_noise(self.noise_threshold)
+
+        popt, error, r2 = fitting.fit_image(fitting_model)
+        self.t2_map = popt[0]
+        self.m0_map = popt[1]
+        self.t2_err = error[0]
+        self.m0_err = error[1]
+        self.r2 = r2
+
+        if self.method == '3p_exp':
+            self.b_map = popt[2]
+            self.b_err = error[2]
+
+
+        # if self.method == '2p_exp':
+        #     self.t2_map, self.t2_err, \
+        #         self.m0_map, self.m0_err \
+        #         = self.__fit__()
+        # elif self.method == '3p_exp':
+        #     self.t2_map, self.t2_err, \
+        #         self.m0_map, self.m0_err, \
+        #         self.b_map, self.b_err \
+        #         = self.__fit__()
 
     def __fit__(self):
 
@@ -308,7 +374,7 @@ class T2:
 
         return
 
-
+@njit
 def two_param_eq(t, t2, m0):
     """
         Calculate the expected signal from the equation
@@ -330,7 +396,7 @@ def two_param_eq(t, t2, m0):
         """
     return np.sqrt(np.square(m0 * np.exp(-t / t2)))
 
-
+@njit
 def three_param_eq(t, t2, m0, b):
     """
         Calculate the expected signal from the equation
