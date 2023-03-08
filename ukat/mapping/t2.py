@@ -1,46 +1,68 @@
 import os
 import nibabel as nib
 import numpy as np
-import concurrent.futures
 
 from . import fitting
 from itertools import compress
-from tqdm import tqdm
-from scipy.optimize import curve_fit
 
 
-class T2Model:
+class T2Model(fitting.Model):
     def __init__(self, pixel_array, te, method='2p_exp', mask=None,
                  multithread=True):
-        self.pixel_array = pixel_array
-        self.map_shape = pixel_array.shape[:-1]
-        self.x = te
-        self.method = method
-        self.mask = mask
-        self.multithread = multithread
-        self.n_x = pixel_array.shape[-1]
+        """
+        A class containing the T2 fitting model
 
-        if method == '2p_exp':
-            self.eq = two_param_eq
-            self.n_params = 2
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            An array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2 map would have dimensions [x, y, z, TE].
+        te : np.ndarray
+            An array of the echo times used for the last dimension of the
+            pixel_array. In milliseconds.
+        method : {'2p_exp', '3p_exp'}, optional
+            Default '2p_exp'
+            The model the data is fit to. 2p_exp uses a two parameter
+            exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
+            three parameter exponential model (S = S0 * exp(-t / T2) + b) to
+            fit for noise/very long T2 components of the signal.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2 map rather than the raw data i.e. omit the time
+            dimension.
+        multithread : bool, optional
+            Default True
+            If True, the fitting will be performed in parallel using all
+            available cores
+        """
+        self.method = method
+
+        if self.method == '2p_exp':
+            super().__init__(pixel_array, te, two_param_eq, mask, multithread)
             self.bounds = ([0, 0], [1000, 100000000])
             self.initial_guess = [20, 10000]
         elif self.method == '3p_exp':
-            self.eq = three_param_eq
-            self.n_params = 3
+            super().__init__(pixel_array, te, three_param_eq, mask,
+                             multithread)
             self.bounds = ([0, 0, 0], [1000, 100000000, 1000000])
             self.initial_guess = [20, 10000, 500]
 
-        self.signal_list = self.pixel_array.reshape(-1, self.n_x).tolist()
-        self.x_list = [self.x] * len(self.signal_list)
-        self.p0_list = [self.initial_guess] * len(self.signal_list)
-
-        if self.mask is None:
-            self.mask_list = [True] * len(self.signal_list)
-        else:
-            self.mask_list = self.mask.reshape(-1).tolist()
+        self.generate_lists()
 
     def threshold_noise(self, threshold=0):
+        """
+        Remove voxel values below a certain threshold from the fitting
+        process, useful if long echo times have been collected and thus
+        thermal noise is being measured below a certain threshold rather
+        than the T2 decay.
+
+        Parameters
+        ----------
+        threshold : float, optional
+            Default 0
+            The threshold below which to remove values
+        """
         for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
                                                 self.x_list,
                                                 self.p0_list)):
@@ -64,6 +86,9 @@ class T2:
         The estimated M0 values
     m0_err : np.ndarray
         The certainty in the fit of `m0`
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the T2 map
     n_te : int
