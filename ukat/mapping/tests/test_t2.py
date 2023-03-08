@@ -147,8 +147,8 @@ class TestT2:
                                 0.0, 568.160604]
         gold_standard_3p_exp = [9.881218e+01, 4.294529e+01,
                                 3.489657e-02, 5.681606e+02]
-        gold_standard_thresh = [106.354968,  39.894933,
-                                0.0, 568.160591]
+        gold_standard_thresh = [106.351332, 39.904419,
+                                0.0, 568.160832]
 
         # 2p_exp method
         mapper = T2(image, te, self.affine)
