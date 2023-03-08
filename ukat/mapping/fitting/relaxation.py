@@ -3,6 +3,7 @@ import numpy as np
 from pathos.pools import ProcessPool
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
+from tqdm import tqdm
 
 
 def fit_image(model):
@@ -15,12 +16,13 @@ def fit_image(model):
                                    model.mask_list,
                                    [model] * len(model.signal_list))
     else:
-        results = list(map(fit_signal,
-                           model.signal_list,
-                           model.x_list,
-                           model.p0_list,
-                           model.mask_list,
-                           [model] * len(model.signal_list)))
+        results = list(tqdm(map(fit_signal,
+                                model.signal_list,
+                                model.x_list,
+                                model.p0_list,
+                                model.mask_list,
+                                [model] * len(model.signal_list)),
+                            total=len(model.signal_list)))
 
     popt_array = np.array([result[0] for result in results])
     popt_list = [popt_array[:, p].reshape(model.map_shape) for p in range(
