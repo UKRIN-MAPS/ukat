@@ -258,7 +258,7 @@ class T2Star:
         -------
         r2star_map : np.ndarray
             An array containing the R2* map generated
-            by the function with R2* measured in ms.
+            by the function with R2* measured in ms^-1.
         """
         return np.nan_to_num(np.reciprocal(self.t2star_map),
                              posinf=0, neginf=0)

@@ -136,7 +136,8 @@ class T2:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
             self.mask = mask.astype(bool)
-            # Don't process any nan values
+
+        # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.noise_threshold = noise_threshold
         self.method = method
@@ -165,23 +166,6 @@ class T2:
         if self.method == '3p_exp':
             self.b_map = popt[2]
             self.b_err = error[2]
-
-    def r2_map(self):
-        """
-        Generates the R2 map from the T2 map output by initialising this
-        class.
-
-        Parameters
-        ----------
-        See class attributes in __init__
-
-        Returns
-        -------
-        r2 : np.ndarray
-            An array containing the R2 map generated
-            by the function with R2 measured in ms.
-        """
-        return np.reciprocal(self.t2_map)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -220,7 +204,7 @@ class T2:
                                                    affine=self.affine)
                     nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
                 elif result == 'r2' or result == 'r2_map':
-                    r2_nifti = nib.Nifti1Image(T2.r2_map(self),
+                    r2_nifti = nib.Nifti1Image(self.r2,
                                                affine=self.affine)
                     nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
                 elif result == 'mask':
@@ -232,7 +216,6 @@ class T2:
                              'should be "all" or a list of maps from '
                              '"["t2", "t2_err", "m0", "m0_err", "r2", '
                              '"mask"]".')
-
         return
 
 

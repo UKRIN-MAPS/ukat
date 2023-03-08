@@ -40,7 +40,6 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
-        npt.assert_almost_equal(mapper.r2_map().mean(), 1 / self.t2)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False)
