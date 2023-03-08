@@ -5,7 +5,6 @@ import concurrent.futures
 
 from . import fitting
 from itertools import compress
-from numba import njit
 from tqdm import tqdm
 from scipy.optimize import curve_fit
 
@@ -374,7 +373,7 @@ class T2:
 
         return
 
-@njit
+
 def two_param_eq(t, t2, m0):
     """
         Calculate the expected signal from the equation
@@ -396,7 +395,7 @@ def two_param_eq(t, t2, m0):
         """
     return np.sqrt(np.square(m0 * np.exp(-t / t2)))
 
-@njit
+
 def three_param_eq(t, t2, m0, b):
     """
         Calculate the expected signal from the equation

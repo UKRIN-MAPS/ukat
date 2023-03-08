@@ -37,6 +37,11 @@ def fit_signal(sig, x, p0, mask, model):
         try:
             popt, pcov = curve_fit(model.eq, x, sig, p0=p0,
                                    bounds=model.bounds)
+            # Remove fits that are hitting (or very close to) the upper bounds
+            # as these tend to be inaccurate
+            if (popt > np.array(model.bounds[1]) * 0.999).any():
+                popt = np.zeros(model.n_params)
+                pcov = np.zeros((model.n_params, model.n_params))
         except (RuntimeError, ValueError):
             popt = np.zeros(model.n_params)
             pcov = np.zeros((model.n_params, model.n_params))
