@@ -247,9 +247,10 @@ class TestT1:
                         affine=self.affine, tss=1, tss_axis=2)
 
     def test_molli_2p_warning(self):
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         with pytest.warns(UserWarning):
-            mapper = T1(pixel_array=np.zeros((5, 5, 5)),
-                        inversion_list=np.linspace(0, 2000, 5),
+            mapper = T1(pixel_array=signal_array,
+                        inversion_list=self.t,
                         affine=self.affine, parameters=2, molli=True)
 
     def test_real_data(self):

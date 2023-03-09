@@ -3,8 +3,54 @@ import nibabel as nib
 import numpy as np
 import os
 import warnings
+
+from . import fitting
+
 from tqdm import tqdm
 from scipy.optimize import curve_fit
+
+
+class T1Model(fitting.Model):
+    def __init__(self, pixel_array, ti, method=2, mask=None, tss=0,
+                 tss_axis=-2, multithread=True):
+        self.method = method
+        self.tss = tss
+        self.tss_axis = tss_axis
+
+        if np.min(pixel_array) < 0:
+            self.mag_corr = True
+        else:
+            self.mag_corr = False
+
+        if self.method == 2:
+            if self.mag_corr:
+                super().__init__(pixel_array, ti, two_param_eq, mask,
+                                 multithread)
+            else:
+                super().__init__(pixel_array, ti, two_param_abs_eq, mask,
+                                 multithread)
+            self.bounds = ([0, 0], [5000, 1000000000])
+            self.initial_guess = [1000, 30000]
+        elif self.method == 3:
+            if self.mag_corr:
+                super().__init__(pixel_array, ti, three_param_eq, mask,
+                                 multithread)
+            else:
+                super().__init__(pixel_array, ti, three_param_abs_eq, mask,
+                                 multithread)
+            self.bounds = ([0, 0, 1], [5000, 1000000000, 2])
+            self.initial_guess = [1000, 30000, 2]
+        else:
+            raise ValueError(f'Parameters can be 2 or 3 only. You specified '
+                             f'{method}.')
+
+        self.generate_lists()
+        self._tss_correct_ti()
+
+    def _tss_correct_ti(self):
+        slices = np.indices(self.map_shape)[self.tss_axis].ravel()
+        for ind, (ti, slice) in enumerate(zip(self.x_list, slices)):
+            self.x_list[ind] = np.array(ti) + self.tss * slice
 
 
 class T1:
@@ -122,158 +168,42 @@ class T1:
                 warnings.warn('MOLLI requires a three parameter fit, '
                               'using parameters=3.')
 
-        # Initialise output attributes
-        self.t1_map = np.zeros(self.shape)
-        self.t1_err = np.zeros(self.shape)
-        self.m0_map = np.zeros(self.shape)
-        self.m0_err = np.zeros(self.shape)
-        self.eff_map = np.zeros(self.shape)
-        self.eff_err = np.zeros(self.shape)
+        # Fit Data
+        fitting_model = T1Model(self.pixel_array, self.inversion_list,
+                                self.parameters, self.mask, self.tss,
+                                self.tss_axis, self.multithread)
+        popt, error, r2 = fitting.fit_image(fitting_model)
+        self.t1_map = popt[0]
+        self.m0_map = popt[1]
+        self.t1_err = error[0]
+        self.m0_err = error[1]
+        self.r2 = r2
 
-        # Fit data
-        if self.parameters == 2:
-            self.t1_map, self.t1_err, self.m0_map, self.m0_err = self.__fit__()
-        elif self.parameters == 3:
-            self.t1_map, self.t1_err, self.m0_map, self.m0_err, \
-                self.eff_map, self.eff_err = self.__fit__()
-        else:
-            raise ValueError('Parameters can be 2 or 3 only. You specified '
-                             '{}'.format(self.parameters))
+        if self.parameters == 3:
+            self.eff_map = popt[2]
+            self.eff_err = error[2]
 
+        # Filter values that are very close to models upper bounds of T1 or
+        # M0 out. Not filtering based on eff as this should ideally be at
+        # the upper bound!
+        threshold = 0.999  # 99.9% of the upper bound
+        bounds_mask = ((self.t1_map > fitting_model.bounds[1][0] * 0.999) |
+                       (self.m0_map > fitting_model.bounds[1][1] * 0.999))
+        self.t1_map[bounds_mask] = 0
+        self.m0_map[bounds_mask] = 0
+        self.t1_err[bounds_mask] = 0
+        self.m0_err[bounds_mask] = 0
+        self.r2[bounds_mask] = 0
+        if self.parameters == 3:
+            self.eff_map[bounds_mask] = 0
+            self.eff_err[bounds_mask] = 0
+
+        # Do MOLLI correction
         if self.molli:
             correction_factor = (self.m0_map * self.eff_map) / self.m0_map - 1
             percentage_error = self.t1_err / self.t1_map
             self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
             self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
-
-    def __fit__(self):
-        n_vox = np.prod(self.shape)
-        # Initialise maps
-        t1_map = np.zeros(n_vox)
-        m0_map = np.zeros(n_vox)
-        t1_err = np.zeros(n_vox)
-        m0_err = np.zeros(n_vox)
-        if self.parameters == 3:
-            eff_map = np.zeros(n_vox)
-            eff_err = np.zeros(n_vox)
-        mask = self.mask.flatten()
-        signal = self.pixel_array.reshape(-1, self.n_ti)
-        slices = np.indices(self.shape)[self.tss_axis].ravel()
-        # Get indices of voxels to process
-        idx = np.argwhere(mask).squeeze()
-
-        # Multithreaded method
-        if self.multithread:
-            with concurrent.futures.ProcessPoolExecutor() as pool:
-                with tqdm(total=idx.size) as progress:
-                    futures = []
-
-                    for ind in idx:
-                        ti_slice_corrected = self.inversion_list + \
-                                             slices[ind] * self.tss
-                        future = pool.submit(self.__fit_signal__,
-                                             signal[ind, :],
-                                             ti_slice_corrected,
-                                             self.parameters)
-                        future.add_done_callback(lambda p: progress.update())
-                        futures.append(future)
-
-                    results = []
-                    for future in futures:
-                        result = future.result()
-                        results.append(result)
-
-            if self.parameters == 2:
-                t1_map[idx], t1_err[idx], \
-                    m0_map[idx], m0_err[idx] = [np.array(row)
-                                                for row in zip(*results)]
-            elif self.parameters == 3:
-                t1_map[idx], t1_err[idx], \
-                    m0_map[idx], m0_err[idx], \
-                        eff_map[idx], eff_err[idx] = [np.array(row)
-                                                      for row in zip(*results)]
-
-        # Single threaded method
-        else:
-            with tqdm(total=idx.size) as progress:
-                for ind in idx:
-                    sig = signal[ind, :]
-                    ti_slice_corrected = self.inversion_list + \
-                                            slices[ind] * self.tss
-                    if self.parameters == 2:
-                        t1_map[ind], t1_err[ind], \
-                            m0_map[ind], m0_err[ind] = \
-                                self.__fit_signal__(sig,
-                                                    ti_slice_corrected,
-                                                    self.parameters)
-                    elif self.parameters == 3:
-                        t1_map[ind], t1_err[ind], \
-                            m0_map[ind], m0_err[ind], \
-                                eff_map[ind], eff_err[ind] = \
-                                    self.__fit_signal__(sig,
-                                                        ti_slice_corrected,
-                                                        self.parameters)
-                    progress.update(1)
-
-        # Reshape results to raw data shape
-        t1_map = t1_map.reshape(self.shape)
-        m0_map = m0_map.reshape(self.shape)
-        t1_err = t1_err.reshape(self.shape)
-        m0_err = m0_err.reshape(self.shape)
-
-        if self.parameters == 2:
-            return t1_map, t1_err, m0_map, m0_err
-
-        elif self.parameters == 3:
-            eff_map = eff_map.reshape(self.shape)
-            eff_err = eff_err.reshape(self.shape)
-            return t1_map, t1_err, m0_map, m0_err, eff_map, eff_err
-
-    def __fit_signal__(self, sig, t, parameters):
-
-        # Initialise parameters and specify equation to fit to
-        if parameters == 2:
-            bounds = ([0, 0], [5000, 1000000000])
-            initial_guess = [1000, 30000]
-            if sig.min() >= 0:
-                eq = two_param_abs_eq
-            else:
-                eq = two_param_eq
-        elif parameters == 3:
-            bounds = ([0, 0, 1], [5000, 1000000000, 2])
-            initial_guess = [1000, 30000, 2]
-            if sig.min() >= 0:
-                eq = three_param_abs_eq
-            else:
-                eq = three_param_eq
-
-        # Fit data to equation
-        try:
-            popt, pcov = curve_fit(eq, t, sig,
-                                   p0=initial_guess, bounds=bounds)
-        except RuntimeError:
-            popt = np.zeros(self.parameters)
-            pcov = np.zeros((self.parameters, self.parameters))
-
-        # Extract fits and errors from result variable
-        if popt[0] < bounds[1][0] - 1:
-            t1 = popt[0]
-            m0 = popt[1]
-            err = np.sqrt(np.diag(pcov))
-            t1_err = err[0]
-            m0_err = err[1]
-            if self.parameters == 3:
-                eff = popt[2]
-                eff_err = err[2]
-        else:
-            t1, m0, t1_err, m0_err = 0, 0, 0, 0
-            if self.parameters == 3:
-                eff, eff_err = 0, 0
-
-        if self.parameters == 2:
-            return t1, t1_err, m0, m0_err
-        elif self.parameters == 3:
-            return t1, t1_err, m0, m0_err, eff, eff_err
 
     def r1_map(self):
         """
@@ -290,7 +220,10 @@ class T1:
             An array containing the R1 map generated
             by the function with R1 measured in ms.
         """
-        return np.nan_to_num(np.reciprocal(self.t1_map), posinf=0, neginf=0)
+        with np.errstate(divide='ignore'):
+            r1_map = np.nan_to_num(np.reciprocal(self.t1_map), posinf=0,
+                                   neginf=0)
+        return r1_map
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -373,7 +306,9 @@ def two_param_abs_eq(t, t1, m0):
     -------
     signal: ndarray
     """
-    return np.abs(m0 * (1 - 2 * np.exp(-t / t1)))
+    with np.errstate(divide='ignore'):
+        signal = np.abs(m0 * (1 - 2 * np.exp(-t / t1)))
+    return signal
 
 
 def two_param_eq(t, t1, m0):
@@ -394,7 +329,9 @@ def two_param_eq(t, t1, m0):
     -------
     signal: ndarray
     """
-    return m0 * (1 - 2 * np.exp(-t / t1))
+    with np.errstate(divide='ignore'):
+        signal = m0 * (1 - 2 * np.exp(-t / t1))
+    return signal
 
 
 def three_param_abs_eq(t, t1, m0, eff):
@@ -418,7 +355,9 @@ def three_param_abs_eq(t, t1, m0, eff):
     -------
     signal: ndarray
     """
-    return np.abs(m0 * (1 - eff * np.exp(-t / t1)))
+    with np.errstate(divide='ignore'):
+        signal = np.abs(m0 * (1 - eff * np.exp(-t / t1)))
+    return signal
 
 
 def three_param_eq(t, t1, m0, eff):
@@ -442,7 +381,9 @@ def three_param_eq(t, t1, m0, eff):
     -------
     signal: ndarray
     """
-    return m0 * (1 - eff * np.exp(-t / t1))
+    with np.errstate(divide='ignore'):
+        signal = m0 * (1 - eff * np.exp(-t / t1))
+    return signal
 
 
 def magnitude_correct(pixel_array):
