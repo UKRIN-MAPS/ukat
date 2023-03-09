@@ -316,13 +316,14 @@ class TestT1:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t1test', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 8
+        assert len(output_files) == 9
         assert 't1test_eff_err.nii.gz' in output_files
         assert 't1test_eff_map.nii.gz' in output_files
         assert 't1test_m0_err.nii.gz' in output_files
         assert 't1test_m0_map.nii.gz' in output_files
         assert 't1test_mask.nii.gz' in output_files
         assert 't1test_r1_map.nii.gz' in output_files
+        assert 't1test_r2.nii.gz' in output_files
         assert 't1test_t1_err.nii.gz' in output_files
         assert 't1test_t1_map.nii.gz' in output_files
 

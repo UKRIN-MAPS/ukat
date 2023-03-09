@@ -245,7 +245,7 @@ class T1:
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
             maps = ['t1', 't1_err', 'm0', 'm0_err', 'eff', 'eff_err', 'r1_map',
-                    'mask']
+                    'r2', 'mask']
         if isinstance(maps, list):
             for result in maps:
                 if result == 't1' or result == 't1_map':
@@ -275,6 +275,10 @@ class T1:
                     r1_nifti = nib.Nifti1Image(T1.r1_map(self),
                                                affine=self.affine)
                     nib.save(r1_nifti, base_path + '_r1_map.nii.gz')
+                elif result == 'r2':
+                    r2_nifti = nib.Nifti1Image(self.r2.astype(np.uint16),
+                                               affine=self.affine)
+                    nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
