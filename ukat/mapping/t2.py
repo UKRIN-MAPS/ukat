@@ -192,6 +192,20 @@ class T2:
             self.b_map = popt[2]
             self.b_err = error[2]
 
+        # Filter values that are very close to models upper bounds of T2 or
+        # M0 out.
+        threshold = 0.999  # 99.9% of the upper bound
+        bounds_mask = ((self.t2_map > fitting_model.bounds[1][0] * 0.999) |
+                       (self.m0_map > fitting_model.bounds[1][1] * 0.999))
+        self.t2_map[bounds_mask] = 0
+        self.m0_map[bounds_mask] = 0
+        self.t2_err[bounds_mask] = 0
+        self.m0_err[bounds_mask] = 0
+        self.r2[bounds_mask] = 0
+        if self.method == '3p_exp':
+            self.b_map[bounds_mask] = 0
+            self.b_err[bounds_mask] = 0
+
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T2 class attributes to NIFTI.
