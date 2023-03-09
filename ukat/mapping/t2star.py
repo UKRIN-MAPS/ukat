@@ -273,7 +273,7 @@ class T2Star:
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T2Star class attributes to NIFTI.
-                
+
         Parameters
         ----------
         output_directory : string, optional

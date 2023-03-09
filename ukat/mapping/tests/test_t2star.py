@@ -20,6 +20,7 @@ class TestT2Star:
                                1893.85093652, 1783.56164391, 1679.6950997,
                                1581.87727213, 1489.75591137, 1402.99928103])
     affine = np.eye(4)
+
     def test_two_param_eq(self):
         signal = two_param_eq(self.t, self.t2star, self.m0)
         npt.assert_allclose(signal, self.correct_signal, rtol=1e-6, atol=1e-8)

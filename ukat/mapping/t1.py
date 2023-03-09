@@ -122,7 +122,6 @@ class T1:
                 warnings.warn('MOLLI requires a three parameter fit, '
                               'using parameters=3.')
 
-
         # Initialise output attributes
         self.t1_map = np.zeros(self.shape)
         self.t1_err = np.zeros(self.shape)

@@ -195,7 +195,7 @@ class T2:
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T2 class attributes to NIFTI.
-                        
+
         Parameters
         ----------
         output_directory : string, optional
