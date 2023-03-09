@@ -284,12 +284,12 @@ class T2Star:
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
             or a list of maps from ["t2star", "t2star_err", "m0",
-            "m0_err", "r2star", "mask"].
+            "m0_err", "r2star", "r2", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['t2star', 'm0', 'r2star', 'mask']
+            maps = ['t2star', 'm0', 'r2star', 'r2', 'mask']
             if self.method == '2p_exp':
                 maps += ['t2star_err', 'm0_err']
         if isinstance(maps, list):
@@ -324,6 +324,10 @@ class T2Star:
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
                                                    affine=self.affine)
                     nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
+                elif result == 'r2' or result == 'r2_map':
+                    r2_nifti = nib.Nifti1Image(self.r2.astype(np.uint16),
+                                               affine=self.affine)
+                    nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
