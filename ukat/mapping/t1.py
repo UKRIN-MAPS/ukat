@@ -1,4 +1,3 @@
-import concurrent.futures
 import nibabel as nib
 import numpy as np
 import os
@@ -6,14 +5,50 @@ import warnings
 
 from . import fitting
 
-from tqdm import tqdm
-from scipy.optimize import curve_fit
-
 
 class T1Model(fitting.Model):
-    def __init__(self, pixel_array, ti, method=2, mask=None, tss=0,
+    def __init__(self, pixel_array, ti, parameters=2, mask=None, tss=0,
                  tss_axis=-2, multithread=True):
-        self.method = method
+        """
+        A class containing the T1 fitting model
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            An array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T1 map would have dimensions [x, y, z, TE].
+        ti : np.ndarray
+            An array of the inversion times used for the last dimension of the
+            pixel_array. In milliseconds.
+        parameters : {2, 3}, optional
+            Default `2`
+            The number of parameters to fit the data to. A two parameter fit
+            will estimate S0 and T1 while a three parameter fit will also
+            estimate the inversion efficiency.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T1 map rather than the raw data i.e. omit the time
+            dimension.
+        tss : float, optional
+            Default 0
+            The temporal slice spacing is the delay between acquisition of
+            slices in a T1 map. Including this information means the
+            inversion time is correct for each slice in a multi-slice T1
+            map. In milliseconds.
+        tss_axis : int, optional
+            Default -2 i.e. last spatial axis
+            The axis over which the temporal slice spacing is applied. This
+            axis is relative to the full 4D pixel array i.e. tss_axis=-1
+            would be along the TI axis and would be meaningless.
+            If `pixel_array` is single slice (dimensions [x, y, TI]),
+            then this should be set to None.
+        multithread : bool, optional
+            Default True
+            If True, the fitting will be performed in parallel using all
+            available cores
+        """
+        self.parameters = parameters
         self.tss = tss
         self.tss_axis = tss_axis
 
@@ -22,7 +57,7 @@ class T1Model(fitting.Model):
         else:
             self.mag_corr = False
 
-        if self.method == 2:
+        if self.parameters == 2:
             if self.mag_corr:
                 super().__init__(pixel_array, ti, two_param_eq, mask,
                                  multithread)
@@ -31,7 +66,7 @@ class T1Model(fitting.Model):
                                  multithread)
             self.bounds = ([0, 0], [5000, 1000000000])
             self.initial_guess = [1000, 30000]
-        elif self.method == 3:
+        elif self.parameters == 3:
             if self.mag_corr:
                 super().__init__(pixel_array, ti, three_param_eq, mask,
                                  multithread)
@@ -42,7 +77,7 @@ class T1Model(fitting.Model):
             self.initial_guess = [1000, 30000, 2]
         else:
             raise ValueError(f'Parameters can be 2 or 3 only. You specified '
-                             f'{method}.')
+                             f'{parameters}.')
 
         self.generate_lists()
         self._tss_correct_ti()
