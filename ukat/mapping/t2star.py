@@ -359,4 +359,6 @@ def two_param_eq(t, t2star, m0):
         -------
         signal: np.ndarray
         """
-    return np.sqrt(np.square(m0 * np.exp(-t / t2star)))
+    with np.errstate(divide='ignore'):
+        signal = m0 * np.exp(-t / t2star)
+    return signal
