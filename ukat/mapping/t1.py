@@ -105,6 +105,9 @@ class T1:
         pulse and 2 represents a 180 degree inversion
     eff_err : np.ndarray
         The certainty in the fit of `eff`
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -274,7 +277,7 @@ class T1:
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
             or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
-            "eff_err", "r1", "mask"]
+            "eff_err", "r1", "r2", "mask"]
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)

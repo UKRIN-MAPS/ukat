@@ -54,6 +54,9 @@ class T2Star:
     m0_err : np.ndarray
         The certainty in the fit of `m0_map`. Only returned if `2p_exp`
         method is used, otherwise is an array of nan
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the T2* map
     n_te : int

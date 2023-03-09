@@ -154,10 +154,13 @@ class TestADC:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='adc_test', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 3
+        assert len(output_files) == 6
         assert 'adc_test_adc_map.nii.gz' in output_files
         assert 'adc_test_adc_err.nii.gz' in output_files
         assert 'adc_test_mask.nii.gz' in output_files
+        assert 'adc_test_r2.nii.gz' in output_files
+        assert 'adc_test_s0_map.nii.gz' in output_files
+        assert 'adc_test_s0_err.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))

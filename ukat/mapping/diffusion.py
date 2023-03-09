@@ -9,6 +9,7 @@ import warnings
 
 from dipy.core.gradients import gradient_table, unique_bvals_tolerance
 from dipy.reconst.dti import TensorModel
+from sklearn.metrics import r2_score
 from tqdm import tqdm
 
 
@@ -89,8 +90,15 @@ class ADC:
     ----------
     adc : np.ndarray
         The estimated ADC in mm^2/s.
+    s0 : np.ndarray
+        The estimated S0.
     adc_err : np.ndarray
         The certainty in the fit of `adc` in mm^2/s.
+    s0_err : np.ndarray
+        The certainty in the fit of `s0`.
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the ADC map.
     n_vox : int
@@ -170,7 +178,8 @@ class ADC:
 
         self.pixel_array_mean = self.__mean_over_directions__()
 
-        self.adc, self.adc_err = self.__fit__()
+        self.adc, self.s0, self.adc_err, self.s0_err, self.r2 = \
+            self.__fit__()
 
     def __mean_over_directions__(self):
         """
@@ -193,7 +202,10 @@ class ADC:
     def __fit__(self):
         # Initialise maps
         adc_map = np.zeros(self.n_vox)
+        s0_map = np.zeros(self.n_vox)
         adc_err = np.zeros(self.n_vox)
+        s0_err = np.zeros(self.n_vox)
+        r2 = np.zeros(self.n_vox)
 
         mask = self.mask.flatten()
         signal = self.pixel_array_mean.reshape(-1, self.n_bvals)
@@ -201,17 +213,24 @@ class ADC:
         with tqdm(total=idx.size) as progress:
             for ind in idx:
                 sig = signal[ind, :]
-                adc_map[ind], adc_err[ind] = \
+                adc_map[ind], s0_map[ind], adc_err[ind], s0_err[ind], \
+                    r2[ind] = \
                     self.__fit_signal__(sig, self.u_bvals)
                 progress.update(1)
         adc_map[adc_map < 0] = 0
+        s0_map[adc_map < 0] = 0
         adc_err[adc_map < 0] = 0
+        s0_err[adc_map < 0] = 0
+        r2[adc_map < 0] = 0
 
         # Reshape results into raw data shape
         adc_map = adc_map.reshape(self.shape)
+        s0_map = s0_map.reshape(self.shape)
         adc_err = adc_err.reshape(self.shape)
+        s0_err = s0_err.reshape(self.shape)
+        r2 = r2.reshape(self.shape)
 
-        return adc_map, adc_err
+        return adc_map, s0_map, adc_err, s0_err, r2
 
     @staticmethod
     def __fit_signal__(sig, bvals):
@@ -219,12 +238,18 @@ class ADC:
             popt, pvar = np.polyfit(bvals[sig > 0], np.log(sig[sig > 0]), 1,
                                     cov=True)
             adc = -popt[0]
+            s0 = np.exp(popt[1])
             adc_err = np.sqrt(pvar[0, 0])
+            s0_err = np.exp(np.sqrt(pvar[1, 1]))
         except np.linalg.LinAlgError:
             adc = 0
+            s0 = 0
             adc_err = 0
+            s0_err = 0
 
-        return adc, adc_err
+        fit_sig = adc_eq(bvals, adc, s0)
+        r2 = r2_score(sig, fit_sig)
+        return adc, s0, adc_err, s0_err, r2
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -239,21 +264,34 @@ class ADC:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["adc", "adc_err", "mask"].
+            or a list of maps from ["adc", "s0", "adc_err", "s0_err",
+            "r2", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['adc', 'adc_err', 'mask']
+            maps = ['adc', 's0', 'adc_err', 's0_err', 'r2', 'mask']
         if isinstance(maps, list):
             for result in maps:
                 if result == 'adc' or result == 'adc_map':
                     adc_nifti = nib.Nifti1Image(self.adc, affine=self.affine)
                     nib.save(adc_nifti, base_path + '_adc_map.nii.gz')
+                elif result == 's0' or result == 's0_map':
+                    s0_nifti = nib.Nifti1Image(self.s0,
+                                               affine=self.affine)
+                    nib.save(s0_nifti, base_path + '_s0_map.nii.gz')
                 elif result == 'adc_err' or result == 'adc_err_map':
                     adc_err_nifti = nib.Nifti1Image(self.adc_err,
                                                     affine=self.affine)
                     nib.save(adc_err_nifti, base_path + '_adc_err.nii.gz')
+                elif result == 's0_err' or result == 's0_err_map':
+                    s0_err_nifti = nib.Nifti1Image(self.s0_err,
+                                                   affine=self.affine)
+                    nib.save(s0_err_nifti, base_path + '_s0_err.nii.gz')
+                elif result == 'r2' or result == 'r2_map':
+                    r2_nifti = nib.Nifti1Image(self.r2,
+                                               affine=self.affine)
+                    nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
@@ -263,6 +301,27 @@ class ADC:
                              'should be "all" or a list of maps from '
                              '"["adc", "adc_err", "mask"]".')
 
+def adc_eq(bvals, adc, s0):
+    """
+    The ADC equation.
+
+    Parameters
+    ----------
+    bvals : np.ndarray
+        The b-values used in the experiment in s/mm^2.
+    adc : float
+        The estimated ADC value in mm^2/s.
+    s0 : float
+        The estimated S0 value.
+
+    Returns
+    -------
+    signal : np.ndarray
+        The estimated signal values.
+    """
+    with np.errstate(divide='ignore'):
+        signal = s0 * np.exp(-bvals * adc)
+    return signal
 
 class DTI:
     """
