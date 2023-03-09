@@ -160,8 +160,8 @@ class T2Star:
         # M0 out.
         threshold = 0.999  # 99.9% of the upper bound
         bounds_mask = ((self.t2star_map >
-                        self._exp_model.bounds[1][0] * 0.999) |
-                       (self.m0_map > self._exp_model.bounds[1][1] * 0.999))
+                        self._exp_model.bounds[1][0] * threshold) |
+                       (self.m0_map > self._exp_model.bounds[1][1] * threshold))
         self.t2star_map[bounds_mask] = 0
         self.m0_map[bounds_mask] = 0
         self.t2star_err[bounds_mask] = 0
