@@ -1,1 +1,1 @@
-from .relaxation import fit_image, Model
+from .relaxation import Model, fit_image, fit_signal

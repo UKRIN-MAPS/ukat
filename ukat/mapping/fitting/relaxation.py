@@ -163,14 +163,16 @@ def fit_signal(sig, x, p0, mask, model):
         try:
             popt, pcov = curve_fit(model.eq, x, sig, p0=p0,
                                    bounds=model.bounds)
+            fit_sig = model.eq(x, *popt)
+            r2 = r2_score(sig, fit_sig)
         except (RuntimeError, ValueError):
             popt = np.zeros(model.n_params)
             pcov = np.zeros((model.n_params, model.n_params))
+            r2 = -1E6
     else:
         popt = np.zeros(model.n_params)
         pcov = np.zeros((model.n_params, model.n_params))
+        r2 = -1E6
 
     error = np.sqrt(np.diag(pcov))
-    fit_sig = model.eq(x, *popt)
-    r2 = r2_score(sig, fit_sig)
     return popt, error, r2
