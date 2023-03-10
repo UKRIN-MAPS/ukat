@@ -37,6 +37,7 @@ class TestT2Star:
         assert np.isnan(mapper.t2star_err.mean())
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2Star(signal_array, self.t, self.affine, method='loglin',
@@ -46,6 +47,7 @@ class TestT2Star:
         assert np.isnan(mapper.t2star_err.mean())
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Auto Threaded
         mapper = T2Star(signal_array, self.t, self.affine, method='loglin',
@@ -55,6 +57,7 @@ class TestT2Star:
         assert np.isnan(mapper.t2star_err.mean())
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_2p_exp_fit(self):
         # Make the signal into a 4D array
@@ -68,6 +71,7 @@ class TestT2Star:
         npt.assert_almost_equal(mapper.t2star_err.mean(), 7.395706644238e-11)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp',
@@ -77,6 +81,7 @@ class TestT2Star:
         npt.assert_almost_equal(mapper.t2star_err.mean(), 7.395706644238e-11)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Auto Threaded
         mapper = T2Star(signal_array, self.t, self.affine, method='2p_exp',
@@ -86,14 +91,16 @@ class TestT2Star:
         npt.assert_almost_equal(mapper.t2star_err.mean(), 7.395706644238e-11)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.r2star_map().mean(), 1 / self.t2star)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Fail to fit
         mapper = T2Star(signal_array[..., ::-1], self.t, self.affine,
                         method='2p_exp', multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
-        npt.assert_almost_equal(mapper.t2star_map.mean(), 0.0)
-        npt.assert_almost_equal(mapper.t2star_err.mean(), 0.0)
+        npt.assert_almost_equal(mapper.t2star_map.mean(), 0)
+        npt.assert_almost_equal(mapper.t2star_err.mean(), 0)
+        npt.assert_almost_equal(mapper.r2.mean(), 0)
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))

@@ -40,18 +40,21 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Auto Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Fail to fit
         mapper = T2(signal_array[..., ::-1], self.t, self.affine,
@@ -71,6 +74,7 @@ class TestT2:
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.b_map.mean(), self.b)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False,
@@ -79,6 +83,7 @@ class TestT2:
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.b_map.mean(), self.b)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_threshold_fit(self):
         # Make the signal into a 4D array
@@ -90,6 +95,7 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False,
@@ -97,6 +103,7 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))

@@ -91,11 +91,13 @@ class TestADC:
     def test_negative_signal(self):
         gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
         gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
+        gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
         negateive_pixel_array = self.pixel_array.copy()
         negateive_pixel_array[:30, :, :, :] -= 40000
         mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+        adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
         assert np.sum(mapper.adc[:30, :, :]) == 0
         npt.assert_allclose([adc_stats['mean']['3D'], adc_stats['std']['3D'],
                              adc_stats['min']['3D'], adc_stats['max']['3D']],
@@ -105,6 +107,11 @@ class TestADC:
                              adc_err_stats['min']['3D'],
                              adc_err_stats['max']['3D']],
                             gold_standard_adc_err, rtol=5e-3, atol=1e-7)
+        npt.assert_allclose([adc_r2_stats['mean']['3D'],
+                             adc_r2_stats['std']['3D'],
+                             adc_r2_stats['min']['3D'],
+                             adc_r2_stats['max']['3D']],
+                            gold_standard_adc_r2, rtol=5e-3, atol=1e-7)
 
     def test_real_data(self):
         # Gold standard statistics

@@ -301,6 +301,7 @@ class ADC:
                              'should be "all" or a list of maps from '
                              '"["adc", "adc_err", "mask"]".')
 
+
 def adc_eq(bvals, adc, s0):
     """
     The ADC equation.
@@ -322,6 +323,7 @@ def adc_eq(bvals, adc, s0):
     with np.errstate(divide='ignore'):
         signal = s0 * np.exp(-bvals * adc)
     return signal
+
 
 class DTI:
     """
