@@ -314,7 +314,7 @@ class T1:
                                                affine=self.affine)
                     nib.save(r1_nifti, base_path + '_r1_map.nii.gz')
                 elif result == 'r2':
-                    r2_nifti = nib.Nifti1Image(self.r2.astype(np.uint16),
+                    r2_nifti = nib.Nifti1Image(self.r2,
                                                affine=self.affine)
                     nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':

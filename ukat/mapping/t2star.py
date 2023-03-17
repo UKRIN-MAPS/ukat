@@ -213,50 +213,51 @@ class T2Star:
     @staticmethod
     def _fit_loglin_signal(sig, te, mask, model):
         if mask is True:
-            sig = np.array(sig)
-            te = np.array(te)
-            s_w = 0.0
-            s_wx = 0.0
-            s_wx2 = 0.0
-            s_wy = 0.0
-            s_wxy = 0.0
-            n_te = len(sig)
+            with np.errstate(divide='ignore', invalid='ignore'):
+                sig = np.array(sig)
+                te = np.array(te)
+                s_w = 0.0
+                s_wx = 0.0
+                s_wx2 = 0.0
+                s_wy = 0.0
+                s_wxy = 0.0
+                n_te = len(sig)
 
-            noise = sig.sum() / n_te
-            sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
-            if sd > 1e-10:
-                for t in range(n_te):
-                    if sig[t] > 0:
-                        te_tmp = te[t]
-                        if sig[t] > sd:
-                            sigma = np.log(sig[t] / (sig[t] - sd))
-                        else:
-                            sigma = np.log(sig[t] / 0.0001)
-                        logsig = np.log(sig[t])
-                        weight = 1 / sigma ** 2
+                noise = sig.sum() / n_te
+                sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
+                if sd > 1e-10:
+                    for t in range(n_te):
+                        if sig[t] > 0:
+                            te_tmp = te[t]
+                            if sig[t] > sd:
+                                sigma = np.log(sig[t] / (sig[t] - sd))
+                            else:
+                                sigma = np.log(sig[t] / 0.0001)
+                            logsig = np.log(sig[t])
+                            weight = 1 / sigma ** 2
 
-                        s_w += weight
-                        s_wx += weight * te_tmp
-                        s_wx2 += weight * te_tmp ** 2
-                        s_wy += weight * logsig
-                        s_wxy += weight * te_tmp * logsig
+                            s_w += weight
+                            s_wx += weight * te_tmp
+                            s_wx2 += weight * te_tmp ** 2
+                            s_wy += weight * logsig
+                            s_wxy += weight * te_tmp * logsig
 
-                delta = (s_w * s_wx2) - (s_wx ** 2)
-                if delta > 1e-5:
-                    a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
-                    b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
-                    t2star = np.real(-1 / b)
-                    m0 = np.real(np.exp(a))
-                    if t2star < 0 or t2star > model.bounds[1][0] or \
-                       np.isnan(t2star):
+                    delta = (s_w * s_wx2) - (s_wx ** 2)
+                    if delta > 1e-5:
+                        a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
+                        b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
+                        t2star = np.real(-1 / b)
+                        m0 = np.real(np.exp(a))
+                        if t2star < 0 or t2star > model.bounds[1][0] or \
+                           np.isnan(t2star):
+                            t2star = 0
+                            m0 = 0
+                    else:
                         t2star = 0
                         m0 = 0
                 else:
                     t2star = 0
                     m0 = 0
-            else:
-                t2star = 0
-                m0 = 0
         else:
             t2star = 0
             m0 = 0
@@ -282,8 +283,10 @@ class T2Star:
             An array containing the R2* map generated
             by the function with R2* measured in ms^-1.
         """
-        return np.nan_to_num(np.reciprocal(self.t2star_map),
-                             posinf=0, neginf=0)
+        with np.errstate(divide='ignore'):
+            r2star = np.nan_to_num(np.reciprocal(self.t2star_map),
+                                   posinf=0, neginf=0)
+        return r2star
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
@@ -340,7 +343,7 @@ class T2Star:
                                                    affine=self.affine)
                     nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
                 elif result == 'r2' or result == 'r2_map':
-                    r2_nifti = nib.Nifti1Image(self.r2.astype(np.uint16),
+                    r2_nifti = nib.Nifti1Image(self.r2,
                                                affine=self.affine)
                     nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':
