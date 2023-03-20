@@ -80,7 +80,8 @@ class T1Model(fitting.Model):
                              f'{parameters}.')
 
         self.generate_lists()
-        self._tss_correct_ti()
+        if self.tss != 0:
+            self._tss_correct_ti()
 
     def _tss_correct_ti(self):
         slices = np.indices(self.map_shape)[self.tss_axis].ravel()
@@ -112,6 +113,9 @@ class T1:
         The shape of the T1 map
     n_ti : int
         The number of TI used to calculate the map
+    n_vox : int
+        The number of voxels in the map i.e. the product of all dimensions
+        apart from TI
     """
 
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
@@ -155,8 +159,8 @@ class T1:
         molli : bool, optional
             Default False.
             Apply MOLLI corrections to T1.
-        multithread : bool, optional
-            Default True.
+        multithread : bool or 'auto', optional
+            Default 'auto'.
             If True, fitting will be distributed over all cores available on
             the node. If False, fitting will be carried out on a single thread.
             Multithreading is useful when calculating the T1 for a large
@@ -165,12 +169,20 @@ class T1:
             amounts of data e.g. a mean T1 signal decay over a ROI when the
             overheads of multithreading are more of a hindrance than the
             increase in speed distributing the calculation would generate.
+            'auto' attempts to apply multithreading where appropriate based
+            on the number of voxels being fit.
         """
+        assert multithread is True \
+               or multithread is False \
+               or multithread == 'auto', f'multithreaded must be True,' \
+                                         f'False or auto. You entered ' \
+                                         f'{multithread}'
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.dimensions = len(pixel_array.shape)
         self.n_ti = pixel_array.shape[-1]
+        self.n_vox = np.prod(self.shape)
         self.affine = affine
         # Generate a mask if there isn't one specified
         if mask is None:
@@ -188,6 +200,11 @@ class T1:
             self.tss = 0
         self.parameters = parameters
         self.molli = molli
+        if multithread == 'auto':
+            if self.n_vox > 20:
+                multithread = True
+            else:
+                multithread = False
         self.multithread = multithread
 
         # Some sanity checks

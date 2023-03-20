@@ -109,6 +109,14 @@ class TestT1:
         npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
 
+        # Auto Threaded
+        mapper = T1(signal_array, self.t, self.affine, multithread='auto')
+        assert mapper.shape == signal_array.shape[:-1]
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
     def test_three_param_fit(self):
         # Make the signal into a 4D array
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
