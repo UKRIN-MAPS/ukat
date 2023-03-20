@@ -2,9 +2,42 @@ import os
 import warnings
 import numpy as np
 import nibabel as nib
-import concurrent.futures
+
+from . import fitting
+
+from pathos.pools import ProcessPool
 from tqdm import tqdm
-from scipy.optimize import curve_fit
+from sklearn.metrics import r2_score
+
+
+class T2StarExpModel(fitting.Model):
+    def __init__(self, pixel_array, te, mask=None, multithread=True):
+        """
+        A class for fitting T2* data to a mono-exponential model.
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            An array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2* map would have dimensions [x, y, z, TE].
+        te : np.ndarray
+            An array of the echo times used for the last dimension of the
+            pixel_array. In milliseconds.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2* map rather than the raw data i.e. omit the time
+            dimension.
+        multithread : bool, optional
+            Default True
+            If True, the fitting will be performed in parallel using all
+            available cores
+        """
+
+        super().__init__(pixel_array, te, two_param_eq, mask, multithread)
+        self.bounds = ([0, 0], [700, 100000000])
+        self.initial_guess = [20, 10000]
+        self.generate_lists()
 
 
 class T2Star:
@@ -21,6 +54,9 @@ class T2Star:
     m0_err : np.ndarray
         The certainty in the fit of `m0_map`. Only returned if `2p_exp`
         method is used, otherwise is an array of nan
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the T2* map
     n_te : int
@@ -75,27 +111,29 @@ class T2Star:
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
         assert method == 'loglin' \
-            or method == '2p_exp', 'method must be loglin or 2p_exp. You ' \
-                                   'entered {}'.format(method)
+            or method == '2p_exp', f'method must be loglin or 2p_exp. You ' \
+                                   f'entered {method}'
         assert multithread is True \
             or multithread is False \
-            or multithread == 'auto', 'multithreaded must be True, False or ' \
-                                      'auto. You entered {}'\
-                                      .format(multithread)
+            or multithread == 'auto', f'multithreaded must be True, False ' \
+                                      f'or auto. You entered {multithread}'
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
         self.n_vox = np.prod(self.shape)
         self.affine = affine
+
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = mask
-            # Don't process any nan values
+            self.mask = mask.astype(bool)
+
+        # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.echo_list = echo_list
         self.method = method
+
         # Auto multithreading conditions
         if multithread == 'auto':
             if self.method == '2p_exp' and self.n_vox > 20:
@@ -105,8 +143,33 @@ class T2Star:
         self.multithread = multithread
 
         # Fit data
-        self.t2star_map, self.t2star_err, self.m0_map, self.m0_err\
-            = self.__fit__()
+
+        # Initialise an exponential model, even if we're using loglin fit,
+        # so we're using the same limits etc
+        self._exp_model = T2StarExpModel(self.pixel_array, self.echo_list,
+                                         self.mask, self.multithread)
+        if self.method == 'loglin':
+            popt, error, r2 = self._loglin_fit()
+        else:
+            popt, error, r2 = fitting.fit_image(self._exp_model)
+
+        self.t2star_map = popt[0]
+        self.m0_map = popt[1]
+        self.t2star_err = error[0]
+        self.m0_err = error[1]
+        self.r2 = r2
+
+        # Filter values that are very close to models upper bounds of T2* or
+        # M0 out.
+        threshold = 0.999  # 99.9% of the upper bound
+        bounds_mask = ((self.t2star_map >
+                        self._exp_model.bounds[1][0] * threshold) |
+                       (self.m0_map > self._exp_model.bounds[1][1] * threshold))
+        self.t2star_map[bounds_mask] = 0
+        self.m0_map[bounds_mask] = 0
+        self.t2star_err[bounds_mask] = 0
+        self.m0_err[bounds_mask] = 0
+        self.r2[bounds_mask] = 0
 
         # Warn if using loglin method to produce a map with a large
         # proportion of T2* < 20 ms i.e. where loglin isn't as accurate.
@@ -122,128 +185,88 @@ class T2Star:
                               'interest, consider using the 2p_exp fitting'
                               ' method'.format(proportion_less_than_20))
 
-    def __fit__(self):
-
-        # Initialise maps
-        t2star_map = np.zeros(self.n_vox)
-        t2star_err = np.zeros(self.n_vox)
-        m0_map = np.zeros(self.n_vox)
-        m0_err = np.zeros(self.n_vox)
-        mask = self.mask.flatten()
-        signal = self.pixel_array.reshape(-1, self.n_te)
-        # Get indices of voxels to process
-        idx = np.argwhere(mask).squeeze()
-
-        # Multithreaded method
+    def _loglin_fit(self):
         if self.multithread:
-            with concurrent.futures.ProcessPoolExecutor() as pool:
-                with tqdm(total=idx.size) as progress:
-                    futures = []
-
-                    for ind in idx:
-                        future = pool.submit(self.__fit_signal__,
-                                             signal[ind, :],
-                                             self.echo_list,
-                                             self.method)
-                        future.add_done_callback(lambda p: progress.update())
-                        futures.append(future)
-
-                    results = []
-                    for future in futures:
-                        result = future.result()
-                        results.append(result)
-            t2star_map[idx], t2star_err[idx], m0_map[idx], m0_err[idx] \
-                = [np.array(row) for row in zip(*results)]
-
-        # Single threaded method
+            with ProcessPool() as executor:
+                results = executor.map(self._fit_loglin_signal,
+                                       self._exp_model.signal_list,
+                                       self._exp_model.x_list,
+                                       self._exp_model.mask_list,
+                                       [self._exp_model] * self.n_vox)
         else:
-            with tqdm(total=idx.size) as progress:
-                for ind in idx:
-                    sig = signal[ind, :]
-                    t2star_map[ind], t2star_err[ind], \
-                        m0_map[ind], m0_err[ind] \
-                        = self.__fit_signal__(sig, self.echo_list, self.method)
-                    progress.update(1)
-
-        # Reshape results to raw data shape
-        t2star_map = t2star_map.reshape(self.shape)
-        t2star_err = t2star_err.reshape(self.shape)
-        m0_map = m0_map.reshape(self.shape)
-        m0_err = m0_err.reshape(self.shape)
-
-        return t2star_map, t2star_err, m0_map, m0_err
+            results = list(tqdm(map(self._fit_loglin_signal,
+                                    self._exp_model.signal_list,
+                                    self._exp_model.x_list,
+                                    self._exp_model.mask_list,
+                                    [self._exp_model] * self.n_vox),
+                                total=self.n_vox))
+        popt_array = np.array([result[0] for result in results])
+        popt_list = [popt_array[:, p].reshape(self._exp_model.map_shape) for p
+                     in range(self._exp_model.n_params)]
+        error_array = np.array([result[1] for result in results])
+        error_list = [error_array[:, p].reshape(self._exp_model.map_shape)
+                      for p in range(self._exp_model.n_params)]
+        r2 = np.array([result[2] for result in results]).reshape(
+            self._exp_model.map_shape)
+        return popt_list, error_list, r2
 
     @staticmethod
-    def __fit_signal__(sig, te, method):
-        if method == 'loglin':
-            s_w = 0.0
-            s_wx = 0.0
-            s_wx2 = 0.0
-            s_wy = 0.0
-            s_wxy = 0.0
-            n_te = len(sig)
+    def _fit_loglin_signal(sig, te, mask, model):
+        if mask is True:
+            with np.errstate(divide='ignore', invalid='ignore'):
+                sig = np.array(sig)
+                te = np.array(te)
+                s_w = 0.0
+                s_wx = 0.0
+                s_wx2 = 0.0
+                s_wy = 0.0
+                s_wxy = 0.0
+                n_te = len(sig)
 
-            noise = sig.sum() / n_te
-            sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
-            if sd > 1e-10:
-                for t in range(n_te):
-                    if sig[t] > 0:
-                        te_tmp = te[t]
-                        if sig[t] > sd:
-                            sigma = np.log(sig[t] / (sig[t] - sd))
-                        else:
-                            sigma = np.log(sig[t] / 0.0001)
-                        logsig = np.log(sig[t])
-                        weight = 1 / sigma ** 2
+                noise = sig.sum() / n_te
+                sd = np.abs(np.sum(sig ** 2) / n_te - noise ** 2)
+                if sd > 1e-10:
+                    for t in range(n_te):
+                        if sig[t] > 0:
+                            te_tmp = te[t]
+                            if sig[t] > sd:
+                                sigma = np.log(sig[t] / (sig[t] - sd))
+                            else:
+                                sigma = np.log(sig[t] / 0.0001)
+                            logsig = np.log(sig[t])
+                            weight = 1 / sigma ** 2
 
-                        s_w += weight
-                        s_wx += weight * te_tmp
-                        s_wx2 += weight * te_tmp ** 2
-                        s_wy += weight * logsig
-                        s_wxy += weight * te_tmp * logsig
+                            s_w += weight
+                            s_wx += weight * te_tmp
+                            s_wx2 += weight * te_tmp ** 2
+                            s_wy += weight * logsig
+                            s_wxy += weight * te_tmp * logsig
 
-                delta = (s_w * s_wx2) - (s_wx ** 2)
-                if delta > 1e-5:
-                    a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
-                    b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
-                    t2star = np.real(-1 / b)
-                    m0 = np.real(np.exp(a))
-                    if t2star < 0 or t2star > 700 or np.isnan(t2star):
+                    delta = (s_w * s_wx2) - (s_wx ** 2)
+                    if delta > 1e-5:
+                        a = (1 / delta) * (s_wx2 * s_wy - s_wx * s_wxy)
+                        b = (1 / delta) * (s_w * s_wxy - s_wx * s_wy)
+                        t2star = np.real(-1 / b)
+                        m0 = np.real(np.exp(a))
+                        if t2star < 0 or t2star > model.bounds[1][0] or \
+                           np.isnan(t2star):
+                            t2star = 0
+                            m0 = 0
+                    else:
                         t2star = 0
                         m0 = 0
                 else:
                     t2star = 0
                     m0 = 0
-            else:
-                t2star = 0
-                m0 = 0
-            t2star_err = np.nan
-            m0_err = np.nan
+        else:
+            t2star = 0
+            m0 = 0
 
-        elif method == '2p_exp':
-            # Initialise parameters
-            bounds = ([0, 0], [700, 100000000])
-            initial_guess = [20, 10000]
-
-            # Fit data to equation
-            try:
-                popt, pcov = curve_fit(two_param_eq, te, sig,
-                                       p0=initial_guess, bounds=bounds)
-            except RuntimeError:
-                popt = np.zeros(2)
-                pcov = np.zeros((2, 2))
-
-            # Extract fits and errors from result variables
-            if popt[0] < bounds[1][0] - 1:
-                t2star = popt[0]
-                m0 = popt[1]
-                err = np.sqrt(np.diag(pcov))
-                t2star_err = err[0]
-                m0_err = err[1]
-            else:
-                t2star, m0, t2star_err, m0_err = 0, 0, 0, 0
-
-        return t2star, t2star_err, m0, m0_err
+        fit_sig = two_param_eq(te, t2star, m0)
+        r2 = r2_score(sig, fit_sig)
+        t2star_err = np.nan
+        m0_err = np.nan
+        return (t2star, m0), (t2star_err, m0_err), r2
 
     def r2star_map(self):
         """
@@ -258,15 +281,17 @@ class T2Star:
         -------
         r2star_map : np.ndarray
             An array containing the R2* map generated
-            by the function with R2* measured in ms.
+            by the function with R2* measured in ms^-1.
         """
-        return np.nan_to_num(np.reciprocal(self.t2star_map),
-                             posinf=0, neginf=0)
+        with np.errstate(divide='ignore'):
+            r2star = np.nan_to_num(np.reciprocal(self.t2star_map),
+                                   posinf=0, neginf=0)
+        return r2star
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T2Star class attributes to NIFTI.
-                
+
         Parameters
         ----------
         output_directory : string, optional
@@ -277,12 +302,12 @@ class T2Star:
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
             or a list of maps from ["t2star", "t2star_err", "m0",
-            "m0_err", "r2star", "mask"].
+            "m0_err", "r2star", "r2", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['t2star', 'm0', 'r2star', 'mask']
+            maps = ['t2star', 'm0', 'r2star', 'r2', 'mask']
             if self.method == '2p_exp':
                 maps += ['t2star_err', 'm0_err']
         if isinstance(maps, list):
@@ -317,6 +342,10 @@ class T2Star:
                     r2star_nifti = nib.Nifti1Image(T2Star.r2star_map(self),
                                                    affine=self.affine)
                     nib.save(r2star_nifti, base_path + '_r2star_map.nii.gz')
+                elif result == 'r2' or result == 'r2_map':
+                    r2_nifti = nib.Nifti1Image(self.r2,
+                                               affine=self.affine)
+                    nib.save(r2_nifti, base_path + '_r2.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
@@ -348,4 +377,6 @@ def two_param_eq(t, t2star, m0):
         -------
         signal: np.ndarray
         """
-    return np.sqrt(np.square(m0 * np.exp(-t / t2star)))
+    with np.errstate(divide='ignore'):
+        signal = m0 * np.exp(-t / t2star)
+    return signal

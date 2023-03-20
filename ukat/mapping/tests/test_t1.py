@@ -96,16 +96,26 @@ class TestT1:
         # Multithread
         mapper = T1(signal_array, self.t, self.affine, multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T1(signal_array, self.t, self.affine, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+        # Auto Threaded
+        mapper = T1(signal_array, self.t, self.affine, multithread='auto')
+        assert mapper.shape == signal_array.shape[:-1]
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_three_param_fit(self):
         # Make the signal into a 4D array
@@ -115,35 +125,39 @@ class TestT1:
         mapper = T1(signal_array, self.t, self.affine, parameters=3,
                     multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.eff_map.mean() - self.eff < 0.00005
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.eff_map.mean(), self.eff)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T1(signal_array, self.t, self.affine, parameters=3,
                     multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.eff_map.mean() - self.eff < 0.00005
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.eff_map.mean(), self.eff)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_tss(self):
 
         mapper = T1(self.correct_signal_two_param_tss, self.t, self.affine,
                     tss=10)
         assert mapper.shape == self.correct_signal_two_param_tss.shape[:-1]
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_tss_axis(self):
         signal_array = np.swapaxes(self.correct_signal_two_param_tss, 0, 1)
         mapper = T1(signal_array, self.t, self.affine, tss=10, tss_axis=0)
-        assert mapper.t1_map.mean() - self.t1 < 0.00001
-        assert mapper.m0_map.mean() - self.m0 < 0.00001
-        assert mapper.r1_map().mean() - 1 / self.t1 < 0.00001
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_failed_fit(self):
         # Make the signal, where the fitting is expected to fail, into 4D array
@@ -154,20 +168,22 @@ class TestT1:
                               parameters=2, multithread=True)
         assert mapper_two_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
-        assert mapper_two_param.t1_map.mean() == 0.0
-        assert mapper_two_param.t1_err.mean() == 0.0
-        assert mapper_two_param.m0_map.mean() == 0.0
-        assert mapper_two_param.m0_err.mean() == 0.0
+        npt.assert_equal(mapper_two_param.t1_map.mean(), 0)
+        npt.assert_equal(mapper_two_param.t1_err.mean(), 0)
+        npt.assert_equal(mapper_two_param.m0_map.mean(), 0)
+        npt.assert_equal(mapper_two_param.m0_err.mean(), 0)
+        npt.assert_equal(mapper_two_param.r2.mean(), 0)
 
         # Fail to fit using the 3 parameter equation
         mapper_three_param = T1(signal_array, self.t, self.affine,
                                 parameters=3, multithread=True)
         assert mapper_three_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
-        assert mapper_three_param.t1_map.mean() == 0.0
-        assert mapper_three_param.t1_err.mean() == 0.0
-        assert mapper_three_param.m0_map.mean() == 0.0
-        assert mapper_three_param.m0_err.mean() == 0.0
+        npt.assert_equal(mapper_three_param.t1_map.mean(), 0)
+        npt.assert_equal(mapper_three_param.t1_err.mean(), 0)
+        npt.assert_equal(mapper_three_param.m0_map.mean(), 0)
+        npt.assert_equal(mapper_three_param.m0_err.mean(), 0)
+        npt.assert_equal(mapper_two_param.r2.mean(), 0)
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
@@ -177,16 +193,16 @@ class TestT1:
         mask[:5, ...] = False
         mapper = T1(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
-        assert mapper.t1_map[:5, ...].mean() < 0.00001
+        npt.assert_almost_equal(mapper.t1_map[5:, ...].mean(), self.t1)
+        npt.assert_equal(mapper.t1_map[:5, ...].mean(), 0)
 
         # Int mask
         mask = np.ones(signal_array.shape[:-1])
         mask[:5, ...] = 0
         mapper = T1(signal_array, self.t, self.affine, mask=mask)
         assert mapper.shape == signal_array.shape[:-1]
-        assert mapper.t1_map[5:, ...].mean() - self.t1 < 0.00001
-        assert mapper.t1_map[:5, ...].mean() < 0.00001
+        npt.assert_almost_equal(mapper.t1_map[5:, ...].mean(), self.t1)
+        npt.assert_equal(mapper.t1_map[:5, ...].mean(), 0)
 
     def test_mismatched_raw_data_and_inversion_lengths(self):
 
@@ -247,9 +263,10 @@ class TestT1:
                         affine=self.affine, tss=1, tss_axis=2)
 
     def test_molli_2p_warning(self):
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         with pytest.warns(UserWarning):
-            mapper = T1(pixel_array=np.zeros((5, 5, 5)),
-                        inversion_list=np.linspace(0, 2000, 5),
+            mapper = T1(pixel_array=signal_array,
+                        inversion_list=self.t,
                         affine=self.affine, parameters=2, molli=True)
 
     def test_real_data(self):
@@ -315,13 +332,14 @@ class TestT1:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t1test', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 8
+        assert len(output_files) == 9
         assert 't1test_eff_err.nii.gz' in output_files
         assert 't1test_eff_map.nii.gz' in output_files
         assert 't1test_m0_err.nii.gz' in output_files
         assert 't1test_m0_map.nii.gz' in output_files
         assert 't1test_mask.nii.gz' in output_files
         assert 't1test_r1_map.nii.gz' in output_files
+        assert 't1test_r2.nii.gz' in output_files
         assert 't1test_t1_err.nii.gz' in output_files
         assert 't1test_t1_map.nii.gz' in output_files
 

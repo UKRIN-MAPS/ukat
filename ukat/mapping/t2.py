@@ -1,9 +1,77 @@
 import os
 import nibabel as nib
 import numpy as np
-import concurrent.futures
-from tqdm import tqdm
-from scipy.optimize import curve_fit
+
+from . import fitting
+from itertools import compress
+
+
+class T2Model(fitting.Model):
+    def __init__(self, pixel_array, te, method='2p_exp', mask=None,
+                 multithread=True):
+        """
+        A class containing the T2 fitting model
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            An array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2 map would have dimensions [x, y, z, TE].
+        te : np.ndarray
+            An array of the echo times used for the last dimension of the
+            pixel_array. In milliseconds.
+        method : {'2p_exp', '3p_exp'}, optional
+            Default '2p_exp'
+            The model the data is fit to. 2p_exp uses a two parameter
+            exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
+            three parameter exponential model (S = S0 * exp(-t / T2) + b) to
+            fit for noise/very long T2 components of the signal.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2 map rather than the raw data i.e. omit the time
+            dimension.
+        multithread : bool, optional
+            Default True
+            If True, the fitting will be performed in parallel using all
+            available cores
+        """
+        self.method = method
+
+        if self.method == '2p_exp':
+            super().__init__(pixel_array, te, two_param_eq, mask, multithread)
+            self.bounds = ([0, 0], [1000, 100000000])
+            self.initial_guess = [20, 10000]
+        elif self.method == '3p_exp':
+            super().__init__(pixel_array, te, three_param_eq, mask,
+                             multithread)
+            self.bounds = ([0, 0, 0], [1000, 100000000, 1000000])
+            self.initial_guess = [20, 10000, 500]
+
+        self.generate_lists()
+
+    def threshold_noise(self, threshold=0):
+        """
+        Remove voxel values below a certain threshold from the fitting
+        process, useful if long echo times have been collected and thus
+        thermal noise is being measured below a certain threshold rather
+        than the T2 decay.
+
+        Parameters
+        ----------
+        threshold : float, optional
+            Default 0
+            The threshold below which to remove values
+        """
+        for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
+                                                self.x_list,
+                                                self.p0_list)):
+            self.signal_list[ind] = np.array(list(compress(sig, np.array(sig) >
+                                                  threshold)))
+            self.x_list[ind] = np.array(list(compress(te, np.array(sig) >
+                                             threshold)))
+            self.p0_list[ind] = np.array(list(compress(p0, np.array(sig) >
+                                              threshold)))
 
 
 class T2:
@@ -18,6 +86,9 @@ class T2:
         The estimated M0 values
     m0_err : np.ndarray
         The certainty in the fit of `m0`
+    r2 : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
     shape : tuple
         The shape of the T2 map
     n_te : int
@@ -71,13 +142,14 @@ class T2:
                                     'number of time frames on the last axis ' \
                                     'of pixel_array'
         assert multithread is True \
-            or multithread is False \
-            or multithread == 'auto', 'multithreaded must be True, ' \
-                                      'False or auto. You entered {}' \
-            .format(multithread)
+               or multithread is False \
+               or multithread == 'auto', f'multithreaded must be True,' \
+                                         f'False or auto. You entered ' \
+                                         f'{multithread}'
+
         if method != '2p_exp' and method != '3p_exp':
-            raise ValueError('method can be 2p_exp or 3p_exp only. You '
-                             'specified {}'.format(method))
+            raise ValueError(f'method can be 2p_exp or 3p_exp only. You '
+                             f'specified {method}')
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
@@ -88,8 +160,9 @@ class T2:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
-            self.mask = mask
-            # Don't process any nan values
+            self.mask = mask.astype(bool)
+
+        # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.noise_threshold = noise_threshold
         self.method = method
@@ -103,163 +176,40 @@ class T2:
         self.multithread = multithread
 
         # Fit data
-        if self.method == '2p_exp':
-            self.t2_map, self.t2_err, \
-                self.m0_map, self.m0_err \
-                = self.__fit__()
-        elif self.method == '3p_exp':
-            self.t2_map, self.t2_err, \
-                self.m0_map, self.m0_err, \
-                self.b_map, self.b_err \
-                = self.__fit__()
+        fitting_model = T2Model(self.pixel_array, self.echo_list,
+                                self.method, self.mask, self.multithread)
 
-    def __fit__(self):
+        if self.noise_threshold > 0:
+            fitting_model.threshold_noise(self.noise_threshold)
+        popt, error, r2 = fitting.fit_image(fitting_model)
+        self.t2_map = popt[0]
+        self.m0_map = popt[1]
+        self.t2_err = error[0]
+        self.m0_err = error[1]
+        self.r2 = r2
 
-        # Initialise maps
-        t2_map = np.zeros(self.n_vox)
-        t2_err = np.zeros(self.n_vox)
-        m0_map = np.zeros(self.n_vox)
-        m0_err = np.zeros(self.n_vox)
-        b_map = np.zeros(self.n_vox)
-        b_err = np.zeros(self.n_vox)
-        mask = self.mask.flatten()
-        signal = self.pixel_array.reshape(-1, self.n_te)
-        # Get indices of voxels to process
-        idx = np.argwhere(mask).squeeze()
+        if self.method == '3p_exp':
+            self.b_map = popt[2]
+            self.b_err = error[2]
 
-        # Multithreaded method
-        if self.multithread:
-            with concurrent.futures.ProcessPoolExecutor() as pool:
-                with tqdm(total=idx.size) as progress:
-                    futures = []
-
-                    for ind in idx:
-                        signal_thresh = signal[ind, :][
-                            signal[ind, :] > self.noise_threshold]
-                        echo_list_thresh = self.echo_list[
-                            signal[ind, :] > self.noise_threshold]
-                        future = pool.submit(self.__fit_signal__,
-                                             signal_thresh,
-                                             echo_list_thresh)
-                        future.add_done_callback(lambda p: progress.update())
-                        futures.append(future)
-
-                    results = []
-                    for future in futures:
-                        result = future.result()
-                        results.append(result)
-
-            if self.method == '2p_exp':
-                t2_map[idx], t2_err[idx], m0_map[idx], m0_err[idx] = [np.array(
-                    row) for row in zip(*results)]
-            elif self.method == '3p_exp':
-                t2_map[idx], t2_err[idx], \
-                    m0_map[idx], m0_err[idx], \
-                    b_map[idx], b_err[idx] = \
-                    [np.array(row) for row in zip(*results)]
-
-        # Single threaded method
-        else:
-            with tqdm(total=idx.size) as progress:
-                for ind in idx:
-                    signal_thresh = signal[ind, :][
-                        signal[ind, :] > self.noise_threshold]
-                    echo_list_thresh = self.echo_list[
-                        signal[ind, :] > self.noise_threshold]
-                    if self.method == '2p_exp':
-                        t2_map[ind], t2_err[ind], \
-                            m0_map[ind], m0_err[ind] \
-                            = self.__fit_signal__(signal_thresh,
-                                                  echo_list_thresh)
-                    elif self.method == '3p_exp':
-                        t2_map[ind], t2_err[ind], \
-                            m0_map[ind], m0_err[ind], \
-                            b_map[ind], b_err[ind] \
-                            = self.__fit_signal__(signal_thresh,
-                                                  echo_list_thresh)
-                    progress.update(1)
-
-        # Reshape results to raw data shape
-        t2_map = t2_map.reshape(self.shape)
-        t2_err = t2_err.reshape(self.shape)
-        m0_map = m0_map.reshape(self.shape)
-        m0_err = m0_err.reshape(self.shape)
-
-        if self.method == '2p_exp':
-            return t2_map, t2_err, m0_map, m0_err
-        elif self.method == '3p_exp':
-            b_map = b_map.reshape(self.shape)
-            b_err = b_err.reshape(self.shape)
-            return t2_map, t2_err, m0_map, m0_err, b_map, b_err
-
-    def __fit_signal__(self, sig, te):
-
-        # Initialise parameters
-        if self.method == '2p_exp':
-            eq = two_param_eq
-            bounds = ([0, 0], [1000, 100000000])
-            initial_guess = [20, 10000]
-        elif self.method == '3p_exp':
-            eq = three_param_eq
-            bounds = ([0, 0, 0], [1000, 100000000, 1000000])
-            initial_guess = [20, 10000, 500]
-
-        # Fit data to equation
-        try:
-            popt, pcov = curve_fit(eq, te, sig, p0=initial_guess,
-                                   bounds=bounds)
-        except (RuntimeError, ValueError):
-            popt = np.zeros(3)
-            pcov = np.zeros((3, 3))
-
-        # Extract fits and errors from result variables
-        if self.method == '2p_exp':
-            if popt[0] < bounds[1][0] - 1:
-                t2 = popt[0]
-                m0 = popt[1]
-                err = np.sqrt(np.diag(pcov))
-                t2_err = err[0]
-                m0_err = err[1]
-            else:
-                t2, m0, t2_err, m0_err = 0, 0, 0, 0
-
-            return t2, t2_err, m0, m0_err
-
-        elif self.method == '3p_exp':
-            if popt[0] < bounds[1][0] - 1:
-                t2 = popt[0]
-                m0 = popt[1]
-                b = popt[2]
-                err = np.sqrt(np.diag(pcov))
-                t2_err = err[0]
-                m0_err = err[1]
-                b_err = err[2]
-            else:
-                t2, m0, t2_err, m0_err, b, b_err = 0, 0, 0, 0, 0, 0
-
-            return t2, t2_err, m0, m0_err, b, b_err
-
-    def r2_map(self):
-        """
-        Generates the R2 map from the T2 map output by initialising this
-        class.
-
-        Parameters
-        ----------
-        See class attributes in __init__
-
-        Returns
-        -------
-        r2 : np.ndarray
-            An array containing the R2 map generated
-            by the function with R2 measured in ms.
-        """
-        return np.reciprocal(self.t2_map)
+        # Filter values that are very close to models upper bounds of T2 or
+        # M0 out.
+        threshold = 0.999  # 99.9% of the upper bound
+        bounds_mask = ((self.t2_map > fitting_model.bounds[1][0] * threshold) |
+                       (self.m0_map > fitting_model.bounds[1][1] * threshold))
+        self.t2_map[bounds_mask] = 0
+        self.m0_map[bounds_mask] = 0
+        self.t2_err[bounds_mask] = 0
+        self.m0_err[bounds_mask] = 0
+        self.r2[bounds_mask] = 0
+        if self.method == '3p_exp':
+            self.b_map[bounds_mask] = 0
+            self.b_err[bounds_mask] = 0
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
         """Exports some of the T2 class attributes to NIFTI.
-                        
+
         Parameters
         ----------
         output_directory : string, optional
@@ -293,7 +243,7 @@ class T2:
                                                    affine=self.affine)
                     nib.save(m0_err_nifti, base_path + '_m0_err.nii.gz')
                 elif result == 'r2' or result == 'r2_map':
-                    r2_nifti = nib.Nifti1Image(T2.r2_map(self),
+                    r2_nifti = nib.Nifti1Image(self.r2,
                                                affine=self.affine)
                     nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
                 elif result == 'mask':
@@ -305,7 +255,6 @@ class T2:
                              'should be "all" or a list of maps from '
                              '"["t2", "t2_err", "m0", "m0_err", "r2", '
                              '"mask"]".')
-
         return
 
 
@@ -328,7 +277,9 @@ def two_param_eq(t, t2, m0):
         signal: np.ndarray
             The expected signal
         """
-    return np.sqrt(np.square(m0 * np.exp(-t / t2)))
+    with np.errstate(divide='ignore'):
+        signal = m0 * np.exp(-t / t2)
+    return signal
 
 
 def three_param_eq(t, t2, m0, b):
@@ -352,4 +303,6 @@ def three_param_eq(t, t2, m0, b):
         signal: np.ndarray
             The expected signal
         """
-    return np.sqrt(np.square(m0 * np.exp(-t / t2) + b))
+    with np.errstate(divide='ignore'):
+        signal = m0 * np.exp(-t / t2) + b
+    return signal
