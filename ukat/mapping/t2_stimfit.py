@@ -22,7 +22,7 @@ class StimFitModel:
             raise ValueError(f'n_comp must be either 1, 2 or 3. You specified '
                              f'{n_comp}.')
         self.n_comp = n_comp
-        if ukrin_vendor not in ['ge']:  # TODO add other vendors
+        if ukrin_vendor not in ['ge', 'philips', 'siemens']:
             raise warnings.warn('ukrin_vendor was not specified. Using '
                                 'default pulse sequence parameters.')
         self.opt = dict()
@@ -42,23 +42,22 @@ class StimFitModel:
                                'G': 0.5,
                                'phase': 0,
                                'ref': 1,
-                               'alpha': []}
+                               'alpha': [],
+                               'angle': 90}
             self.opt['RFr'] = {'RF': [],
                                'tau': 2e-3,
                                'G': 0.5,
                                'phase': 90,
                                'ref': 0,
-                               'alpha': []}
-        self.opt['RFe']['angle'] = 90
-        self.opt['RFr']['angle'] = 180
-        self.opt['RFr']['FA_array'] = np.ones(self.opt['etl'])
-
+                               'alpha': [],
+                               'angle': 180,
+                               'FA_array': np.ones(self.opt['etl'])}
         # Curve fitting parameters
         self.opt['lsq'] = {'Ncomp': n_comp,
                            'xtol': 5e-4,
                            'ftol': 1e-9}
         if self.opt['lsq']['Ncomp'] == 1:
-            self.opt['lsq']['X0'] = [0.06, 0.1, 1]
+            self.opt['lsq']['X0'] = [0.06, 0.1, 1]  # [T2(sec), amp, B1]
             self.opt['lsq']['XU'] = [3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.2]
         elif self.opt['lsq']['Ncomp'] == 2:
@@ -92,19 +91,34 @@ class StimFitModel:
 
     def _set_ukrin_vendor(self, vendor):
         self.vendor = vendor
+        self.opt['T1'] = 1.5
+        self.opt['esp'] = 0.0129
+        self.opt['etl'] = 10
+        self.opt['RFr']['FA_array'] = np.ones(self.opt['etl'])
         if self.vendor == 'ge':
             self.opt['RFe']['tau'] = 2000 / 1e6
             self.opt['RFe']['G'] = 0.751599
             self.opt['RFr']['tau'] = 3136 / 1e6
             self.opt['RFr']['G'] = 0.276839
-            self.opt['T1'] = 1.5
-            self.opt['Dz'] = [0, 0.45]
-            self.opt['esp'] = 12.9 / 1000
-            self.opt['etl'] = 10
-            self.opt['RFr']['angle'] = 180
-            self.opt['RFr']['FA_array'] = np.ones(self.opt['etl'])
             self.opt['RFe']['RF'] = rf_pulses.ge_90
             self.opt['RFr']['RF'] = rf_pulses.ge_180
+            self.opt['Dz'] = [0, 0.45]
+        elif self.vendor == 'philips':
+            self.opt['RFe']['tau'] = 3820 / 1e6
+            self.opt['RFe']['G'] = 0.392
+            self.opt['RFr']['tau'] = 6010 / 1e6
+            self.opt['RFr']['G'] = 0.327
+            self.opt['RFe']['RF'] = rf_pulses.philips_90
+            self.opt['RFr']['RF'] = rf_pulses.philips_180
+            self.opt['Dz'] = [0, 0.45]
+        elif self.vendor == 'siemens':
+            self.opt['RFe']['tau'] = 3072 / 1e6
+            self.opt['RFe']['G'] = 0.417
+            self.opt['RFr']['tau'] = 3000 / 1e6
+            self.opt['RFr']['G'] = 0.326
+            self.opt['RFe']['RF'] = rf_pulses.philips_90
+            self.opt['RFr']['RF'] = rf_pulses.philips_180
+            self.opt['Dz'] = [0, 0.5]
 
     def _set_rf(self, rf):
         dz = self.opt['Dz']
