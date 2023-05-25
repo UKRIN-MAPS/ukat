@@ -116,8 +116,8 @@ class StimFitModel:
             self.opt['RFe']['G'] = 0.417
             self.opt['RFr']['tau'] = 3000 / 1e6
             self.opt['RFr']['G'] = 0.326
-            self.opt['RFe']['RF'] = rf_pulses.philips_90
-            self.opt['RFr']['RF'] = rf_pulses.philips_180
+            self.opt['RFe']['RF'] = rf_pulses.ge_90
+            self.opt['RFr']['RF'] = rf_pulses.ge_180
             self.opt['Dz'] = [0, 0.5]
 
     def _set_rf(self, rf):
@@ -391,105 +391,3 @@ def _epg(x2, b1, x1, esp, ar, ae):  # TE = 6.425ms. TR = 1500ms.   90, 175,
         if i % 2 == 0:
             echo_intensity[:, i // 2 - 1] = omiga[:, 0, 0]
     return echo_intensity
-
-# @jit(nopython=True)
-# def epg(x2, b1, x1, esp, ar, ae):  # TE = 6.425ms. TR = 1500ms.   90,175,145,110,110,110.
-#     echo_intensity = np.zeros(ar.shape, dtype=np.float64)
-#     omiga = np.zeros((ar.shape[0], 3, 1 + 2 * ar.shape[1]), dtype=np.float64)
-#     ar = b1 * ar
-#     ae = b1 * ae
-#     x2 = np.exp(-0.5 * esp / x2)
-#     x1 = np.exp(-0.5 * esp / x1)
-#
-#     for i in range(omiga.shape[2]):
-#         if i == 0:
-#             omiga[:, 0, i] = np.sin(ae)
-#             omiga[:, 1, i] = np.sin(ae)
-#             omiga[:, 2, i] = np.cos(ae)
-#             continue
-#         omiga[:, 0, 1:i + 1] = omiga[:, 0, 0:i]
-#         omiga[:, 1, 0:i] = omiga[:, 1, 1:i + 1]
-#         omiga[:, 0, 0] = np.conj(omiga[:, 1, 0])
-#         omiga[:, 0:2, :] = x2 * omiga[:, 0:2, :]
-#         omiga[:, 2, :] = x1 * omiga[:, 2, :]
-#         omiga[:, 2, 0] += 1 - x1
-#         if i % 2 == 1:
-#             for runs in range(ar.shape[0]):
-#                 ari = ar[runs, i // 2]
-#                 T = np.array(
-#                     [[np.cos(0.5 * ari) ** 2, np.sin(0.5 * ari) ** 2, np.sin(ari)],
-#                      [np.sin(0.5 * ari) ** 2, np.cos(0.5 * ari) ** 2, -np.sin(ari)],
-#                      [-0.5 * np.sin(ari), +0.5 * np.sin(ari), np.cos(ari)]], dtype=np.float64)
-#                 omiga[runs, :, :] = np.dot(T, np.ascontiguousarray(omiga[runs, :, :]))
-#         if i % 2 == 0:
-#             echo_intensity[:, i // 2 - 1] = omiga[:, 0, 0]
-#     return echo_intensity
-#
-#
-# def epgsig(t2, b1, opt):
-#     sig = np.zeros(opt['etl'])
-#     if opt['mode'] == 'n':
-#         FA = np.pi / 180 * opt['RFr']['angle'] * np.array([opt['RFr']['FA_array']])
-#         sig = epg(t2, b1, opt['T1'], opt['esp'], FA, opt['RFe']['angle'] * np.pi / 180)
-#     elif opt['mode'] == 's':
-#         FA = np.array([opt['RFr']['alpha']]).T * opt['RFr']['FA_array']
-#         M = epg(t2, b1, opt['T1'], opt['esp'], FA, opt['RFe']['angle'] * np.pi / 180)
-#         sig = np.sum(M, 0) / opt['Nz']
-#     return sig.ravel()
-#
-#
-# def residual1(p, y, opt):
-#     return y - epgsig(p[0], p[2], opt) * p[1]
-#
-#
-# def residual2(p, y, opt):
-#     return y - epgsig(p[0], p[4], opt) * p[1] - epgsig(p[2], p[4], opt) * p[3]
-#
-#
-# def residual3(p, y, opt):
-#     return y - epgsig(p[0], p[6], opt) * p[1] - epgsig(p[4], p[6], opt) * p[5] - epgsig(p[2], p[6], opt) * p[3]
-#
-#
-# def fit(sig, opt, switch=1):
-#     if len(sig) != opt['etl']:
-#         raise Exception('Inconsistent echo train length')
-#     if opt['mode'] == 's' and switch == 1:
-#         opt['RFe'] = setRF(opt['RFe'], opt['Nrf'], opt['Dz'], opt['Nz'])
-#         opt['RFr'] = setRF(opt['RFr'], opt['Nrf'], opt['Dz'], opt['Nz'])
-#
-#     if opt['lsq']['Ncomp'] == 2:
-#         X = optimize.least_squares(residual2, opt['lsq']['IIcomp']['X0'], args=(sig, opt),
-#                                    bounds=(opt['lsq']['IIcomp']['XL'], opt['lsq']['IIcomp']['XU']),
-#                                    xtol=opt['lsq']['fopt']['xtol'], ftol=opt['lsq']['fopt']['ftol']).x
-#         T2, amp, B1 = [X[0], X[2]], [X[1], X[3]], X[5]
-#
-#     elif opt['lsq']['Ncomp'] == 3:
-#         X = optimize.least_squares(residual2, opt['lsq']['IIIcomp']['X0'], args=(sig, opt),
-#                                    bounds=(opt['lsq']['IIIcomp']['XL'], opt['lsq']['IIIcomp']['XU']),
-#                                    xtol=opt['lsq']['fopt']['xtol'], ftol=opt['lsq']['fopt']['ftol']).x
-#         T2, amp, B1 = [X[0], X[2], X[4]], [X[1], X[3], X[5]], X[6]
-#
-#     else:
-#         X = optimize.least_squares(residual1, opt['lsq']['Icomp']['X0'], args=(sig, opt),
-#                                    bounds=(opt['lsq']['Icomp']['XL'], opt['lsq']['Icomp']['XU']),
-#                                    xtol=opt['lsq']['fopt']['xtol'], ftol=opt['lsq']['fopt']['ftol']).x
-#         T2, amp, B1 = X
-#     return T2, amp, B1, opt
-#
-#
-# def fit_help(z):
-#     return fit(z[0], z[1])
-#
-#
-# def multiprocess_fit(pic, opt):
-#     with ProcessPoolExecutor() as executors:
-#         results = list(executors.map(fit_help, [(pic[i // pic.shape[1], i % pic.shape[1], :], opt) for i in
-#                                                 range(pic.shape[0] * pic.shape[1])]))
-#     T2map = np.array([results[i][0] for i in range(pic.shape[0] * pic.shape[1])],
-#                      dtype=np.float64).reshape(pic.shape[0], pic.shape[1])
-#     amp = np.array([results[i][1] for i in range(pic.shape[0] * pic.shape[1])],
-#                    dtype=np.float64).reshape(pic.shape[0], pic.shape[1])
-#     B1 = np.array([results[i][2] for i in range(pic.shape[0] * pic.shape[1])],
-#                   dtype=np.float64).reshape(pic.shape[0], pic.shape[1])
-#     opt = list(results)[0][3]
-#     return T2map, amp, B1, opt
