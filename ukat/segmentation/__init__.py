@@ -1,1 +1,1 @@
-from . import whole_kidney
+from . import shape_metrics, whole_kidney
