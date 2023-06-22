@@ -51,10 +51,8 @@ class ShapeMetrics:
 
         if kidneys:
             if self.n_labels != 2:
-                # TODO check this should actually be an AttributeError when
-                # you're on the ground
-                raise AttributeError('Expected two labels (L and R) if '
-                                     'kidney=True')
+                raise ValueError('Expected two labels (L and R) if '
+                                 'kidney=True')
             self.region_labels = ['L', 'R']
         elif region_labels is not None:
             if len(region_labels) != self.n_labels:
@@ -67,6 +65,15 @@ class ShapeMetrics:
         self.metrics = self.get_metrics()
 
     def get_metrics(self):
+        """
+        Calculate shape metrics for each region in the mask.
+
+        Returns
+        -------
+        props_df : pd.DataFrame
+            A dataframe containing the calculated shape metrics for each
+            region in the mask.
+        """
         properties = ['volume', 'surface_area', 'volume_bbox', 'volume_convex',
                       'volume_filled', 'n_vox', 'long_axis',
                       'short_axis', 'compactness', 'euler_number', 'solidity']
@@ -78,18 +85,37 @@ class ShapeMetrics:
         return props_df
 
     def _get_region_props(self, region):
+        """
+        Calculate shape metrics for a single region.
+
+        Parameters
+        ----------
+        region : np.ndarray(dtype=np.bool)
+            A binary array of 0s and 1s where 0 represents background tissue.
+
+        Returns
+        -------
+        props_dict : dict
+            A dictionary containing the calculated shape metrics for the
+            region.
+        """
         props = regionprops(region.astype(np.uint8), spacing=self.zoom)[0]
         mesh = self._get_smoothed_mesh(region)
 
         props_dict = {}
         props_dict.update({'volume': props['area'] / 1000})  # mm^3 to mL
         props_dict.update({'surface_area': mesh.area / 100})  # mm^2 to cm^2
-        props_dict.update({'volume_bbox': props['bbox_area'] / 1000})  # mm^3 to mL
-        props_dict.update({'volume_convex': props['convex_area'] / 1000})  # mm^3 to mL
-        props_dict.update({'volume_filled': props['filled_area'] / 1000})  # mm^3 to mL
+        props_dict.update(
+            {'volume_bbox': props['bbox_area'] / 1000})  # mm^3 to mL
+        props_dict.update(
+            {'volume_convex': props['convex_area'] / 1000})  # mm^3 to mL
+        props_dict.update(
+            {'volume_filled': props['filled_area'] / 1000})  # mm^3 to mL
         props_dict.update({'n_vox': props['num_pixels']})
-        props_dict.update({'long_axis': props['major_axis_length'] / 10})  # mm to cm
-        props_dict.update({'short_axis': props['minor_axis_length'] / 10})  # mm to cm
+        props_dict.update(
+            {'long_axis': props['major_axis_length'] / 10})  # mm to cm
+        props_dict.update(
+            {'short_axis': props['minor_axis_length'] / 10})  # mm to cm
         compactness = (props_dict['volume'] / props_dict['surface_area']) / \
                       (props['equivalent_diameter_area'] / 6)
         props_dict.update({'compactness': compactness})
@@ -99,11 +125,23 @@ class ShapeMetrics:
         return props_dict
 
     def _get_smoothed_mesh(self, region):
+        """
+        Generate a smoothed mesh from a binary region. Parameters have been
+        optimised for kidneys.
+
+        Parameters
+        ----------
+        region : np.ndarray(dtype=np.bool)
+            A binary array of 0s and 1s where 0 represents background tissue.
+
+        Returns
+        -------
+        mesh : trimesh.Trimesh
+            A smoothed mesh representation of the region.
+        """
         verts, faces, _, _ = marching_cubes(region.astype(np.uint8),
                                             spacing=self.zoom, level=0.5,
                                             step_size=1.0)
         mesh = trimesh.Trimesh(vertices=verts, faces=faces)
         mesh = smoothing.filter_laplacian(mesh, lamb=1, iterations=20)
         return mesh
-
-
