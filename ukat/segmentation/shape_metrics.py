@@ -44,7 +44,7 @@ class ShapeMetrics:
         self.zoom = zoom
         self.n_labels = len(np.unique(pixel_array[pixel_array > 0]))
         if self.n_labels == 1:
-            self.labels = label(pixel_array)
+            self.labels = label(self.pixel_array)
             self.n_labels = len(np.unique(self.labels[self.labels > 0]))
         else:
             self.labels = self.pixel_array
