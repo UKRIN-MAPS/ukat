@@ -84,6 +84,17 @@ class ShapeMetrics:
             props_df.loc[region] = self._get_region_props(self.labels == label)
         return props_df
 
+    def save_metrics_csv(self, path):
+        """
+        Save the calculated shape metrics to a csv file.
+
+        Parameters
+        ----------
+        path : str
+            The path to save the csv file to.
+        """
+        self.metrics.to_csv(path)
+
     def _get_region_props(self, region):
         """
         Calculate shape metrics for a single region.

@@ -1,3 +1,7 @@
+import csv
+import os
+import shutil
+
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
@@ -152,3 +156,47 @@ class TestShapeMetrics:
         shape_metrics = ShapeMetrics(mask, affine,
                                      kidneys=False)
         assert np.all(shape_metrics.get_metrics().index == [1, 2, 3])
+
+    def test_three_regions_kidney(self):
+        mask = np.zeros((50, 50, 10))
+        mask[5:15, 5:45, :] = 1
+        mask[20:30, 5:45, :] = 1
+        mask[35:45, 5:45, :] = 1
+        affine = np.eye(4)
+        with pytest.raises(ValueError):
+            ShapeMetrics(mask, affine,
+                         kidneys=True)
+
+    def test_save_csv(self):
+        shape_metrics = ShapeMetrics(self.kidneys, self.affine)
+        expected = [['', 'volume', 'surface_area', 'volume_bbox',
+                     'volume_convex', 'volume_filled', 'n_vox', 'long_axis',
+                     'short_axis', 'compactness', 'euler_number', 'solidity'],
+                    ['L', '118.19352898042803', '148.05689835989392',
+                     '360.8547068442343', '170.52736146479933',
+                     '118.19352898042803', '9551.0', '11.793750181329315',
+                     '4.347012606736469', '0.07866555492167773', '2.0',
+                     '0.6931059506531204'],
+                    ['R', '121.80702604484902', '154.5164344861936',
+                     '263.7357857429465', '150.36850284171092',
+                     '121.80702604484902', '9843.0', '12.317681104489647',
+                     '3.6430077535636998', '0.0769055483268716', '2.0',
+                     '0.8100567854497571']]
+
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
+        os.makedirs('test_output', exist_ok=True)
+
+        shape_metrics.save_metrics_csv('test_output/metrics.csv')
+        output_files = os.listdir('test_output')
+
+        assert 'metrics.csv' in output_files
+
+        with open('test_output/metrics.csv', 'r') as csv_file:
+            reader = csv.reader(csv_file)
+            list_from_csv = [row for row in reader]
+        assert list_from_csv == expected
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+        shutil.rmtree('test_output')
