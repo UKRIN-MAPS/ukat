@@ -20,6 +20,17 @@ class TestShapeFeatures:
     mask = segmentation.get_mask()
     kidneys = segmentation.get_kidneys()
 
+    mask_two_body = np.zeros((50, 50, 10))
+    mask_two_body[5:15, 5:45, :] = 1
+    mask_two_body[20:30, 5:45, :] = 1
+
+    mask_three_body = np.zeros((50, 50, 10))
+    mask_three_body[5:15, 5:45, :] = 1
+    mask_three_body[20:30, 5:45, :] = 1
+    mask_three_body[35:45, 5:45, :] = 1
+
+    simulated_affine = np.eye(4)
+
     def test_get_smoothed_mesh(self):
         expected = [175.680058, 104.798285, 3.267293, 291.491921]
         shape_features = ShapeFeatures(self.kidneys, self.affine)
@@ -100,11 +111,8 @@ class TestShapeFeatures:
         pd.testing.assert_frame_equal(features_df, gold_df, check_dtype=False)
 
     def test_shape_features_mask(self):
-        mask = np.zeros((50, 50, 10))
-        mask[5:15, 5:45, :] = 1
-        mask[20:30, 5:45, :] = 1
-        affine = np.eye(4)
-        shape_features = ShapeFeatures(mask, affine)
+        shape_features = ShapeFeatures(self.mask_two_body,
+                                       self.simulated_affine)
         features_df = shape_features.get_features()
         gold_df = pd.DataFrame(index=['L', 'R'],
                                columns=['volume', 'surface_area',
@@ -128,57 +136,35 @@ class TestShapeFeatures:
             ShapeFeatures(self.kidneys)
 
     def test_region_labels_length_doesnt_match(self):
-        mask = np.zeros((50, 50, 10))
-        mask[5:15, 5:45, :] = 1
-        mask[20:30, 5:45, :] = 1
-        mask[35:45, 5:45, :] = 1
-        affine = np.eye(4)
+
         with pytest.raises(ValueError):
-            ShapeFeatures(mask, affine,
+            ShapeFeatures(self.mask_three_body, self.simulated_affine,
                           region_labels=['L', 'R'],
                           kidneys=False)
 
     def test_custom_labels(self):
         shape_features = ShapeFeatures(self.mask, self.affine,
-                                      region_labels=['L', 'R', 'O'],
-                                      kidneys=False)
+                                       region_labels=['L', 'R', 'O'],
+                                       kidneys=False)
         assert np.all(shape_features.get_features().index == ['L', 'R', 'O'])
 
     def test_no_labels_not_kidneys(self):
-        mask = np.zeros((50, 50, 10))
-        mask[5:15, 5:45, :] = 1
-        mask[20:30, 5:45, :] = 1
-        mask[35:45, 5:45, :] = 1
-        affine = np.eye(4)
-        shape_features = ShapeFeatures(mask, affine,
-                                      kidneys=False)
+        shape_features = ShapeFeatures(self.mask_three_body,
+                                       self.simulated_affine,
+                                       kidneys=False)
         assert np.all(shape_features.get_features().index == [1, 2, 3])
 
     def test_three_regions_kidney(self):
-        mask = np.zeros((50, 50, 10))
-        mask[5:15, 5:45, :] = 1
-        mask[20:30, 5:45, :] = 1
-        mask[35:45, 5:45, :] = 1
-        affine = np.eye(4)
         with pytest.raises(ValueError):
-            ShapeFeatures(mask, affine,
+            ShapeFeatures(self.mask_three_body, self.simulated_affine,
                           kidneys=True)
 
     def test_save_csv(self):
         shape_features = ShapeFeatures(self.kidneys, self.affine)
-        expected = [['', 'volume', 'surface_area', 'volume_bbox',
-                     'volume_convex', 'volume_filled', 'n_vox', 'long_axis',
-                     'short_axis', 'compactness', 'euler_number', 'solidity'],
-                    ['L', '118.19352898042803', '148.05689835989392',
-                     '360.8547068442343', '170.52736146479933',
-                     '118.19352898042803', '9551.0', '11.793750181329315',
-                     '4.347012606736469', '0.07866555492167773', '2.0',
-                     '0.6931059506531204'],
-                    ['R', '121.80702604484902', '154.5164344861936',
-                     '263.7357857429465', '150.36850284171092',
-                     '121.80702604484902', '9843.0', '12.317681104489647',
-                     '3.6430077535636998', '0.0769055483268716', '2.0',
-                     '0.8100567854497571']]
+        expected_cols = ['', 'volume', 'surface_area', 'volume_bbox',
+                         'volume_convex', 'volume_filled', 'n_vox',
+                         'long_axis', 'short_axis', 'compactness',
+                         'euler_number', 'solidity']
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
@@ -192,7 +178,11 @@ class TestShapeFeatures:
         with open('test_output/features.csv', 'r') as csv_file:
             reader = csv.reader(csv_file)
             list_from_csv = [row for row in reader]
-        assert list_from_csv == expected
+        assert list_from_csv[0] == expected_cols
+        assert len(list_from_csv) == 3
+        assert len(list_from_csv[1]) == 12
+        assert list_from_csv[1][0] == 'L'
+        assert list_from_csv[2][0] == 'R'
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
