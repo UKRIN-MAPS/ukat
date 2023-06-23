@@ -7,11 +7,11 @@ from skimage.measure import label, marching_cubes, regionprops
 from trimesh import smoothing
 
 
-class ShapeMetrics:
+class ShapeFeatures:
     def __init__(self, pixel_array, affine=None, zoom=None, kidneys=True,
                  region_labels=None):
         """
-        Calculate shape metrics for a mask.
+        Calculate shape features for a mask.
 
         Parameters
         ----------
@@ -19,7 +19,7 @@ class ShapeMetrics:
             An array containing the mask, this array can either be a binary
             array of 0s and 1s where 0 represents background tissue or an
             array of integers where each integer represents a different tissue.
-            If a binary mask is provided, the metrics of each isolated
+            If a binary mask is provided, the features of each isolated
             region will be calculated.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
@@ -62,16 +62,16 @@ class ShapeMetrics:
         else:
             self.region_labels = np.arange(1, self.n_labels + 1)
 
-        self.metrics = self.get_metrics()
+        self.features = self.get_features()
 
-    def get_metrics(self):
+    def get_features(self):
         """
-        Calculate shape metrics for each region in the mask.
+        Calculate shape features for each region in the mask.
 
         Returns
         -------
         props_df : pd.DataFrame
-            A dataframe containing the calculated shape metrics for each
+            A dataframe containing the calculated shape features for each
             region in the mask.
         """
         properties = ['volume', 'surface_area', 'volume_bbox', 'volume_convex',
@@ -84,20 +84,20 @@ class ShapeMetrics:
             props_df.loc[region] = self._get_region_props(self.labels == label)
         return props_df
 
-    def save_metrics_csv(self, path):
+    def save_features_csv(self, path):
         """
-        Save the calculated shape metrics to a csv file.
+        Save the calculated shape features to a csv file.
 
         Parameters
         ----------
         path : str
             The path to save the csv file to.
         """
-        self.metrics.to_csv(path)
+        self.features.to_csv(path)
 
     def _get_region_props(self, region):
         """
-        Calculate shape metrics for a single region.
+        Calculate shape features for a single region.
 
         Parameters
         ----------
@@ -107,7 +107,7 @@ class ShapeMetrics:
         Returns
         -------
         props_dict : dict
-            A dictionary containing the calculated shape metrics for the
+            A dictionary containing the calculated shape features for the
             region.
         """
         props = regionprops(region.astype(np.uint8), spacing=self.zoom)[0]
