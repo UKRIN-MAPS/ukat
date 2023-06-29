@@ -53,7 +53,10 @@ class ShapeFeatures:
             if self.n_labels != 2:
                 raise ValueError('Expected two labels (L and R) if '
                                  'kidney=True')
-            self.region_labels = ['L', 'R']
+            if region_labels is not None:
+                self.region_labels = region_labels
+            else:
+                self.region_labels = ['L', 'R']
         elif region_labels is not None:
             if len(region_labels) != self.n_labels:
                 raise ValueError('The number of labels must match the number '
