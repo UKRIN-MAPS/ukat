@@ -60,7 +60,7 @@ class StimFitModel:
             self.opt['lsq']['XU'] = [3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.2]
         elif self.opt['lsq']['Ncomp'] == 2:
-            self.opt['lsq']['X0'] = [0.02, 0.1, 0.131, 0.1, 1]
+            self.opt['lsq']['X0'] = [0.02, 0.1, 0.331, 0.1, 1]
             self.opt['lsq']['XU'] = [0.25, 1e+3, 3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.25, 0, 0.2]
         elif self.opt['lsq']['Ncomp'] == 3:
@@ -256,14 +256,20 @@ class T2StimFit:
         m0 = np.array([result[1] for result in results])
         b1 = np.array([result[2] for result in results])
 
-        t2_map = np.zeros(self.n_vox)
-        m0_map = np.zeros(self.n_vox)
+        if self.model.n_comp > 1:
+            t2_map = np.zeros((self.n_vox, self.model.n_comp))
+            m0_map = np.zeros((self.n_vox, self.model.n_comp))
+        else:
+            t2_map = np.zeros(self.n_vox)
+            m0_map = np.zeros(self.n_vox)
         b1_map = np.zeros(self.n_vox)
         t2_map[idx] = t2
         m0_map[idx] = m0
         b1_map[idx] = b1
-        self.t2_map = t2_map.reshape(self.shape)
-        self.m0_map = m0_map.reshape(self.shape)
+        self.t2_map = t2_map.reshape((*self.shape,
+                                      self.model.n_comp))
+        self.m0_map = m0_map.reshape((*self.shape,
+                                      self.model.n_comp))
         self.b1_map = b1_map.reshape(self.shape)
 
     def _fit_signal(self, signal):
@@ -279,7 +285,7 @@ class T2StimFit:
                                                self.model.opt['lsq']['XU']),
                                        xtol=self.model.opt['lsq']['xtol'],
                                        ftol=self.model.opt['lsq']['ftol']).x
-            t2, amp, b1 = [x[0], x[2]], [x[1], x[3]], x[5]
+            t2, amp, b1 = [x[0], x[2]], [x[1], x[3]], x[4]
 
         elif self.model.opt['lsq']['Ncomp'] == 3:
             # TODO check with Leo this should be residual3 rather than
