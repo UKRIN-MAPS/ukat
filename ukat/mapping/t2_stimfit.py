@@ -266,7 +266,7 @@ class T2StimFit:
                 results = executor.map(self._fit_signal, signal)
         else:
             results = list(tqdm(map(self._fit_signal, signal),
-                                total=self.n_vox))
+                                total=np.sum(self.mask)))
         t2 = np.array([result[0] for result in results])
         m0 = np.array([result[1] for result in results])
         b1 = np.array([result[2] for result in results])
@@ -349,7 +349,7 @@ def _epgsig(t2, b1, opt, mode):
         fa = np.array([opt['RFr']['alpha']]).T * \
              opt['RFr']['FA_array']
         m = _epg(t2, b1, opt['T1'], opt['esp'],
-                 fa, opt['RFe']['angle'] * np.pi / 180)
+                 fa, opt['RFe']['alpha'])
         sig = np.sum(m, 0) / opt['Nz']
     return sig.ravel()
 
