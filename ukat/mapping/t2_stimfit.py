@@ -3,8 +3,7 @@ import warnings
 
 import nibabel as nib
 import numpy as np
-# from numba import jit
-# TODO try adding numba back in
+from numba import jit
 from pathos.pools import ProcessPool
 from scipy import optimize
 from tqdm import tqdm
@@ -68,20 +67,6 @@ class StimFitModel:
             self.opt['lsq']['X0'] = [0.02, 0.1, 0.036, 0.1, 0.131, 0.1, 1]
             self.opt['lsq']['XU'] = [0.035, 1e+3, 0.13, 1e3, 3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.035, 0, 0.13, 0, 0.2]
-
-        # self.opt['lsq']['Icomp'] = {'X0': [0.06, 0.1, 1],
-        #                             'XU': [3, 1e+3, 1.8],
-        #                             'XL': [0.015, 0, 0.2]}
-        #                             # [T2(s),amp,B1]
-        # self.opt['lsq']['IIcomp'] = {'X0': [0.02, 0.1, 0.131, 0.1, 1],
-        #                              'XU': [0.25, 1e+3, 3, 1e+3, 1.8],
-        #                              'XL': [0.015, 0, 0.25, 0, 0.2]}
-        # self.opt['lsq']['IIIcomp'] = {'X0': [0.02, 0.1, 0.036, 0.1, 0.131, 0.1,
-        #                                      1],
-        #                               'XU': [0.035, 1e+3, 0.13, 1e3, 3, 1e+3,
-        #                                      1.8],
-        #                               'XL': [0.015, 0, 0.035, 0, 0.13, 0, 0.2]}
-        # self.opt['lsq']['fopt'] = {'xtol': 5e-4, 'ftol': 1e-9}
 
         if ukrin_vendor is not None:
             self._set_ukrin_vendor(ukrin_vendor)
@@ -353,7 +338,8 @@ def _epgsig(t2, b1, opt, mode):
         sig = np.sum(m, 0) / opt['Nz']
     return sig.ravel()
 
-# @jit(nopython=True)
+
+@jit(nopython=True)
 def _epg(x2, b1, x1, esp, ar, ae):  # TE = 6.425ms. TR = 1500ms.   90, 175,
     # 145, 110, 110, 110.
     echo_intensity = np.zeros(ar.shape, dtype=np.float64)
