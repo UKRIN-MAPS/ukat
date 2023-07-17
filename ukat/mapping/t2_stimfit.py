@@ -24,8 +24,8 @@ class StimFitModel:
                              f'{n_comp}.')
         self.n_comp = n_comp
         if ukrin_vendor not in ['ge', 'philips', 'siemens']:
-            raise warnings.warn('ukrin_vendor was not specified. Using '
-                                'default pulse sequence parameters.')
+            warnings.warn('ukrin_vendor was not specified. Using default '
+                          'pulse sequence parameters.')
         self.opt = dict()
         self.opt['mode'] = self.mode
         self.opt['esp'] = 10e-3
@@ -76,9 +76,9 @@ class StimFitModel:
 
         if ukrin_vendor is not None:
             self._set_ukrin_vendor(ukrin_vendor)
-        if self.mode == 'selective':
-            self.opt['RFe'] = self._set_rf(self.opt['RFe'])
-            self.opt['RFr'] = self._set_rf(self.opt['RFr'])
+            if self.mode == 'selective':
+                self.opt['RFe'] = self._set_rf(self.opt['RFe'])
+                self.opt['RFr'] = self._set_rf(self.opt['RFr'])
 
     def _set_ukrin_vendor(self, vendor):
         self.vendor = vendor
@@ -111,6 +111,9 @@ class StimFitModel:
             self.opt['RFe']['RF'] = rf_pulses.ge_90
             self.opt['RFr']['RF'] = rf_pulses.ge_180
             self.opt['Dz'] = [0, 0.5]
+        else:
+            warnings.warn(f'{self.vendor} is not implemented. Please '
+                          f'manually specify the models parameters.')
 
     def _set_rf(self, rf):
         dz = self.opt['Dz']
