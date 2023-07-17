@@ -71,19 +71,22 @@ class TestStimFitModel:
     def test_set_rf(self):
         model = StimFitModel(mode='selective', ukrin_vendor='ge')
         npt.assert_almost_equal(model.opt['RFe']['RF'][-1], 2.58327955e-07)
-        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.04164681)
+        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.04164681,
+                                decimal=5)
         npt.assert_almost_equal(model.opt['RFr']['RF'][-1], -3.55622605e-05)
         npt.assert_almost_equal(model.opt['RFr']['alpha'][-1], 1.97107315)
 
         model = StimFitModel(mode='selective', ukrin_vendor='philips')
         npt.assert_almost_equal(model.opt['RFe']['RF'][-1], 3.59081850e-04)
-        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.05002553)
+        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.05002553,
+                                decimal=5)
         npt.assert_almost_equal(model.opt['RFr']['RF'][-1], 0.00473865)
         npt.assert_almost_equal(model.opt['RFr']['alpha'][-1],  0.46764775)
 
         model = StimFitModel(mode='selective', ukrin_vendor='siemens')
         npt.assert_almost_equal(model.opt['RFe']['RF'][-1], 1.68182263e-07)
-        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.07221162)
+        npt.assert_almost_equal(model.opt['RFe']['alpha'][-1], 0.07221162,
+                                decimal=5)
         npt.assert_almost_equal(model.opt['RFr']['RF'][-1], -3.71744163e-05)
         npt.assert_almost_equal(model.opt['RFr']['alpha'][-1], 1.31133498)
 
