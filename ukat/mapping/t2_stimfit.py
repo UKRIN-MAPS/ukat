@@ -6,9 +6,11 @@ import numpy as np
 from numba import jit
 from pathos.pools import ProcessPool
 from scipy import optimize
+from sklearn.metrics import r2_score
 from tqdm import tqdm
 
 from .resources.t2_stimfit import rf_pulses
+from ukat.mapping.t2 import two_param_eq
 
 
 class StimFitModel:
@@ -51,6 +53,10 @@ class StimFitModel:
                                'alpha': [],
                                'angle': 180,
                                'FA_array': np.ones(self.opt['etl'])}
+        else:
+            self.opt['RFe'] = {'angle': 90}
+            self.opt['RFr'] = {'angle': 180,
+                               'FA_array': np.ones(self.opt['etl'])}
         # Curve fitting parameters
         self.opt['lsq'] = {'Ncomp': n_comp,
                            'xtol': 5e-4,
@@ -79,6 +85,7 @@ class StimFitModel:
         self.opt['T1'] = 1.5
         self.opt['esp'] = 0.0129
         self.opt['etl'] = 10
+        self.opt['te'] = (np.arange(self.opt['etl']) + 1) * self.opt['esp']
         self.opt['RFr']['FA_array'] = np.ones(self.opt['etl'])
         if self.vendor == 'ge':
             self.opt['RFe']['tau'] = 2000 / 1e6
@@ -225,11 +232,10 @@ class T2StimFit:
                     m0_err_nifti = nib.Nifti1Image(self.b1_map,
                                                    affine=self.affine)
                     nib.save(m0_err_nifti, base_path + '_b1_map.nii.gz')
-                # TODO - add R-squared outputs
-                # elif result == 'r2' or result == 'r2_map':
-                #     r2_nifti = nib.Nifti1Image(T2.r2_map(self),
-                #                                affine=self.affine)
-                #     nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
+                elif result == 'r2' or result == 'r2_map':
+                    r2_nifti = nib.Nifti1Image(self.r2_map,
+                                               affine=self.affine)
+                    nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
@@ -255,22 +261,28 @@ class T2StimFit:
         t2 = np.array([result[0] for result in results])
         m0 = np.array([result[1] for result in results])
         b1 = np.array([result[2] for result in results])
+        r2 = np.array([result[3] for result in results])
 
         if self.model.n_comp > 1:
             t2_map = np.zeros((self.n_vox, self.model.n_comp))
             m0_map = np.zeros((self.n_vox, self.model.n_comp))
+            r2_map = np.zeros((self.n_vox, self.model.n_comp))
         else:
             t2_map = np.zeros(self.n_vox)
             m0_map = np.zeros(self.n_vox)
+            r2_map = np.zeros(self.n_vox)
         b1_map = np.zeros(self.n_vox)
         t2_map[idx] = t2
         m0_map[idx] = m0
         b1_map[idx] = b1
+        r2_map[idx] = r2
         self.t2_map = t2_map.reshape((*self.shape,
                                       self.model.n_comp))
         self.m0_map = m0_map.reshape((*self.shape,
                                       self.model.n_comp))
         self.b1_map = b1_map.reshape(self.shape)
+        self.r2_map = r2_map.reshape((*self.shape,
+                                      self.model.n_comp))
 
     def _fit_signal(self, signal):
         if len(signal) != self.model.opt['etl']:
@@ -286,6 +298,10 @@ class T2StimFit:
                                        xtol=self.model.opt['lsq']['xtol'],
                                        ftol=self.model.opt['lsq']['ftol']).x
             t2, amp, b1 = [x[0], x[2]], [x[1], x[3]], x[4]
+            r2 = [r2_score(signal, two_param_eq(self.model.opt['te'], t2[0],
+                                                amp[0])),
+                  r2_score(signal, two_param_eq(self.model.opt['te'], t2[1],
+                                                amp[1]))]
 
         elif self.model.opt['lsq']['Ncomp'] == 3:
             # TODO check with Leo this should be residual3 rather than
@@ -299,6 +315,12 @@ class T2StimFit:
                                        xtol=self.model.opt['lsq']['xtol'],
                                        ftol=self.model.opt['lsq']['ftol']).x
             t2, amp, b1 = [x[0], x[2], x[4]], [x[1], x[3], x[5]], x[6]
+            r2 = [r2_score(signal, two_param_eq(self.model.opt['te'], t2[0],
+                                                amp[0])),
+                  r2_score(signal, two_param_eq(self.model.opt['te'], t2[1],
+                                                amp[1])),
+                  r2_score(signal, two_param_eq(self.model.opt['te'], t2[2],
+                                                amp[2]))]
 
         else:
             x = optimize.least_squares(self._residual1,
@@ -310,7 +332,9 @@ class T2StimFit:
                                        xtol=self.model.opt['lsq']['xtol'],
                                        ftol=self.model.opt['lsq']['ftol']).x
             t2, amp, b1 = x
-        return t2, amp, b1
+            fit_sig = two_param_eq(self.model.opt['te'], t2, amp)
+            r2 = r2_score(signal, fit_sig)
+        return t2, amp, b1, r2
 
     @staticmethod
     def _residual1(p, y, opt, mode):
