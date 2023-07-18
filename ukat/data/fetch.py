@@ -266,12 +266,21 @@ fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   ['02f90f0fc8277e09144c21d3fc75a8b7'],
                                   doc='Downloading Philips T1W data')
 
-fetch_t2_philips = _make_fetcher('fetch_t2_philips',
-                                 pjoin(ukat_home, 't2_philips'),
+fetch_t2_philips_1 = _make_fetcher('fetch_t2_philips_1',
+                                 pjoin(ukat_home, 't2_philips_1'),
                                  'https://zenodo.org/record/4762380/files/',
                                  ['philips_1.zip'],
                                  ['philips_1.zip'],
                                  ['a8adc351219339737b3f0a50404e2c54'],
+                                 unzip=True,
+                                 doc='Downloading Philips T2 data')
+
+fetch_t2_philips_2 = _make_fetcher('fetch_t2_philips_2',
+                                 pjoin(ukat_home, 't2_philips_2'),
+                                 'https://zenodo.org/record/8160764/files/',
+                                 ['philips_2.zip'],
+                                 ['philips_2.zip'],
+                                 ['5ce51450e37da30d562443ed03c23274'],
                                  unzip=True,
                                  doc='Downloading Philips T2 data')
 
@@ -415,9 +424,14 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
-    elif name == 't2_philips':
-        files, folder = fetch_t2_philips()
+    elif name == 't2_philips_1':
+        files, folder = fetch_t2_philips_1()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 't2_philips_2':
+        files, folder = fetch_t2_philips_2()
+        fnames = sorted(glob.glob(pjoin(folder, '*RespTrig_SE*')))
         return fnames
 
     elif name == 't2star_ge':
@@ -857,7 +871,39 @@ def t2_philips(dataset_id=1):
 
     # See README.md in ukat/data/t2 for information about the acquisition.
     if dataset_id == 1:
-        fnames = get_fnames('t2_philips')
+        fnames = get_fnames('t2_philips_1')
+        # Load magnitude data and corresponding echo times (in the orig)
+        magnitude = []
+        echo_list = []
+        for file in fnames:
+
+            if file.endswith(".nii.gz"):
+
+                # Load NIfTI
+                data = nib.load(file)
+                magnitude.append(data.get_fdata())
+
+            elif file.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(file, 'r') as json_file:
+                    hdr = json.load(json_file)
+                echo_list.append(hdr["EchoTime"])
+
+        # Move echo dimension to 4th dimension
+        magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+        echo_list = np.array(echo_list)
+
+        # Sort by increasing echo time
+        sort_idxs = np.argsort(echo_list)
+        echo_list = echo_list[sort_idxs]
+        magnitude = magnitude[:, :, :, sort_idxs]
+        affine = data.affine
+
+        return magnitude, affine, echo_list
+
+    elif dataset_id == 2:
+        fnames = get_fnames('t2_philips_2')
         # Load magnitude data and corresponding echo times (in the orig)
         magnitude = []
         echo_list = []
