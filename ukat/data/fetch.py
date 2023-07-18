@@ -267,40 +267,40 @@ fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   doc='Downloading Philips T1W data')
 
 fetch_t2_ge_1 = _make_fetcher('fetch_t2_ge_1',
-                                 pjoin(ukat_home, 't2_ge_1'),
-                                 'https://zenodo.org/record/8160807/files/',
-                                 ['ge_t2.zip'],
-                                 ['ge_t2.zip'],
-                                 ['164997465af0cb55c58022f8f8773b04'],
-                                 unzip=True,
-                                 doc='Downloading GE T2 data')
+                              pjoin(ukat_home, 't2_ge_1'),
+                              'https://zenodo.org/record/8160807/files/',
+                              ['ge_t2.zip'],
+                              ['ge_t2.zip'],
+                              ['164997465af0cb55c58022f8f8773b04'],
+                              unzip=True,
+                              doc='Downloading GE T2 data')
 
 fetch_t2_philips_1 = _make_fetcher('fetch_t2_philips_1',
-                                 pjoin(ukat_home, 't2_philips_1'),
-                                 'https://zenodo.org/record/4762380/files/',
-                                 ['philips_1.zip'],
-                                 ['philips_1.zip'],
-                                 ['a8adc351219339737b3f0a50404e2c54'],
-                                 unzip=True,
-                                 doc='Downloading Philips T2 data')
+                                   pjoin(ukat_home, 't2_philips_1'),
+                                   'https://zenodo.org/record/4762380/files/',
+                                   ['philips_1.zip'],
+                                   ['philips_1.zip'],
+                                   ['a8adc351219339737b3f0a50404e2c54'],
+                                   unzip=True,
+                                   doc='Downloading Philips T2 data')
 
 fetch_t2_philips_2 = _make_fetcher('fetch_t2_philips_2',
-                                 pjoin(ukat_home, 't2_philips_2'),
-                                 'https://zenodo.org/record/8160764/files/',
-                                 ['philips_2.zip'],
-                                 ['philips_2.zip'],
-                                 ['5ce51450e37da30d562443ed03c23274'],
-                                 unzip=True,
-                                 doc='Downloading Philips T2 data')
+                                   pjoin(ukat_home, 't2_philips_2'),
+                                   'https://zenodo.org/record/8160764/files/',
+                                   ['philips_2.zip'],
+                                   ['philips_2.zip'],
+                                   ['5ce51450e37da30d562443ed03c23274'],
+                                   unzip=True,
+                                   doc='Downloading Philips T2 data')
 
 fetch_t2_siemens_1 = _make_fetcher('fetch_t2_siemens_1',
-                                 pjoin(ukat_home, 't2_siemens_1'),
-                                 'https://zenodo.org/record/8160856/files/',
-                                 ['siemens_t2.zip'],
-                                 ['siemens_t2.zip'],
-                                 ['77b726b9b6c0ed61ffc5ff9f091d7de5'],
-                                 unzip=True,
-                                 doc='Downloading Siemens T2 data')
+                                   pjoin(ukat_home, 't2_siemens_1'),
+                                   'https://zenodo.org/record/8160856/files/',
+                                   ['siemens_t2.zip'],
+                                   ['siemens_t2.zip'],
+                                   ['77b726b9b6c0ed61ffc5ff9f091d7de5'],
+                                   unzip=True,
+                                   doc='Downloading Siemens T2 data')
 
 fetch_t2star_ge = _make_fetcher('fetch_t2star_ge',
                                 pjoin(ukat_home, 't2star_ge'),
@@ -707,7 +707,7 @@ def phase_contrast_left_philips():
     velocity_encoding = 100
     for file in fnames:
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-           file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
@@ -747,7 +747,7 @@ def phase_contrast_right_philips():
     for file in fnames:
 
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-           file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
