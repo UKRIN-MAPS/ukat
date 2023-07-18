@@ -175,7 +175,7 @@ class StimFitModel:
 
 class T2StimFit:
     def __init__(self, pixel_array, affine, model,
-                 mask=None, multithread='auto'):
+                 mask=None, multithread='auto', norm=True):
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
         self.n_vox = np.prod(self.shape)
@@ -201,6 +201,12 @@ class T2StimFit:
             self.mask = mask
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
+
+        if norm:
+            pixel_array /= np.nanmax(pixel_array)
+        # todo add warning if pixel_array contains values greater than 1 and
+        # norm is False
+
         self._fit()
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
@@ -275,17 +281,17 @@ class T2StimFit:
             m0_map = np.zeros(self.n_vox)
             r2_map = np.zeros(self.n_vox)
         b1_map = np.zeros(self.n_vox)
-        t2_map[idx] = t2
+        t2_map[idx] = t2 * 1000  # Convert to ms
         m0_map[idx] = m0
         b1_map[idx] = b1
         r2_map[idx] = r2
-        self.t2_map = t2_map.reshape((*self.shape,
-                                      self.model.n_comp))
-        self.m0_map = m0_map.reshape((*self.shape,
-                                      self.model.n_comp))
+        self.t2_map = np.squeeze(t2_map.reshape((*self.shape,
+                                                 self.model.n_comp)))
+        self.m0_map = np.squeeze(m0_map.reshape((*self.shape,
+                                                 self.model.n_comp)))
         self.b1_map = b1_map.reshape(self.shape)
-        self.r2_map = r2_map.reshape((*self.shape,
-                                      self.model.n_comp))
+        self.r2_map = np.squeeze(r2_map.reshape((*self.shape,
+                                                 self.model.n_comp)))
 
     def _fit_signal(self, signal):
         if len(signal) != self.model.opt['etl']:
