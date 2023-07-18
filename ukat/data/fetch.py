@@ -266,6 +266,15 @@ fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   ['02f90f0fc8277e09144c21d3fc75a8b7'],
                                   doc='Downloading Philips T1W data')
 
+fetch_t2_ge_1 = _make_fetcher('fetch_t2_ge_1',
+                                 pjoin(ukat_home, 't2_ge_1'),
+                                 'https://zenodo.org/record/8160807/files/',
+                                 ['ge_t2.zip'],
+                                 ['ge_t2.zip'],
+                                 ['164997465af0cb55c58022f8f8773b04'],
+                                 unzip=True,
+                                 doc='Downloading GE T2 data')
+
 fetch_t2_philips_1 = _make_fetcher('fetch_t2_philips_1',
                                  pjoin(ukat_home, 't2_philips_1'),
                                  'https://zenodo.org/record/4762380/files/',
@@ -283,6 +292,15 @@ fetch_t2_philips_2 = _make_fetcher('fetch_t2_philips_2',
                                  ['5ce51450e37da30d562443ed03c23274'],
                                  unzip=True,
                                  doc='Downloading Philips T2 data')
+
+fetch_t2_siemens_1 = _make_fetcher('fetch_t2_siemens_1',
+                                 pjoin(ukat_home, 't2_siemens_1'),
+                                 'https://zenodo.org/record/8160856/files/',
+                                 ['siemens_t2.zip'],
+                                 ['siemens_t2.zip'],
+                                 ['77b726b9b6c0ed61ffc5ff9f091d7de5'],
+                                 unzip=True,
+                                 doc='Downloading Siemens T2 data')
 
 fetch_t2star_ge = _make_fetcher('fetch_t2star_ge',
                                 pjoin(ukat_home, 't2star_ge'),
@@ -424,6 +442,11 @@ def get_fnames(name):
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
+    elif name == 't2_ge_1':
+        files, folder = fetch_t2_ge_1()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
     elif name == 't2_philips_1':
         files, folder = fetch_t2_philips_1()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
@@ -432,6 +455,11 @@ def get_fnames(name):
     elif name == 't2_philips_2':
         files, folder = fetch_t2_philips_2()
         fnames = sorted(glob.glob(pjoin(folder, '*RespTrig_SE*')))
+        return fnames
+
+    elif name == 't2_siemens_1':
+        files, folder = fetch_t2_siemens_1()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
 
     elif name == 't2star_ge':
@@ -848,6 +876,60 @@ def t1w_volume_philips():
     return image, data.affine
 
 
+def t2_ge(dataset_id=1):
+    """Fetches t2/ge_{dataset_id} dataset
+        dataset_id : int
+                Number of the dataset to load:
+                - dataset_id = 1 to load "t2/ge_1"
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
+    possible_dataset_ids = [1]
+
+    if dataset_id not in possible_dataset_ids:
+        error_msg = f"`dataset_id` must be one of {possible_dataset_ids}"
+        raise ValueError(error_msg)
+
+    # See README.md in ukat/data/t2 for information about the acquisition.
+    if dataset_id == 1:
+        fnames = get_fnames('t2_ge_1')
+        # Load magnitude data and corresponding echo times (in the orig)
+        magnitude = []
+        echo_list = []
+        for file in fnames:
+
+            if file.endswith(".nii.gz"):
+
+                # Load NIfTI
+                data = nib.load(file)
+                magnitude.append(data.get_fdata())
+
+            elif file.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(file, 'r') as json_file:
+                    hdr = json.load(json_file)
+                echo_list.append(hdr["EchoTime"])
+
+        # Move echo dimension to 4th dimension
+        magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+        echo_list = np.array(echo_list)
+
+        # Sort by increasing echo time
+        sort_idxs = np.argsort(echo_list)
+        echo_list = echo_list[sort_idxs]
+        magnitude = magnitude[:, :, :, sort_idxs]
+        affine = data.affine
+
+        return magnitude, affine, echo_list
+
+
 def t2_philips(dataset_id=1):
     """Fetches t2/philips_{dataset_id} dataset
     dataset_id : int
@@ -904,6 +986,60 @@ def t2_philips(dataset_id=1):
 
     elif dataset_id == 2:
         fnames = get_fnames('t2_philips_2')
+        # Load magnitude data and corresponding echo times (in the orig)
+        magnitude = []
+        echo_list = []
+        for file in fnames:
+
+            if file.endswith(".nii.gz"):
+
+                # Load NIfTI
+                data = nib.load(file)
+                magnitude.append(data.get_fdata())
+
+            elif file.endswith(".json"):
+
+                # Retrieve list of echo times in the original order
+                with open(file, 'r') as json_file:
+                    hdr = json.load(json_file)
+                echo_list.append(hdr["EchoTime"])
+
+        # Move echo dimension to 4th dimension
+        magnitude = np.moveaxis(np.array(magnitude), 0, -1)
+        echo_list = np.array(echo_list)
+
+        # Sort by increasing echo time
+        sort_idxs = np.argsort(echo_list)
+        echo_list = echo_list[sort_idxs]
+        magnitude = magnitude[:, :, :, sort_idxs]
+        affine = data.affine
+
+        return magnitude, affine, echo_list
+
+
+def t2_siemens(dataset_id=1):
+    """Fetches t2/siemens_{dataset_id} dataset
+        dataset_id : int
+                Number of the dataset to load:
+                - dataset_id = 1 to load "t2/siemens_1"
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        numpy.ndarray
+            array of echo times, in seconds
+        """
+    possible_dataset_ids = [1]
+
+    if dataset_id not in possible_dataset_ids:
+        error_msg = f"`dataset_id` must be one of {possible_dataset_ids}"
+        raise ValueError(error_msg)
+
+    # See README.md in ukat/data/t2 for information about the acquisition.
+    if dataset_id == 1:
+        fnames = get_fnames('t2_siemens_1')
         # Load magnitude data and corresponding echo times (in the orig)
         magnitude = []
         echo_list = []
