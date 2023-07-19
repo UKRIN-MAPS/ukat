@@ -15,6 +15,113 @@ from ukat.mapping.t2 import two_param_eq
 
 class StimFitModel:
     def __init__(self, mode='non_selective', n_comp=1, ukrin_vendor=None):
+        """
+        A class to set up the T2 StimFit model.
+
+        This model generates an optimisation dictionary (`opt`) containing the
+        model parameters and fitting options.
+
+        Parameters
+        ----------
+        mode : {'non_selective', 'selective'}, optional
+            Default 'non_selective'
+            Choose whether the refocusing pulses are selective on
+            non-selective.
+        n_comp : {1, 2, 3}, optional
+            Default 1
+            The number of components to fit e.g. if n_comp=2, the model will
+            estimate two T2 values, two M0 values and one B1 value per voxel.
+        ukrin_vendor : {None, 'ge', 'philips', 'siemens'}, optional
+            Default None
+            The vendor of the MRI scanner used to acquire the data if the UKRIN
+            protocol was used. Specifying a vendor at this stage overrides
+            the relevant parameters in the model with those from the UKRIN
+            protocol. If no vendor is specified, the default parameters are
+            used but can be manually updated after instantiation.
+
+        Key Parameters in Options Dictionary
+        ----------
+        mode : {'non_selective', 'selective'}
+            Choose whether the refocusing pulses are slice selective or
+            non-selective.
+        esp : float
+            The echo spacing in seconds.
+        etl : int
+            The echo train length.
+        T1 : float
+            The approximate T1 value in seconds.
+        Dz : list
+            The start and end position of each slice in cm.
+        Nz : int
+            The number of positions along the slice profile to simulate signal
+            decay for.
+        Nrf : int
+            The number of resampled points in the RF waveform.
+        RFe : dict
+            The excitation pulse parameters, outlined below.
+        RFr : dict
+            The refocusing pulse parameters, outlined below.
+        lsq : dict
+            The least squares fitting parameters, outlined below.
+
+        Key Parameters in RFe Dictionary
+        ----------
+        RF : np.ndarray
+            The excitation pulse shape.
+        G : float
+            The amplitude of the excitation pulse in Gauss/cm.
+        tau : float
+            The excitation pulse duration in seconds.
+        phase : float
+            The relative phase of the excitation pulse in degrees (0 in CPMG).
+        angle : float
+            The flip angle of the excitation pulse in degrees (typically 90).
+        ref : float
+            The rephasing gradient fraction, times two. Near unity for
+            excitation.
+        alpha : list, optional
+            The actual tip angle distribution across the slice (degrees). If
+            not specified, the tip angle distribution is calculated.
+
+        Key Parameters in RFr Dictionary
+        ----------
+        RF : np.ndarray
+            The refocusing pulse shape.
+        G : float
+            The amplitude of the refocusing pulse in Gauss/cm.
+        tau : float
+            The refocusing pulse duration in seconds.
+        phase : float
+            The relative phase of the refocusing pulse in degrees (90 in CPMG).
+        angle : float
+            The flip angle of the refocusing pulse in degrees (typically 180).
+        ref : float
+            The rephasing gradient fraction, times two. Typically, 0 for
+            refocusing.
+        alpha : list, optional
+            The actual refocusing angle distribution across the slice
+            (degrees). If not specified, the tip angle distribution is
+            calculated.
+
+        Key Parameters in lsq Dictionary
+        ----------
+        Ncomp : int
+            The number of components to fit.
+        X0 : list
+            The initial guess for the fitting parameters in the order
+            [[T2_comp, M0_comp] * Ncomp, B1].
+        XL : list
+            The lower bounds for the fitting parameters in the order
+            [[T2_comp, M0_comp] * Ncomp, B1].
+        XU : list
+            The upper bounds for the fitting parameters in the order
+            [[T2_comp, M0_comp] * Ncomp, B1].
+        xtol : float
+            Tolerance for termination by the change of the independent
+            variables.
+        ftol : float
+            Tolerance for termination by the change of the cost function.
+        """
         if mode != 'non_selective' and mode != 'selective':
             raise ValueError(f'mode must be either "non_selective" or '
                              f'"selective". You specified {mode}.')
@@ -186,9 +293,55 @@ class StimFitModel:
 
 
 class T2StimFit:
+    """
+    Attributes
+    ----------
+    t2_map : np.ndarray
+        The estimated T2 values in ms
+    m0_map : np.ndarray
+        The estimated M0 values
+    r2_map : np.ndarray
+        The R-Squared value of the fit, values close to 1 indicate a good
+        fit, lower values indicate a poorer fit
+    shape : tuple
+        The shape of the T2 map
+    n_vox : int
+        The number of voxels in the map i.e. the product of all dimensions
+        apart from TE
+    """
     def __init__(self, pixel_array, affine, model,
                  mask=None, multithread='auto', norm=True):
-        self.pixel_array = pixel_array
+        """
+        Class for performing stimulated echo T2 fitting.
+
+        Parameters
+        ----------
+        pixel_array : np.ndarray
+            An array containing the signal from each voxel at each echo
+            time with the last dimension being time i.e. the array needed to
+            generate a 3D T2 map would have dimensions [x, y, z, TE].
+        affine : np.ndarray
+            A matrix giving the relationship between voxel coordinates and
+            world coordinates.
+        model : StimFitModel
+            A StimFitModel object containing the model parameters.
+        mask : np.ndarray, optional
+            A boolean mask of the voxels to fit. Should be the shape of the
+            desired T2 map rather than the raw data i.e. omit the time
+            dimension.
+        multithread : bool or 'auto', optional
+            Default 'auto'.
+            If True, fitting will be distributed over all cores available on
+            the node. If False, fitting will be carried out on a single thread.
+            'auto' attempts to apply multithreading where appropriate based
+            on the number of voxels being fit.
+        norm : bool, optional
+            Default True.
+            StimFit is performed on normalised data. If norm is False,
+            it is assumed that the data has already been normalised. If norm
+            is True, the data will be normalised before fitting.
+        """
+        self.pixel_array = np.copy(pixel_array)
         self.shape = pixel_array.shape[:-1]
         self.n_vox = np.prod(self.shape)
         self.affine = affine
@@ -215,9 +368,9 @@ class T2StimFit:
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
 
         if norm:
-            pixel_array /= np.nanmax(pixel_array)
+            self.pixel_array /= np.nanmax(self.pixel_array)
 
-        if np.nanmax(pixel_array) > 1:
+        if np.nanmax(self.pixel_array) > 1:
             warnings.warn('Pixel array contains values greater than 1. '
                           'Data should be normalised, please set norm=True '
                           'or manually normalise your data.')
@@ -226,7 +379,7 @@ class T2StimFit:
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """Exports some of the T2 class attributes to NIFTI.
+        """Exports some of the T2StimFit class attributes to NIFTI.
 
         Parameters
         ----------
@@ -237,8 +390,7 @@ class T2StimFit:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["t2", "m0", "b1",
-            "r2", "mask"].
+            or a list of maps from ["t2", "m0", "b1", "r2", "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
@@ -328,8 +480,6 @@ class T2StimFit:
                                                 amp[1]))]
 
         elif self.model.opt['lsq']['Ncomp'] == 3:
-            # TODO check with Leo this should be residual3 rather than
-            #  residual2 as in original code!
             x = optimize.least_squares(self._residual3,
                                        self.model.opt['lsq']['X0'],
                                        args=(signal, self.model.opt,

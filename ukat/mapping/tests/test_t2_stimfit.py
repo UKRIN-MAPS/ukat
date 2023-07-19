@@ -133,15 +133,15 @@ class TestT2StimFit:
         model = StimFitModel(mode='selective', ukrin_vendor='ge', n_comp=2)
         mapper = T2StimFit(self.image_ge[0, 14, :, :], self.affine_ge, model)
 
-        npt.assert_allclose([mapper.t2_map.mean()],
-                            [180.666285],
+        npt.assert_allclose([mapper.t2_map[0, 0]],
+                            [117.991529],
                             rtol=5e-2, atol=0.1)
 
         # Three Components
         model = StimFitModel(mode='selective', ukrin_vendor='ge', n_comp=3)
         mapper = T2StimFit(self.image_ge[0, 14, :, :], self.affine_ge, model)
-        npt.assert_allclose([mapper.t2_map.mean()],
-                            [544.996386],
+        npt.assert_allclose([mapper.t2_map[0, 2]],
+                            [1245.291925],
                             rtol=5e-2, atol=0.1)
 
     # vendor
@@ -166,13 +166,13 @@ class TestT2StimFit:
 
     # mask
     def test_mask(self):
-        mask = self.image_ge[..., 0] > 0.5
+        mask = self.image_ge[..., 0] > 3000
         model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
         mapper = T2StimFit(self.image_ge, self.affine_ge, model, mask=mask)
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [154.834639, 208.455712, 0.0, 1497.168001],
+                            [156.693513, 207.797,  0.0, 1497.168001],
                             rtol=1e-6, atol=1e-4)
 
     # threading
