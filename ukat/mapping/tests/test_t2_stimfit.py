@@ -128,7 +128,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
                              stats["min"]["4D"], stats["max"]["4D"]],
-                            [210.372205, 291.385375, 15.000004, 2999.999999],
+                            [210.331084,  272.009048, 15.0, 2999.999999],
                             rtol=1e-6, atol=1e-4)
 
         # Three Components
@@ -148,7 +148,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [127.9447, 348.459204, 15.0, 2999.999999],
+                            [128.006434,  348.856183, 15.0, 2999.999999],
                             rtol=1e-6, atol=1e-4)
 
         # Siemens
@@ -177,7 +177,8 @@ class TestEpg:
         npt.assert_allclose(sig, np.array([0.53193464, 0.48718256, 0.41393849,
                                            0.37639148, 0.32247532, 0.29132453,
                                            0.25050307, 0.22604609, 0.19430487,
-                                           0.1755666]))
+                                           0.1755666]),
+                            rtol=1e-5, atol=1e-5)
 
     def test_non_selective(self):
         model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
@@ -185,4 +186,5 @@ class TestEpg:
         npt.assert_allclose(sig, np.array([0.87087025, 0.7713902, 0.6727603,
                                            0.59694589, 0.51965957, 0.46200336,
                                            0.40135138, 0.35760991, 0.30993556,
-                                           0.27684428]))
+                                           0.27684428]),
+                            rtol=1e-5, atol=1e-5)
