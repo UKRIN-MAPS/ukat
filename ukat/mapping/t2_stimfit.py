@@ -80,6 +80,18 @@ class StimFitModel:
                 self.opt['RFe'] = self._set_rf(self.opt['RFe'])
                 self.opt['RFr'] = self._set_rf(self.opt['RFr'])
 
+    def get_opt(self):
+        return self.opt
+
+    def get_lsq(self):
+        return self.opt['lsq']
+
+    def get_rfe(self):
+        return self.opt['RFe']
+
+    def get_rfr(self):
+        return self.opt['RFr']
+
     def _set_ukrin_vendor(self, vendor):
         self.vendor = vendor
         self.opt['T1'] = 1.5

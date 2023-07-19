@@ -91,6 +91,13 @@ class TestStimFitModel:
         npt.assert_almost_equal(model.opt['RFr']['RF'][-1], -3.71744163e-05)
         npt.assert_almost_equal(model.opt['RFr']['alpha'][-1], 1.31133498)
 
+    def test_getters(self):
+        model = StimFitModel(mode='selective', ukrin_vendor='ge')
+        assert len(model.get_opt()) == 11
+        assert len(model.get_lsq()) == 6
+        assert len(model.get_rfe()) == 7
+        assert len(model.get_rfr()) == 8
+
 
 class TestT2StimFit:
     image_ge, affine_ge, te_ge = fetch.t2_ge(1)
@@ -124,19 +131,18 @@ class TestT2StimFit:
     def test_n_comp(self):
         # Two Components
         model = StimFitModel(mode='selective', ukrin_vendor='ge', n_comp=2)
-        mapper = T2StimFit(self.image_ge, self.affine_ge, model)
-        stats = arraystats.ArrayStats(mapper.t2_map).calculate()
-        npt.assert_allclose([stats["mean"]["4D"]],
-                            [214.648239],
-                            rtol=5e-2, atol=10)
+        mapper = T2StimFit(self.image_ge[0, 14, :, :], self.affine_ge, model)
+
+        npt.assert_allclose([mapper.t2_map.mean()],
+                            [180.666285],
+                            rtol=5e-2, atol=0.1)
 
         # Three Components
         model = StimFitModel(mode='selective', ukrin_vendor='ge', n_comp=3)
-        mapper = T2StimFit(self.image_ge, self.affine_ge, model)
-        stats = arraystats.ArrayStats(mapper.t2_map).calculate()
-        npt.assert_allclose([stats["mean"]["4D"]],
-                            [507.257399],
-                            rtol=5e-2, atol=10)
+        mapper = T2StimFit(self.image_ge[0, 14, :, :], self.affine_ge, model)
+        npt.assert_allclose([mapper.t2_map.mean()],
+                            [544.996386],
+                            rtol=5e-2, atol=0.1)
 
     # vendor
     def test_vendor(self):
@@ -187,6 +193,10 @@ class TestT2StimFit:
             mapper = T2StimFit(self.image_ge * 2, self.affine_ge, model,
                                norm=False)
 
+    def test_etl_signal_exception(self):
+        with pytest.raises(Exception):
+            model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+            mapper = T2StimFit(self.image_ge[..., :-2], self.affine_ge, model)
 
     # to_nifti
     def test_to_nifti(self):
