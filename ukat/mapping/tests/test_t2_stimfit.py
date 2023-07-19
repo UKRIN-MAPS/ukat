@@ -94,11 +94,11 @@ class TestStimFitModel:
 
 class TestT2StimFit:
     image_ge, affine_ge, te_ge = fetch.t2_ge(1)
-    image_ge = image_ge[::8, ::8, 2:4, :]  # Downsample to speed up tests
+    image_ge = image_ge[35:45, 50:65, 2:4, :]  # Crop to speed up tests
     image_philips, affine_philips, te_philips = fetch.t2_philips(2)
-    image_philips = image_philips[::8, ::8, 2:4, :]
+    image_philips = image_philips[35:45, 50:65, 2:4, :]
     image_siemens, affine_siemens, te_siemens = fetch.t2_siemens(1)
-    image_siemens = image_siemens[::8, ::8, 2:4, :]
+    image_siemens = image_siemens[35:45, 40:55, 2:4, :]
 
     # selective
     def test_selectiveness(self):
@@ -108,7 +108,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [110.635654, 292.978898, 15.0, 3000.0],
+                            [164.331581, 199.057747, 51.268116, 1455.551225],
                             rtol=1e-6, atol=1e-4)
 
         # Non-selective
@@ -117,7 +117,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [111.737636, 302.09994, 15.0, 3000.0],
+                            [165.994692, 203.583211, 51.827107, 1497.168001],
                             rtol=1e-6, atol=1e-4)
 
     # n_comp
@@ -128,7 +128,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
                              stats["min"]["4D"], stats["max"]["4D"]],
-                            [210.331084, 272.009048, 15.0, 2999.999999],
+                            [214.648239, 229.962247, 51.270805, 2965.271373],
                             rtol=1e-6, atol=1e-4)
 
         # Three Components
@@ -137,7 +137,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
                              stats["min"]["4D"], stats["max"]["4D"]],
-                            [346.479962, 845.632811, 15.0, 3000.0],
+                            [507.257399, 982.164258, 15.656578, 2999.999385],
                             rtol=1e-6, atol=1e-4)
 
     # vendor
@@ -148,7 +148,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [128.006434,  348.856183, 15.0, 2999.999999],
+                            [281.52594, 596.832203, 36.470879, 3000.0],
                             rtol=1e-6, atol=1e-4)
 
         # Siemens
@@ -157,7 +157,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
-                            [145.373325, 453.853709, 15.0, 3000.0],
+                            [120.47096, 190.454984, 26.621704, 2999.999651],
                             rtol=1e-5, atol=1e-2)
     # mask
 
