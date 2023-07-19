@@ -169,14 +169,17 @@ class StimFitModel:
                            'xtol': 5e-4,
                            'ftol': 1e-9}
         if self.opt['lsq']['Ncomp'] == 1:
-            self.opt['lsq']['X0'] = [0.06, 0.1, 1]  # [T2(sec), amp, B1]
+            # [T2(sec), amp, B1]
+            self.opt['lsq']['X0'] = [0.06, 0.1, 1]
             self.opt['lsq']['XU'] = [3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.2]
         elif self.opt['lsq']['Ncomp'] == 2:
+            # [T2, amp, T2, amp, B1]
             self.opt['lsq']['X0'] = [0.02, 0.1, 0.331, 0.1, 1]
             self.opt['lsq']['XU'] = [0.25, 1e+3, 3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.25, 0, 0.2]
         elif self.opt['lsq']['Ncomp'] == 3:
+            # [T2, amp, T2, amp, T2, amp, B1]
             self.opt['lsq']['X0'] = [0.02, 0.1, 0.036, 0.1, 0.131, 0.1, 1]
             self.opt['lsq']['XU'] = [0.035, 1e+3, 0.13, 1e3, 3, 1e+3, 1.8]
             self.opt['lsq']['XL'] = [0.015, 0, 0.035, 0, 0.13, 0, 0.2]
@@ -207,13 +210,13 @@ class StimFitModel:
         self.opt['te'] = (np.arange(self.opt['etl']) + 1) * self.opt['esp']
         self.opt['RFr']['FA_array'] = np.ones(self.opt['etl'])
         if self.vendor == 'ge':
-            self.opt['RFe']['tau'] = 2000 / 1e6
-            self.opt['RFe']['G'] = 0.751599
+            self.opt['RFe']['tau'] = 2000 / 1e6  # Duration
+            self.opt['RFe']['G'] = 0.751599  # Amplitude
             self.opt['RFr']['tau'] = 3136 / 1e6
             self.opt['RFr']['G'] = 0.276839
             self.opt['RFe']['RF'] = rf_pulses.ge_90
             self.opt['RFr']['RF'] = rf_pulses.ge_180
-            self.opt['Dz'] = [0, 0.45]
+            self.opt['Dz'] = [0, 0.45]  # Slice thickness
         elif self.vendor == 'philips':
             self.opt['RFe']['tau'] = 3820 / 1e6
             self.opt['RFe']['G'] = 0.392
@@ -312,7 +315,10 @@ class T2StimFit:
     def __init__(self, pixel_array, affine, model,
                  mask=None, multithread='auto', norm=True):
         """
-        Class for performing stimulated echo T2 fitting.
+        Class for performing stimulated echo T2 fitting as in Marc Lebel R.
+        StimFit: A Toolbox for Robust T2 Mapping with Stimulated Echo
+        Compensation. In: Proc. Intl. Soc. Mag. Reson. Med. 20. Melbourne;
+        2012:2558. https://archive.ismrm.org/2012/2558.html.
 
         Parameters
         ----------
@@ -367,6 +373,7 @@ class T2StimFit:
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
 
+        # Normalise the data
         if norm:
             self.pixel_array /= np.nanmax(self.pixel_array)
 
@@ -375,6 +382,7 @@ class T2StimFit:
                           'Data should be normalised, please set norm=True '
                           'or manually normalise your data.')
 
+        # Perform the fit
         self._fit()
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
@@ -464,6 +472,7 @@ class T2StimFit:
         if len(signal) != self.model.opt['etl']:
             raise Exception('Inconsistent echo train length')
 
+        # Two component fitting
         if self.model.opt['lsq']['Ncomp'] == 2:
             x = optimize.least_squares(self._residual2,
                                        self.model.opt['lsq']['X0'],
@@ -479,6 +488,7 @@ class T2StimFit:
                   r2_score(signal, two_param_eq(self.model.opt['te'], t2[1],
                                                 amp[1]))]
 
+        # Three component fitting
         elif self.model.opt['lsq']['Ncomp'] == 3:
             x = optimize.least_squares(self._residual3,
                                        self.model.opt['lsq']['X0'],
@@ -496,6 +506,7 @@ class T2StimFit:
                   r2_score(signal, two_param_eq(self.model.opt['te'], t2[2],
                                                 amp[2]))]
 
+        # One component fitting
         else:
             x = optimize.least_squares(self._residual1,
                                        self.model.opt['lsq']['X0'],
