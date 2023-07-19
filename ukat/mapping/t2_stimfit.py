@@ -204,8 +204,11 @@ class T2StimFit:
 
         if norm:
             pixel_array /= np.nanmax(pixel_array)
-        # todo add warning if pixel_array contains values greater than 1 and
-        # norm is False
+
+        if np.nanmax(pixel_array) > 1:
+            warnings.warn('Pixel array contains values greater than 1. '
+                          'Data should be normalised, please set norm=True '
+                          'or manually normalise your data.')
 
         self._fit()
 

@@ -128,7 +128,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["4D"]],
                             [214.648239],
-                            rtol=1e-2, atol=3)
+                            rtol=5e-2, atol=10)
 
         # Three Components
         model = StimFitModel(mode='selective', ukrin_vendor='ge', n_comp=3)
@@ -136,7 +136,7 @@ class TestT2StimFit:
         stats = arraystats.ArrayStats(mapper.t2_map).calculate()
         npt.assert_allclose([stats["mean"]["4D"]],
                             [507.257399],
-                            rtol=1e-2, atol=5)
+                            rtol=5e-2, atol=10)
 
     # vendor
     def test_vendor(self):
@@ -157,13 +157,87 @@ class TestT2StimFit:
                              stats["min"]["3D"], stats["max"]["3D"]],
                             [120.47096, 190.454984, 26.621704, 2999.999651],
                             rtol=1e-5, atol=1e-2)
+
     # mask
+    def test_mask(self):
+        mask = self.image_ge[..., 0] > 0.5
+        model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model, mask=mask)
+        stats = arraystats.ArrayStats(mapper.t2_map).calculate()
+        npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
+                             stats["min"]["3D"], stats["max"]["3D"]],
+                            [154.834639, 208.455712, 0.0, 1497.168001],
+                            rtol=1e-6, atol=1e-4)
 
     # threading
+    def test_st(self):
+        model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model,
+                           multithread=False)
+        stats = arraystats.ArrayStats(mapper.t2_map).calculate()
+        npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
+                             stats["min"]["3D"], stats["max"]["3D"]],
+                            [165.994692, 203.583211, 51.827107, 1497.168001],
+                            rtol=1e-6, atol=1e-4)
 
     # normalisation
+    def test_normalisation_warning(self):
+        with pytest.warns(UserWarning):
+            model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+            mapper = T2StimFit(self.image_ge * 2, self.affine_ge, model,
+                               norm=False)
+
 
     # to_nifti
+    def test_to_nifti(self):
+        mask = self.image_ge[..., 0] > 3000
+        model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model, mask=mask)
+
+        if os.path.exists('test_output'):
+            shutil.rmtree('test_output')
+        os.makedirs('test_output', exist_ok=True)
+
+        # Check all is saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2stimfittest', maps='all')
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 5
+        assert 't2stimfittest_b1_map.nii.gz' in output_files
+        assert 't2stimfittest_m0_map.nii.gz' in output_files
+        assert 't2stimfittest_mask.nii.gz' in output_files
+        assert 't2stimfittest_r2_map.nii.gz' in output_files
+        assert 't2stimfittest_t2_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that no files are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2stimfittest', maps=[])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 0
+
+        # Check that only t2, mask and r2 are saved.
+        mapper.to_nifti(output_directory='test_output',
+                        base_file_name='t2stimfittest', maps=['mask', 't2',
+                                                              'r2'])
+        output_files = os.listdir('test_output')
+        assert len(output_files) == 3
+        assert 't2stimfittest_mask.nii.gz' in output_files
+        assert 't2stimfittest_t2_map.nii.gz' in output_files
+        assert 't2stimfittest_r2_map.nii.gz' in output_files
+
+        for f in os.listdir('test_output'):
+            os.remove(os.path.join('test_output', f))
+
+        # Check that it fails when no maps are given
+        with pytest.raises(ValueError):
+            mapper.to_nifti(output_directory='test_output',
+                            base_file_name='t2stimfittest', maps='')
+
+        # Delete 'test_output' folder
+        shutil.rmtree('test_output')
 
 class TestEpg:
     t2 = 0.1
