@@ -403,8 +403,8 @@ class DTI:
         if bvecs.shape[1] != 3 and bvecs.shape[0] == 3:
             bvecs = bvecs.T
             warnings.warn(f'bvecs should be (N, 3). Because your bvecs array '
-                          'is {bvecs.shape} it has been transposed to {'
-                          'bvecs.T.shape}.')
+                          f'is {bvecs.shape} it has been transposed to '
+                          f'{bvecs.T.shape}.')
         assert (bvecs.shape[1] == 3)
         assert (pixel_array.shape[-1] == bvecs.shape[0]), 'Number of bvecs ' \
                                                           'does not match ' \

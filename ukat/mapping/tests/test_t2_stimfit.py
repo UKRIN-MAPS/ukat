@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from ukat.data import fetch
-from ukat.mapping.t2_stimfit import StimFitModel, T2StimFit, _epgsig, _epg
+from ukat.mapping.t2_stimfit import StimFitModel, T2StimFit, _epgsig
 from ukat.utils import arraystats
 
 
@@ -250,6 +250,7 @@ class TestT2StimFit:
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
+
 
 class TestEpg:
     t2 = 0.1

@@ -49,7 +49,7 @@ class MTR:
                                              'dimension of the input ' \
                                              'pixel_array must be 2.'
         if np.sum(pixel_array[..., 1]) >= np.sum(pixel_array[..., 0]):
-            warnings.warn(f'The average intensity of the MT_ON image is more '
+            warnings.warn('The average intensity of the MT_ON image is more '
                           'than the average intensity of the MT_OFF image. '
                           'This will lead to negative MTR values which is not '
                           'usually desirable. Please check that you\'ve input '
@@ -69,7 +69,8 @@ class MTR:
         self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
         self.mtr_map = np.squeeze(np.nan_to_num(((self.mt_off - self.mt_on) /
-                                     self.mt_off), posinf=0, neginf=0))
+                                                 self.mt_off),
+                                                posinf=0, neginf=0))
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
