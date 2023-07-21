@@ -7,9 +7,9 @@ numpy
 pandas
 pathos
 renalsegmentor
-scikit-image==0.20
+scikit-image~=0.20.0
 scipy
-scikit-learn
+scikit-learn~=1.2.1
 tabulate
 tqdm
 trimesh
