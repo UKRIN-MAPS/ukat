@@ -1,6 +1,6 @@
 dipy~=1.6.0
 matplotlib~=3.7.0
-nibabel~=5.0.1
+nibabel
 notebook~=6.5.1
 numba~=0.55.2
 numpy~=1.22.1
