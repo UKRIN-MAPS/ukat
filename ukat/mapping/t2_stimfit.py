@@ -554,7 +554,7 @@ def _epgsig(t2, b1, opt, mode):
     return sig.ravel()
 
 
-@jit(nopython=True)
+@jit(nopython=True, parallel=False)
 def _epg(x2, b1, x1, esp, ar, ae):  # TE = 6.425ms. TR = 1500ms.   90, 175,
     # 145, 110, 110, 110.
     echo_intensity = np.zeros(ar.shape, dtype=np.float64)
