@@ -6,7 +6,7 @@ numba~=0.55.2
 numpy~=1.22.1
 pandas~=2.0.2
 pathos~=0.3.0
-renalsegmentor~=1.3.7
+renalsegmentor==1.3.4
 scikit-image~=0.20.0
 scipy~=1.9.1
 scikit-learn~=1.2.1
