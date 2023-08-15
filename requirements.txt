@@ -2,7 +2,7 @@ dipy~=1.6.0
 matplotlib~=3.7.0
 nibabel~=5.0.1
 notebook~=6.5.1
-numba
+numba~=0.55.2
 numpy~=1.24.1
 pandas~=2.0.2
 pathos~=0.3.0
