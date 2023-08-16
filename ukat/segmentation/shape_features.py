@@ -115,7 +115,7 @@ class ShapeFeatures:
         mesh = self._get_smoothed_mesh(region)
 
         props_dict = {}
-        props_dict.update({'volume': props['num_pixels'] / 1000})  # mm^3 to mL
+        props_dict.update({'volume': props['area'] / 1000})  # mm^3 to mL
         props_dict.update({'surface_area': mesh.area / 100})  # mm^2 to cm^2
         props_dict.update(
             {'volume_bbox': props['bbox_area'] / 1000})  # mm^3 to mL
