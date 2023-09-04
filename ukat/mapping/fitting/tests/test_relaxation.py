@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from ukat.mapping.fitting import Model, fit_image, fit_signal
 
@@ -95,7 +96,6 @@ class TestFitSignal:
         npt.assert_allclose(popt, [0, 0])
         npt.assert_allclose(error, [0, 0])
         npt.assert_almost_equal(r2, -1E6)
-
 
 class TestFitImage:
     x = np.arange(1, 9)

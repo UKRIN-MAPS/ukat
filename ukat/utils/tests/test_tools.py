@@ -6,6 +6,7 @@ from ukat.utils import arraystats
 
 
 class TestConvertToPiRange:
+
     # Gold Standard = [mean, std, minimum, maximum]
     # Input: {np.arange(12).reshape((2, 2, 3)) - 6 * np.ones((2, 2, 3))}
     gold_standard = [-7.401486830834377e-17, 1.9718077939258474,
@@ -21,8 +22,8 @@ class TestConvertToPiRange:
         pi_range_calculated = tools.convert_to_pi_range(self.array)
         stats = arraystats.ArrayStats(pi_range_calculated).calculate()
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
-                             stats["min"]["3D"], stats["max"]["3D"]],
-                            self.gold_standard, rtol=1e-6, atol=1e-4)
+                                    stats["min"]["3D"], stats["max"]["3D"]],
+                                    self.gold_standard, rtol=1e-6, atol=1e-4)
 
     def test_if_ranges(self):
         # Test for values > 3.2
@@ -53,6 +54,7 @@ class TestConvertToPiRange:
 
 
 class TestResizeArray:
+
     # Create arrays for testing
     array_2d = np.arange(100).reshape((10, 10))
     array_3d = np.arange(500).reshape((10, 10, 5))
@@ -94,6 +96,7 @@ class TestResizeArray:
 
 
 class TestMaskSlices:
+
     shape = (2, 2, 3)
     # Create mask where all pixels from all slices are True
     full_mask = np.full(shape, True)

@@ -1,17 +1,14 @@
-import nibabel as nib
 import numpy as np
 import pandas as pd
 import trimesh
 
 from nibabel.affines import voxel_sizes
-from nibabel.orientations import aff2axcodes
-from nibabel.processing import conform
 from skimage.measure import label, marching_cubes, regionprops
 from trimesh import smoothing
 
 
 class ShapeFeatures:
-    def __init__(self, pixel_array, affine, kidneys=True,
+    def __init__(self, pixel_array, affine=None, zoom=None, kidneys=True,
                  region_labels=None):
         """
         Calculate shape features for a mask.
@@ -27,6 +24,8 @@ class ShapeFeatures:
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
+        zoom : tuple of float, shape (ndim,)
+            A tuple of floats giving the voxel size in mm.
         kidneys : bool, optional
             Default True
             If true, it will be assumed that the two regions in the mask are
@@ -35,9 +34,14 @@ class ShapeFeatures:
             A list of string labels corresponding to each integer label in
             pixel_array
         """
+        if (affine is None) and (zoom is None):
+            raise ValueError('Affine or zoom must be specified')
+
         self.pixel_array = pixel_array
         self.affine = affine
-        self.zoom = tuple(voxel_sizes(self.affine))
+        if zoom is None:
+            zoom = tuple(voxel_sizes(self.affine))
+        self.zoom = zoom
         self.n_labels = len(np.unique(pixel_array[pixel_array > 0]))
         if self.n_labels == 1:
             self.labels = label(self.pixel_array)
@@ -109,9 +113,7 @@ class ShapeFeatures:
             A dictionary containing the calculated shape features for the
             region.
         """
-        # Resample region to be 1 mm isotropic
-        region_iso = self._resample_isotropic(region)
-        props = regionprops(region_iso.astype(np.uint8))[0]  # Add spacing back in when numba and skimage get along
+        props = regionprops(region.astype(np.uint8), spacing=self.zoom)[0]
         mesh = self._get_smoothed_mesh(region)
 
         props_dict = {}
@@ -123,7 +125,7 @@ class ShapeFeatures:
             {'volume_convex': props['convex_area'] / 1000})  # mm^3 to mL
         props_dict.update(
             {'volume_filled': props['filled_area'] / 1000})  # mm^3 to mL
-        props_dict.update({'n_vox': np.sum(region)})
+        props_dict.update({'n_vox': props['num_pixels']})
         props_dict.update(
             {'long_axis': props['major_axis_length'] / 10})  # mm to cm
         props_dict.update(
@@ -157,15 +159,3 @@ class ShapeFeatures:
         mesh = trimesh.Trimesh(vertices=verts, faces=faces)
         mesh = smoothing.filter_laplacian(mesh, lamb=1, iterations=20)
         return mesh
-
-    def _resample_isotropic(self, region, spacing=1.0):
-        orientation = aff2axcodes(self.affine)
-        iso_zoom = np.array([spacing, spacing, spacing])
-        fov = np.array(region.shape) * self.zoom
-        iso_matrix = np.ceil(fov / iso_zoom).astype(int)
-
-        region_img = nib.Nifti1Image(region.astype(np.uint8), self.affine)
-        iso_img = conform(region_img, iso_matrix, iso_zoom,
-                          orientation=orientation, order=0)
-        iso_region = iso_img.get_fdata()
-        return iso_region > 0.5

@@ -23,7 +23,7 @@ class TestIsnr:
         npt.assert_allclose([noise_mask_stats['mean']['3D'],
                              noise_mask_stats['std']['3D'],
                              noise_mask_stats['min']['3D'],
-                             noise_mask_stats['max']['3D']],
+                             noise_mask_stats[ 'max']['3D']],
                             gold_standard_noise_mask, rtol=1e-6, atol=1e-4)
         npt.assert_allclose(isnr_obj.isnr, 45.968827)
         npt.assert_allclose([isnr_map_stats['mean']['3D'],
