@@ -707,7 +707,7 @@ def phase_contrast_left_philips():
     velocity_encoding = 100
     for file in fnames:
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-             file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
@@ -747,7 +747,7 @@ def phase_contrast_right_philips():
     for file in fnames:
 
         if ((file.endswith(".nii.gz") and "_ph_" in file) or
-             file.endswith("_ph.nii.gz")):
+            file.endswith("_ph.nii.gz")):
             # Load NIfTI and only save the phase data
             data = nib.load(file)
             phase.append(np.squeeze(data.get_fdata()))
