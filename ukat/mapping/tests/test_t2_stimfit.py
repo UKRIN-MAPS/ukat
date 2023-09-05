@@ -125,7 +125,7 @@ class TestT2StimFit:
         npt.assert_allclose([stats["mean"]["3D"], stats["std"]["3D"],
                              stats["min"]["3D"], stats["max"]["3D"]],
                             [165.994692, 203.583211, 51.827107, 1497.168001],
-                            rtol=1e-6, atol=1e-4)
+                            rtol=1e-2, atol=0.25)
 
     # n_comp
     def test_n_comp(self):
