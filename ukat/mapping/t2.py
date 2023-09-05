@@ -2,7 +2,7 @@
 # from itertools import compress
 #
 # import nibabel as nib
-# import numpy as np
+import numpy as np
 #
 # from . import fitting
 #
@@ -270,28 +270,28 @@
 #         return
 #
 #
-# def two_param_eq(t, t2, m0):
-#     """
-#         Calculate the expected signal from the equation
-#         signal = M0 * exp(-t / T2)
-#
-#         Parameters
-#         ----------
-#         t: list
-#             The times the signal will be calculated at
-#         t2: float
-#             The T2 of the signal
-#         m0: float
-#             The M0 of the signal
-#
-#         Returns
-#         -------
-#         signal: np.ndarray
-#             The expected signal
-#         """
-#     with np.errstate(divide='ignore'):
-#         signal = m0 * np.exp(-t / t2)
-#     return signal
+def two_param_eq(t, t2, m0):
+    """
+        Calculate the expected signal from the equation
+        signal = M0 * exp(-t / T2)
+
+        Parameters
+        ----------
+        t: list
+            The times the signal will be calculated at
+        t2: float
+            The T2 of the signal
+        m0: float
+            The M0 of the signal
+
+        Returns
+        -------
+        signal: np.ndarray
+            The expected signal
+        """
+    with np.errstate(divide='ignore'):
+        signal = m0 * np.exp(-t / t2)
+    return signal
 #
 #
 # def three_param_eq(t, t2, m0, b):
