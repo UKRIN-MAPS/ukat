@@ -1,9 +1,9 @@
 import os
-
 import nibabel as nib
 import numpy as np
 
 from . import fitting
+from itertools import compress
 
 
 class T2Model(fitting.Model):
@@ -66,12 +66,12 @@ class T2Model(fitting.Model):
         for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
                                                 self.x_list,
                                                 self.p0_list)):
-            self.signal_list[ind] = np.array(
-                [x for (x, b) in zip(sig, np.array(sig) > threshold) if b])
-            self.x_list[ind] = np.array(
-                [x for (x, b) in zip(te, np.array(sig) > threshold) if b])
-            self.p0_list[ind] = np.array(
-                [x for (x, b) in zip(p0, np.array(sig) > threshold) if b])
+            self.signal_list[ind] = np.array(list(compress(sig, np.array(sig) >
+                                                  threshold)))
+            self.x_list[ind] = np.array(list(compress(te, np.array(sig) >
+                                             threshold)))
+            self.p0_list[ind] = np.array(list(compress(p0, np.array(sig) >
+                                              threshold)))
 
 
 class T2:
@@ -226,9 +226,6 @@ class T2:
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
             maps = ['t2', 't2_err', 'm0', 'm0_err', 'r2', 'mask']
-            if self.method == '3p_exp':
-                maps.append('b')
-                maps.append('b_err')
         if isinstance(maps, list):
             for result in maps:
                 if result == 't2' or result == 't2_map':
@@ -253,14 +250,6 @@ class T2:
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
                     nib.save(mask_nifti, base_path + '_mask.nii.gz')
-                elif result == 'b' or result == 'b_map':
-                    b_nifti = nib.Nifti1Image(self.b_map,
-                                              affine=self.affine)
-                    nib.save(b_nifti, base_path + '_b_map.nii.gz')
-                elif result == 'b_err':
-                    b_err_nifti = nib.Nifti1Image(self.b_err,
-                                                  affine=self.affine)
-                    nib.save(b_err_nifti, base_path + '_b_err.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
