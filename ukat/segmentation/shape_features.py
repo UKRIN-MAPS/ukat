@@ -65,7 +65,7 @@ class ShapeFeatures:
         else:
             self.region_labels = np.arange(1, self.n_labels + 1)
 
-        # self.features = self.get_features()
+        self.features = self.get_features()
 
     def get_features(self):
         """

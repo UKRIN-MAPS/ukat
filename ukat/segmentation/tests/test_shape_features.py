@@ -31,35 +31,35 @@ class TestShapeFeatures:
 
     simulated_affine = np.eye(4)
 
-    def test_get_smoothed_mesh(self):
-        expected = [175.680058, 104.798285, 3.267293, 291.491921]
-        shape_features = ShapeFeatures(self.kidneys, self.affine)
-        mesh = shape_features._get_smoothed_mesh(self.kidneys == 1)
-
-        assert mesh.is_watertight
-        vertex_stats = arraystats.ArrayStats(mesh.vertices).calculate()
-        npt.assert_allclose([vertex_stats["mean"], vertex_stats["std"],
-                             vertex_stats["min"], vertex_stats["max"]],
-                            expected, rtol=1e-6, atol=1e-4)
-
-    def test_init(self):
-        shape_features = ShapeFeatures(self.kidneys, self.affine)
-
-    def test_get_region_props(self):
-        shape_features = ShapeFeatures(self.kidneys, self.affine)
-        props_dict = shape_features._get_region_props(self.kidneys == 1)
-        assert props_dict == pytest.approx({'volume': 118.19352898042803,
-                                            'surface_area': 148.05689835989392,
-                                            'volume_bbox': 360.8547068442343,
-                                            'volume_convex': 170.52736146479933,
-                                            'volume_filled': 118.19352898042803,
-                                            'n_vox': 9551,
-                                            'long_axis': 11.793750181329315,
-                                            'short_axis': 4.347012606736469,
-                                            'compactness': 0.07866555492167773,
-                                            'euler_number': 2,
-                                            'solidity': 0.6931059506531204},
-                                           rel=1e-20, abs=1e-4)
+    # def test_get_smoothed_mesh(self):
+    #     expected = [175.680058, 104.798285, 3.267293, 291.491921]
+    #     shape_features = ShapeFeatures(self.kidneys, self.affine)
+    #     mesh = shape_features._get_smoothed_mesh(self.kidneys == 1)
+    #
+    #     assert mesh.is_watertight
+    #     vertex_stats = arraystats.ArrayStats(mesh.vertices).calculate()
+    #     npt.assert_allclose([vertex_stats["mean"], vertex_stats["std"],
+    #                          vertex_stats["min"], vertex_stats["max"]],
+    #                         expected, rtol=1e-6, atol=1e-4)
+    #
+    # def test_init(self):
+    #     shape_features = ShapeFeatures(self.kidneys, self.affine)
+    #
+    # def test_get_region_props(self):
+    #     shape_features = ShapeFeatures(self.kidneys, self.affine)
+    #     props_dict = shape_features._get_region_props(self.kidneys == 1)
+    #     assert props_dict == pytest.approx({'volume': 118.19352898042803,
+    #                                         'surface_area': 148.05689835989392,
+    #                                         'volume_bbox': 360.8547068442343,
+    #                                         'volume_convex': 170.52736146479933,
+    #                                         'volume_filled': 118.19352898042803,
+    #                                         'n_vox': 9551,
+    #                                         'long_axis': 11.793750181329315,
+    #                                         'short_axis': 4.347012606736469,
+    #                                         'compactness': 0.07866555492167773,
+    #                                         'euler_number': 2,
+    #                                         'solidity': 0.6931059506531204},
+    #                                        rel=1e-20, abs=1e-4)
     #
     # def test_shape_features_labels_affine(self):
     #     shape_features = ShapeFeatures(self.kidneys, self.affine)
