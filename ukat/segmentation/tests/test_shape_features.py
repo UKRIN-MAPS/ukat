@@ -41,7 +41,10 @@ class TestShapeFeatures:
         npt.assert_allclose([vertex_stats["mean"], vertex_stats["std"],
                              vertex_stats["min"], vertex_stats["max"]],
                             expected, rtol=1e-6, atol=1e-4)
-    #
+
+    def test_init(self):
+        shape_features = ShapeFeatures(self.kidneys, self.affine)
+
     # def test_get_region_props(self):
     #     shape_features = ShapeFeatures(self.kidneys, self.affine)
     #     props_dict = shape_features._get_region_props(self.kidneys == 1)
