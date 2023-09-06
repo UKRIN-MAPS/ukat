@@ -18,7 +18,8 @@ class TestB0:
     correct_array = np.angle(np.exp(1j * correct_array))
     one_echo_array = np.arange(100).reshape((10, 10, 1))
     multiple_echoes_array = (np.concatenate((correct_array,
-                             np.arange(300).reshape((10, 10, 3))), axis=2))
+                                             np.arange(300).reshape(
+                                                 (10, 10, 3))), axis=2))
     affine = np.eye(4)
     correct_echo_list = [4, 7]
     one_echo_list = [4]
@@ -33,7 +34,7 @@ class TestB0:
                                unwrap=False).b0_map
         b0maps_stats = arraystats.ArrayStats(b0_map_calculated).calculate()
         npt.assert_allclose([b0maps_stats["mean"], b0maps_stats["std"],
-                            b0maps_stats["min"], b0maps_stats["max"]],
+                             b0maps_stats["min"], b0maps_stats["max"]],
                             self.gold_standard, rtol=1e-7, atol=1e-9)
 
     def test_inputs(self):
@@ -182,7 +183,7 @@ class TestB0:
         mapper = B0(images, te, affine, unwrap=True)
         b0map_stats = arraystats.ArrayStats(mapper.b0_map).calculate()
         npt.assert_allclose([b0map_stats["mean"], b0map_stats["std"],
-                            b0map_stats["min"], b0map_stats["max"]],
+                             b0map_stats["min"], b0map_stats["max"]],
                             gold_standard_b0, rtol=0.01, atol=0)
 
     def test_b0_offset_correction(self):
@@ -213,6 +214,7 @@ class TestB0:
                                             (2 * np.pi * mapper.delta_te))
         # This assertion proves that there was offset correction performed
         assert (mapper.b0_map != b0_map_without_offset_correction).any()
+
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):

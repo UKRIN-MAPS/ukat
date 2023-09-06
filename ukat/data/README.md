@@ -37,6 +37,9 @@ With the exception of datasets marked with :star:, all test data is from the tra
 
 ### T2
 * `t2/philips_1`: not part of travelling kidney pilot study 2019, data acquired on 06 Aug 2020 in Nottingham
+* `t2/philips_2`: 2021 Travelling kidney study Philips subject 6
+* `t2/ge_1`: 2021 Travelling kidney study GE subject 6
+* `t2/siemens_2`: 2021 Travelling kidney study Siemens subject 2
 
 ### MT
 * `mt/philips`: Part of travelling kidney study 2021, data acquired on 05 July 2021 in Nottingham
