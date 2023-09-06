@@ -141,41 +141,41 @@ class TestT2:
                         echo_list=np.linspace(0, 2000, 4),
                         affine=self.affine, method='4p_exp')
 
-    # def test_real_data(self):
-    #     # Get test data
-    #     image, affine, te = fetch.t2_philips(1)
-    #     te *= 1000
-    #     # Crop to reduce runtime
-    #     image = image[60:90, 30:70, 2, :]
-    #
-    #     # Gold standard statistics
-    #     gold_standard_2p_exp = [105.63945, 39.616205,
-    #                             0.0, 568.160604]
-    #     gold_standard_3p_exp = [9.881218e+01, 4.294529e+01,
-    #                             3.489657e-02, 5.681606e+02]
-    #     gold_standard_thresh = [106.351332, 39.904419,
-    #                             0.0, 568.160832]
-    #
-    #     # 2p_exp method
-    #     mapper = T2(image, te, self.affine)
-    #     t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
-    #     npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
-    #                          t2_stats["min"], t2_stats["max"]],
-    #                         gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
-    #
-    #     # 3p_exp method
-    #     mapper = T2(image, te, self.affine, method='3p_exp')
-    #     t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
-    #     npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
-    #                          t2_stats["min"], t2_stats["max"]],
-    #                         gold_standard_3p_exp, rtol=1e-6, atol=1e-4)
-    #
-    #     # threshold method
-    #     mapper = T2(image, te, self.affine, noise_threshold=100)
-    #     t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
-    #     npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
-    #                          t2_stats["min"], t2_stats["max"]],
-    #                         gold_standard_thresh, rtol=1e-6, atol=1e-4)
+    def test_real_data(self):
+        # Get test data
+        image, affine, te = fetch.t2_philips(1)
+        te *= 1000
+        # Crop to reduce runtime
+        image = image[60:90, 30:70, 2, :]
+
+        # Gold standard statistics
+        gold_standard_2p_exp = [105.63945, 39.616205,
+                                0.0, 568.160604]
+        gold_standard_3p_exp = [9.881218e+01, 4.294529e+01,
+                                3.489657e-02, 5.681606e+02]
+        gold_standard_thresh = [106.351332, 39.904419,
+                                0.0, 568.160832]
+
+        # 2p_exp method
+        mapper = T2(image, te, self.affine)
+        t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
+        npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
+                             t2_stats["min"], t2_stats["max"]],
+                            gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+
+        # 3p_exp method
+        mapper = T2(image, te, self.affine, method='3p_exp')
+        t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
+        npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
+                             t2_stats["min"], t2_stats["max"]],
+                            gold_standard_3p_exp, rtol=1e-6, atol=1e-4)
+
+        # threshold method
+        mapper = T2(image, te, self.affine, noise_threshold=100)
+        t2_stats = arraystats.ArrayStats(mapper.t2_map).calculate()
+        npt.assert_allclose([t2_stats["mean"], t2_stats["std"],
+                             t2_stats["min"], t2_stats["max"]],
+                            gold_standard_thresh, rtol=1e-6, atol=1e-4)
 
     def test_to_nifti(self):
         # Create a T2 map instance and test different export to NIFTI scenarios
