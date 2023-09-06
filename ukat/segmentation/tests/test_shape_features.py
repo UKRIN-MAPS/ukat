@@ -31,16 +31,16 @@ class TestShapeFeatures:
 
     simulated_affine = np.eye(4)
 
-    # def test_get_smoothed_mesh(self):
-    #     expected = [175.680058, 104.798285, 3.267293, 291.491921]
-    #     shape_features = ShapeFeatures(self.kidneys, self.affine)
-    #     mesh = shape_features._get_smoothed_mesh(self.kidneys == 1)
-    #
-    #     assert mesh.is_watertight
-    #     vertex_stats = arraystats.ArrayStats(mesh.vertices).calculate()
-    #     npt.assert_allclose([vertex_stats["mean"], vertex_stats["std"],
-    #                          vertex_stats["min"], vertex_stats["max"]],
-    #                         expected, rtol=1e-6, atol=1e-4)
+    def test_get_smoothed_mesh(self):
+        expected = [175.680058, 104.798285, 3.267293, 291.491921]
+        shape_features = ShapeFeatures(self.kidneys, self.affine)
+        mesh = shape_features._get_smoothed_mesh(self.kidneys == 1)
+
+        assert mesh.is_watertight
+        vertex_stats = arraystats.ArrayStats(mesh.vertices).calculate()
+        npt.assert_allclose([vertex_stats["mean"], vertex_stats["std"],
+                             vertex_stats["min"], vertex_stats["max"]],
+                            expected, rtol=1e-6, atol=1e-4)
     #
     # def test_get_region_props(self):
     #     shape_features = ShapeFeatures(self.kidneys, self.affine)
