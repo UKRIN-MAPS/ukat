@@ -1,3 +1,18 @@
+## [0.7.0] - 2023-09-07
+
+### Added
+* T2StimFit - A method of accounting for stimulated echoes when performing T2 mapping #207, #209
+* R-Squared values for curve fitting maps #198 #205
+* New PR template for releases #205 #210
+
+### Changed
+* `ukat` is now tested against Python 3.11
+* Dependencies are now a little less strict for some packages
+
+### Fixed
+* Mapping should now scale better over large images/multiple cores #165 #205
+* Quite a lot of PEP8 formatting issues
+
 ## [0.6.5] - 2023-02-17
 
 ### Added
