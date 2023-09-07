@@ -114,7 +114,7 @@ def mask_slices(shape, slices, mask=None):
         s_min = min(slices)
         s_max = max(slices)
 
-    if not(s_min >= 0 and s_max+1 <= shape[2]):
+    if not(s_min >= 0 and s_max + 1 <= shape[2]):
         msg = f"The elements of `slices` must be > 0 and <= {shape[2]-1}"
         raise ValueError(msg)
 

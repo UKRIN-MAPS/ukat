@@ -5,7 +5,7 @@
 - Ensure code follows [PEP8](https://www.python.org/dev/peps/pep-0008/).
 - Provide tests.
 - Ideally, provide examples and/or tutorials.
-- Make sure you follow the checklists on the [pull request template](PULL_REQUEST_TEMPLATE.md)
+- Make sure you follow the checklists on the [pull request template](PULL_REQUEST_TEMPLATE/PULL_REQUEST_TEMPLATE.md)
 - Branch off and request merges to the `dev` branch
 
 # Workflow

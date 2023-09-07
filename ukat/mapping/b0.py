@@ -111,7 +111,7 @@ class B0:
             # B0 Map Offset Correction
             self.b0_map -= (np.round(mean_central_b0 / b0_offset_step)) * \
                            b0_offset_step
-            
+
             # Mask B0 Map
             self.b0_map[np.squeeze(~self.mask)] = 0
         else:

@@ -10,14 +10,18 @@ on:
   pull_request:
     branches: [ master, dev ]
 
+env:
+  NUMBA_DISABLE_JIT: 1
+
 jobs:
   build:
 
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.8, 3.9, "3.10"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v2
@@ -40,9 +44,8 @@ jobs:
       run: |
         pytest --cov-report=xml --cov=ukat
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
         env_vars: OS,PYTHON
         fail_ci_if_error: true
         verbose: false

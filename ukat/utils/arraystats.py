@@ -11,6 +11,7 @@ from scipy import stats
 
 NOT_CALCULATED_MSG = 'Not calculated. See ArrayStats.calculate().'
 
+
 class ArrayStats():
     """Class to calculate array statistics (optionally within a mask)
 
@@ -236,8 +237,8 @@ class ArrayStats():
         elif self.image_ndims == 3:
             n = {
                 '2D': n2.transpose()[0],
-                '3D': n4, # n4 because {statistic}4 always returns the result
-            }             # over the entire array, which here is 3D
+                '3D': n4,  # n4 because {statistic}4 always returns the result
+            }              # over the entire array, which here is 3D
             mean = {
                 '2D': mean2.transpose()[0],
                 '3D': mean4,

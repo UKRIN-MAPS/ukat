@@ -40,19 +40,21 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
-        npt.assert_almost_equal(mapper.r2_map().mean(), 1 / self.t2)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Auto Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread='auto')
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Fail to fit
         mapper = T2(signal_array[..., ::-1], self.t, self.affine,
@@ -72,6 +74,7 @@ class TestT2:
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.b_map.mean(), self.b)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False,
@@ -80,6 +83,7 @@ class TestT2:
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
         npt.assert_almost_equal(mapper.b_map.mean(), self.b)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_threshold_fit(self):
         # Make the signal into a 4D array
@@ -91,6 +95,7 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
         # Single Threaded
         mapper = T2(signal_array, self.t, self.affine, multithread=False,
@@ -98,6 +103,7 @@ class TestT2:
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t2_map.mean(), self.t2)
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_mask(self):
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
@@ -147,8 +153,8 @@ class TestT2:
                                 0.0, 568.160604]
         gold_standard_3p_exp = [9.881218e+01, 4.294529e+01,
                                 3.489657e-02, 5.681606e+02]
-        gold_standard_thresh = [106.354968,  39.894933,
-                                0.0, 568.160591]
+        gold_standard_thresh = [106.351332, 39.904419,
+                                0.0, 568.160832]
 
         # 2p_exp method
         mapper = T2(image, te, self.affine)
@@ -174,7 +180,7 @@ class TestT2:
     def test_to_nifti(self):
         # Create a T2 map instance and test different export to NIFTI scenarios
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
-        mapper = T2(signal_array, self.t, self.affine)
+        mapper = T2(signal_array, self.t, self.affine, method='3p_exp')
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
@@ -184,7 +190,9 @@ class TestT2:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2test', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 6
+        assert len(output_files) == 8
+        assert 't2test_b_map.nii.gz' in output_files
+        assert 't2test_b_err.nii.gz' in output_files
         assert 't2test_m0_err.nii.gz' in output_files
         assert 't2test_m0_map.nii.gz' in output_files
         assert 't2test_mask.nii.gz' in output_files
@@ -201,7 +209,7 @@ class TestT2:
         output_files = os.listdir('test_output')
         assert len(output_files) == 0
 
-        # Check that only t2 and r2 are saved.
+        # Check that only mask, t2 and r2 are saved.
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2test', maps=['mask', 't2', 'r2'])
         output_files = os.listdir('test_output')
