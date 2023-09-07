@@ -507,7 +507,7 @@ internet and used.</dd>
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="ukat.segmentation.whole_kidney.Segmentation.header_class"><code class="name">var <span class="ident">header_class</span> : Type[Nifti1Header]</code></dt>
+<dt id="ukat.segmentation.whole_kidney.Segmentation.header_class"><code class="name">var <span class="ident">header_class</span> : type[Nifti1Header]</code></dt>
 <dd>
 <div class="desc"><p>Class for NIfTI1 header</p>
 <p>The NIfTI1 header has many more coded fields than the simpler Analyze
@@ -519,6 +519,21 @@ The object needs to
 know which type it is, in order to manage the voxel offset pointing to the
 data, extension reading, and writing the correct magic string.</p>
 <p>This class handles the header-preceding-data case.</p></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ukat.segmentation.whole_kidney.Segmentation.header"><code class="name">var <span class="ident">header</span> : nibabel.filebasedimages.FileBasedHeader</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def header(self) -&gt; FileBasedHeader:
+    return self._header</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -866,6 +881,7 @@ or a list of maps from ["mask", "left", "right", "individual"]</dd>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_rkv" href="#ukat.segmentation.whole_kidney.Segmentation.get_rkv">get_rkv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_tkv" href="#ukat.segmentation.whole_kidney.Segmentation.get_tkv">get_tkv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.get_volumes" href="#ukat.segmentation.whole_kidney.Segmentation.get_volumes">get_volumes</a></code></li>
+<li><code><a title="ukat.segmentation.whole_kidney.Segmentation.header" href="#ukat.segmentation.whole_kidney.Segmentation.header">header</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.header_class" href="#ukat.segmentation.whole_kidney.Segmentation.header_class">header_class</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.save_volumes_csv" href="#ukat.segmentation.whole_kidney.Segmentation.save_volumes_csv">save_volumes_csv</a></code></li>
 <li><code><a title="ukat.segmentation.whole_kidney.Segmentation.to_nifti" href="#ukat.segmentation.whole_kidney.Segmentation.to_nifti">to_nifti</a></code></li>

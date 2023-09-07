@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>ukat.mapping.resources.t2_stimfit.rf_pulses API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ukat.mapping.resources.t2_stimfit.rf_pulses</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import numpy as np
+
+ge_90 = np.array([0.000000000000000000e+00,
+                  0.000000000000000000e+00,
+                  0.000000000000000000e+00,
+                  0.000000000000000000e+00,
+                  0.000000000000000000e+00,
+                  0.000000000000000000e+00,
+                  -1.266768749857178165e+02,
+                  -3.124522490114486573e+04,
+                  -9.531547336557127710e+04,
+                  -9.721048020529435598e+04,
+                  -1.179229383718024765e+05,
+                  -1.456733869440756971e+05,
+                  -1.721247993207764812e+05,
+                  -1.952492802694011480e+05,
+                  -2.129515095199028729e+05,
+                  -2.212653870648781303e+05,
+                  -2.176550316485261428e+05,
+                  -1.986209674288319075e+05,
+                  -1.608037579581205500e+05,
+                  -1.015676326677684265e+05,
+                  -1.764346979966967410e+04,
+                  9.146498080684282468e+04,
+                  2.305132406684918096e+05,
+                  3.992299908046545461e+05,
+                  5.973996433025186416e+05,
+                  8.234028000181980897e+05,
+                  1.076599458585872315e+06,
+                  1.353354095860138303e+06,
+                  1.648617102658187039e+06,
+                  1.960097276725076837e+06,
+                  2.279507916006019339e+06,
+                  2.598834868547144346e+06,
+                  2.914556274034465663e+06,
+                  3.215262450139994733e+06,
+                  3.492515551519702189e+06,
+                  3.743626426648607478e+06,
+                  3.955383802293300163e+06,
+                  4.122795531721453648e+06,
+                  4.245528126540713944e+06,
+                  4.312751237523826770e+06,
+                  4.325134271489643492e+06,
+                  4.287280772804215550e+06,
+                  4.193747129049188923e+06,
+                  4.051372835346973035e+06,
+                  3.868604124899462331e+06,
+                  3.644595798674946185e+06,
+                  3.390452242988429498e+06,
+                  3.116637709659715649e+06,
+                  2.824276558167716488e+06,
+                  2.525030573960933834e+06,
+                  2.228156430497014429e+06,
+                  1.934771772715587635e+06,
+                  1.653738064701012336e+06,
+                  1.391487375758768991e+06,
+                  1.147340323923531920e+06,
+                  9.273275685164701426e+05,
+                  7.332337711992086843e+05,
+                  5.631421786069724476e+05,
+                  4.191517663029067335e+05,
+                  3.006847090521778446e+05,
+                  2.252239997526510851e+05,
+                  1.585568372310573177e+05,
+                  2.501030593846463671e+04,
+                  1.223713984113714659e+01])
+
+ge_180 = np.array([2.628067099684659042e+05,
+                   1.812536453020582558e+05,
+                   5.814370884872322495e+04,
+                   -4.110320687328568602e+04,
+                   -1.374178347772504785e+05,
+                   -2.306666085725722369e+05,
+                   -3.182438513767363620e+05,
+                   -3.943806634919878561e+05,
+                   -4.532441780498687876e+05,
+                   -4.879111396010195022e+05,
+                   -4.922629923736716155e+05,
+                   -4.584898011221469496e+05,
+                   -3.801620427679839777e+05,
+                   -2.525084479537750303e+05,
+                   -6.868080375989120512e+04,
+                   1.734608747904833872e+05,
+                   4.798435415184603771e+05,
+                   8.509221243205775972e+05,
+                   1.286536533087235410e+06,
+                   1.785914593650705181e+06,
+                   2.343766314660373144e+06,
+                   2.955048761526284739e+06,
+                   3.610983570142784156e+06,
+                   4.298010399946169928e+06,
+                   5.002087344977931120e+06,
+                   5.701459471400410868e+06,
+                   6.373684782939250581e+06,
+                   6.991767440126724541e+06,
+                   7.526621337772894651e+06,
+                   7.951718050802586600e+06,
+                   8.241118240750433877e+06,
+                   8.378189295735327527e+06,
+                   8.354026371893344447e+06,
+                   8.170212088494279422e+06,
+                   7.837891504246501252e+06,
+                   7.377730451304072514e+06,
+                   6.815066800326613709e+06,
+                   6.177579216060877778e+06,
+                   5.494161889734255150e+06,
+                   4.790092515738011338e+06,
+                   4.088859494925408624e+06,
+                   3.408608516213723458e+06,
+                   2.764577993263987359e+06,
+                   2.168364262965844013e+06,
+                   1.626976905518055893e+06,
+                   1.147140237310670083e+06,
+                   7.305744826368239010e+05,
+                   3.791304701537272194e+05,
+                   9.221733370468940120e+04,
+                   -1.313390917462947546e+05,
+                   -2.978557992391907610e+05,
+                   -4.099621404116821941e+05,
+                   -4.737573230025937082e+05,
+                   -4.947706974138531368e+05,
+                   -4.808528154712727410e+05,
+                   -4.383707892266485142e+05,
+                   -3.731866142973536626e+05,
+                   -2.931676076587194111e+05,
+                   -2.034967062652181776e+05,
+                   -1.086659747288654326e+05,
+                   -1.190326363416896857e+04,
+                   9.080151677670537902e+04,
+                   2.349733636560339364e+05,
+                   -2.059012535436650978e+03])
+
+philips_90 = np.array([6.600000000000000000e+01,
+                       -2.642857142857142776e+02,
+                       -6.307142857142857792e+02,
+                       -1.032142857142857338e+03,
+                       -1.458000000000000000e+03,
+                       -1.902285714285714221e+03,
+                       -2.353000000000000000e+03,
+                       -2.800000000000000000e+03,
+                       -3.227428571428571558e+03,
+                       -3.625142857142856883e+03,
+                       -3.974000000000000000e+03,
+                       -4.260714285714285325e+03,
+                       -4.471142857142856883e+03,
+                       -4.582000000000000000e+03,
+                       -4.591000000000000000e+03,
+                       -4.463714285714286234e+03,
+                       -4.206714285714286234e+03,
+                       -3.794857142857142208e+03,
+                       -3.225142857142857338e+03,
+                       -2.491999999999999545e+03,
+                       -1.580000000000000909e+03,
+                       -5.100000000000000000e+02,
+                       7.482857142857126291e+02,
+                       2.157857142857139024e+03,
+                       3.728857142857144026e+03,
+                       5.440285714285713766e+03,
+                       7.275999999999996362e+03,
+                       9.221857142857144936e+03,
+                       1.124700000000000000e+04,
+                       1.333671428571428260e+04,
+                       1.545514285714285143e+04,
+                       1.757542857142857247e+04,
+                       1.966757142857142753e+04,
+                       2.170200000000000728e+04,
+                       2.364200000000000364e+04,
+                       2.547100000000000000e+04,
+                       2.713457142857142753e+04,
+                       2.863385714285714494e+04,
+                       2.992314285714285506e+04,
+                       3.099285714285714494e+04,
+                       3.182485714285714494e+04,
+                       3.239100000000000000e+04,
+                       3.271200000000000000e+04,
+                       3.273557142857142753e+04,
+                       3.250800000000000000e+04,
+                       3.197042857142856519e+04,
+                       3.124314285714286234e+04,
+                       3.024142857142856519e+04,
+                       2.900242857142856883e+04,
+                       2.757000000000000000e+04,
+                       2.593514285714285870e+04,
+                       2.415500000000000728e+04,
+                       2.224042857142856155e+04,
+                       2.022942857142856519e+04,
+                       1.815042857142856519e+04,
+                       1.603457142857142571e+04,
+                       1.391100000000000000e+04,
+                       1.181442857142857429e+04,
+                       9.765714285714289872e+03,
+                       7.798000000000007276e+03,
+                       5.929714285714278958e+03,
+                       4.179714285714280777e+03,
+                       2.184857142857139024e+03,
+                       2.660000000000000000e+02])
+
+philips_180 = np.array([1.148000000000000000e+03,
+                        1.754761904761904816e+03,
+                        2.009746031746031804e+03,
+                        2.101238095238095411e+03,
+                        2.124507936507936392e+03,
+                        2.076793650793650613e+03,
+                        1.934238095238095184e+03,
+                        1.694222222222222399e+03,
+                        1.279492063492063608e+03,
+                        6.062857142857147892e+02,
+                        -3.720476190476181273e+02,
+                        -1.550380952380951157e+03,
+                        -2.703190476190476147e+03,
+                        -3.637793650793649249e+03,
+                        -4.326333333333333030e+03,
+                        -4.843904761904761472e+03,
+                        -5.259507936507936392e+03,
+                        -5.505158730158730577e+03,
+                        -5.302714285714286234e+03,
+                        -4.534444444444445253e+03,
+                        -3.094619047619050434e+03,
+                        -1.095000000000006821e+03,
+                        1.362269841269835979e+03,
+                        4.290158730158726030e+03,
+                        7.697095238095237619e+03,
+                        1.166841269841270150e+04,
+                        1.591801587301586005e+04,
+                        2.024557142857142026e+04,
+                        2.438911111111110949e+04,
+                        2.811252380952380918e+04,
+                        3.091819047619046614e+04,
+                        3.250747619047618718e+04,
+                        3.250747619047618718e+04,
+                        3.091819047619046614e+04,
+                        2.811252380952380918e+04,
+                        2.438966666666666424e+04,
+                        2.024557142857142026e+04,
+                        1.591874603174601907e+04,
+                        1.166809523809524035e+04,
+                        7.697000000000000000e+03,
+                        4.290158730158726030e+03,
+                        1.362349206349189672e+03,
+                        -1.094666666666673564e+03,
+                        -3.093619047619046796e+03,
+                        -4.533444444444450710e+03,
+                        -5.302285714285715585e+03,
+                        -5.504174603174604272e+03,
+                        -5.259507936507935483e+03,
+                        -4.843904761904761472e+03,
+                        -4.325555555555557476e+03,
+                        -3.636428571428570194e+03,
+                        -2.702142857142859157e+03,
+                        -1.550380952380948429e+03,
+                        -3.720476190476193779e+02,
+                        6.062857142857187682e+02,
+                        1.280492063492064290e+03,
+                        1.695222222222221490e+03,
+                        1.935238095238095866e+03,
+                        2.076793650793650613e+03,
+                        2.124507936507936392e+03,
+                        2.102238095238094957e+03,
+                        2.009920634920635166e+03,
+                        1.755761904761903224e+03,
+                        1.149000000000000000e+03])</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ukat.mapping.resources.t2_stimfit" href="index.html">ukat.mapping.resources.t2_stimfit</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -77,7 +77,7 @@ class MTR:
                                              &#39;dimension of the input &#39; \
                                              &#39;pixel_array must be 2.&#39;
         if np.sum(pixel_array[..., 1]) &gt;= np.sum(pixel_array[..., 0]):
-            warnings.warn(f&#39;The average intensity of the MT_ON image is more &#39;
+            warnings.warn(&#39;The average intensity of the MT_ON image is more &#39;
                           &#39;than the average intensity of the MT_OFF image. &#39;
                           &#39;This will lead to negative MTR values which is not &#39;
                           &#39;usually desirable. Please check that you\&#39;ve input &#39;
@@ -97,7 +97,8 @@ class MTR:
         self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
         self.mtr_map = np.squeeze(np.nan_to_num(((self.mt_off - self.mt_on) /
-                                     self.mt_off), posinf=0, neginf=0))
+                                                 self.mt_off),
+                                                posinf=0, neginf=0))
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
                  maps=&#39;all&#39;):
@@ -244,7 +245,7 @@ dimension.</dd>
                                              &#39;dimension of the input &#39; \
                                              &#39;pixel_array must be 2.&#39;
         if np.sum(pixel_array[..., 1]) &gt;= np.sum(pixel_array[..., 0]):
-            warnings.warn(f&#39;The average intensity of the MT_ON image is more &#39;
+            warnings.warn(&#39;The average intensity of the MT_ON image is more &#39;
                           &#39;than the average intensity of the MT_OFF image. &#39;
                           &#39;This will lead to negative MTR values which is not &#39;
                           &#39;usually desirable. Please check that you\&#39;ve input &#39;
@@ -264,7 +265,8 @@ dimension.</dd>
         self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
         self.mtr_map = np.squeeze(np.nan_to_num(((self.mt_off - self.mt_on) /
-                                     self.mt_off), posinf=0, neginf=0))
+                                                 self.mt_off),
+                                                posinf=0, neginf=0))
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
                  maps=&#39;all&#39;):

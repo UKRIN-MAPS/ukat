@@ -119,11 +119,13 @@ class TestADC:
     def test_negative_signal(self):
         gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
         gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
+        gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
         negateive_pixel_array = self.pixel_array.copy()
         negateive_pixel_array[:30, :, :, :] -= 40000
         mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+        adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
         assert np.sum(mapper.adc[:30, :, :]) == 0
         npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
                              adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
@@ -133,6 +135,11 @@ class TestADC:
                              adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
                              adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
                             gold_standard_adc_err, rtol=5e-3, atol=1e-7)
+        npt.assert_allclose([adc_r2_stats[&#39;mean&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;std&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;min&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;max&#39;][&#39;3D&#39;]],
+                            gold_standard_adc_r2, rtol=5e-3, atol=1e-7)
 
     def test_real_data(self):
         # Gold standard statistics
@@ -182,10 +189,13 @@ class TestADC:
         mapper.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;adc_test&#39;, maps=&#39;all&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 3
+        assert len(output_files) == 6
         assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
         assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
         assert &#39;adc_test_mask.nii.gz&#39; in output_files
+        assert &#39;adc_test_r2.nii.gz&#39; in output_files
+        assert &#39;adc_test_s0_map.nii.gz&#39; in output_files
+        assert &#39;adc_test_s0_err.nii.gz&#39; in output_files
 
         for f in os.listdir(&#39;test_output&#39;):
             os.remove(os.path.join(&#39;test_output&#39;, f))
@@ -378,11 +388,13 @@ if os.path.exists(&#39;test_output&#39;):
     def test_negative_signal(self):
         gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
         gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
+        gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
         negateive_pixel_array = self.pixel_array.copy()
         negateive_pixel_array[:30, :, :, :] -= 40000
         mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+        adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
         assert np.sum(mapper.adc[:30, :, :]) == 0
         npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
                              adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
@@ -392,6 +404,11 @@ if os.path.exists(&#39;test_output&#39;):
                              adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
                              adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
                             gold_standard_adc_err, rtol=5e-3, atol=1e-7)
+        npt.assert_allclose([adc_r2_stats[&#39;mean&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;std&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;min&#39;][&#39;3D&#39;],
+                             adc_r2_stats[&#39;max&#39;][&#39;3D&#39;]],
+                            gold_standard_adc_r2, rtol=5e-3, atol=1e-7)
 
     def test_real_data(self):
         # Gold standard statistics
@@ -441,10 +458,13 @@ if os.path.exists(&#39;test_output&#39;):
         mapper.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;adc_test&#39;, maps=&#39;all&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 3
+        assert len(output_files) == 6
         assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
         assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
         assert &#39;adc_test_mask.nii.gz&#39; in output_files
+        assert &#39;adc_test_r2.nii.gz&#39; in output_files
+        assert &#39;adc_test_s0_map.nii.gz&#39; in output_files
+        assert &#39;adc_test_s0_err.nii.gz&#39; in output_files
 
         for f in os.listdir(&#39;test_output&#39;):
             os.remove(os.path.join(&#39;test_output&#39;, f))
@@ -542,11 +562,13 @@ if os.path.exists(&#39;test_output&#39;):
 <pre><code class="python">def test_negative_signal(self):
     gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
     gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
+    gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
     negateive_pixel_array = self.pixel_array.copy()
     negateive_pixel_array[:30, :, :, :] -= 40000
     mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
     adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
     adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+    adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
     assert np.sum(mapper.adc[:30, :, :]) == 0
     npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
                          adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
@@ -555,7 +577,12 @@ if os.path.exists(&#39;test_output&#39;):
                          adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
                          adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
                          adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc_err, rtol=5e-3, atol=1e-7)</code></pre>
+                        gold_standard_adc_err, rtol=5e-3, atol=1e-7)
+    npt.assert_allclose([adc_r2_stats[&#39;mean&#39;][&#39;3D&#39;],
+                         adc_r2_stats[&#39;std&#39;][&#39;3D&#39;],
+                         adc_r2_stats[&#39;min&#39;][&#39;3D&#39;],
+                         adc_r2_stats[&#39;max&#39;][&#39;3D&#39;]],
+                        gold_standard_adc_r2, rtol=5e-3, atol=1e-7)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_real_data"><code class="name flex">
@@ -605,10 +632,13 @@ if os.path.exists(&#39;test_output&#39;):
     mapper.to_nifti(output_directory=&#39;test_output&#39;,
                     base_file_name=&#39;adc_test&#39;, maps=&#39;all&#39;)
     output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 3
+    assert len(output_files) == 6
     assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
     assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
     assert &#39;adc_test_mask.nii.gz&#39; in output_files
+    assert &#39;adc_test_r2.nii.gz&#39; in output_files
+    assert &#39;adc_test_s0_map.nii.gz&#39; in output_files
+    assert &#39;adc_test_s0_err.nii.gz&#39; in output_files
 
     for f in os.listdir(&#39;test_output&#39;):
         os.remove(os.path.join(&#39;test_output&#39;, f))

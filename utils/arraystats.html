@@ -46,6 +46,7 @@ from scipy import stats
 
 NOT_CALCULATED_MSG = &#39;Not calculated. See ArrayStats.calculate().&#39;
 
+
 class ArrayStats():
     &#34;&#34;&#34;Class to calculate array statistics (optionally within a mask)
 
@@ -271,8 +272,8 @@ class ArrayStats():
         elif self.image_ndims == 3:
             n = {
                 &#39;2D&#39;: n2.transpose()[0],
-                &#39;3D&#39;: n4, # n4 because {statistic}4 always returns the result
-            }             # over the entire array, which here is 3D
+                &#39;3D&#39;: n4,  # n4 because {statistic}4 always returns the result
+            }              # over the entire array, which here is 3D
             mean = {
                 &#39;2D&#39;: mean2.transpose()[0],
                 &#39;3D&#39;: mean4,
@@ -711,8 +712,8 @@ class FlatStats():
         elif self.image_ndims == 3:
             n = {
                 &#39;2D&#39;: n2.transpose()[0],
-                &#39;3D&#39;: n4, # n4 because {statistic}4 always returns the result
-            }             # over the entire array, which here is 3D
+                &#39;3D&#39;: n4,  # n4 because {statistic}4 always returns the result
+            }              # over the entire array, which here is 3D
             mean = {
                 &#39;2D&#39;: mean2.transpose()[0],
                 &#39;3D&#39;: mean4,
@@ -992,8 +993,8 @@ For example:
     elif self.image_ndims == 3:
         n = {
             &#39;2D&#39;: n2.transpose()[0],
-            &#39;3D&#39;: n4, # n4 because {statistic}4 always returns the result
-        }             # over the entire array, which here is 3D
+            &#39;3D&#39;: n4,  # n4 because {statistic}4 always returns the result
+        }              # over the entire array, which here is 3D
         mean = {
             &#39;2D&#39;: mean2.transpose()[0],
             &#39;3D&#39;: mean4,

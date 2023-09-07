@@ -271,6 +271,23 @@ class TestFetch:
         assert len(np.shape(image)) == 3
         assert np.shape(affine) == (4, 4)
 
+    def test_ge_t2(self):
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_ge()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
+        # If an incorrect dataset_id is given
+        with pytest.raises(ValueError):
+            magnitude, affine, echo_times = fetch.t2_ge(2)
+
     def test_philips_t2(self):
         # Test if the fetch function works
         magnitude, affine, echo_times = fetch.t2_philips(1)
@@ -284,9 +301,38 @@ class TestFetch:
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
 
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_philips(2)
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
             magnitude, affine, echo_times = fetch.t2_philips(3)
+
+    def test_siemens_t2(self):
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_siemens()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
+        # If an incorrect dataset_id is given
+        with pytest.raises(ValueError):
+            magnitude, affine, echo_times = fetch.t2_siemens(2)
 
     def test_ge_t2star(self):
         # Test if the fetch function works
@@ -617,6 +663,23 @@ class TestFetch:
         assert len(np.shape(image)) == 3
         assert np.shape(affine) == (4, 4)
 
+    def test_ge_t2(self):
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_ge()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
+        # If an incorrect dataset_id is given
+        with pytest.raises(ValueError):
+            magnitude, affine, echo_times = fetch.t2_ge(2)
+
     def test_philips_t2(self):
         # Test if the fetch function works
         magnitude, affine, echo_times = fetch.t2_philips(1)
@@ -630,9 +693,38 @@ class TestFetch:
         assert np.shape(affine) == (4, 4)
         assert len(np.shape(echo_times)) == 1
 
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_philips(2)
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
         # If an incorrect dataset_id is given
         with pytest.raises(ValueError):
             magnitude, affine, echo_times = fetch.t2_philips(3)
+
+    def test_siemens_t2(self):
+        # Test if the fetch function works
+        magnitude, affine, echo_times = fetch.t2_siemens()
+
+        # Check the format of the outputs
+        assert isinstance(magnitude, np.ndarray)
+        assert np.unique(np.isnan(magnitude)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert isinstance(echo_times, np.ndarray)
+        assert len(np.shape(magnitude)) == 4
+        assert np.shape(affine) == (4, 4)
+        assert len(np.shape(echo_times)) == 1
+
+        # If an incorrect dataset_id is given
+        with pytest.raises(ValueError):
+            magnitude, affine, echo_times = fetch.t2_siemens(2)
 
     def test_ge_t2star(self):
         # Test if the fetch function works
@@ -757,6 +849,33 @@ class TestFetch:
     assert len(np.shape(bvals)) == 1
     assert len(np.shape(bvecs)) == 2
     assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)</code></pre>
+</details>
+</dd>
+<dt id="ukat.data.tests.test_fetch.TestFetch.test_ge_t2"><code class="name flex">
+<span>def <span class="ident">test_ge_t2</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_ge_t2(self):
+    # Test if the fetch function works
+    magnitude, affine, echo_times = fetch.t2_ge()
+
+    # Check the format of the outputs
+    assert isinstance(magnitude, np.ndarray)
+    assert np.unique(np.isnan(magnitude)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert isinstance(echo_times, np.ndarray)
+    assert len(np.shape(magnitude)) == 4
+    assert np.shape(affine) == (4, 4)
+    assert len(np.shape(echo_times)) == 1
+
+    # If an incorrect dataset_id is given
+    with pytest.raises(ValueError):
+        magnitude, affine, echo_times = fetch.t2_ge(2)</code></pre>
 </details>
 </dd>
 <dt id="ukat.data.tests.test_fetch.TestFetch.test_ge_t2star"><code class="name flex">
@@ -1034,6 +1153,18 @@ class TestFetch:
     assert np.shape(affine) == (4, 4)
     assert len(np.shape(echo_times)) == 1
 
+    # Test if the fetch function works
+    magnitude, affine, echo_times = fetch.t2_philips(2)
+
+    # Check the format of the outputs
+    assert isinstance(magnitude, np.ndarray)
+    assert np.unique(np.isnan(magnitude)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert isinstance(echo_times, np.ndarray)
+    assert len(np.shape(magnitude)) == 4
+    assert np.shape(affine) == (4, 4)
+    assert len(np.shape(echo_times)) == 1
+
     # If an incorrect dataset_id is given
     with pytest.raises(ValueError):
         magnitude, affine, echo_times = fetch.t2_philips(3)</code></pre>
@@ -1189,6 +1320,33 @@ class TestFetch:
     assert (np.shape(bvecs)[0] == 3 or np.shape(bvecs)[1] == 3)</code></pre>
 </details>
 </dd>
+<dt id="ukat.data.tests.test_fetch.TestFetch.test_siemens_t2"><code class="name flex">
+<span>def <span class="ident">test_siemens_t2</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_siemens_t2(self):
+    # Test if the fetch function works
+    magnitude, affine, echo_times = fetch.t2_siemens()
+
+    # Check the format of the outputs
+    assert isinstance(magnitude, np.ndarray)
+    assert np.unique(np.isnan(magnitude)) != [True]
+    assert isinstance(affine, np.ndarray)
+    assert isinstance(echo_times, np.ndarray)
+    assert len(np.shape(magnitude)) == 4
+    assert np.shape(affine) == (4, 4)
+    assert len(np.shape(echo_times)) == 1
+
+    # If an incorrect dataset_id is given
+    with pytest.raises(ValueError):
+        magnitude, affine, echo_times = fetch.t2_siemens(2)</code></pre>
+</details>
+</dd>
 <dt id="ukat.data.tests.test_fetch.TestFetch.test_siemens_t2star"><code class="name flex">
 <span>def <span class="ident">test_siemens_t2star</span></span>(<span>self)</span>
 </code></dt>
@@ -1235,6 +1393,7 @@ class TestFetch:
 <ul class="">
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_ge_b0" href="#ukat.data.tests.test_fetch.TestFetch.test_ge_b0">test_ge_b0</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_ge_dwi" href="#ukat.data.tests.test_fetch.TestFetch.test_ge_dwi">test_ge_dwi</a></code></li>
+<li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_ge_t2" href="#ukat.data.tests.test_fetch.TestFetch.test_ge_t2">test_ge_t2</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_ge_t2star" href="#ukat.data.tests.test_fetch.TestFetch.test_ge_t2star">test_ge_t2star</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_b0" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_b0">test_philips_b0</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_dwi" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_dwi">test_philips_dwi</a></code></li>
@@ -1250,6 +1409,7 @@ class TestFetch:
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_philips_tsnr" href="#ukat.data.tests.test_fetch.TestFetch.test_philips_tsnr">test_philips_tsnr</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_b0" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_b0">test_siemens_b0</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_dwi" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_dwi">test_siemens_dwi</a></code></li>
+<li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_t2" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_t2">test_siemens_t2</a></code></li>
 <li><code><a title="ukat.data.tests.test_fetch.TestFetch.test_siemens_t2star" href="#ukat.data.tests.test_fetch.TestFetch.test_siemens_t2star">test_siemens_t2star</a></code></li>
 </ul>
 </li>
