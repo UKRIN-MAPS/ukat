@@ -159,3 +159,4 @@ class ShapeFeatures:
         mesh = trimesh.Trimesh(vertices=verts, faces=faces)
         mesh = smoothing.filter_laplacian(mesh, lamb=1, iterations=20)
         return mesh
+

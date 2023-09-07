@@ -187,3 +187,4 @@ class TestShapeFeatures:
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
         shutil.rmtree('test_output')
+
