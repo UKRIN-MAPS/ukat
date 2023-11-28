@@ -467,9 +467,10 @@ class DTI:
                     nib.save(color_fa_nifti, base_path +
                              '_color_fa_map.nii.gz')
                 elif result == 'mask':
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
-                                                 affine=self.affine)
-                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+                    if self.mask is not None:
+                        mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
+                                                     affine=self.affine)
+                        nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
