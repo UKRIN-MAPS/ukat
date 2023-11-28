@@ -57,7 +57,7 @@ def make_gradient_scheme(bvals, bvecs, normalize=True, one_bzero=True):
 
     if normalize:
         # Rescale bvecs to have norm 1
-        bvecs = [v/np.linalg.norm(v) for v in bvecs]
+        bvecs = [v / np.linalg.norm(v) for v in bvecs]
 
     bvecs = [np.round(x, 8) for x in bvecs]
 
@@ -120,6 +120,7 @@ class ADC:
         contains six volumes acquired with b=600 s/mm^2 in different
         directions, these six volumes will be averaged together.
     """
+
     def __init__(self, pixel_array, affine, bvals, mask=None, ukrin_b=False):
         """Initialise a ADC class instance.
 
@@ -195,7 +196,7 @@ class ADC:
         """
         pixel_array_mean = np.zeros((*self.shape, self.n_bvals))
         for ind, bval in enumerate(self.u_bvals):
-            pixel_array_mean[..., ind]\
+            pixel_array_mean[..., ind] \
                 = np.mean(self.pixel_array[..., self.bvals == bval], axis=-1)
         return pixel_array_mean
 
@@ -364,6 +365,7 @@ class DTI:
     tensor_fit : dipy TensorModel after fitting
         The fit dipy tensor model, can be used to recall additional parameters.
     """
+
     def __init__(self, pixel_array, affine, bvals, bvecs, mask=None,
                  ukrin_b=False):
         """Initialise a DTI class instance.
@@ -468,8 +470,9 @@ class DTI:
                              '_color_fa_map.nii.gz')
                 elif result == 'mask':
                     if self.mask is not None:
-                        mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
-                                                     affine=self.affine)
+                        mask_nifti = (
+                            nib.Nifti1Image(self.mask.astype(np.uint16),
+                                            affine=self.affine))
                         nib.save(mask_nifti, base_path + '_mask.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
