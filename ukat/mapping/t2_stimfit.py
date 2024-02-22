@@ -477,7 +477,7 @@ class T2StimFit:
         self.m0_map = np.squeeze(m0_map.reshape((*self.shape,
                                                  self.model.n_comp)))
         self.b1_map = b1_map.reshape(self.shape)
-        self.b1_map_scaled = rescale_b1_map(self.b1_map)
+        self.b1_map_scaled = rescale_b1_map(self.b1_map * 100)
         self.r2_map = np.squeeze(r2_map.reshape((*self.shape,
                                                  self.model.n_comp)))
 
