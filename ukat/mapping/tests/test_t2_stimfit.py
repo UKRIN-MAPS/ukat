@@ -214,8 +214,9 @@ class TestT2StimFit:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='t2stimfittest', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 5
+        assert len(output_files) == 6
         assert 't2stimfittest_b1_map.nii.gz' in output_files
+        assert 't2stimfittest_b1_map_scaled.nii.gz' in output_files
         assert 't2stimfittest_m0_map.nii.gz' in output_files
         assert 't2stimfittest_mask.nii.gz' in output_files
         assert 't2stimfittest_r2_map.nii.gz' in output_files

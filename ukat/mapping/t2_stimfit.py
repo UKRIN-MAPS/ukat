@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 from .resources.t2_stimfit import rf_pulses
 from ukat.mapping.t2 import two_param_eq
+from ukat.utils.tools import rescale_b1_map
 
 
 class StimFitModel:
@@ -303,6 +304,11 @@ class T2StimFit:
         The estimated T2 values in ms
     m0_map : np.ndarray
         The estimated M0 values
+    b1_map : np.ndarray
+        The estimated B1 values where 1 represents the nominal flip angle
+    b1_map_scaled : np.ndarray
+        The estimated B1 values scaled to the range [0, 1] where 1 represents
+        the nominal flip angle. All values over 1 are reflected about 1.
     r2_map : np.ndarray
         The R-Squared value of the fit, values close to 1 indicate a good
         fit, lower values indicate a poorer fit
@@ -398,32 +404,38 @@ class T2StimFit:
             Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
-            or a list of maps from ["t2", "m0", "b1", "r2", "mask"].
+            or a list of maps from ["t2", "m0", "b1", "b1_scaled", "r2",
+            "mask"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['t2', 'm0', 'b1', 'r2', 'mask']
+            maps = ['t2', 'm0', 'b1', 'b1_scaled', 'r2', 'mask']
         if isinstance(maps, list):
             for result in maps:
                 if result == 't2' or result == 't2_map':
                     t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                    nib.save(t2_nifti, base_path + '_t2_map.nii.gz')
+                    nib.save(t2_nifti, f'{base_path}_t2_map.nii.gz')
                 elif result == 'm0' or result == 'm0_map':
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                    nib.save(m0_nifti, base_path + '_m0_map.nii.gz')
+                    nib.save(m0_nifti, f'{base_path}_m0_map.nii.gz')
                 elif result == 'b1':
-                    m0_err_nifti = nib.Nifti1Image(self.b1_map,
-                                                   affine=self.affine)
-                    nib.save(m0_err_nifti, base_path + '_b1_map.nii.gz')
+                    b1_nifti = nib.Nifti1Image(self.b1_map,
+                                               affine=self.affine)
+                    nib.save(b1_nifti, f'{base_path}_b1_map.nii.gz')
+                elif result == 'b1_scaled':
+                    b1_scaled_nifti = nib.Nifti1Image(self.b1_map_scaled,
+                                                      affine=self.affine)
+                    nib.save(b1_scaled_nifti,
+                             f'{base_path}_b1_map_scaled.nii.gz')
                 elif result == 'r2' or result == 'r2_map':
                     r2_nifti = nib.Nifti1Image(self.r2_map,
                                                affine=self.affine)
-                    nib.save(r2_nifti, base_path + '_r2_map.nii.gz')
+                    nib.save(r2_nifti, f'{base_path}_r2_map.nii.gz')
                 elif result == 'mask':
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
-                    nib.save(mask_nifti, base_path + '_mask.nii.gz')
+                    nib.save(mask_nifti, f'{base_path}_mask.nii.gz')
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
@@ -465,6 +477,7 @@ class T2StimFit:
         self.m0_map = np.squeeze(m0_map.reshape((*self.shape,
                                                  self.model.n_comp)))
         self.b1_map = b1_map.reshape(self.shape)
+        self.b1_map_scaled = rescale_b1_map(self.b1_map)
         self.r2_map = np.squeeze(r2_map.reshape((*self.shape,
                                                  self.model.n_comp)))
 
