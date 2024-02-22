@@ -4,6 +4,8 @@ multiple algorithms
 
 """
 import numpy as np
+import warnings
+
 from scipy.ndimage import zoom
 
 
@@ -31,6 +33,35 @@ def convert_to_pi_range(pixel_array):
         # It means it's already on the interval [-pi, pi]
         radians_array = pixel_array
     return radians_array
+
+
+def rescale_b1_map(b1_map):
+    """
+    Some method of estimating B1 cannot distinguish B1 values x degrees over
+    the nominal flip angle from x degrees under the nominal flip angle. It can
+    therefore be useful to reflect all values over 100% of the nominal flip
+    angle. To avoid confusion between reflected and un-reflected B1 maps,
+    this function is designed to take B1 maps as a percentage of the nominal
+    flip angle and output them as a ratio between 0 and 1.
+
+    Parameters
+    ----------
+    b1_map : np.ndarray
+        B1 map in percentage of nominal flip angle.
+
+    Returns
+    -------
+    b1_scaled : np.ndarray
+        B1 map scaled to the range [0, 1] where flip angles over 100% are
+        reflected back.
+    """
+    if np.amax(b1_map) <= 1:
+        warnings.warn(f"This function is designed to take the B1 map as a "
+                      f"percentage of the nominal flip angle. The maximum of "
+                      f"the input B1 map is {np.amax(b1_map)}. Are you sure "
+                      f"you haven't already scaled your B1 map?")
+    b1_scaled = 1 - np.abs(1 - (b1_map / 100))
+    return b1_scaled
 
 
 def resize_array(pixel_array, factor=1, target_size=None):
