@@ -39,6 +39,7 @@ from tqdm import tqdm
 
 from .resources.t2_stimfit import rf_pulses
 from ukat.mapping.t2 import two_param_eq
+from ukat.utils.tools import rescale_b1_map
 
 
 class StimFitModel:
@@ -331,6 +332,11 @@ class T2StimFit:
         The estimated T2 values in ms
     m0_map : np.ndarray
         The estimated M0 values
+    b1_map : np.ndarray
+        The estimated B1 values where 1 represents the nominal flip angle
+    b1_map_scaled : np.ndarray
+        The estimated B1 values scaled to the range [0, 1] where 1 represents
+        the nominal flip angle. All values over 1 are reflected about 1.
     r2_map : np.ndarray
         The R-Squared value of the fit, values close to 1 indicate a good
         fit, lower values indicate a poorer fit
@@ -426,32 +432,38 @@ class T2StimFit:
             Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
         maps : list or &#39;all&#39;, optional
             List of maps to save to NIFTI. This should either the string &#34;all&#34;
-            or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;r2&#34;, &#34;mask&#34;].
+            or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;b1_scaled&#34;, &#34;r2&#34;,
+            &#34;mask&#34;].
         &#34;&#34;&#34;
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
-            maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;r2&#39;, &#39;mask&#39;]
+            maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;b1_scaled&#39;, &#39;r2&#39;, &#39;mask&#39;]
         if isinstance(maps, list):
             for result in maps:
                 if result == &#39;t2&#39; or result == &#39;t2_map&#39;:
                     t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                    nib.save(t2_nifti, base_path + &#39;_t2_map.nii.gz&#39;)
+                    nib.save(t2_nifti, f&#39;{base_path}_t2_map.nii.gz&#39;)
                 elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                    nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+                    nib.save(m0_nifti, f&#39;{base_path}_m0_map.nii.gz&#39;)
                 elif result == &#39;b1&#39;:
-                    m0_err_nifti = nib.Nifti1Image(self.b1_map,
-                                                   affine=self.affine)
-                    nib.save(m0_err_nifti, base_path + &#39;_b1_map.nii.gz&#39;)
+                    b1_nifti = nib.Nifti1Image(self.b1_map,
+                                               affine=self.affine)
+                    nib.save(b1_nifti, f&#39;{base_path}_b1_map.nii.gz&#39;)
+                elif result == &#39;b1_scaled&#39;:
+                    b1_scaled_nifti = nib.Nifti1Image(self.b1_map_scaled,
+                                                      affine=self.affine)
+                    nib.save(b1_scaled_nifti,
+                             f&#39;{base_path}_b1_map_scaled.nii.gz&#39;)
                 elif result == &#39;r2&#39; or result == &#39;r2_map&#39;:
                     r2_nifti = nib.Nifti1Image(self.r2_map,
                                                affine=self.affine)
-                    nib.save(r2_nifti, base_path + &#39;_r2_map.nii.gz&#39;)
+                    nib.save(r2_nifti, f&#39;{base_path}_r2_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
-                    nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+                    nib.save(mask_nifti, f&#39;{base_path}_mask.nii.gz&#39;)
         else:
             raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
                              &#39;should be &#34;all&#34; or a list of maps from &#39;
@@ -493,6 +505,7 @@ class T2StimFit:
         self.m0_map = np.squeeze(m0_map.reshape((*self.shape,
                                                  self.model.n_comp)))
         self.b1_map = b1_map.reshape(self.shape)
+        self.b1_map_scaled = rescale_b1_map(self.b1_map * 100)
         self.r2_map = np.squeeze(r2_map.reshape((*self.shape,
                                                  self.model.n_comp)))
 
@@ -1084,6 +1097,11 @@ Tolerance for termination by the change of the cost function.</p></div>
 <dd>The estimated T2 values in ms</dd>
 <dt><strong><code>m0_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>The estimated M0 values</dd>
+<dt><strong><code>b1_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The estimated B1 values where 1 represents the nominal flip angle</dd>
+<dt><strong><code>b1_map_scaled</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>The estimated B1 values scaled to the range [0, 1] where 1 represents
+the nominal flip angle. All values over 1 are reflected about 1.</dd>
 <dt><strong><code>r2_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>The R-Squared value of the fit, values close to 1 indicate a good
 fit, lower values indicate a poorer fit</dd>
@@ -1137,6 +1155,11 @@ is True, the data will be normalised before fitting.</dd>
         The estimated T2 values in ms
     m0_map : np.ndarray
         The estimated M0 values
+    b1_map : np.ndarray
+        The estimated B1 values where 1 represents the nominal flip angle
+    b1_map_scaled : np.ndarray
+        The estimated B1 values scaled to the range [0, 1] where 1 represents
+        the nominal flip angle. All values over 1 are reflected about 1.
     r2_map : np.ndarray
         The R-Squared value of the fit, values close to 1 indicate a good
         fit, lower values indicate a poorer fit
@@ -1232,32 +1255,38 @@ is True, the data will be normalised before fitting.</dd>
             Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
         maps : list or &#39;all&#39;, optional
             List of maps to save to NIFTI. This should either the string &#34;all&#34;
-            or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;r2&#34;, &#34;mask&#34;].
+            or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;b1_scaled&#34;, &#34;r2&#34;,
+            &#34;mask&#34;].
         &#34;&#34;&#34;
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
-            maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;r2&#39;, &#39;mask&#39;]
+            maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;b1_scaled&#39;, &#39;r2&#39;, &#39;mask&#39;]
         if isinstance(maps, list):
             for result in maps:
                 if result == &#39;t2&#39; or result == &#39;t2_map&#39;:
                     t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                    nib.save(t2_nifti, base_path + &#39;_t2_map.nii.gz&#39;)
+                    nib.save(t2_nifti, f&#39;{base_path}_t2_map.nii.gz&#39;)
                 elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
                     m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                    nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+                    nib.save(m0_nifti, f&#39;{base_path}_m0_map.nii.gz&#39;)
                 elif result == &#39;b1&#39;:
-                    m0_err_nifti = nib.Nifti1Image(self.b1_map,
-                                                   affine=self.affine)
-                    nib.save(m0_err_nifti, base_path + &#39;_b1_map.nii.gz&#39;)
+                    b1_nifti = nib.Nifti1Image(self.b1_map,
+                                               affine=self.affine)
+                    nib.save(b1_nifti, f&#39;{base_path}_b1_map.nii.gz&#39;)
+                elif result == &#39;b1_scaled&#39;:
+                    b1_scaled_nifti = nib.Nifti1Image(self.b1_map_scaled,
+                                                      affine=self.affine)
+                    nib.save(b1_scaled_nifti,
+                             f&#39;{base_path}_b1_map_scaled.nii.gz&#39;)
                 elif result == &#39;r2&#39; or result == &#39;r2_map&#39;:
                     r2_nifti = nib.Nifti1Image(self.r2_map,
                                                affine=self.affine)
-                    nib.save(r2_nifti, base_path + &#39;_r2_map.nii.gz&#39;)
+                    nib.save(r2_nifti, f&#39;{base_path}_r2_map.nii.gz&#39;)
                 elif result == &#39;mask&#39;:
                     mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                                  affine=self.affine)
-                    nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+                    nib.save(mask_nifti, f&#39;{base_path}_mask.nii.gz&#39;)
         else:
             raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
                              &#39;should be &#34;all&#34; or a list of maps from &#39;
@@ -1299,6 +1328,7 @@ is True, the data will be normalised before fitting.</dd>
         self.m0_map = np.squeeze(m0_map.reshape((*self.shape,
                                                  self.model.n_comp)))
         self.b1_map = b1_map.reshape(self.shape)
+        self.b1_map_scaled = rescale_b1_map(self.b1_map * 100)
         self.r2_map = np.squeeze(r2_map.reshape((*self.shape,
                                                  self.model.n_comp)))
 
@@ -1386,7 +1416,8 @@ is True, the data will be normalised before fitting.</dd>
 Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.</dd>
 <dt><strong><code>maps</code></strong> :&ensp;<code>list</code> or <code>'all'</code>, optional</dt>
 <dd>List of maps to save to NIFTI. This should either the string "all"
-or a list of maps from ["t2", "m0", "b1", "r2", "mask"].</dd>
+or a list of maps from ["t2", "m0", "b1", "b1_scaled", "r2",
+"mask"].</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -1405,32 +1436,38 @@ or a list of maps from ["t2", "m0", "b1", "r2", "mask"].</dd>
         Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
     maps : list or &#39;all&#39;, optional
         List of maps to save to NIFTI. This should either the string &#34;all&#34;
-        or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;r2&#34;, &#34;mask&#34;].
+        or a list of maps from [&#34;t2&#34;, &#34;m0&#34;, &#34;b1&#34;, &#34;b1_scaled&#34;, &#34;r2&#34;,
+        &#34;mask&#34;].
     &#34;&#34;&#34;
     os.makedirs(output_directory, exist_ok=True)
     base_path = os.path.join(output_directory, base_file_name)
     if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
-        maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;r2&#39;, &#39;mask&#39;]
+        maps = [&#39;t2&#39;, &#39;m0&#39;, &#39;b1&#39;, &#39;b1_scaled&#39;, &#39;r2&#39;, &#39;mask&#39;]
     if isinstance(maps, list):
         for result in maps:
             if result == &#39;t2&#39; or result == &#39;t2_map&#39;:
                 t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                nib.save(t2_nifti, base_path + &#39;_t2_map.nii.gz&#39;)
+                nib.save(t2_nifti, f&#39;{base_path}_t2_map.nii.gz&#39;)
             elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
                 m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
+                nib.save(m0_nifti, f&#39;{base_path}_m0_map.nii.gz&#39;)
             elif result == &#39;b1&#39;:
-                m0_err_nifti = nib.Nifti1Image(self.b1_map,
-                                               affine=self.affine)
-                nib.save(m0_err_nifti, base_path + &#39;_b1_map.nii.gz&#39;)
+                b1_nifti = nib.Nifti1Image(self.b1_map,
+                                           affine=self.affine)
+                nib.save(b1_nifti, f&#39;{base_path}_b1_map.nii.gz&#39;)
+            elif result == &#39;b1_scaled&#39;:
+                b1_scaled_nifti = nib.Nifti1Image(self.b1_map_scaled,
+                                                  affine=self.affine)
+                nib.save(b1_scaled_nifti,
+                         f&#39;{base_path}_b1_map_scaled.nii.gz&#39;)
             elif result == &#39;r2&#39; or result == &#39;r2_map&#39;:
                 r2_nifti = nib.Nifti1Image(self.r2_map,
                                            affine=self.affine)
-                nib.save(r2_nifti, base_path + &#39;_r2_map.nii.gz&#39;)
+                nib.save(r2_nifti, f&#39;{base_path}_r2_map.nii.gz&#39;)
             elif result == &#39;mask&#39;:
                 mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
                                              affine=self.affine)
-                nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
+                nib.save(mask_nifti, f&#39;{base_path}_mask.nii.gz&#39;)
     else:
         raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
                          &#39;should be &#34;all&#34; or a list of maps from &#39;

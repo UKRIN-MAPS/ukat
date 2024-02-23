@@ -242,8 +242,9 @@ class TestT2StimFit:
         mapper.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;t2stimfittest&#39;, maps=&#39;all&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 5
+        assert len(output_files) == 6
         assert &#39;t2stimfittest_b1_map.nii.gz&#39; in output_files
+        assert &#39;t2stimfittest_b1_map_scaled.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_m0_map.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_mask.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_r2_map.nii.gz&#39; in output_files
@@ -792,8 +793,9 @@ class TestEpg:
         mapper.to_nifti(output_directory=&#39;test_output&#39;,
                         base_file_name=&#39;t2stimfittest&#39;, maps=&#39;all&#39;)
         output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 5
+        assert len(output_files) == 6
         assert &#39;t2stimfittest_b1_map.nii.gz&#39; in output_files
+        assert &#39;t2stimfittest_b1_map_scaled.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_m0_map.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_mask.nii.gz&#39; in output_files
         assert &#39;t2stimfittest_r2_map.nii.gz&#39; in output_files
@@ -1020,8 +1022,9 @@ class TestEpg:
     mapper.to_nifti(output_directory=&#39;test_output&#39;,
                     base_file_name=&#39;t2stimfittest&#39;, maps=&#39;all&#39;)
     output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 5
+    assert len(output_files) == 6
     assert &#39;t2stimfittest_b1_map.nii.gz&#39; in output_files
+    assert &#39;t2stimfittest_b1_map_scaled.nii.gz&#39; in output_files
     assert &#39;t2stimfittest_m0_map.nii.gz&#39; in output_files
     assert &#39;t2stimfittest_mask.nii.gz&#39; in output_files
     assert &#39;t2stimfittest_r2_map.nii.gz&#39; in output_files

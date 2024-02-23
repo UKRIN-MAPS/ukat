@@ -35,6 +35,8 @@ multiple algorithms
 
 &#34;&#34;&#34;
 import numpy as np
+import warnings
+
 from scipy.ndimage import zoom
 
 
@@ -62,6 +64,35 @@ def convert_to_pi_range(pixel_array):
         # It means it&#39;s already on the interval [-pi, pi]
         radians_array = pixel_array
     return radians_array
+
+
+def rescale_b1_map(b1_map):
+    &#34;&#34;&#34;
+    Some method of estimating B1 cannot distinguish B1 values x degrees over
+    the nominal flip angle from x degrees under the nominal flip angle. It can
+    therefore be useful to reflect all values over 100% of the nominal flip
+    angle. To avoid confusion between reflected and un-reflected B1 maps,
+    this function is designed to take B1 maps as a percentage of the nominal
+    flip angle and output them as a ratio between 0 and 1.
+
+    Parameters
+    ----------
+    b1_map : np.ndarray
+        B1 map in percentage of nominal flip angle.
+
+    Returns
+    -------
+    b1_scaled : np.ndarray
+        B1 map scaled to the range [0, 1] where flip angles over 100% are
+        reflected back.
+    &#34;&#34;&#34;
+    if np.amax(b1_map) &lt;= 1:
+        warnings.warn(f&#34;This function is designed to take the B1 map as a &#34;
+                      f&#34;percentage of the nominal flip angle. The maximum of &#34;
+                      f&#34;the input B1 map is {np.amax(b1_map)}. Are you sure &#34;
+                      f&#34;you haven&#39;t already scaled your B1 map?&#34;)
+    b1_scaled = 1 - np.abs(1 - (b1_map / 100))
+    return b1_scaled
 
 
 def resize_array(pixel_array, factor=1, target_size=None):
@@ -315,6 +346,60 @@ in all elements except at the locations of the True elements of this
     return final_mask</code></pre>
 </details>
 </dd>
+<dt id="ukat.utils.tools.rescale_b1_map"><code class="name flex">
+<span>def <span class="ident">rescale_b1_map</span></span>(<span>b1_map)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Some method of estimating B1 cannot distinguish B1 values x degrees over
+the nominal flip angle from x degrees under the nominal flip angle. It can
+therefore be useful to reflect all values over 100% of the nominal flip
+angle. To avoid confusion between reflected and un-reflected B1 maps,
+this function is designed to take B1 maps as a percentage of the nominal
+flip angle and output them as a ratio between 0 and 1.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>b1_map</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>B1 map in percentage of nominal flip angle.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>b1_scaled</code></strong> :&ensp;<code>np.ndarray</code></dt>
+<dd>B1 map scaled to the range [0, 1] where flip angles over 100% are
+reflected back.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rescale_b1_map(b1_map):
+    &#34;&#34;&#34;
+    Some method of estimating B1 cannot distinguish B1 values x degrees over
+    the nominal flip angle from x degrees under the nominal flip angle. It can
+    therefore be useful to reflect all values over 100% of the nominal flip
+    angle. To avoid confusion between reflected and un-reflected B1 maps,
+    this function is designed to take B1 maps as a percentage of the nominal
+    flip angle and output them as a ratio between 0 and 1.
+
+    Parameters
+    ----------
+    b1_map : np.ndarray
+        B1 map in percentage of nominal flip angle.
+
+    Returns
+    -------
+    b1_scaled : np.ndarray
+        B1 map scaled to the range [0, 1] where flip angles over 100% are
+        reflected back.
+    &#34;&#34;&#34;
+    if np.amax(b1_map) &lt;= 1:
+        warnings.warn(f&#34;This function is designed to take the B1 map as a &#34;
+                      f&#34;percentage of the nominal flip angle. The maximum of &#34;
+                      f&#34;the input B1 map is {np.amax(b1_map)}. Are you sure &#34;
+                      f&#34;you haven&#39;t already scaled your B1 map?&#34;)
+    b1_scaled = 1 - np.abs(1 - (b1_map / 100))
+    return b1_scaled</code></pre>
+</details>
+</dd>
 <dt id="ukat.utils.tools.resize_array"><code class="name flex">
 <span>def <span class="ident">resize_array</span></span>(<span>pixel_array, factor=1, target_size=None)</span>
 </code></dt>
@@ -404,6 +489,7 @@ will have a the same size as in pixel_array.</dd>
 <ul class="">
 <li><code><a title="ukat.utils.tools.convert_to_pi_range" href="#ukat.utils.tools.convert_to_pi_range">convert_to_pi_range</a></code></li>
 <li><code><a title="ukat.utils.tools.mask_slices" href="#ukat.utils.tools.mask_slices">mask_slices</a></code></li>
+<li><code><a title="ukat.utils.tools.rescale_b1_map" href="#ukat.utils.tools.rescale_b1_map">rescale_b1_map</a></code></li>
 <li><code><a title="ukat.utils.tools.resize_array" href="#ukat.utils.tools.resize_array">resize_array</a></code></li>
 </ul>
 </li>
