@@ -1,3 +1,14 @@
+## [0.7.1] - 2024-02-23
+
+### Added
+* B1 rescaling as function and default output of StimFit #218
+
+### Changed
+* `ukat` is now tested on MacOS #219
+
+### Fixed
+* DWI mask export bug #217
+
 ## [0.7.0] - 2023-09-07
 
 ### Added

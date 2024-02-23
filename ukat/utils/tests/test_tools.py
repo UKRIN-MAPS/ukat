@@ -52,6 +52,25 @@ class TestConvertToPiRange:
             tools.convert_to_pi_range("abcdef")
 
 
+class TestRescaleB1Map:
+    unscaled_b1_map = prescaled_b1_map = (
+        np.concatenate((np.linspace(90, 100, 25),
+                        np.linspace(100, 110, 25)),
+                       axis=0).reshape((5, 5, 2)))
+    prescaled_b1_map = (
+        np.concatenate((np.linspace(0.9, 1, 25),
+                       np.linspace(1, 0.9, 25)),
+                       axis=0).reshape((5, 5, 2)))
+
+    def test_rescale(self):
+        rescaled_b1_map = tools.rescale_b1_map(self.unscaled_b1_map)
+        npt.assert_allclose(rescaled_b1_map, self.prescaled_b1_map)
+
+    def test_warning_of_prescaled_data(self):
+        with pytest.warns(UserWarning):
+            tools.rescale_b1_map(self.prescaled_b1_map)
+
+
 class TestResizeArray:
     # Create arrays for testing
     array_2d = np.arange(100).reshape((10, 10))
