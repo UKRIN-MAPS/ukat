@@ -373,6 +373,22 @@ class TestT1:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine,
+                    parameters=3, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
 
 class TestMagnitudeCorrect:
 
