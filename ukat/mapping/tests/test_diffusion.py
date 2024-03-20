@@ -197,6 +197,16 @@ class TestADC:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
+    def test_get_fit_signal(self):
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
+                             stats["min"]["4D"], stats["max"]["4D"]],
+                            [33971.334576954156, 31856.26958366113,
+                             0.0, 241017.96908169912],
+                            rtol=1e-6, atol=1e-4)
+
 
 class TestDTI:
     pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
