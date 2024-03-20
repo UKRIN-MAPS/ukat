@@ -230,6 +230,21 @@ class TestT2:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1)) + self.b
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False, method='3p_exp')
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):

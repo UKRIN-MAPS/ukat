@@ -355,8 +355,8 @@ class T1:
     def get_fit_signal(self):
         """
         Get the fit signal from the model used to fit the data i.e. the
-        simulated signal at each TI given the estimated T1, M0 (and
-        inversion efficiency if applicable).
+        simulated signal at each inversion time given the estimated T1, M0
+        (and inversion efficiency if applicable).
 
         Returns
         -------
