@@ -252,6 +252,19 @@ class TestT2StimFit:
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
 
+    def test_get_fit_signal(self):
+        model = StimFitModel(mode='non_selective', ukrin_vendor='ge')
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model,
+                           multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
+                             stats["min"]["4D"], stats["max"]["4D"]],
+                            [0.4638738536540625,
+                             0.191494386548333,
+                             0.013169224663907297,
+                             1.0085580888230137],
+                            rtol=1e-6, atol=1e-4)
 
 class TestEpg:
     t2 = 0.1

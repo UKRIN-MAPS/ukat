@@ -289,6 +289,22 @@ class TestT2Star:
                                     t2star_stats["min"], t2star_stats["max"]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
 
+    def test_get_fit_signal(self):
+        # Loglin fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method='loglin', multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Exponential fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method='2p_exp', multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists('test_output'):
