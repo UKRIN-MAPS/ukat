@@ -241,7 +241,8 @@ class TestT2:
         # Three parameter fit
         signal_array = np.tile(self.correct_signal, (10, 10, 3, 1)) + self.b
 
-        mapper = T2(signal_array, self.t, self.affine, multithread=False, method='3p_exp')
+        mapper = T2(signal_array, self.t, self.affine, multithread=False,
+                    method='3p_exp')
         fit_signal = mapper.get_fit_signal()
         npt.assert_array_almost_equal(fit_signal, signal_array)
 

@@ -380,10 +380,11 @@ class T1:
                                                  m0_lin)):
                 fit_signal[n, :] = self.fitting_model.t1_eq(ti, t1, m0)
         else:
-            for n, (ti, t1, m0, eff) in enumerate(zip(self.fitting_model.x_list,
-                                                      t1_lin,
-                                                      m0_lin,
-                                                      eff_lin)):
+            for n, (ti, t1, m0, eff) in (
+                enumerate(zip(self.fitting_model.x_list,
+                              t1_lin,
+                              m0_lin,
+                              eff_lin))):
                 fit_signal[n, :] = self.fitting_model.t1_eq(ti, t1, m0, eff)
 
         fit_signal = fit_signal.reshape((*self.shape, self.n_ti))
