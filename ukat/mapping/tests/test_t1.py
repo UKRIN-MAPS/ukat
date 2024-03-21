@@ -381,13 +381,32 @@ class TestT1:
         fit_signal = mapper.get_fit_signal()
         npt.assert_array_almost_equal(fit_signal, signal_array)
 
-        # Two parameter fit
+        # Three parameter fit
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
 
         mapper = T1(signal_array, self.t, self.affine,
                     parameters=3, multithread=False)
         fit_signal = mapper.get_fit_signal()
         npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # MOLLI fit
+        image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
+        image_molli = image_molli[70:90, 100:120, :2, :]
+        ti_molli *= 1000
+
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(image_molli, ti_molli, affine_molli,
+                    parameters=3, molli=True, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        fit_signal = np.nan_to_num(fit_signal)
+
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
+                             stats["min"]["4D"], stats["max"]["4D"]],
+                            [5398.618239796042, 3125.641946762129,
+                             0.0, 12565.465983508042],
+                            rtol=1e-6, atol=1e-4)
 
 
 class TestMagnitudeCorrect:
