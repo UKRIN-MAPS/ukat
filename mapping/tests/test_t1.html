@@ -309,13 +309,13 @@ class TestT1:
 
         # Crop to reduce runtime
         magnitude = magnitude[37:55, 65:85, :2, :]
-        image_molli = image_molli[37:55, 65:85, :2, :]
+        image_molli = image_molli[70:90, 100:120, :2, :]
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
         gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
-        gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
+        gold_standard_molli = [1647.83798691, 741.68317391, 0.0, 4706.6919605]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -400,6 +400,41 @@ class TestT1:
 
         # Delete &#39;test_output&#39; folder
         shutil.rmtree(&#39;test_output&#39;)
+
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine,
+                    parameters=3, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # MOLLI fit
+        image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
+        image_molli = image_molli[70:90, 100:120, :2, :]
+        ti_molli *= 1000
+
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(image_molli, ti_molli, affine_molli,
+                    parameters=3, molli=True, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        fit_signal = np.nan_to_num(fit_signal)
+
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [5398.618239796042, 3125.641946762129,
+                             0.0, 12565.465983508042],
+                            rtol=1e-6, atol=1e-4)
 
 
 class TestMagnitudeCorrect:
@@ -1036,13 +1071,13 @@ if os.path.exists(&#39;test_output&#39;):
 
         # Crop to reduce runtime
         magnitude = magnitude[37:55, 65:85, :2, :]
-        image_molli = image_molli[37:55, 65:85, :2, :]
+        image_molli = image_molli[70:90, 100:120, :2, :]
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
         gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
-        gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
+        gold_standard_molli = [1647.83798691, 741.68317391, 0.0, 4706.6919605]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -1126,7 +1161,42 @@ if os.path.exists(&#39;test_output&#39;):
                             base_file_name=&#39;t1test&#39;, maps=&#39;&#39;)
 
         # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)</code></pre>
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine,
+                    parameters=3, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # MOLLI fit
+        image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
+        image_molli = image_molli[70:90, 100:120, :2, :]
+        ti_molli *= 1000
+
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(image_molli, ti_molli, affine_molli,
+                    parameters=3, molli=True, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        fit_signal = np.nan_to_num(fit_signal)
+
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [5398.618239796042, 3125.641946762129,
+                             0.0, 12565.465983508042],
+                            rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -1203,6 +1273,51 @@ if os.path.exists(&#39;test_output&#39;):
     npt.assert_equal(mapper_three_param.m0_map.mean(), 0)
     npt.assert_equal(mapper_three_param.m0_err.mean(), 0)
     npt.assert_equal(mapper_two_param.r2.mean(), 0)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_t1.TestT1.test_get_fit_signal"><code class="name flex">
+<span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_fit_signal(self):
+    # Two parameter fit
+    signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+    mapper = T1(signal_array, self.t, self.affine, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)
+
+    # Three parameter fit
+    signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+    mapper = T1(signal_array, self.t, self.affine,
+                parameters=3, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)
+
+    # MOLLI fit
+    image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
+    image_molli = image_molli[70:90, 100:120, :2, :]
+    ti_molli *= 1000
+
+    signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+    mapper = T1(image_molli, ti_molli, affine_molli,
+                parameters=3, molli=True, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    fit_signal = np.nan_to_num(fit_signal)
+
+    stats = arraystats.ArrayStats(fit_signal).calculate()
+    npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                         stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                        [5398.618239796042, 3125.641946762129,
+                         0.0, 12565.465983508042],
+                        rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_t1.TestT1.test_mask"><code class="name flex">
@@ -1318,13 +1433,13 @@ if os.path.exists(&#39;test_output&#39;):
 
     # Crop to reduce runtime
     magnitude = magnitude[37:55, 65:85, :2, :]
-    image_molli = image_molli[37:55, 65:85, :2, :]
+    image_molli = image_molli[70:90, 100:120, :2, :]
 
     # Gold standard statistics
     gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
     gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
     gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
-    gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
+    gold_standard_molli = [1647.83798691, 741.68317391, 0.0, 4706.6919605]
 
     # Two parameter method
     mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -1657,6 +1772,7 @@ if os.path.exists(&#39;test_output&#39;):
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.t" href="#ukat.mapping.tests.test_t1.TestT1.t">t</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.t1" href="#ukat.mapping.tests.test_t1.TestT1.t1">t1</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.test_failed_fit" href="#ukat.mapping.tests.test_t1.TestT1.test_failed_fit">test_failed_fit</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_t1.TestT1.test_get_fit_signal" href="#ukat.mapping.tests.test_t1.TestT1.test_get_fit_signal">test_get_fit_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.test_mask" href="#ukat.mapping.tests.test_t1.TestT1.test_mask">test_mask</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.test_mismatched_raw_data_and_inversion_lengths" href="#ukat.mapping.tests.test_t1.TestT1.test_mismatched_raw_data_and_inversion_lengths">test_mismatched_raw_data_and_inversion_lengths</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t1.TestT1.test_molli_2p_warning" href="#ukat.mapping.tests.test_t1.TestT1.test_molli_2p_warning">test_molli_2p_warning</a></code></li>

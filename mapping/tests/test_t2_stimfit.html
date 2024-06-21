@@ -280,6 +280,19 @@ class TestT2StimFit:
         # Delete &#39;test_output&#39; folder
         shutil.rmtree(&#39;test_output&#39;)
 
+    def test_get_fit_signal(self):
+        model = StimFitModel(mode=&#39;non_selective&#39;, ukrin_vendor=&#39;ge&#39;)
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model,
+                           multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [0.4638738536540625,
+                             0.191494386548333,
+                             0.013169224663907297,
+                             1.0085580888230137],
+                            rtol=1e-6, atol=1e-4)
 
 class TestEpg:
     t2 = 0.1
@@ -829,7 +842,21 @@ class TestEpg:
                             base_file_name=&#39;t2stimfittest&#39;, maps=&#39;&#39;)
 
         # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)</code></pre>
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_get_fit_signal(self):
+        model = StimFitModel(mode=&#39;non_selective&#39;, ukrin_vendor=&#39;ge&#39;)
+        mapper = T2StimFit(self.image_ge, self.affine_ge, model,
+                           multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [0.4638738536540625,
+                             0.191494386548333,
+                             0.013169224663907297,
+                             1.0085580888230137],
+                            rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -885,6 +912,30 @@ class TestEpg:
     with pytest.raises(Exception):
         model = StimFitModel(mode=&#39;non_selective&#39;, ukrin_vendor=&#39;ge&#39;)
         mapper = T2StimFit(self.image_ge[..., :-2], self.affine_ge, model)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_get_fit_signal"><code class="name flex">
+<span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_fit_signal(self):
+    model = StimFitModel(mode=&#39;non_selective&#39;, ukrin_vendor=&#39;ge&#39;)
+    mapper = T2StimFit(self.image_ge, self.affine_ge, model,
+                       multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    stats = arraystats.ArrayStats(fit_signal).calculate()
+    npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                         stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                        [0.4638738536540625,
+                         0.191494386548333,
+                         0.013169224663907297,
+                         1.0085580888230137],
+                        rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_mask"><code class="name flex">
@@ -1143,6 +1194,7 @@ class TestEpg:
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.te_philips" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.te_philips">te_philips</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.te_siemens" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.te_siemens">te_siemens</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_etl_signal_exception" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_etl_signal_exception">test_etl_signal_exception</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_get_fit_signal" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_get_fit_signal">test_get_fit_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_mask" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_mask">test_mask</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_n_comp" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_n_comp">test_n_comp</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_normalisation_warning" href="#ukat.mapping.tests.test_t2_stimfit.TestT2StimFit.test_normalisation_warning">test_normalisation_warning</a></code></li>

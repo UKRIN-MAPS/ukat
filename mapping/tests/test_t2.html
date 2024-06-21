@@ -258,6 +258,22 @@ class TestT2:
         # Delete &#39;test_output&#39; folder
         shutil.rmtree(&#39;test_output&#39;)
 
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1)) + self.b
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False,
+                    method=&#39;3p_exp&#39;)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists(&#39;test_output&#39;):
@@ -502,7 +518,23 @@ if os.path.exists(&#39;test_output&#39;):
                             base_file_name=&#39;t2test&#39;, maps=&#39;&#39;)
 
         # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)</code></pre>
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1)) + self.b
+
+        mapper = T2(signal_array, self.t, self.affine, multithread=False,
+                    method=&#39;3p_exp&#39;)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -605,6 +637,32 @@ if os.path.exists(&#39;test_output&#39;):
     npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
     npt.assert_almost_equal(mapper.b_map.mean(), self.b)
     npt.assert_almost_equal(mapper.r2.mean(), 1)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_t2.TestT2.test_get_fit_signal"><code class="name flex">
+<span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_fit_signal(self):
+    # Two parameter fit
+    signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+    mapper = T2(signal_array, self.t, self.affine, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)
+
+    # Three parameter fit
+    signal_array = np.tile(self.correct_signal, (10, 10, 3, 1)) + self.b
+
+    mapper = T2(signal_array, self.t, self.affine, multithread=False,
+                method=&#39;3p_exp&#39;)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_t2.TestT2.test_invalid_method"><code class="name flex">
@@ -870,6 +928,7 @@ if os.path.exists(&#39;test_output&#39;):
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.t2" href="#ukat.mapping.tests.test_t2.TestT2.t2">t2</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_2p_exp_fit" href="#ukat.mapping.tests.test_t2.TestT2.test_2p_exp_fit">test_2p_exp_fit</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_3p_exp_fit" href="#ukat.mapping.tests.test_t2.TestT2.test_3p_exp_fit">test_3p_exp_fit</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_get_fit_signal" href="#ukat.mapping.tests.test_t2.TestT2.test_get_fit_signal">test_get_fit_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_invalid_method" href="#ukat.mapping.tests.test_t2.TestT2.test_invalid_method">test_invalid_method</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_mask" href="#ukat.mapping.tests.test_t2.TestT2.test_mask">test_mask</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2.TestT2.test_mismatched_raw_data_and_echo_lengths" href="#ukat.mapping.tests.test_t2.TestT2.test_mismatched_raw_data_and_echo_lengths">test_mismatched_raw_data_and_echo_lengths</a></code></li>

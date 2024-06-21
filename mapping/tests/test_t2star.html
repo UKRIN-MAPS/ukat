@@ -317,6 +317,22 @@ class TestT2Star:
                                     t2star_stats[&#34;min&#34;], t2star_stats[&#34;max&#34;]],
                                     gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
 
+    def test_get_fit_signal(self):
+        # Loglin fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method=&#39;loglin&#39;, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Exponential fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method=&#39;2p_exp&#39;, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
 if os.path.exists(&#39;test_output&#39;):
@@ -620,7 +636,24 @@ if os.path.exists(&#39;test_output&#39;):
         t2star_stats = arraystats.ArrayStats(mapper.t2star_map).calculate()
         npt.assert_allclose([t2star_stats[&#34;mean&#34;], t2star_stats[&#34;std&#34;],
                                     t2star_stats[&#34;min&#34;], t2star_stats[&#34;max&#34;]],
-                                    gold_standard_2p_exp, rtol=1e-6, atol=1e-4)</code></pre>
+                                    gold_standard_2p_exp, rtol=1e-6, atol=1e-4)
+
+    def test_get_fit_signal(self):
+        # Loglin fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method=&#39;loglin&#39;, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Exponential fit
+        signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+        mapper = T2Star(signal_array, self.t, self.affine,
+                        method=&#39;2p_exp&#39;, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -698,6 +731,33 @@ if os.path.exists(&#39;test_output&#39;):
     npt.assert_almost_equal(mapper.t2star_map.mean(), 0)
     npt.assert_almost_equal(mapper.t2star_err.mean(), 0)
     npt.assert_almost_equal(mapper.r2.mean(), 0)</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_t2star.TestT2Star.test_get_fit_signal"><code class="name flex">
+<span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_fit_signal(self):
+    # Loglin fit
+    signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+    mapper = T2Star(signal_array, self.t, self.affine,
+                    method=&#39;loglin&#39;, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)
+
+    # Exponential fit
+    signal_array = np.tile(self.correct_signal, (10, 10, 3, 1))
+
+    mapper = T2Star(signal_array, self.t, self.affine,
+                    method=&#39;2p_exp&#39;, multithread=False)
+    fit_signal = mapper.get_fit_signal()
+    npt.assert_array_almost_equal(fit_signal, signal_array)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_t2star.TestT2Star.test_loglin_fit"><code class="name flex">
@@ -1042,6 +1102,7 @@ if os.path.exists(&#39;test_output&#39;):
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.t" href="#ukat.mapping.tests.test_t2star.TestT2Star.t">t</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.t2star" href="#ukat.mapping.tests.test_t2star.TestT2Star.t2star">t2star</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.test_2p_exp_fit" href="#ukat.mapping.tests.test_t2star.TestT2Star.test_2p_exp_fit">test_2p_exp_fit</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.test_get_fit_signal" href="#ukat.mapping.tests.test_t2star.TestT2Star.test_get_fit_signal">test_get_fit_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.test_loglin_fit" href="#ukat.mapping.tests.test_t2star.TestT2Star.test_loglin_fit">test_loglin_fit</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.test_loglin_warning" href="#ukat.mapping.tests.test_t2star.TestT2Star.test_loglin_warning">test_loglin_warning</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_t2star.TestT2Star.test_mask" href="#ukat.mapping.tests.test_t2star.TestT2Star.test_mask">test_mask</a></code></li>

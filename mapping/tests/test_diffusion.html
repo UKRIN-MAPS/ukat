@@ -225,6 +225,16 @@ class TestADC:
         # Delete &#39;test_output&#39; folder
         shutil.rmtree(&#39;test_output&#39;)
 
+    def test_get_fit_signal(self):
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [33971.334576954156, 31856.26958366113,
+                             0.0, 241017.96908169912],
+                            rtol=1e-6, atol=1e-4)
+
 
 class TestDTI:
     pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
@@ -492,7 +502,17 @@ if os.path.exists(&#39;test_output&#39;):
                             base_file_name=&#39;adc_test&#39;, maps=&#39;&#39;)
 
         # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)</code></pre>
+        shutil.rmtree(&#39;test_output&#39;)
+
+    def test_get_fit_signal(self):
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
+        fit_signal = mapper.get_fit_signal()
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                            [33971.334576954156, 31856.26958366113,
+                             0.0, 241017.96908169912],
+                            rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -532,6 +552,26 @@ if os.path.exists(&#39;test_output&#39;):
     mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
                  self.mask)
     assert np.abs(mapper.adc.mean()) &lt; 1e-6</code></pre>
+</details>
+</dd>
+<dt id="ukat.mapping.tests.test_diffusion.TestADC.test_get_fit_signal"><code class="name flex">
+<span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_fit_signal(self):
+    mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
+    fit_signal = mapper.get_fit_signal()
+    stats = arraystats.ArrayStats(fit_signal).calculate()
+    npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
+                         stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
+                        [33971.334576954156, 31856.26958366113,
+                         0.0, 241017.96908169912],
+                        rtol=1e-6, atol=1e-4)</code></pre>
 </details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_missmatched_raw_data_and_bvals"><code class="name flex">
@@ -1242,6 +1282,7 @@ if os.path.exists(&#39;test_output&#39;):
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.mask" href="#ukat.mapping.tests.test_diffusion.TestADC.mask">mask</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.pixel_array" href="#ukat.mapping.tests.test_diffusion.TestADC.pixel_array">pixel_array</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.test_fail_to_fit" href="#ukat.mapping.tests.test_diffusion.TestADC.test_fail_to_fit">test_fail_to_fit</a></code></li>
+<li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.test_get_fit_signal" href="#ukat.mapping.tests.test_diffusion.TestADC.test_get_fit_signal">test_get_fit_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.test_missmatched_raw_data_and_bvals" href="#ukat.mapping.tests.test_diffusion.TestADC.test_missmatched_raw_data_and_bvals">test_missmatched_raw_data_and_bvals</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.test_negative_signal" href="#ukat.mapping.tests.test_diffusion.TestADC.test_negative_signal">test_negative_signal</a></code></li>
 <li><code><a title="ukat.mapping.tests.test_diffusion.TestADC.test_real_data" href="#ukat.mapping.tests.test_diffusion.TestADC.test_real_data">test_real_data</a></code></li>
