@@ -1,4 +1,4 @@
-## [0.7.2rc1] - 2024-06-21
+## [0.7.2-rc.1] - 2024-06-21
 
 ### Added
 * Export the fit signals from mapping functions e.g. the expected T1 recovery at times TI given the fit values of T1 and M0. #221
