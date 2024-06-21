@@ -1,3 +1,11 @@
+## [0.7.2rc1] - 2024-06-21
+
+### Added
+* Export the fit signals from mapping functions e.g. the expected T1 recovery at times TI given the fit values of T1 and M0. #221
+
+### Fixed
+* Issue where resources sub-module was not included on PyPI
+
 ## [0.7.1] - 2024-02-23
 
 ### Added
