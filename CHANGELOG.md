@@ -3,6 +3,7 @@
 ### Added
 * Export the fit signals from mapping functions e.g. the expected T1 recovery at times TI given the fit values of T1 and M0. #221
 * Warnings if there aren't many negative values in T1 mapping data. #222 #223
+* `get_fit_signal` methods have been added to most mapping classes to allow the user to get the fit signal at a given time point.
 
 ### Fixed
 * Issue where resources sub-module was not included on PyPI
