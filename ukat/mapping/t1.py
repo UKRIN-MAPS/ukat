@@ -52,10 +52,21 @@ class T1Model(fitting.Model):
         self.tss = tss
         self.tss_axis = tss_axis
 
-        if np.nanmin(pixel_array) < 0:
+        if np.percentile(pixel_array[..., 0], 1) < 0:
             self.mag_corr = True
         else:
             self.mag_corr = False
+            if np.nanmin(pixel_array) < 0:
+                warnings.warn('Negative values found in data from the first '
+                              'inversion but as the first percentile is not '
+                              'negative, it is assumed these are negative '
+                              'due to noise or preprocessing steps such as '
+                              'EPI distortion correction and registration. '
+                              'As such the data will be fit to the modulus of '
+                              'the recovery curve.\n'
+                              f'Min value = {np.nanmin(pixel_array[..., 0])}\n'
+                              '1st percentile = '
+                              f'{np.percentile(pixel_array[..., 0], 1)}')
 
         if self.parameters == 2:
             if self.mag_corr:
