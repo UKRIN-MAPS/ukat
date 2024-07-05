@@ -52,26 +52,56 @@ class T1Model(fitting.Model):
         self.tss = tss
         self.tss_axis = tss_axis
 
-        if np.min(pixel_array) < 0:
+        # Assume the data has been magnitude corrected if the first
+        # percentile of the first inversion time is negative.
+        if np.percentile(pixel_array[..., 0], 1) < 0:
             self.mag_corr = True
+            neg_percent = (np.sum(pixel_array[..., 0] < 0)
+                           / pixel_array[..., 0].size)
+            if neg_percent < 0.05:
+                warnings.warn('Fitting data to a magnitude corrected '
+                              'inversion recovery curve however, less than 5% '
+                              'of the data from the first inversion is '
+                              'negative. If you have performed magnitude '
+                              'correction ignore this warning, otherwise the '
+                              'negative values could be due to noise or '
+                              'preprocessing steps  such as EPI distortion '
+                              'correction and  registration.\n'
+                              f'Percentage of first inversion data that is '
+                              f'negative = {neg_percent:.2%}')
         else:
             self.mag_corr = False
+            if np.nanmin(pixel_array) < 0:
+                warnings.warn('Negative values found in data from the first '
+                              'inversion but as the first percentile is not '
+                              'negative, it is assumed these are negative '
+                              'due to noise or preprocessing steps such as '
+                              'EPI distortion correction and registration. '
+                              'As such the data will be fit to the modulus of '
+                              'the recovery curve.\n'
+                              f'Min value = {np.nanmin(pixel_array[..., 0])}\n'
+                              '1st percentile = '
+                              f'{np.percentile(pixel_array[..., 0], 1)}')
 
         if self.parameters == 2:
             if self.mag_corr:
-                super().__init__(pixel_array, ti, two_param_eq, mask,
+                self.t1_eq = two_param_eq
+                super().__init__(pixel_array, ti, self.t1_eq, mask,
                                  multithread)
             else:
-                super().__init__(pixel_array, ti, two_param_abs_eq, mask,
+                self.t1_eq = two_param_abs_eq
+                super().__init__(pixel_array, ti, self.t1_eq, mask,
                                  multithread)
             self.bounds = ([0, 0], [5000, 1000000000])
             self.initial_guess = [1000, 30000]
         elif self.parameters == 3:
             if self.mag_corr:
-                super().__init__(pixel_array, ti, three_param_eq, mask,
+                self.t1_eq = three_param_eq
+                super().__init__(pixel_array, ti, self.t1_eq, mask,
                                  multithread)
             else:
-                super().__init__(pixel_array, ti, three_param_abs_eq, mask,
+                self.t1_eq = three_param_abs_eq
+                super().__init__(pixel_array, ti, self.t1_eq, mask,
                                  multithread)
             self.bounds = ([0, 0, 1], [5000, 1000000000, 2])
             self.initial_guess = [1000, 30000, 2]
@@ -224,10 +254,10 @@ class T1:
                               'using parameters=3.')
 
         # Fit Data
-        fitting_model = T1Model(self.pixel_array, self.inversion_list,
-                                self.parameters, self.mask, self.tss,
-                                self.tss_axis, self.multithread)
-        popt, error, r2 = fitting.fit_image(fitting_model)
+        self.fitting_model = T1Model(self.pixel_array, self.inversion_list,
+                                     self.parameters, self.mask, self.tss,
+                                     self.tss_axis, self.multithread)
+        popt, error, r2 = fitting.fit_image(self.fitting_model)
         self.t1_map = popt[0]
         self.m0_map = popt[1]
         self.t1_err = error[0]
@@ -242,8 +272,10 @@ class T1:
         # M0 out. Not filtering based on eff as this should ideally be at
         # the upper bound!
         threshold = 0.999  # 99.9% of the upper bound
-        bounds_mask = ((self.t1_map > fitting_model.bounds[1][0] * threshold) |
-                       (self.m0_map > fitting_model.bounds[1][1] * threshold))
+        bounds_mask = ((self.t1_map > self.fitting_model.bounds[1][0] *
+                        threshold) |
+                       (self.m0_map > self.fitting_model.bounds[1][1] *
+                        threshold))
         self.t1_map[bounds_mask] = 0
         self.m0_map[bounds_mask] = 0
         self.t1_err[bounds_mask] = 0
@@ -345,6 +377,44 @@ class T1:
                              '"eff_err", "r1", "mask"]".')
 
         return
+
+    def get_fit_signal(self):
+        """
+        Get the fit signal from the model used to fit the data i.e. the
+        simulated signal at each inversion time given the estimated T1, M0
+        (and inversion efficiency if applicable).
+
+        Returns
+        -------
+        fit_signal : np.ndarray
+            An array containing the fit signal generated by the model
+        """
+        if self.molli:
+            t1 = self.t1_map / ((self.m0_map * self.eff_map) / self.m0_map - 1)
+        else:
+            t1 = self.t1_map
+        t1_lin = t1.reshape(-1)
+        m0_lin = self.m0_map.reshape(-1)
+        if self.parameters == 3:
+            eff_lin = self.eff_map.reshape(-1)
+
+        fit_signal = np.zeros((self.n_vox, self.n_ti))
+
+        if self.parameters == 2:
+            for n, (ti, t1, m0) in enumerate(zip(self.fitting_model.x_list,
+                                                 t1_lin,
+                                                 m0_lin)):
+                fit_signal[n, :] = self.fitting_model.t1_eq(ti, t1, m0)
+        else:
+            for n, (ti, t1, m0, eff) in (
+                enumerate(zip(self.fitting_model.x_list,
+                              t1_lin,
+                              m0_lin,
+                              eff_lin))):
+                fit_signal[n, :] = self.fitting_model.t1_eq(ti, t1, m0, eff)
+
+        fit_signal = fit_signal.reshape((*self.shape, self.n_ti))
+        return fit_signal
 
 
 def two_param_abs_eq(t, t1, m0):

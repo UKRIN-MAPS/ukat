@@ -262,6 +262,33 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
+    def test_mag_corr_warning(self):
+        # Test warning for small number of negative values thus assuming no
+        # magnitude correction has been performed
+
+        # Make the absolute of the signal into a 4D array
+        signal_array = np.tile(np.abs(self.correct_signal_two_param),
+                               (10, 10, 3, 1))
+        # Add a single negative value to the signal
+        signal_array[0, 0, 0, 0] = -1
+
+        with pytest.warns(UserWarning):
+            mapper = T1(signal_array, self.t, self.affine, multithread=False)
+
+        # Test warning for enough negative values to assume magnitude
+        # correction has been performed but still not that many negative values
+
+        # Make the of the signal into a 4D array
+        signal_array = np.tile(np.abs(self.correct_signal_two_param),
+                               (10, 10, 3, 1))
+        # Add a row of signals with negative values to the image
+        # 3.3% of first inversion is negative but 1st percentile is negative.
+        signal_array[:, 0, 0, :] = self.correct_signal_two_param
+
+        with pytest.warns(UserWarning):
+            mapper = T1(signal_array, self.t, self.affine, multithread=False)
+
+
     def test_molli_2p_warning(self):
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         with pytest.warns(UserWarning):
@@ -281,13 +308,13 @@ class TestT1:
 
         # Crop to reduce runtime
         magnitude = magnitude[37:55, 65:85, :2, :]
-        image_molli = image_molli[37:55, 65:85, :2, :]
+        image_molli = image_molli[70:90, 100:120, :2, :]
 
         # Gold standard statistics
         gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
         gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
         gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
-        gold_standard_molli = [782.923767, 495.751163, 0.0, 4452.606435]
+        gold_standard_molli = [1647.83798691, 741.68317391, 0.0, 4706.6919605]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -372,6 +399,41 @@ class TestT1:
 
         # Delete 'test_output' folder
         shutil.rmtree('test_output')
+
+    def test_get_fit_signal(self):
+        # Two parameter fit
+        signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # Three parameter fit
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(signal_array, self.t, self.affine,
+                    parameters=3, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        npt.assert_array_almost_equal(fit_signal, signal_array)
+
+        # MOLLI fit
+        image_molli, affine_molli, ti_molli = fetch.t1_molli_philips()
+        image_molli = image_molli[70:90, 100:120, :2, :]
+        ti_molli *= 1000
+
+        signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
+
+        mapper = T1(image_molli, ti_molli, affine_molli,
+                    parameters=3, molli=True, multithread=False)
+        fit_signal = mapper.get_fit_signal()
+        fit_signal = np.nan_to_num(fit_signal)
+
+        stats = arraystats.ArrayStats(fit_signal).calculate()
+        npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
+                             stats["min"]["4D"], stats["max"]["4D"]],
+                            [5398.618239796042, 3125.641946762129,
+                             0.0, 12565.465983508042],
+                            rtol=1e-6, atol=1e-4)
 
 
 class TestMagnitudeCorrect:
