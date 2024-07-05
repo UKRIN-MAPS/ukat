@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
 <title>ukat.utils.tests.test_tools API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
 </head>
 <body>
 <main>
@@ -22,195 +25,6 @@
 <h1 class="title">Module <code>ukat.utils.tests.test_tools</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import pytest
-import numpy as np
-import numpy.testing as npt
-import ukat.utils.tools as tools
-from ukat.utils import arraystats
-
-
-class TestConvertToPiRange:
-    # Gold Standard = [mean, std, minimum, maximum]
-    # Input: {np.arange(12).reshape((2, 2, 3)) - 6 * np.ones((2, 2, 3))}
-    gold_standard = [-7.401486830834377e-17, 1.9718077939258474,
-                     -3.141592653589793, 3.1415926535897922]
-
-    # Create arrays for testing
-    array = np.arange(12).reshape((2, 2, 3)) - 6 * np.ones((2, 2, 3))
-    array_positive = np.arange(12).reshape((2, 2, 3))
-    array_negative = -np.arange(12).reshape((2, 2, 3))
-    array_pi_range = array / 2
-
-    def test_pi_range_result(self):
-        pi_range_calculated = tools.convert_to_pi_range(self.array)
-        stats = arraystats.ArrayStats(pi_range_calculated).calculate()
-        npt.assert_allclose([stats[&#34;mean&#34;][&#34;3D&#34;], stats[&#34;std&#34;][&#34;3D&#34;],
-                             stats[&#34;min&#34;][&#34;3D&#34;], stats[&#34;max&#34;][&#34;3D&#34;]],
-                            self.gold_standard, rtol=1e-6, atol=1e-4)
-
-    def test_if_ranges(self):
-        # Test for values &gt; 3.2
-        result_over = tools.convert_to_pi_range(self.array_positive)
-        assert np.amax(result_over) &lt; np.amax(self.array_positive)
-        # Test for values &lt; -3.2
-        result_under = tools.convert_to_pi_range(self.array_negative)
-        assert np.amin(result_under) &gt; np.amin(self.array_negative)
-        # Test for values &gt; 3.2 and &lt; -3.2
-        result_under_over = tools.convert_to_pi_range(self.array)
-        assert np.amax(result_under_over) &lt; np.amax(self.array)
-        assert np.amin(result_under_over) &gt; np.amin(self.array)
-
-    def test_else_range(self):
-        result = tools.convert_to_pi_range(self.array_pi_range)
-        assert (result == self.array_pi_range).all()
-
-    def test_input_array_type_assertion(self):
-        # Empty array
-        with pytest.raises(ValueError):
-            tools.convert_to_pi_range(np.array([]))
-        # No input argument
-        with pytest.raises(TypeError):
-            tools.convert_to_pi_range(None)
-        # String
-        with pytest.raises(TypeError):
-            tools.convert_to_pi_range(&#34;abcdef&#34;)
-
-
-class TestRescaleB1Map:
-    unscaled_b1_map = prescaled_b1_map = (
-        np.concatenate((np.linspace(90, 100, 25),
-                        np.linspace(100, 110, 25)),
-                       axis=0).reshape((5, 5, 2)))
-    prescaled_b1_map = (
-        np.concatenate((np.linspace(0.9, 1, 25),
-                       np.linspace(1, 0.9, 25)),
-                       axis=0).reshape((5, 5, 2)))
-
-    def test_rescale(self):
-        rescaled_b1_map = tools.rescale_b1_map(self.unscaled_b1_map)
-        npt.assert_allclose(rescaled_b1_map, self.prescaled_b1_map)
-
-    def test_warning_of_prescaled_data(self):
-        with pytest.warns(UserWarning):
-            tools.rescale_b1_map(self.prescaled_b1_map)
-
-
-class TestResizeArray:
-    # Create arrays for testing
-    array_2d = np.arange(100).reshape((10, 10))
-    array_3d = np.arange(500).reshape((10, 10, 5))
-    array_4d = np.arange(5000).reshape((10, 10, 5, 10))
-
-    def test_no_resize(self):
-        resized_array_2d = tools.resize_array(self.array_2d)
-        resized_array_3d = tools.resize_array(self.array_3d, factor=1)
-        resized_array_4d = tools.resize_array(self.array_4d, target_size=10)
-        assert (resized_array_2d == self.array_2d).all()
-        assert (resized_array_3d == self.array_3d).all()
-        assert (resized_array_4d == self.array_4d).all()
-
-    def test_output_shapes(self):
-        resized_array_1 = tools.resize_array(self.array_3d, factor=2)
-        resized_array_2 = tools.resize_array(self.array_4d, target_size=20)
-        assert np.shape(resized_array_1)[0] != 10
-        assert np.shape(resized_array_1)[0] == 20
-        assert np.shape(resized_array_1)[0] == np.shape(resized_array_1)[1]
-        assert np.shape(resized_array_2)[0] != 10
-        assert np.shape(resized_array_2)[0] == 20
-        assert np.shape(resized_array_1)[0] == np.shape(resized_array_2)[0]
-        assert np.shape(resized_array_1)[1] == np.shape(resized_array_2)[1]
-        assert np.shape(resized_array_1)[2] != 10
-        assert np.shape(resized_array_1)[2] == np.shape(self.array_3d)[2]
-        assert np.shape(resized_array_2)[3] != 20
-        assert np.shape(resized_array_2)[3] == np.shape(self.array_4d)[3]
-
-    def test_input_array_type_assertion(self):
-        # Empty array
-        with pytest.raises(IndexError):
-            tools.resize_array(np.array([]))
-        # No input argument
-        with pytest.raises(IndexError):
-            tools.resize_array(None)
-        # String
-        with pytest.raises(IndexError):
-            tools.resize_array(&#34;abcdef&#34;)
-
-
-class TestMaskSlices:
-    shape = (2, 2, 3)
-    # Create mask where all pixels from all slices are True
-    full_mask = np.full(shape, True)
-    # Create mask where only the pixels from slice index 1 are True
-    one_slice_mask = np.full(shape, False)
-    one_slice_mask[:, :, 1] = True
-    # Create mask where only the pixels from slices index 1 and 2 are True
-    two_slice_mask = np.full(shape, False)
-    two_slice_mask[:, :, 1] = True
-    two_slice_mask[:, :, 2] = True
-
-    def test_single_slice(self):
-        # #1: shape + single slice (int)
-        final_mask = tools.mask_slices(self.shape, 1)
-        assert (final_mask == self.one_slice_mask).all()
-
-    def test_multiple_slices(self):
-        # #2: shape + multiple slices (list)
-        final_mask = tools.mask_slices(self.shape, [1, 2])
-        assert (final_mask == self.two_slice_mask).all()
-
-    def test_masked_single_slice(self):
-        # #3: shape + single slice + mask
-        final_mask = tools.mask_slices(self.shape, 1, self.full_mask)
-        assert (final_mask == self.one_slice_mask).all()
-
-    def test_masked_masked_slices(self):
-        # #4: shape + multiple slices + mask
-        final_mask = tools.mask_slices(self.shape, [1, 2], self.full_mask)
-        assert (final_mask == self.two_slice_mask).all()
-
-    def test_shape_assertion(self):
-        # Wrong type `shape`
-        non_tuple_shape = [2, 2, 3]
-        with pytest.raises(ValueError):
-            tools.mask_slices(non_tuple_shape, 1)
-        # `mask` with different dimensions than `shape`
-        mismatched_mask = np.full((2, 3, 3), True)
-        with pytest.raises(AssertionError):
-            tools.mask_slices(self.shape, 1, mismatched_mask)
-
-    def test_slices_type_assertion(self):
-        # Wrong type `slices`
-        with pytest.raises(ValueError):
-            tools.mask_slices(self.shape, np.array([1, 2]))
-        # Not all elements of slices are `ints`
-        with pytest.raises(ValueError):
-            tools.mask_slices(self.shape, [1, 2.2])
-        with pytest.raises(ValueError):
-            tools.mask_slices(self.shape, 2.2)
-
-    def test_slice_ranges_assertion(self):
-        # Slices out of range tests
-        with pytest.raises(ValueError):
-            tools.mask_slices(self.shape, [0, 3])
-        with pytest.raises(ValueError):
-            tools.mask_slices(self.shape, 3)
-
-    def test_mask_type_assertion(self):
-        # Wrong dtype mask
-        wrong_type_mask = &#34;not a numpy array&#34;
-        with pytest.raises(AssertionError):
-            tools.mask_slices(self.shape, 1, wrong_type_mask)
-
-    def test_mask_dtype_assertion(self):
-        # Wrong dtype mask
-        wrong_dtype_mask = np.full(self.shape, 2)
-        with pytest.raises(AssertionError):
-            tools.mask_slices(self.shape, 1, wrong_dtype_mask)</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -306,74 +120,24 @@ class TestMaskSlices:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_else_range(self):
-    result = tools.convert_to_pi_range(self.array_pi_range)
-    assert (result == self.array_pi_range).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestConvertToPiRange.test_if_ranges"><code class="name flex">
 <span>def <span class="ident">test_if_ranges</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_if_ranges(self):
-    # Test for values &gt; 3.2
-    result_over = tools.convert_to_pi_range(self.array_positive)
-    assert np.amax(result_over) &lt; np.amax(self.array_positive)
-    # Test for values &lt; -3.2
-    result_under = tools.convert_to_pi_range(self.array_negative)
-    assert np.amin(result_under) &gt; np.amin(self.array_negative)
-    # Test for values &gt; 3.2 and &lt; -3.2
-    result_under_over = tools.convert_to_pi_range(self.array)
-    assert np.amax(result_under_over) &lt; np.amax(self.array)
-    assert np.amin(result_under_over) &gt; np.amin(self.array)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestConvertToPiRange.test_input_array_type_assertion"><code class="name flex">
 <span>def <span class="ident">test_input_array_type_assertion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_input_array_type_assertion(self):
-    # Empty array
-    with pytest.raises(ValueError):
-        tools.convert_to_pi_range(np.array([]))
-    # No input argument
-    with pytest.raises(TypeError):
-        tools.convert_to_pi_range(None)
-    # String
-    with pytest.raises(TypeError):
-        tools.convert_to_pi_range(&#34;abcdef&#34;)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestConvertToPiRange.test_pi_range_result"><code class="name flex">
 <span>def <span class="ident">test_pi_range_result</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_pi_range_result(self):
-    pi_range_calculated = tools.convert_to_pi_range(self.array)
-    stats = arraystats.ArrayStats(pi_range_calculated).calculate()
-    npt.assert_allclose([stats[&#34;mean&#34;][&#34;3D&#34;], stats[&#34;std&#34;][&#34;3D&#34;],
-                         stats[&#34;min&#34;][&#34;3D&#34;], stats[&#34;max&#34;][&#34;3D&#34;]],
-                        self.gold_standard, rtol=1e-6, atol=1e-4)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -483,149 +247,54 @@ class TestMaskSlices:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_mask_dtype_assertion(self):
-    # Wrong dtype mask
-    wrong_dtype_mask = np.full(self.shape, 2)
-    with pytest.raises(AssertionError):
-        tools.mask_slices(self.shape, 1, wrong_dtype_mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_mask_type_assertion"><code class="name flex">
 <span>def <span class="ident">test_mask_type_assertion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_mask_type_assertion(self):
-    # Wrong dtype mask
-    wrong_type_mask = &#34;not a numpy array&#34;
-    with pytest.raises(AssertionError):
-        tools.mask_slices(self.shape, 1, wrong_type_mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_masked_masked_slices"><code class="name flex">
 <span>def <span class="ident">test_masked_masked_slices</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_masked_masked_slices(self):
-    # #4: shape + multiple slices + mask
-    final_mask = tools.mask_slices(self.shape, [1, 2], self.full_mask)
-    assert (final_mask == self.two_slice_mask).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_masked_single_slice"><code class="name flex">
 <span>def <span class="ident">test_masked_single_slice</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_masked_single_slice(self):
-    # #3: shape + single slice + mask
-    final_mask = tools.mask_slices(self.shape, 1, self.full_mask)
-    assert (final_mask == self.one_slice_mask).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_multiple_slices"><code class="name flex">
 <span>def <span class="ident">test_multiple_slices</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_multiple_slices(self):
-    # #2: shape + multiple slices (list)
-    final_mask = tools.mask_slices(self.shape, [1, 2])
-    assert (final_mask == self.two_slice_mask).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_shape_assertion"><code class="name flex">
 <span>def <span class="ident">test_shape_assertion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_shape_assertion(self):
-    # Wrong type `shape`
-    non_tuple_shape = [2, 2, 3]
-    with pytest.raises(ValueError):
-        tools.mask_slices(non_tuple_shape, 1)
-    # `mask` with different dimensions than `shape`
-    mismatched_mask = np.full((2, 3, 3), True)
-    with pytest.raises(AssertionError):
-        tools.mask_slices(self.shape, 1, mismatched_mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_single_slice"><code class="name flex">
 <span>def <span class="ident">test_single_slice</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_single_slice(self):
-    # #1: shape + single slice (int)
-    final_mask = tools.mask_slices(self.shape, 1)
-    assert (final_mask == self.one_slice_mask).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_slice_ranges_assertion"><code class="name flex">
 <span>def <span class="ident">test_slice_ranges_assertion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_slice_ranges_assertion(self):
-    # Slices out of range tests
-    with pytest.raises(ValueError):
-        tools.mask_slices(self.shape, [0, 3])
-    with pytest.raises(ValueError):
-        tools.mask_slices(self.shape, 3)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestMaskSlices.test_slices_type_assertion"><code class="name flex">
 <span>def <span class="ident">test_slices_type_assertion</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_slices_type_assertion(self):
-    # Wrong type `slices`
-    with pytest.raises(ValueError):
-        tools.mask_slices(self.shape, np.array([1, 2]))
-    # Not all elements of slices are `ints`
-    with pytest.raises(ValueError):
-        tools.mask_slices(self.shape, [1, 2.2])
-    with pytest.raises(ValueError):
-        tools.mask_slices(self.shape, 2.2)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -674,28 +343,12 @@ class TestMaskSlices:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_rescale(self):
-    rescaled_b1_map = tools.rescale_b1_map(self.unscaled_b1_map)
-    npt.assert_allclose(rescaled_b1_map, self.prescaled_b1_map)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestRescaleB1Map.test_warning_of_prescaled_data"><code class="name flex">
 <span>def <span class="ident">test_warning_of_prescaled_data</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_warning_of_prescaled_data(self):
-    with pytest.warns(UserWarning):
-        tools.rescale_b1_map(self.prescaled_b1_map)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -770,64 +423,18 @@ class TestMaskSlices:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_input_array_type_assertion(self):
-    # Empty array
-    with pytest.raises(IndexError):
-        tools.resize_array(np.array([]))
-    # No input argument
-    with pytest.raises(IndexError):
-        tools.resize_array(None)
-    # String
-    with pytest.raises(IndexError):
-        tools.resize_array(&#34;abcdef&#34;)</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestResizeArray.test_no_resize"><code class="name flex">
 <span>def <span class="ident">test_no_resize</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_no_resize(self):
-    resized_array_2d = tools.resize_array(self.array_2d)
-    resized_array_3d = tools.resize_array(self.array_3d, factor=1)
-    resized_array_4d = tools.resize_array(self.array_4d, target_size=10)
-    assert (resized_array_2d == self.array_2d).all()
-    assert (resized_array_3d == self.array_3d).all()
-    assert (resized_array_4d == self.array_4d).all()</code></pre>
-</details>
 </dd>
 <dt id="ukat.utils.tests.test_tools.TestResizeArray.test_output_shapes"><code class="name flex">
 <span>def <span class="ident">test_output_shapes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_output_shapes(self):
-    resized_array_1 = tools.resize_array(self.array_3d, factor=2)
-    resized_array_2 = tools.resize_array(self.array_4d, target_size=20)
-    assert np.shape(resized_array_1)[0] != 10
-    assert np.shape(resized_array_1)[0] == 20
-    assert np.shape(resized_array_1)[0] == np.shape(resized_array_1)[1]
-    assert np.shape(resized_array_2)[0] != 10
-    assert np.shape(resized_array_2)[0] == 20
-    assert np.shape(resized_array_1)[0] == np.shape(resized_array_2)[0]
-    assert np.shape(resized_array_1)[1] == np.shape(resized_array_2)[1]
-    assert np.shape(resized_array_1)[2] != 10
-    assert np.shape(resized_array_1)[2] == np.shape(self.array_3d)[2]
-    assert np.shape(resized_array_2)[3] != 20
-    assert np.shape(resized_array_2)[3] == np.shape(self.array_4d)[3]</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -835,7 +442,6 @@ class TestMaskSlices:
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -905,7 +511,7 @@ class TestMaskSlices:
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
 <title>ukat.mapping.t2 API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
 </head>
 <body>
 <main>
@@ -22,362 +25,6 @@
 <h1 class="title">Module <code>ukat.mapping.t2</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import os
-
-import nibabel as nib
-import numpy as np
-
-from . import fitting
-
-
-class T2Model(fitting.Model):
-    def __init__(self, pixel_array, te, method=&#39;2p_exp&#39;, mask=None,
-                 multithread=True):
-        &#34;&#34;&#34;
-        A class containing the T2 fitting model
-
-        Parameters
-        ----------
-        pixel_array : np.ndarray
-            An array containing the signal from each voxel at each echo
-            time with the last dimension being time i.e. the array needed to
-            generate a 3D T2 map would have dimensions [x, y, z, TE].
-        te : np.ndarray
-            An array of the echo times used for the last dimension of the
-            pixel_array. In milliseconds.
-        method : {&#39;2p_exp&#39;, &#39;3p_exp&#39;}, optional
-            Default &#39;2p_exp&#39;
-            The model the data is fit to. 2p_exp uses a two parameter
-            exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
-            three parameter exponential model (S = S0 * exp(-t / T2) + b) to
-            fit for noise/very long T2 components of the signal.
-        mask : np.ndarray, optional
-            A boolean mask of the voxels to fit. Should be the shape of the
-            desired T2 map rather than the raw data i.e. omit the time
-            dimension.
-        multithread : bool, optional
-            Default True
-            If True, the fitting will be performed in parallel using all
-            available cores
-        &#34;&#34;&#34;
-        self.method = method
-
-        if self.method == &#39;2p_exp&#39;:
-            self.t2_eq = two_param_eq
-            super().__init__(pixel_array, te, self.t2_eq, mask, multithread)
-            self.bounds = ([0, 0], [1000, 100000000])
-            self.initial_guess = [20, 10000]
-        elif self.method == &#39;3p_exp&#39;:
-            self.t2_eq = three_param_eq
-            super().__init__(pixel_array, te, self.t2_eq, mask,
-                             multithread)
-            self.bounds = ([0, 0, 0], [1000, 100000000, 1000000])
-            self.initial_guess = [20, 10000, 500]
-
-        self.generate_lists()
-
-    def threshold_noise(self, threshold=0):
-        &#34;&#34;&#34;
-        Remove voxel values below a certain threshold from the fitting
-        process, useful if long echo times have been collected and thus
-        thermal noise is being measured below a certain threshold rather
-        than the T2 decay.
-
-        Parameters
-        ----------
-        threshold : float, optional
-            Default 0
-            The threshold below which to remove values
-        &#34;&#34;&#34;
-        for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
-                                                self.x_list,
-                                                self.p0_list)):
-            self.signal_list[ind] = np.array(
-                [x for (x, b) in zip(sig, np.array(sig) &gt; threshold) if b])
-            self.x_list[ind] = np.array(
-                [x for (x, b) in zip(te, np.array(sig) &gt; threshold) if b])
-            self.p0_list[ind] = np.array(
-                [x for (x, b) in zip(p0, np.array(sig) &gt; threshold) if b])
-
-
-class T2:
-    &#34;&#34;&#34;
-    Attributes
-    ----------
-    t2_map : np.ndarray
-        The estimated T2 values in ms
-    t2_err : np.ndarray
-        The certainty in the fit of `t2` in ms
-    m0_map : np.ndarray
-        The estimated M0 values
-    m0_err : np.ndarray
-        The certainty in the fit of `m0`
-    r2 : np.ndarray
-        The R-Squared value of the fit, values close to 1 indicate a good
-        fit, lower values indicate a poorer fit
-    shape : tuple
-        The shape of the T2 map
-    n_te : int
-        The number of TE used to calculate the map
-    n_vox : int
-        The number of voxels in the map i.e. the product of all dimensions
-        apart from TE
-    &#34;&#34;&#34;
-
-    def __init__(self, pixel_array, echo_list, affine, mask=None,
-                 noise_threshold=0, method=&#39;2p_exp&#39;, multithread=&#39;auto&#39;):
-        &#34;&#34;&#34;Initialise a T2 class instance.
-
-        Parameters
-        ----------
-        pixel_array : np.ndarray
-            An array containing the signal from each voxel at each echo
-            time with the last dimension being time i.e. the array needed to
-            generate a 3D T2 map would have dimensions [x, y, z, TE].
-        echo_list : list()
-            An array of the echo times used for the last dimension of the
-            raw data. In milliseconds.
-        affine : np.ndarray
-            A matrix giving the relationship between voxel coordinates and
-            world coordinates.
-        mask : np.ndarray, optional
-            A boolean mask of the voxels to fit. Should be the shape of the
-            desired T2 map rather than the raw data i.e. omit the time
-            dimension.
-        noise_threshold : float, optional
-            Default 0
-            Voxels with magnitude less than this threshold will not be used
-            when fitting. This can be useful if the noise floor of the data
-            is known.
-        method : {&#39;2p_exp&#39;, &#39;3p_exp&#39;}, optional
-            Default `2p_exp`
-            The model the data is fit to. 2p_exp uses a two parameter
-            exponential model (S = S0 * exp(-t / T2)) whereas 3p_exp uses a
-            three parameter exponential model (S = S0 * exp(-t / T2) + b) to
-            fit for noise/very long T2 components of the signal.
-        multithread : bool or &#39;auto&#39;, optional
-            Default &#39;auto&#39;.
-            If True, fitting will be distributed over all cores available on
-            the node. If False, fitting will be carried out on a single thread.
-            &#39;auto&#39; attempts to apply multithreading where appropriate based
-            on the number of voxels being fit.
-        &#34;&#34;&#34;
-        # Some sanity checks
-        assert (pixel_array.shape[-1]
-                == len(echo_list)), &#39;Number of echoes does not match the &#39; \
-                                    &#39;number of time frames on the last axis &#39; \
-                                    &#39;of pixel_array&#39;
-        assert multithread is True \
-               or multithread is False \
-               or multithread == &#39;auto&#39;, f&#39;multithreaded must be True,&#39; \
-                                         f&#39;False or auto. You entered &#39; \
-                                         f&#39;{multithread}&#39;
-
-        if method != &#39;2p_exp&#39; and method != &#39;3p_exp&#39;:
-            raise ValueError(f&#39;method can be 2p_exp or 3p_exp only. You &#39;
-                             f&#39;specified {method}&#39;)
-
-        self.pixel_array = pixel_array
-        self.shape = pixel_array.shape[:-1]
-        self.n_te = pixel_array.shape[-1]
-        self.n_vox = np.prod(self.shape)
-        self.affine = affine
-        # Generate a mask if there isn&#39;t one specified
-        if mask is None:
-            self.mask = np.ones(self.shape, dtype=bool)
-        else:
-            self.mask = mask.astype(bool)
-
-        # Don&#39;t process any nan values
-        self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
-        self.noise_threshold = noise_threshold
-        self.method = method
-        self.echo_list = echo_list
-        # Auto multithreading conditions
-        if multithread == &#39;auto&#39;:
-            if self.n_vox &gt; 20:
-                multithread = True
-            else:
-                multithread = False
-        self.multithread = multithread
-
-        # Fit data
-        self.fitting_model = T2Model(self.pixel_array, self.echo_list,
-                                self.method, self.mask, self.multithread)
-
-        if self.noise_threshold &gt; 0:
-            self.fitting_model.threshold_noise(self.noise_threshold)
-        popt, error, r2 = fitting.fit_image(self.fitting_model)
-        self.t2_map = popt[0]
-        self.m0_map = popt[1]
-        self.t2_err = error[0]
-        self.m0_err = error[1]
-        self.r2 = r2
-
-        if self.method == &#39;3p_exp&#39;:
-            self.b_map = popt[2]
-            self.b_err = error[2]
-
-        # Filter values that are very close to models upper bounds of T2 or
-        # M0 out.
-        threshold = 0.999  # 99.9% of the upper bound
-        bounds_mask = ((self.t2_map &gt; self.fitting_model.bounds[1][0] *
-                        threshold) |
-                       (self.m0_map &gt; self.fitting_model.bounds[1][1] *
-                        threshold))
-        self.t2_map[bounds_mask] = 0
-        self.m0_map[bounds_mask] = 0
-        self.t2_err[bounds_mask] = 0
-        self.m0_err[bounds_mask] = 0
-        self.r2[bounds_mask] = 0
-        if self.method == &#39;3p_exp&#39;:
-            self.b_map[bounds_mask] = 0
-            self.b_err[bounds_mask] = 0
-
-    def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
-                 maps=&#39;all&#39;):
-        &#34;&#34;&#34;Exports some of the T2 class attributes to NIFTI.
-
-        Parameters
-        ----------
-        output_directory : string, optional
-            Path to the folder where the NIFTI files will be saved.
-        base_file_name : string, optional
-            Filename of the resulting NIFTI. This code appends the extension.
-            Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
-        maps : list or &#39;all&#39;, optional
-            List of maps to save to NIFTI. This should either the string &#34;all&#34;
-            or a list of maps from [&#34;t2&#34;, &#34;t2_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;,
-            &#34;r2&#34;, &#34;mask&#34;].
-        &#34;&#34;&#34;
-        os.makedirs(output_directory, exist_ok=True)
-        base_path = os.path.join(output_directory, base_file_name)
-        if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
-            maps = [&#39;t2&#39;, &#39;t2_err&#39;, &#39;m0&#39;, &#39;m0_err&#39;, &#39;r2&#39;, &#39;mask&#39;]
-            if self.method == &#39;3p_exp&#39;:
-                maps.append(&#39;b&#39;)
-                maps.append(&#39;b_err&#39;)
-        if isinstance(maps, list):
-            for result in maps:
-                if result == &#39;t2&#39; or result == &#39;t2_map&#39;:
-                    t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                    nib.save(t2_nifti, base_path + &#39;_t2_map.nii.gz&#39;)
-                elif result == &#39;t2_err&#39;:
-                    t2_err_nifti = nib.Nifti1Image(self.t2_err,
-                                                   affine=self.affine)
-                    nib.save(t2_err_nifti, base_path + &#39;_t2_err.nii.gz&#39;)
-                elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
-                    m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                    nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
-                elif result == &#39;m0_err&#39;:
-                    m0_err_nifti = nib.Nifti1Image(self.m0_err,
-                                                   affine=self.affine)
-                    nib.save(m0_err_nifti, base_path + &#39;_m0_err.nii.gz&#39;)
-                elif result == &#39;r2&#39; or result == &#39;r2_map&#39;:
-                    r2_nifti = nib.Nifti1Image(self.r2,
-                                               affine=self.affine)
-                    nib.save(r2_nifti, base_path + &#39;_r2_map.nii.gz&#39;)
-                elif result == &#39;mask&#39;:
-                    mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
-                                                 affine=self.affine)
-                    nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
-                elif result == &#39;b&#39; or result == &#39;b_map&#39;:
-                    b_nifti = nib.Nifti1Image(self.b_map,
-                                              affine=self.affine)
-                    nib.save(b_nifti, base_path + &#39;_b_map.nii.gz&#39;)
-                elif result == &#39;b_err&#39;:
-                    b_err_nifti = nib.Nifti1Image(self.b_err,
-                                                  affine=self.affine)
-                    nib.save(b_err_nifti, base_path + &#39;_b_err.nii.gz&#39;)
-        else:
-            raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
-                             &#39;should be &#34;all&#34; or a list of maps from &#39;
-                             &#39;&#34;[&#34;t2&#34;, &#34;t2_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;, &#34;r2&#34;, &#39;
-                             &#39;&#34;mask&#34;]&#34;.&#39;)
-        return
-
-    def get_fit_signal(self):
-        &#34;&#34;&#34;
-        Get the fit signal from the model used to fit the data i.e. the
-        simulated signal at each echo time given the estimated T2, M0
-        (and baseline noise floor (b) if applicable).
-
-        Returns
-        -------
-        fit_signal : np.ndarray
-            An array containing the fit signal generated by the model
-        &#34;&#34;&#34;
-        fit_signal = np.zeros((self.n_vox, self.n_te))
-        if self.method == &#39;2p_exp&#39;:
-            params = np.array([self.t2_map.reshape(-1),
-                               self.m0_map.reshape(-1)])
-        elif self.method == &#39;3p_exp&#39;:
-            params = np.array([self.t2_map.reshape(-1),
-                               self.m0_map.reshape(-1),
-                               self.b_map.reshape(-1)])
-
-        for n in range(self.n_vox):
-            fit_signal[n] = self.fitting_model.t2_eq(self.echo_list,
-                                                     *params[:, n])
-
-        fit_signal = fit_signal.reshape((*self.shape, self.n_te))
-        return fit_signal
-
-
-
-def two_param_eq(t, t2, m0):
-    &#34;&#34;&#34;
-        Calculate the expected signal from the equation
-        signal = M0 * exp(-t / T2)
-
-        Parameters
-        ----------
-        t: list
-            The times the signal will be calculated at
-        t2: float
-            The T2 of the signal
-        m0: float
-            The M0 of the signal
-
-        Returns
-        -------
-        signal: np.ndarray
-            The expected signal
-        &#34;&#34;&#34;
-    with np.errstate(divide=&#39;ignore&#39;):
-        signal = m0 * np.exp(-t / t2)
-    return signal
-
-
-def three_param_eq(t, t2, m0, b):
-    &#34;&#34;&#34;
-        Calculate the expected signal from the equation
-        signal = M0 * exp(-t / T2) + b
-
-        Parameters
-        ----------
-        t: list
-            The times the signal will be calculated at
-        t2: float
-            The T2 of the signal
-        m0: float
-            The M0 of the signal
-        b: float
-            The baseline noise floor of the signal
-
-        Returns
-        -------
-        signal: np.ndarray
-            The expected signal
-        &#34;&#34;&#34;
-    with np.errstate(divide=&#39;ignore&#39;):
-        signal = m0 * np.exp(-t / t2) + b
-    return signal</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -408,35 +55,6 @@ signal = M0 * exp(-t / T2) + b</p>
 <dt><strong><code>signal</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>The expected signal</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def three_param_eq(t, t2, m0, b):
-    &#34;&#34;&#34;
-        Calculate the expected signal from the equation
-        signal = M0 * exp(-t / T2) + b
-
-        Parameters
-        ----------
-        t: list
-            The times the signal will be calculated at
-        t2: float
-            The T2 of the signal
-        m0: float
-            The M0 of the signal
-        b: float
-            The baseline noise floor of the signal
-
-        Returns
-        -------
-        signal: np.ndarray
-            The expected signal
-        &#34;&#34;&#34;
-    with np.errstate(divide=&#39;ignore&#39;):
-        signal = m0 * np.exp(-t / t2) + b
-    return signal</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.t2.two_param_eq"><code class="name flex">
 <span>def <span class="ident">two_param_eq</span></span>(<span>t, t2, m0)</span>
@@ -458,33 +76,6 @@ signal = M0 * exp(-t / T2)</p>
 <dt><strong><code>signal</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>The expected signal</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def two_param_eq(t, t2, m0):
-    &#34;&#34;&#34;
-        Calculate the expected signal from the equation
-        signal = M0 * exp(-t / T2)
-
-        Parameters
-        ----------
-        t: list
-            The times the signal will be calculated at
-        t2: float
-            The T2 of the signal
-        m0: float
-            The M0 of the signal
-
-        Returns
-        -------
-        signal: np.ndarray
-            The expected signal
-        &#34;&#34;&#34;
-    with np.errstate(divide=&#39;ignore&#39;):
-        signal = m0 * np.exp(-t / t2)
-    return signal</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -793,37 +384,6 @@ simulated signal at each echo time given the estimated T2, M0
 <dt><strong><code>fit_signal</code></strong> :&ensp;<code>np.ndarray</code></dt>
 <dd>An array containing the fit signal generated by the model</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_fit_signal(self):
-    &#34;&#34;&#34;
-    Get the fit signal from the model used to fit the data i.e. the
-    simulated signal at each echo time given the estimated T2, M0
-    (and baseline noise floor (b) if applicable).
-
-    Returns
-    -------
-    fit_signal : np.ndarray
-        An array containing the fit signal generated by the model
-    &#34;&#34;&#34;
-    fit_signal = np.zeros((self.n_vox, self.n_te))
-    if self.method == &#39;2p_exp&#39;:
-        params = np.array([self.t2_map.reshape(-1),
-                           self.m0_map.reshape(-1)])
-    elif self.method == &#39;3p_exp&#39;:
-        params = np.array([self.t2_map.reshape(-1),
-                           self.m0_map.reshape(-1),
-                           self.b_map.reshape(-1)])
-
-    for n in range(self.n_vox):
-        fit_signal[n] = self.fitting_model.t2_eq(self.echo_list,
-                                                 *params[:, n])
-
-    fit_signal = fit_signal.reshape((*self.shape, self.n_te))
-    return fit_signal</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.t2.T2.to_nifti"><code class="name flex">
 <span>def <span class="ident">to_nifti</span></span>(<span>self, output_directory='/home/runner/work/ukat/ukat', base_file_name='Output', maps='all')</span>
@@ -842,72 +402,6 @@ Eg., base_file_name = 'Output' will result in 'Output.nii.gz'.</dd>
 or a list of maps from ["t2", "t2_err", "m0", "m0_err",
 "r2", "mask"].</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def to_nifti(self, output_directory=os.getcwd(), base_file_name=&#39;Output&#39;,
-             maps=&#39;all&#39;):
-    &#34;&#34;&#34;Exports some of the T2 class attributes to NIFTI.
-
-    Parameters
-    ----------
-    output_directory : string, optional
-        Path to the folder where the NIFTI files will be saved.
-    base_file_name : string, optional
-        Filename of the resulting NIFTI. This code appends the extension.
-        Eg., base_file_name = &#39;Output&#39; will result in &#39;Output.nii.gz&#39;.
-    maps : list or &#39;all&#39;, optional
-        List of maps to save to NIFTI. This should either the string &#34;all&#34;
-        or a list of maps from [&#34;t2&#34;, &#34;t2_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;,
-        &#34;r2&#34;, &#34;mask&#34;].
-    &#34;&#34;&#34;
-    os.makedirs(output_directory, exist_ok=True)
-    base_path = os.path.join(output_directory, base_file_name)
-    if maps == &#39;all&#39; or maps == [&#39;all&#39;]:
-        maps = [&#39;t2&#39;, &#39;t2_err&#39;, &#39;m0&#39;, &#39;m0_err&#39;, &#39;r2&#39;, &#39;mask&#39;]
-        if self.method == &#39;3p_exp&#39;:
-            maps.append(&#39;b&#39;)
-            maps.append(&#39;b_err&#39;)
-    if isinstance(maps, list):
-        for result in maps:
-            if result == &#39;t2&#39; or result == &#39;t2_map&#39;:
-                t2_nifti = nib.Nifti1Image(self.t2_map, affine=self.affine)
-                nib.save(t2_nifti, base_path + &#39;_t2_map.nii.gz&#39;)
-            elif result == &#39;t2_err&#39;:
-                t2_err_nifti = nib.Nifti1Image(self.t2_err,
-                                               affine=self.affine)
-                nib.save(t2_err_nifti, base_path + &#39;_t2_err.nii.gz&#39;)
-            elif result == &#39;m0&#39; or result == &#39;m0_map&#39;:
-                m0_nifti = nib.Nifti1Image(self.m0_map, affine=self.affine)
-                nib.save(m0_nifti, base_path + &#39;_m0_map.nii.gz&#39;)
-            elif result == &#39;m0_err&#39;:
-                m0_err_nifti = nib.Nifti1Image(self.m0_err,
-                                               affine=self.affine)
-                nib.save(m0_err_nifti, base_path + &#39;_m0_err.nii.gz&#39;)
-            elif result == &#39;r2&#39; or result == &#39;r2_map&#39;:
-                r2_nifti = nib.Nifti1Image(self.r2,
-                                           affine=self.affine)
-                nib.save(r2_nifti, base_path + &#39;_r2_map.nii.gz&#39;)
-            elif result == &#39;mask&#39;:
-                mask_nifti = nib.Nifti1Image(self.mask.astype(np.uint16),
-                                             affine=self.affine)
-                nib.save(mask_nifti, base_path + &#39;_mask.nii.gz&#39;)
-            elif result == &#39;b&#39; or result == &#39;b_map&#39;:
-                b_nifti = nib.Nifti1Image(self.b_map,
-                                          affine=self.affine)
-                nib.save(b_nifti, base_path + &#39;_b_map.nii.gz&#39;)
-            elif result == &#39;b_err&#39;:
-                b_err_nifti = nib.Nifti1Image(self.b_err,
-                                              affine=self.affine)
-                nib.save(b_err_nifti, base_path + &#39;_b_err.nii.gz&#39;)
-    else:
-        raise ValueError(&#39;No NIFTI file saved. The variable &#34;maps&#34; &#39;
-                         &#39;should be &#34;all&#34; or a list of maps from &#39;
-                         &#39;&#34;[&#34;t2&#34;, &#34;t2_err&#34;, &#34;m0&#34;, &#34;m0_err&#34;, &#34;r2&#34;, &#39;
-                         &#39;&#34;mask&#34;]&#34;.&#39;)
-    return</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1034,33 +528,6 @@ than the T2 decay.</p>
 <dd>Default 0
 The threshold below which to remove values</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def threshold_noise(self, threshold=0):
-    &#34;&#34;&#34;
-    Remove voxel values below a certain threshold from the fitting
-    process, useful if long echo times have been collected and thus
-    thermal noise is being measured below a certain threshold rather
-    than the T2 decay.
-
-    Parameters
-    ----------
-    threshold : float, optional
-        Default 0
-        The threshold below which to remove values
-    &#34;&#34;&#34;
-    for ind, (sig, te, p0) in enumerate(zip(self.signal_list,
-                                            self.x_list,
-                                            self.p0_list)):
-        self.signal_list[ind] = np.array(
-            [x for (x, b) in zip(sig, np.array(sig) &gt; threshold) if b])
-        self.x_list[ind] = np.array(
-            [x for (x, b) in zip(te, np.array(sig) &gt; threshold) if b])
-        self.p0_list[ind] = np.array(
-            [x for (x, b) in zip(p0, np.array(sig) &gt; threshold) if b])</code></pre>
-</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -1076,7 +543,6 @@ The threshold below which to remove values</dd>
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -1113,7 +579,7 @@ The threshold below which to remove values</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>

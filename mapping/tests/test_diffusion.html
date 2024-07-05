@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.1">
 <title>ukat.mapping.tests.test_diffusion API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+})</script>
 </head>
 <body>
 <main>
@@ -22,344 +25,6 @@
 <h1 class="title">Module <code>ukat.mapping.tests.test_diffusion</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import os
-import shutil
-from ukat.mapping.diffusion import make_gradient_scheme, ADC, DTI
-from ukat.data import fetch
-from ukat.utils import arraystats
-import numpy.testing as npt
-import numpy as np
-import pytest
-
-
-class TestMakeGradientScheme:
-
-    def test_one_bzero_true_with_bzero(self):
-        bvals = [0, 5, 10]
-        bvecs = [[1, 0, 1],
-                 [-1, 1, 0]]
-        output = make_gradient_scheme(bvals, bvecs, one_bzero=True)
-        expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0     10&#34;)
-        assert output == expected
-
-    def test_one_bzero_true_without_bzero(self):
-        bvals = [5, 10]
-        bvecs = [[1, 0, 1],
-                 [-1, 1, 0]]
-        output = make_gradient_scheme(bvals, bvecs, one_bzero=True)
-        expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0     10&#34;)
-        assert output == expected
-
-    def test_one_bzero_true_with_bzero_dont_normalize(self):
-        bvals = [0, 5, 10]
-        bvecs = [[1, 0, 1],
-                 [-1, 1, 0]]
-        output = make_gradient_scheme(bvals, bvecs, normalize=False,
-                                      one_bzero=True)
-        expected = (&#34;          1            0            1      0\n&#34;
-                    &#34;          1            0            1      5\n&#34;
-                    &#34;          1            0            1     10\n&#34;
-                    &#34;         -1            1            0      5\n&#34;
-                    &#34;         -1            1            0     10&#34;)
-        assert output == expected
-
-    def test_one_bzero_false_with_bzero(self):
-        bvals = [0, 5, 10]
-        bvecs = [[1, 0, 1],
-                 [-1, 1, 0]]
-        output = make_gradient_scheme(bvals, bvecs, one_bzero=False)
-        expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0      0\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0     10&#34;)
-        assert output == expected
-
-    def test_one_bzero_false_without_bzero(self):
-        bvals = [5, 10]
-        bvecs = [[1, 0, 1],
-                 [-1, 1, 0]]
-        output = make_gradient_scheme(bvals, bvecs, one_bzero=False)
-        expected = (&#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                    &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                    &#34;-0.70710678   0.70710678          0.0     10&#34;)
-        assert output == expected
-
-
-class TestADC:
-    pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
-    pixel_array = pixel_array[35:95, 40:90, 3:6, :]
-    mask = pixel_array[..., 0] &gt; 20000
-
-    def test_missmatched_raw_data_and_bvals(self):
-
-        with pytest.raises(AssertionError):
-            mapper = ADC(self.pixel_array, self.affine, self.bvals[:-2],
-                         self.mask)
-
-    def test_fail_to_fit(self):
-        mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
-                     self.mask)
-        assert np.abs(mapper.adc.mean()) &lt; 1e-6
-
-    def test_negative_signal(self):
-        gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
-        gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
-        gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
-        negateive_pixel_array = self.pixel_array.copy()
-        negateive_pixel_array[:30, :, :, :] -= 40000
-        mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
-        adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-        adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-        adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
-        assert np.sum(mapper.adc[:30, :, :]) == 0
-        npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc, rtol=5e-4, atol=5e-7)
-        npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc_err, rtol=5e-3, atol=1e-7)
-        npt.assert_allclose([adc_r2_stats[&#39;mean&#39;][&#39;3D&#39;],
-                             adc_r2_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_r2_stats[&#39;min&#39;][&#39;3D&#39;],
-                             adc_r2_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc_r2, rtol=5e-3, atol=1e-7)
-
-    def test_real_data(self):
-        # Gold standard statistics
-        gold_standard_adc = [0.001455, 0.001058, 0.0, 0.005391]
-        gold_standard_adc_err = [0.000127, 0.000142, 0.0, 0.001044]
-        # Test maps
-        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-        adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-        adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-        npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc, rtol=5e-4, atol=5e-7)
-        npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc_err, rtol=5e-3, atol=1e-7)
-
-    def test_ukrin_b(self):
-        # Gold standard statistics
-        gold_standard_adc = [0.001396, 0.000996, 0.0, 0.004789]
-        gold_standard_adc_err = [0.000237, 0.000314, 0.0, 0.00275]
-        # Test maps
-        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,
-                     ukrin_b=True)
-        assert mapper.n_bvals == 4
-        npt.assert_array_equal(mapper.u_bvals, np.array([0, 100, 200, 800]))
-        adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-        adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-        npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc, rtol=5e-4, atol=5e-7)
-        npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                             adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_adc_err, rtol=1e-3, atol=5e-7)
-
-    def test_to_nifti(self):
-        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-
-        if os.path.exists(&#39;test_output&#39;):
-            shutil.rmtree(&#39;test_output&#39;)
-        os.makedirs(&#39;test_output&#39;, exist_ok=True)
-
-        # Check all is saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;adc_test&#39;, maps=&#39;all&#39;)
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 6
-        assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
-        assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
-        assert &#39;adc_test_mask.nii.gz&#39; in output_files
-        assert &#39;adc_test_r2.nii.gz&#39; in output_files
-        assert &#39;adc_test_s0_map.nii.gz&#39; in output_files
-        assert &#39;adc_test_s0_err.nii.gz&#39; in output_files
-
-        for f in os.listdir(&#39;test_output&#39;):
-            os.remove(os.path.join(&#39;test_output&#39;, f))
-
-        # Check that no files are saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;adc_test&#39;, maps=[])
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 0
-
-        # Check that only adc and adc_err are saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;adc_test&#39;, maps=[&#39;adc&#39;, &#39;adc_err&#39;])
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 2
-        assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
-        assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
-
-        for f in os.listdir(&#39;test_output&#39;):
-            os.remove(os.path.join(&#39;test_output&#39;, f))
-
-        # Check that it fails when no maps are given
-        with pytest.raises(ValueError):
-            mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                            base_file_name=&#39;adc_test&#39;, maps=&#39;&#39;)
-
-        # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)
-
-    def test_get_fit_signal(self):
-        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-        fit_signal = mapper.get_fit_signal()
-        stats = arraystats.ArrayStats(fit_signal).calculate()
-        npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
-                             stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
-                            [33971.334576954156, 31856.26958366113,
-                             0.0, 241017.96908169912],
-                            rtol=1e-6, atol=1e-4)
-
-
-class TestDTI:
-    pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
-    pixel_array = pixel_array[35:95, 40:90, 3:6, :]
-    mask = pixel_array[..., 0] &gt; 20000
-
-    def test_missmatched_raw_data_and_bvals(self):
-
-        with pytest.raises(AssertionError):
-            mapper = DTI(self.pixel_array, self.affine, self.bvals[:-2],
-                         self.bvecs, self.mask)
-
-    def test_missmatched_raw_data_and_bvecs(self):
-
-        with pytest.raises(AssertionError):
-            mapper = DTI(self.pixel_array, self.affine, self.bvals,
-                         self.bvecs[:-1, :], self.mask)
-
-    def test_bvecs_transpose(self):
-
-        with pytest.warns(UserWarning):
-            mapper = DTI(self.pixel_array, self.affine, self.bvals,
-                         self.bvecs.T, self.mask)
-
-    def test_real_data(self):
-        # Gold standard statistics
-        gold_standard_md = [0.001781, 0.001567, 0.0, 0.012655]
-        gold_standard_fa = [0.353293, 0.256178, 0.0, 0.999999]
-        gold_standard_color_fa = [0.170594, 0.185415, 0.0, 0.968977]
-
-        # Test maps
-        mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                     self.mask)
-        md_stats = arraystats.ArrayStats(mapper.md).calculate()
-        fa_stats = arraystats.ArrayStats(mapper.fa).calculate()
-        color_fa_stats = arraystats.ArrayStats(mapper.color_fa).calculate()
-        npt.assert_allclose([md_stats[&#39;mean&#39;][&#39;3D&#39;], md_stats[&#39;std&#39;][&#39;3D&#39;],
-                             md_stats[&#39;min&#39;][&#39;3D&#39;], md_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_md, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([fa_stats[&#39;mean&#39;][&#39;3D&#39;], fa_stats[&#39;std&#39;][&#39;3D&#39;],
-                             fa_stats[&#39;min&#39;][&#39;3D&#39;], fa_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_fa, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([color_fa_stats[&#39;mean&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;std&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;min&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;max&#39;][&#39;4D&#39;]],
-                            gold_standard_color_fa, rtol=1e-6, atol=1e-4)
-
-    def test_ukrin_b(self):
-        # Gold standard statistics
-        gold_standard_md = [0.001611, 0.001437, 0.0, 0.02951]
-        gold_standard_fa = [0.446954, 0.291819, 0.0, 1.0]
-        gold_standard_color_fa = [0.216434, 0.219389, 0.0, 0.99972]
-
-        # Test maps
-        mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                     self.mask, ukrin_b=True)
-        assert mapper.n_bvals == 4
-        npt.assert_array_equal(mapper.u_bvals, np.array([0, 100, 200, 800]))
-        md_stats = arraystats.ArrayStats(mapper.md).calculate()
-        fa_stats = arraystats.ArrayStats(mapper.fa).calculate()
-        color_fa_stats = arraystats.ArrayStats(mapper.color_fa).calculate()
-        npt.assert_allclose([md_stats[&#39;mean&#39;][&#39;3D&#39;], md_stats[&#39;std&#39;][&#39;3D&#39;],
-                             md_stats[&#39;min&#39;][&#39;3D&#39;], md_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_md, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([fa_stats[&#39;mean&#39;][&#39;3D&#39;], fa_stats[&#39;std&#39;][&#39;3D&#39;],
-                             fa_stats[&#39;min&#39;][&#39;3D&#39;], fa_stats[&#39;max&#39;][&#39;3D&#39;]],
-                            gold_standard_fa, rtol=1e-6, atol=1e-4)
-        npt.assert_allclose([color_fa_stats[&#39;mean&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;std&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;min&#39;][&#39;4D&#39;],
-                             color_fa_stats[&#39;max&#39;][&#39;4D&#39;]],
-                            gold_standard_color_fa, rtol=1e-6, atol=1e-4)
-
-    def test_to_nifti(self):
-        mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                     self.mask)
-
-        if os.path.exists(&#39;test_output&#39;):
-            shutil.rmtree(&#39;test_output&#39;)
-        os.makedirs(&#39;test_output&#39;, exist_ok=True)
-
-        # Check all is saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;dti_test&#39;, maps=&#39;all&#39;)
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 4
-        assert &#39;dti_test_md_map.nii.gz&#39; in output_files
-        assert &#39;dti_test_fa_map.nii.gz&#39; in output_files
-        assert &#39;dti_test_color_fa_map.nii.gz&#39; in output_files
-        assert &#39;dti_test_mask.nii.gz&#39; in output_files
-
-        for f in os.listdir(&#39;test_output&#39;):
-            os.remove(os.path.join(&#39;test_output&#39;, f))
-
-        # Check that no files are saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;dti_test&#39;, maps=[])
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 0
-
-        # Check that only md and fa are saved.
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;dti_test&#39;, maps=[&#39;md&#39;, &#39;fa&#39;])
-        output_files = os.listdir(&#39;test_output&#39;)
-        assert len(output_files) == 2
-        assert &#39;dti_test_md_map.nii.gz&#39; in output_files
-        assert &#39;dti_test_fa_map.nii.gz&#39; in output_files
-
-        for f in os.listdir(&#39;test_output&#39;):
-            os.remove(os.path.join(&#39;test_output&#39;, f))
-
-        # Check that it fails when no maps are given
-        with pytest.raises(ValueError):
-            mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                            base_file_name=&#39;dti_test&#39;, maps=&#39;&#39;)
-
-        # Delete &#39;test_output&#39; folder
-        shutil.rmtree(&#39;test_output&#39;)
-
-
-# Delete the NIFTI test folder recursively if any of the unit tests failed
-if os.path.exists(&#39;test_output&#39;):
-    shutil.rmtree(&#39;test_output&#39;)</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -544,200 +209,42 @@ if os.path.exists(&#39;test_output&#39;):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_fail_to_fit(self):
-    mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
-                 self.mask)
-    assert np.abs(mapper.adc.mean()) &lt; 1e-6</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_get_fit_signal"><code class="name flex">
 <span>def <span class="ident">test_get_fit_signal</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_get_fit_signal(self):
-    mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-    fit_signal = mapper.get_fit_signal()
-    stats = arraystats.ArrayStats(fit_signal).calculate()
-    npt.assert_allclose([stats[&#34;mean&#34;][&#34;4D&#34;], stats[&#34;std&#34;][&#34;4D&#34;],
-                         stats[&#34;min&#34;][&#34;4D&#34;], stats[&#34;max&#34;][&#34;4D&#34;]],
-                        [33971.334576954156, 31856.26958366113,
-                         0.0, 241017.96908169912],
-                        rtol=1e-6, atol=1e-4)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_missmatched_raw_data_and_bvals"><code class="name flex">
 <span>def <span class="ident">test_missmatched_raw_data_and_bvals</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_missmatched_raw_data_and_bvals(self):
-
-    with pytest.raises(AssertionError):
-        mapper = ADC(self.pixel_array, self.affine, self.bvals[:-2],
-                     self.mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_negative_signal"><code class="name flex">
 <span>def <span class="ident">test_negative_signal</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_negative_signal(self):
-    gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
-    gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
-    gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
-    negateive_pixel_array = self.pixel_array.copy()
-    negateive_pixel_array[:30, :, :, :] -= 40000
-    mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
-    adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-    adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-    adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
-    assert np.sum(mapper.adc[:30, :, :]) == 0
-    npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc, rtol=5e-4, atol=5e-7)
-    npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc_err, rtol=5e-3, atol=1e-7)
-    npt.assert_allclose([adc_r2_stats[&#39;mean&#39;][&#39;3D&#39;],
-                         adc_r2_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_r2_stats[&#39;min&#39;][&#39;3D&#39;],
-                         adc_r2_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc_r2, rtol=5e-3, atol=1e-7)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_real_data"><code class="name flex">
 <span>def <span class="ident">test_real_data</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_real_data(self):
-    # Gold standard statistics
-    gold_standard_adc = [0.001455, 0.001058, 0.0, 0.005391]
-    gold_standard_adc_err = [0.000127, 0.000142, 0.0, 0.001044]
-    # Test maps
-    mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-    adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-    adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-    npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc, rtol=5e-4, atol=5e-7)
-    npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc_err, rtol=5e-3, atol=1e-7)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_to_nifti"><code class="name flex">
 <span>def <span class="ident">test_to_nifti</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_to_nifti(self):
-    mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
-
-    if os.path.exists(&#39;test_output&#39;):
-        shutil.rmtree(&#39;test_output&#39;)
-    os.makedirs(&#39;test_output&#39;, exist_ok=True)
-
-    # Check all is saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;adc_test&#39;, maps=&#39;all&#39;)
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 6
-    assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
-    assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
-    assert &#39;adc_test_mask.nii.gz&#39; in output_files
-    assert &#39;adc_test_r2.nii.gz&#39; in output_files
-    assert &#39;adc_test_s0_map.nii.gz&#39; in output_files
-    assert &#39;adc_test_s0_err.nii.gz&#39; in output_files
-
-    for f in os.listdir(&#39;test_output&#39;):
-        os.remove(os.path.join(&#39;test_output&#39;, f))
-
-    # Check that no files are saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;adc_test&#39;, maps=[])
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 0
-
-    # Check that only adc and adc_err are saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;adc_test&#39;, maps=[&#39;adc&#39;, &#39;adc_err&#39;])
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 2
-    assert &#39;adc_test_adc_map.nii.gz&#39; in output_files
-    assert &#39;adc_test_adc_err.nii.gz&#39; in output_files
-
-    for f in os.listdir(&#39;test_output&#39;):
-        os.remove(os.path.join(&#39;test_output&#39;, f))
-
-    # Check that it fails when no maps are given
-    with pytest.raises(ValueError):
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;adc_test&#39;, maps=&#39;&#39;)
-
-    # Delete &#39;test_output&#39; folder
-    shutil.rmtree(&#39;test_output&#39;)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestADC.test_ukrin_b"><code class="name flex">
 <span>def <span class="ident">test_ukrin_b</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_ukrin_b(self):
-    # Gold standard statistics
-    gold_standard_adc = [0.001396, 0.000996, 0.0, 0.004789]
-    gold_standard_adc_err = [0.000237, 0.000314, 0.0, 0.00275]
-    # Test maps
-    mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,
-                 ukrin_b=True)
-    assert mapper.n_bvals == 4
-    npt.assert_array_equal(mapper.u_bvals, np.array([0, 100, 200, 800]))
-    adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
-    adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
-    npt.assert_allclose([adc_stats[&#39;mean&#39;][&#39;3D&#39;], adc_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_stats[&#39;min&#39;][&#39;3D&#39;], adc_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc, rtol=5e-4, atol=5e-7)
-    npt.assert_allclose([adc_err_stats[&#39;mean&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;std&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;min&#39;][&#39;3D&#39;],
-                         adc_err_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_adc_err, rtol=1e-3, atol=5e-7)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -899,174 +406,36 @@ if os.path.exists(&#39;test_output&#39;):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_bvecs_transpose(self):
-
-    with pytest.warns(UserWarning):
-        mapper = DTI(self.pixel_array, self.affine, self.bvals,
-                     self.bvecs.T, self.mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestDTI.test_missmatched_raw_data_and_bvals"><code class="name flex">
 <span>def <span class="ident">test_missmatched_raw_data_and_bvals</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_missmatched_raw_data_and_bvals(self):
-
-    with pytest.raises(AssertionError):
-        mapper = DTI(self.pixel_array, self.affine, self.bvals[:-2],
-                     self.bvecs, self.mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestDTI.test_missmatched_raw_data_and_bvecs"><code class="name flex">
 <span>def <span class="ident">test_missmatched_raw_data_and_bvecs</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_missmatched_raw_data_and_bvecs(self):
-
-    with pytest.raises(AssertionError):
-        mapper = DTI(self.pixel_array, self.affine, self.bvals,
-                     self.bvecs[:-1, :], self.mask)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestDTI.test_real_data"><code class="name flex">
 <span>def <span class="ident">test_real_data</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_real_data(self):
-    # Gold standard statistics
-    gold_standard_md = [0.001781, 0.001567, 0.0, 0.012655]
-    gold_standard_fa = [0.353293, 0.256178, 0.0, 0.999999]
-    gold_standard_color_fa = [0.170594, 0.185415, 0.0, 0.968977]
-
-    # Test maps
-    mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                 self.mask)
-    md_stats = arraystats.ArrayStats(mapper.md).calculate()
-    fa_stats = arraystats.ArrayStats(mapper.fa).calculate()
-    color_fa_stats = arraystats.ArrayStats(mapper.color_fa).calculate()
-    npt.assert_allclose([md_stats[&#39;mean&#39;][&#39;3D&#39;], md_stats[&#39;std&#39;][&#39;3D&#39;],
-                         md_stats[&#39;min&#39;][&#39;3D&#39;], md_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_md, rtol=1e-6, atol=1e-4)
-    npt.assert_allclose([fa_stats[&#39;mean&#39;][&#39;3D&#39;], fa_stats[&#39;std&#39;][&#39;3D&#39;],
-                         fa_stats[&#39;min&#39;][&#39;3D&#39;], fa_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_fa, rtol=1e-6, atol=1e-4)
-    npt.assert_allclose([color_fa_stats[&#39;mean&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;std&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;min&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;max&#39;][&#39;4D&#39;]],
-                        gold_standard_color_fa, rtol=1e-6, atol=1e-4)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestDTI.test_to_nifti"><code class="name flex">
 <span>def <span class="ident">test_to_nifti</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_to_nifti(self):
-    mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                 self.mask)
-
-    if os.path.exists(&#39;test_output&#39;):
-        shutil.rmtree(&#39;test_output&#39;)
-    os.makedirs(&#39;test_output&#39;, exist_ok=True)
-
-    # Check all is saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;dti_test&#39;, maps=&#39;all&#39;)
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 4
-    assert &#39;dti_test_md_map.nii.gz&#39; in output_files
-    assert &#39;dti_test_fa_map.nii.gz&#39; in output_files
-    assert &#39;dti_test_color_fa_map.nii.gz&#39; in output_files
-    assert &#39;dti_test_mask.nii.gz&#39; in output_files
-
-    for f in os.listdir(&#39;test_output&#39;):
-        os.remove(os.path.join(&#39;test_output&#39;, f))
-
-    # Check that no files are saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;dti_test&#39;, maps=[])
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 0
-
-    # Check that only md and fa are saved.
-    mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                    base_file_name=&#39;dti_test&#39;, maps=[&#39;md&#39;, &#39;fa&#39;])
-    output_files = os.listdir(&#39;test_output&#39;)
-    assert len(output_files) == 2
-    assert &#39;dti_test_md_map.nii.gz&#39; in output_files
-    assert &#39;dti_test_fa_map.nii.gz&#39; in output_files
-
-    for f in os.listdir(&#39;test_output&#39;):
-        os.remove(os.path.join(&#39;test_output&#39;, f))
-
-    # Check that it fails when no maps are given
-    with pytest.raises(ValueError):
-        mapper.to_nifti(output_directory=&#39;test_output&#39;,
-                        base_file_name=&#39;dti_test&#39;, maps=&#39;&#39;)
-
-    # Delete &#39;test_output&#39; folder
-    shutil.rmtree(&#39;test_output&#39;)</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestDTI.test_ukrin_b"><code class="name flex">
 <span>def <span class="ident">test_ukrin_b</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_ukrin_b(self):
-    # Gold standard statistics
-    gold_standard_md = [0.001611, 0.001437, 0.0, 0.02951]
-    gold_standard_fa = [0.446954, 0.291819, 0.0, 1.0]
-    gold_standard_color_fa = [0.216434, 0.219389, 0.0, 0.99972]
-
-    # Test maps
-    mapper = DTI(self.pixel_array, self.affine, self.bvals, self.bvecs,
-                 self.mask, ukrin_b=True)
-    assert mapper.n_bvals == 4
-    npt.assert_array_equal(mapper.u_bvals, np.array([0, 100, 200, 800]))
-    md_stats = arraystats.ArrayStats(mapper.md).calculate()
-    fa_stats = arraystats.ArrayStats(mapper.fa).calculate()
-    color_fa_stats = arraystats.ArrayStats(mapper.color_fa).calculate()
-    npt.assert_allclose([md_stats[&#39;mean&#39;][&#39;3D&#39;], md_stats[&#39;std&#39;][&#39;3D&#39;],
-                         md_stats[&#39;min&#39;][&#39;3D&#39;], md_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_md, rtol=1e-6, atol=1e-4)
-    npt.assert_allclose([fa_stats[&#39;mean&#39;][&#39;3D&#39;], fa_stats[&#39;std&#39;][&#39;3D&#39;],
-                         fa_stats[&#39;min&#39;][&#39;3D&#39;], fa_stats[&#39;max&#39;][&#39;3D&#39;]],
-                        gold_standard_fa, rtol=1e-6, atol=1e-4)
-    npt.assert_allclose([color_fa_stats[&#39;mean&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;std&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;min&#39;][&#39;4D&#39;],
-                         color_fa_stats[&#39;max&#39;][&#39;4D&#39;]],
-                        gold_standard_color_fa, rtol=1e-6, atol=1e-4)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1149,111 +518,30 @@ if os.path.exists(&#39;test_output&#39;):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_one_bzero_false_with_bzero(self):
-    bvals = [0, 5, 10]
-    bvecs = [[1, 0, 1],
-             [-1, 1, 0]]
-    output = make_gradient_scheme(bvals, bvecs, one_bzero=False)
-    expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                &#34;-0.70710678   0.70710678          0.0      0\n&#34;
-                &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                &#34;-0.70710678   0.70710678          0.0     10&#34;)
-    assert output == expected</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestMakeGradientScheme.test_one_bzero_false_without_bzero"><code class="name flex">
 <span>def <span class="ident">test_one_bzero_false_without_bzero</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_one_bzero_false_without_bzero(self):
-    bvals = [5, 10]
-    bvecs = [[1, 0, 1],
-             [-1, 1, 0]]
-    output = make_gradient_scheme(bvals, bvecs, one_bzero=False)
-    expected = (&#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                &#34;-0.70710678   0.70710678          0.0     10&#34;)
-    assert output == expected</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestMakeGradientScheme.test_one_bzero_true_with_bzero"><code class="name flex">
 <span>def <span class="ident">test_one_bzero_true_with_bzero</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_one_bzero_true_with_bzero(self):
-    bvals = [0, 5, 10]
-    bvecs = [[1, 0, 1],
-             [-1, 1, 0]]
-    output = make_gradient_scheme(bvals, bvecs, one_bzero=True)
-    expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                &#34;-0.70710678   0.70710678          0.0     10&#34;)
-    assert output == expected</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestMakeGradientScheme.test_one_bzero_true_with_bzero_dont_normalize"><code class="name flex">
 <span>def <span class="ident">test_one_bzero_true_with_bzero_dont_normalize</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_one_bzero_true_with_bzero_dont_normalize(self):
-    bvals = [0, 5, 10]
-    bvecs = [[1, 0, 1],
-             [-1, 1, 0]]
-    output = make_gradient_scheme(bvals, bvecs, normalize=False,
-                                  one_bzero=True)
-    expected = (&#34;          1            0            1      0\n&#34;
-                &#34;          1            0            1      5\n&#34;
-                &#34;          1            0            1     10\n&#34;
-                &#34;         -1            1            0      5\n&#34;
-                &#34;         -1            1            0     10&#34;)
-    assert output == expected</code></pre>
-</details>
 </dd>
 <dt id="ukat.mapping.tests.test_diffusion.TestMakeGradientScheme.test_one_bzero_true_without_bzero"><code class="name flex">
 <span>def <span class="ident">test_one_bzero_true_without_bzero</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_one_bzero_true_without_bzero(self):
-    bvals = [5, 10]
-    bvecs = [[1, 0, 1],
-             [-1, 1, 0]]
-    output = make_gradient_scheme(bvals, bvecs, one_bzero=True)
-    expected = (&#34; 0.70710678          0.0   0.70710678      0\n&#34;
-                &#34; 0.70710678          0.0   0.70710678      5\n&#34;
-                &#34; 0.70710678          0.0   0.70710678     10\n&#34;
-                &#34;-0.70710678   0.70710678          0.0      5\n&#34;
-                &#34;-0.70710678   0.70710678          0.0     10&#34;)
-    assert output == expected</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -1261,7 +549,6 @@ if os.path.exists(&#39;test_output&#39;):
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -1322,7 +609,7 @@ if os.path.exists(&#39;test_output&#39;):
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
 </footer>
 </body>
 </html>
