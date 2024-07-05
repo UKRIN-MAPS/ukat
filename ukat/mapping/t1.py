@@ -52,10 +52,36 @@ class T1Model(fitting.Model):
         self.tss = tss
         self.tss_axis = tss_axis
 
-        if np.nanmin(pixel_array) < 0:
+        # Assume the data has been magnitude corrected if the first
+        # percentile of the first inversion time is negative.
+        if np.percentile(pixel_array[..., 0], 1) < 0:
             self.mag_corr = True
+            neg_percent = (np.sum(pixel_array[..., 0] < 0)
+                           / pixel_array[..., 0].size)
+            if neg_percent < 0.05:
+                warnings.warn('Fitting data to a magnitude corrected '
+                              'inversion recovery curve however, less than 5% '
+                              'of the data from the first inversion is '
+                              'negative. If you have performed magnitude '
+                              'correction ignore this warning, otherwise the '
+                              'negative values could be due to noise or '
+                              'preprocessing steps  such as EPI distortion '
+                              'correction and  registration.\n'
+                              f'Percentage of first inversion data that is '
+                              f'negative = {neg_percent:.2%}')
         else:
             self.mag_corr = False
+            if np.nanmin(pixel_array) < 0:
+                warnings.warn('Negative values found in data from the first '
+                              'inversion but as the first percentile is not '
+                              'negative, it is assumed these are negative '
+                              'due to noise or preprocessing steps such as '
+                              'EPI distortion correction and registration. '
+                              'As such the data will be fit to the modulus of '
+                              'the recovery curve.\n'
+                              f'Min value = {np.nanmin(pixel_array[..., 0])}\n'
+                              '1st percentile = '
+                              f'{np.percentile(pixel_array[..., 0], 1)}')
 
         if self.parameters == 2:
             if self.mag_corr:

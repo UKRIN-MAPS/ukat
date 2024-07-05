@@ -262,6 +262,33 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
+    def test_mag_corr_warning(self):
+        # Test warning for small number of negative values thus assuming no
+        # magnitude correction has been performed
+
+        # Make the absolute of the signal into a 4D array
+        signal_array = np.tile(np.abs(self.correct_signal_two_param),
+                               (10, 10, 3, 1))
+        # Add a single negative value to the signal
+        signal_array[0, 0, 0, 0] = -1
+
+        with pytest.warns(UserWarning):
+            mapper = T1(signal_array, self.t, self.affine, multithread=False)
+
+        # Test warning for enough negative values to assume magnitude
+        # correction has been performed but still not that many negative values
+
+        # Make the of the signal into a 4D array
+        signal_array = np.tile(np.abs(self.correct_signal_two_param),
+                               (10, 10, 3, 1))
+        # Add a row of signals with negative values to the image
+        # 3.3% of first inversion is negative but 1st percentile is negative.
+        signal_array[:, 0, 0, :] = self.correct_signal_two_param
+
+        with pytest.warns(UserWarning):
+            mapper = T1(signal_array, self.t, self.affine, multithread=False)
+
+
     def test_molli_2p_warning(self):
         signal_array = np.tile(self.correct_signal_three_param, (10, 10, 3, 1))
         with pytest.warns(UserWarning):
