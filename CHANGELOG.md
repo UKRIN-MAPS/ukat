@@ -1,13 +1,15 @@
-## [0.7.2] - 2024-07-04
+## [0.7.2] - 2024-07-05
 
 ### Added
 * Export the fit signals from mapping functions e.g. the expected T1 recovery at times TI given the fit values of T1 and M0. #221
+* Warnings if there aren't many negative values in T1 mapping data. #222 #223
 
 ### Fixed
 * Issue where resources sub-module was not included on PyPI
 
 ### Changed
-* Upgraded codecov action to v4
+* T1 mapping data is now assumed to have been magnitude corrected if the first percentile of the first inversion time is 
+  negative rather than the minimum value. This should make it more robust to noise/preprocessing artefacts. #222 #223
 
 ## [0.7.1] - 2024-02-23
 
