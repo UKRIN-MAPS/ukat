@@ -295,7 +295,6 @@ class TestT1:
                         mag_corr='yes please',
                         multithread=False)
 
-
     def test_auto_mag_corr(self):
         # Test warning for small number of negative values thus assuming no
         # magnitude correction has been performed

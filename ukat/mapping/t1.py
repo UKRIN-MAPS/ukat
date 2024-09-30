@@ -68,7 +68,8 @@ class T1Model(fitting.Model):
             # If the fifth percentile of the first inversion time is
             # less than the negative of 5% of the recovered signal
             # then assume the data has been magnitude corrected
-            if np.percentile(pixel_array[..., 0], 5) < -recovered_signal * 0.05:
+            if (np.percentile(pixel_array[..., 0], 5)
+                < -recovered_signal * 0.05):
                 self.mag_corr = True
                 neg_percent = (np.sum(pixel_array[..., 0] < 0)
                                / pixel_array[..., 0].size)
@@ -231,14 +232,15 @@ class T1:
             'auto' attempts to apply multithreading where appropriate based
             on the number of voxels being fit.
         """
-        assert multithread in [True, False,
-                               'auto'], \
-            (f'multithreaded must be True, False or auto. '
-             f'You entered {multithread}')
-        assert mag_corr in [True, False,
-                               'auto'], \
-            (f'mag_corr must be True, False or auto. '
-             f'You entered {mag_corr}')
+        assert multithread in [True,
+                               False,
+                               'auto'], (f'multithreaded must '
+                                         f'be True, False or auto. You '
+                                         f'entered { multithread}.')
+        assert mag_corr in [True,
+                            False,
+                            'auto'], (f'mag_corr must be True, False or auto. '
+                                      f'You entered {mag_corr}.')
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
