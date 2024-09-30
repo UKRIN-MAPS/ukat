@@ -268,6 +268,34 @@ class TestT1:
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
 
+    def test_mag_corr_options(self):
+        # Test that the mag_corr option can be set to True, False, auto is
+        # checked more thoroughly in the next test
+        signal_array = np.tile(self.correct_signal_two_param, (10, 10, 3, 1))
+
+        # Test that mag_corr = True
+        mapper = T1(signal_array, self.t, self.affine, mag_corr=True,
+                    multithread=False)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+        # Test that mag_corr = False
+        mapper = T1(np.abs(signal_array), self.t, self.affine, mag_corr=False,
+                    multithread=False)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+        # Test with mag_corr not recognised input
+        with pytest.raises(AssertionError):
+            mapper = T1(signal_array, self.t, self.affine,
+                        mag_corr='yes please',
+                        multithread=False)
+
+
     def test_auto_mag_corr(self):
         # Test warning for small number of negative values thus assuming no
         # magnitude correction has been performed

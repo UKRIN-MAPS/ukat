@@ -231,11 +231,14 @@ class T1:
             'auto' attempts to apply multithreading where appropriate based
             on the number of voxels being fit.
         """
-        assert multithread is True \
-               or multithread is False \
-               or multithread == 'auto', f'multithreaded must be True,' \
-                                         f'False or auto. You entered ' \
-                                         f'{multithread}'
+        assert multithread in [True, False,
+                               'auto'], \
+            (f'multithreaded must be True, False or auto. '
+             f'You entered {multithread}')
+        assert mag_corr in [True, False,
+                               'auto'], \
+            (f'mag_corr must be True, False or auto. '
+             f'You entered {mag_corr}')
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
