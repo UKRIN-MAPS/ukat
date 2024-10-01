@@ -150,7 +150,7 @@ class T1:
         apart from TI
     """
 
-    #@Alex: suggestion: make affine a keyword parameter with default np.eye(4).
+    # @Alex: suggestion: make affine a keyword parameter with default np.eye(4).
     # As it is the last argument in the list this will not break existing code
     # And it means the user is not forced to provide a dummy affine when it plays no role.
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
@@ -213,15 +213,15 @@ class T1:
         """
 
         assert multithread is True \
-               or multithread is False \
-               or multithread == 'auto', f'multithreaded must be True,' \
-                                         f'False or auto. You entered ' \
-                                         f'{multithread}'
-        
-        # @Alex: I have moved this up so multithreading 
+            or multithread is False \
+            or multithread == 'auto', f'multithreaded must be True,' \
+            f'False or auto. You entered ' \
+            f'{multithread}'
+
+        # @Alex: I have moved this up so multithreading
         # settings can be reused in mdreg, which requires a True or False
-        # value. In this case (elastix) it is actually unnecessary as 
-        # parallelization is not a real option anyway. But it would be relevant if 
+        # value. In this case (elastix) it is actually unnecessary as
+        # parallelization is not a real option anyway. But it would be relevant if
         # wanted to run with skimage, for instamce.
         if multithread == 'auto':
             npixels = np.prod(pixel_array.shape[:-1])
@@ -229,37 +229,37 @@ class T1:
                 multithread = True
             else:
                 multithread = False
-        
+
         if mdr:
             pixel_array, deform, _, _ = mdreg.fit(
-                pixel_array, 
-                fit_image = {
+                pixel_array,
+                fit_image={
                     'func': _T1_fit,
                     'inversion_list': inversion_list,
                     'affine': affine,
-                    'tss': tss, 
+                    'tss': tss,
                     'tss_axis': tss_axis,
-                    'mask': mask, 
-                    'parameters': parameters, 
-                    'molli': molli, 
-                    'multithread': multithread, 
+                    'mask': mask,
+                    'parameters': parameters,
+                    'molli': molli,
+                    'multithread': multithread,
                 },
-                # @Alex: These coreg settings are default so technically speaking do not have 
+                # @Alex: These coreg settings are default so technically speaking do not have
                 # to be specified here. I am leaving it in nevertheless as a template in case we want
                 # to explore alternative coregistration settings later. The fit_coreg
-                # dictionary could also be exposed as a keyword argument in T1.__init__() 
-                # in case we want to give the user the option to modify the detail. 
-                # As it stands the user has no way of modifying the way mdr runs, eg. 
-                # change verbosity level, stopping criteria or coreg options. 
-                # I didn't change it as that may exactly be the intention of ukat? 
-                fit_coreg = {
+                # dictionary could also be exposed as a keyword argument in T1.__init__()
+                # in case we want to give the user the option to modify the detail.
+                # As it stands the user has no way of modifying the way mdr runs, eg.
+                # change verbosity level, stopping criteria or coreg options.
+                # I didn't change it as that may exactly be the intention of ukat?
+                fit_coreg={
                     'package': 'elastix',
-                    'parallel': False, # elastix is not parallelizable
+                    'parallel': False,  # elastix is not parallelizable
                 }
             )
             # @Alex: At the moment the order of the dimensions in the deformation field returned by mdreg is awkward.
-            # Current dimensions are (x,y,2,t) for 2-dimensional pixel_arrays, 
-            # and (x,y,z,3,t) for 3 dimensional. Better would be (x,y,t,2) and (x,y,z,t,3) 
+            # Current dimensions are (x,y,2,t) for 2-dimensional pixel_arrays,
+            # and (x,y,z,3,t) for 3 dimensional. Better would be (x,y,t,2) and (x,y,z,t,3)
             # - i.e add a new dimension at the end.
             # We will probable change this in mdreg at some point so I put in an ad-hoc
             # reordering at this stage, We can just take it out later if mdreg is updated.
@@ -270,7 +270,6 @@ class T1:
         else:
             # @Alex: is this the expected default?
             self.deformation_field = None
-
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
@@ -608,7 +607,7 @@ def magnitude_correct(pixel_array):
     for ti in range(pixel_array.shape[-1]):
         pixel_array_prime[..., ti] = (pixel_array[..., ti] *
                                       pixel_array[..., -1].conjugate()) \
-                                     / np.abs(pixel_array[..., -1])
+            / np.abs(pixel_array[..., -1])
 
     phase_factor = np.imag(np.log(pixel_array_prime / np.abs(pixel_array)))
     phase_offset = np.abs(phase_factor) - (np.pi / 2)

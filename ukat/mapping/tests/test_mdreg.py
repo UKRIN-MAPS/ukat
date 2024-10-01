@@ -10,7 +10,7 @@ def t1_maps():
 
     # fetch data
     data = mdreg.fetch('MOLLI')
-    array = data['array'][:,:,0,:]
+    array = data['array'][:, :, 0, :]
     TI = np.array(data['TI'])
 
     # Calculate corrected uncorrected T1-map
@@ -34,7 +34,7 @@ def plot_t1_maps():
     ax[0].set_title('T1-map without MDR')
     ax[1].set_title('T1-map with MDR')
     im = ax[0].imshow(t1_uncorr.T, cmap='gray', vmin=0, vmax=2000)
-    im = ax[1].imshow(t1_corr.T, cmap='gray', vmin=0, vmax=2000) 
+    im = ax[1].imshow(t1_corr.T, cmap='gray', vmin=0, vmax=2000)
     fig.colorbar(im, ax=ax.ravel().tolist())
     plt.savefig(os.path.join(os.getcwd(), 't1_mdr'))
     plt.show()
@@ -44,7 +44,3 @@ if __name__ == '__main__':
 
     # t1_maps()
     plot_t1_maps()
-
-
-
-
