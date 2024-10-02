@@ -8,7 +8,7 @@ from . import fitting
 
 class T1Model(fitting.Model):
     def __init__(self, pixel_array, ti, parameters=2, mask=None, tss=0,
-                 tss_axis=-2, multithread=True):
+                 tss_axis=-2, mag_corr=False, multithread=True):
         """
         A class containing the T1 fitting model
 
@@ -43,6 +43,15 @@ class T1Model(fitting.Model):
             would be along the TI axis and would be meaningless.
             If `pixel_array` is single slice (dimensions [x, y, TI]),
             then this should be set to None.
+        mag_corr : {True, False, 'auto'}, optional
+            Default False
+            If True, the data is assumed to have been magnitude corrected
+            using the complex component of the signal and thus negative
+            values represent inverted signal. If False, the data will be
+            fit to the modulus of the expected signal, negative values are
+            simply considered part of the noise in the data. If 'auto',
+            the data will be assumed to have been magnitude corrected if 5%
+            of the initial inversion time data is negative.
         multithread : bool, optional
             Default True
             If True, the fitting will be performed in parallel using all
@@ -52,36 +61,47 @@ class T1Model(fitting.Model):
         self.tss = tss
         self.tss_axis = tss_axis
 
-        # Assume the data has been magnitude corrected if the first
-        # percentile of the first inversion time is negative.
-        if np.percentile(pixel_array[..., 0], 1) < 0:
-            self.mag_corr = True
-            neg_percent = (np.sum(pixel_array[..., 0] < 0)
-                           / pixel_array[..., 0].size)
-            if neg_percent < 0.05:
-                warnings.warn('Fitting data to a magnitude corrected '
-                              'inversion recovery curve however, less than 5% '
-                              'of the data from the first inversion is '
-                              'negative. If you have performed magnitude '
-                              'correction ignore this warning, otherwise the '
-                              'negative values could be due to noise or '
-                              'preprocessing steps  such as EPI distortion '
-                              'correction and  registration.\n'
-                              f'Percentage of first inversion data that is '
-                              f'negative = {neg_percent:.2%}')
+        if mag_corr == 'auto':
+            # Find a very rough estimate of the fully recovered signal
+            recovered_signal = np.percentile(pixel_array[..., -1], 95)
+
+            # If the fifth percentile of the first inversion time is
+            # less than the negative of 5% of the recovered signal
+            # then assume the data has been magnitude corrected
+            if (np.percentile(pixel_array[..., 0], 5)
+                < -recovered_signal * 0.05):
+                self.mag_corr = True
+                neg_percent = (np.sum(pixel_array[..., 0] < 0)
+                               / pixel_array[..., 0].size)
+                if neg_percent < 0.05:
+                    warnings.warn('Fitting data to a magnitude corrected '
+                                  'inversion recovery curve however, less '
+                                  'than 5% of the data from the first '
+                                  'inversion is negative. If you have '
+                                  'performed magnitude correction ignore '
+                                  'this warning, otherwise the negative '
+                                  'values could be due to noise or '
+                                  'preprocessing steps  such as EPI '
+                                  'distortion correction and registration.\n'
+                                  f'Percentage of first inversion data that '
+                                  f'is negative = {neg_percent:.2%}')
+            else:
+                self.mag_corr = False
+                if np.nanmin(pixel_array) < 0:
+                    warnings.warn('Negative values found in data from the '
+                                  'first inversion but as the first '
+                                  'percentile is not negative, it is assumed '
+                                  'these are negative due to noise or '
+                                  'preprocessing steps such as EPI '
+                                  'distortion correction and registration. '
+                                  'As such the data will be fit to the '
+                                  'modulus of the recovery curve.\n'
+                                  f'Min value = '
+                                  f'{np.nanmin(pixel_array[..., 0])}\n'
+                                  '5th percentile = '
+                                  f'{np.percentile(pixel_array[..., 0], 5)}')
         else:
-            self.mag_corr = False
-            if np.nanmin(pixel_array) < 0:
-                warnings.warn('Negative values found in data from the first '
-                              'inversion but as the first percentile is not '
-                              'negative, it is assumed these are negative '
-                              'due to noise or preprocessing steps such as '
-                              'EPI distortion correction and registration. '
-                              'As such the data will be fit to the modulus of '
-                              'the recovery curve.\n'
-                              f'Min value = {np.nanmin(pixel_array[..., 0])}\n'
-                              '1st percentile = '
-                              f'{np.percentile(pixel_array[..., 0], 1)}')
+            self.mag_corr = mag_corr
 
         if self.parameters == 2:
             if self.mag_corr:
@@ -149,7 +169,8 @@ class T1:
     """
 
     def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, molli=False, multithread=True):
+                 mask=None, parameters=2, mag_corr=False, molli=False,
+                 multithread=True):
         """Initialise a T1 class instance.
 
         Parameters
@@ -186,6 +207,15 @@ class T1:
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
+        mag_corr : {True, False, 'auto'}, optional
+            Default False
+            If True, the data is assumed to have been magnitude corrected
+            using the complex component of the signal and thus negative
+            values represent inverted signal. If False, the data will be
+            fit to the modulus of the expected signal, negative values are
+            simply considered part of the noise in the data. If 'auto',
+            the data will be assumed to have been magnitude corrected if 5%
+            of the initial inversion time data is negative.
         molli : bool, optional
             Default False.
             Apply MOLLI corrections to T1.
@@ -202,11 +232,15 @@ class T1:
             'auto' attempts to apply multithreading where appropriate based
             on the number of voxels being fit.
         """
-        assert multithread is True \
-               or multithread is False \
-               or multithread == 'auto', f'multithreaded must be True,' \
-                                         f'False or auto. You entered ' \
-                                         f'{multithread}'
+        assert multithread in [True,
+                               False,
+                               'auto'], (f'multithreaded must '
+                                         f'be True, False or auto. You '
+                                         f'entered { multithread}.')
+        assert mag_corr in [True,
+                            False,
+                            'auto'], (f'mag_corr must be True, False or auto. '
+                                      f'You entered {mag_corr}.')
 
         self.pixel_array = pixel_array
         self.shape = pixel_array.shape[:-1]
@@ -229,6 +263,7 @@ class T1:
             self.tss_axis = None
             self.tss = 0
         self.parameters = parameters
+        self.mag_corr = mag_corr
         self.molli = molli
         if multithread == 'auto':
             if self.n_vox > 20:
@@ -256,7 +291,9 @@ class T1:
         # Fit Data
         self.fitting_model = T1Model(self.pixel_array, self.inversion_list,
                                      self.parameters, self.mask, self.tss,
-                                     self.tss_axis, self.multithread)
+                                     self.tss_axis, self.mag_corr,
+                                     self.multithread)
+        self.mag_corr = self.fitting_model.mag_corr
         popt, error, r2 = fitting.fit_image(self.fitting_model)
         self.t1_map = popt[0]
         self.m0_map = popt[1]
