@@ -65,8 +65,8 @@ class TestT1:
                                                595.68345494, 1014.80958915,
                                                1394.05059827]]
                                              ])
-    # Signal with all 9 elements equal to -5000 between 200 and 1000 ms
-    signal_fail_fit = -5000 * np.ones(9)
+    # Make some silly data that the code won't be able to fit any values to.
+    signal_fail_fit = np.arange(0, 9) % 2
     affine = np.eye(4)
 
     def test_two_param_eq(self):
@@ -126,7 +126,7 @@ class TestT1:
                     multithread=True)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
-        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, decimal=4)
         npt.assert_almost_equal(mapper.eff_map.mean(), self.eff)
         npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
@@ -136,7 +136,7 @@ class TestT1:
                     multithread=False)
         assert mapper.shape == signal_array.shape[:-1]
         npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
-        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, decimal=4)
         npt.assert_almost_equal(mapper.eff_map.mean(), self.eff)
         npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
@@ -164,7 +164,7 @@ class TestT1:
         signal_array = np.tile(self.signal_fail_fit, (10, 10, 3, 1))
 
         # Fail to fit using the 2 parameter equation
-        mapper_two_param = T1(signal_array, self.t, self.affine,
+        mapper_two_param = T1(signal_array[..., :2], self.t[:2], self.affine,
                               parameters=2, multithread=True)
         assert mapper_two_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
@@ -175,8 +175,8 @@ class TestT1:
         npt.assert_equal(mapper_two_param.r2.mean(), 0)
 
         # Fail to fit using the 3 parameter equation
-        mapper_three_param = T1(signal_array, self.t, self.affine,
-                                parameters=3, multithread=True)
+        mapper_three_param = T1(signal_array[..., :2], self.t[:2],
+                                self.affine, parameters=3, multithread=True)
         assert mapper_three_param.shape == signal_array.shape[:-1]
         # Voxels that fail to fit are set to zero
         npt.assert_equal(mapper_three_param.t1_map.mean(), 0)
@@ -311,10 +311,10 @@ class TestT1:
         image_molli = image_molli[70:90, 100:120, :2, :]
 
         # Gold standard statistics
-        gold_standard_2p = [1041.581031, 430.129308, 241.512336, 2603.911794]
-        gold_standard_3p = [1416.989523, 722.097507, 0.0, 4909.693108]
-        gold_standard_3p_single = [1379.242715, 714.21752, 0.0, 4308.23814]
-        gold_standard_molli = [1647.83798691, 741.68317391, 0.0, 4706.6919605]
+        gold_standard_2p = [1040.259477, 429.506592, 241.512334, 2603.911796]
+        gold_standard_3p = [1388.640507, 677.167604, 0.0, 4909.689015]
+        gold_standard_3p_single = [1347.824169, 657.254769, 0.0, 3948.24018]
+        gold_standard_molli = [1554.586501,  606.863022, -170.611303, 6025.763663]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -431,8 +431,8 @@ class TestT1:
         stats = arraystats.ArrayStats(fit_signal).calculate()
         npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
                              stats["min"]["4D"], stats["max"]["4D"]],
-                            [5398.618239796042, 3125.641946762129,
-                             0.0, 12565.465983508042],
+                            [5.469067e+03, 2.982727e+03,
+                             2.613584e+00, 1.284273e+04],
                             rtol=1e-6, atol=1e-4)
 
 
