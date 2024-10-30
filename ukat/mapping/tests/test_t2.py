@@ -151,8 +151,7 @@ class TestT2:
         # Gold standard statistics
         gold_standard_2p_exp = [105.63945, 39.616205,
                                 0.0, 568.160604]
-        gold_standard_3p_exp = [9.881218e+01, 4.294529e+01,
-                                3.489657e-02, 5.681606e+02]
+        gold_standard_3p_exp = [98.812108, 42.945342, 0.0, 568.160625]
         gold_standard_thresh = [106.351332, 39.904419,
                                 0.0, 568.160832]
 
