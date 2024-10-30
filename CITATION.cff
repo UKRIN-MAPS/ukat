@@ -13,11 +13,14 @@ authors:
 - family-names: "Buchanan"
   given-names: "Charlotte E"
   orcid: "https://orcid.org/0000-0003-3010-6079"
+- family-names: "Sourbron"
+  given-names: "Steven"
+  orcid: "https://orcid.org/0000-0002-3374-3973"
 - family-names: "Francis"
   given-names: "Susan T"
   orcid: "https://orcid.org/0000-0003-0903-7507"
 title: "UKRIN Kidney Analysis Toolbox"
-version: 0.7.2
+version: 0.7.3
 doi: 10.5281/zenodo.4742470
-date-released: 2024-07-05
+date-released: 2024-10-30
 url: "https://github.com/UKRIN-MAPS/ukat"

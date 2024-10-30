@@ -35,8 +35,8 @@ class T2StarExpModel(fitting.Model):
         """
 
         super().__init__(pixel_array, te, two_param_eq, mask, multithread)
-        self.bounds = ([0, 0], [700, 100000000])
-        self.initial_guess = [20, 10000]
+        self.bounds = ([0, 0], [700, 100])
+        self.initial_guess = [20, 1]
         self.generate_lists()
 
 
@@ -117,7 +117,11 @@ class T2Star:
             or multithread is False \
             or multithread == 'auto', f'multithreaded must be True, False ' \
                                       f'or auto. You entered {multithread}'
-        self.pixel_array = pixel_array
+
+        # Normalise the data so its roughly in the same range across vendors
+        self.scale = np.nanmax(pixel_array)
+        self.pixel_array = pixel_array / self.scale
+
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
         self.n_vox = np.prod(self.shape)
@@ -184,6 +188,10 @@ class T2Star:
                               'in this regime. If these voxels are of '
                               'interest, consider using the 2p_exp fitting'
                               ' method'.format(proportion_less_than_20))
+
+        # Scale the data back to the original range
+        self.m0_map *= self.scale
+        self.m0_err *= self.scale
 
     def _loglin_fit(self):
         if self.multithread:

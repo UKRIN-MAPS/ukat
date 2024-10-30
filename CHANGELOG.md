@@ -1,3 +1,11 @@
+## [0.7.3] - 2024-10-30
+
+### Changed
+* Signals to input to mapping classes are now normalised before fitting, then M0 rescaled back to the original scale. This 
+  means M0 bounds and initialisation are more consistent/appropriate for data from different vendors #226
+* The limits of efficiency have been widened for MOLLI T1 mapping #229
+* Upgrade codecov action to v4
+
 ## [0.7.2] - 2024-07-05
 
 ### Added
