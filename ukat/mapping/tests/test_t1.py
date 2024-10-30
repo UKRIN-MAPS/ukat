@@ -314,7 +314,8 @@ class TestT1:
         gold_standard_2p = [1040.259477, 429.506592, 241.512334, 2603.911796]
         gold_standard_3p = [1388.640507, 677.167604, 0.0, 4909.689015]
         gold_standard_3p_single = [1347.824169, 657.254769, 0.0, 3948.24018]
-        gold_standard_molli = [1554.586501,  606.863022, -170.611303, 6025.763663]
+        gold_standard_molli = [1554.586501,  606.863022, -170.611303,
+                               6025.763663]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
