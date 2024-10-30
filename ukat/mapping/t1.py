@@ -302,8 +302,8 @@ class T1:
             self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
 
         # Scale the data back to the original scale
-        self.m0_map = self.m0_map * self.scale
-        self.m0_err = self.m0_err * self.scale
+        self.m0_map *= self.scale
+        self.m0_err *= self.scale
 
     def r1_map(self):
         """

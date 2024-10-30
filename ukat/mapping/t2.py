@@ -41,14 +41,14 @@ class T2Model(fitting.Model):
         if self.method == '2p_exp':
             self.t2_eq = two_param_eq
             super().__init__(pixel_array, te, self.t2_eq, mask, multithread)
-            self.bounds = ([0, 0], [1000, 100000000])
-            self.initial_guess = [20, 10000]
+            self.bounds = ([0, 0], [1000, 100])
+            self.initial_guess = [20, 1]
         elif self.method == '3p_exp':
             self.t2_eq = three_param_eq
             super().__init__(pixel_array, te, self.t2_eq, mask,
                              multithread)
-            self.bounds = ([0, 0, 0], [1000, 100000000, 1000000])
-            self.initial_guess = [20, 10000, 500]
+            self.bounds = ([0, 0, 0], [1000, 100, 1])
+            self.initial_guess = [20, 1, 5e-4]
 
         self.generate_lists()
 
@@ -153,7 +153,10 @@ class T2:
             raise ValueError(f'method can be 2p_exp or 3p_exp only. You '
                              f'specified {method}')
 
-        self.pixel_array = pixel_array
+        # Normalise the data so its roughly in the same range across vendors
+        self.scale = np.nanmax(pixel_array)
+        self.pixel_array = pixel_array / self.scale
+
         self.shape = pixel_array.shape[:-1]
         self.n_te = pixel_array.shape[-1]
         self.n_vox = np.prod(self.shape)
@@ -166,7 +169,7 @@ class T2:
 
         # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
-        self.noise_threshold = noise_threshold
+        self.noise_threshold = noise_threshold / self.scale
         self.method = method
         self.echo_list = echo_list
         # Auto multithreading conditions
@@ -209,6 +212,14 @@ class T2:
         if self.method == '3p_exp':
             self.b_map[bounds_mask] = 0
             self.b_err[bounds_mask] = 0
+
+            self.b_map *= self.scale
+            self.b_err *= self.scale
+
+        # Scale the data back to the original scale
+        self.m0_map *= self.scale
+        self.m0_err *= self.scale
+        self.noise_threshold *= self.scale
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
