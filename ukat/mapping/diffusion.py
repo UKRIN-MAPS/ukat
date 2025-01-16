@@ -157,7 +157,7 @@ class ADC:
         if ukrin_b:
             self.b_mask = np.isin(bvals, ukrin_b_test)
         else:
-            self.b_mask = np.full(len(bvals), True, dtype=bool)
+            self.b_mask = np.ones(len(bvals), dtype=bool)
 
         self.pixel_array = pixel_array[..., self.b_mask]
         self.shape = pixel_array.shape[:-1]
@@ -177,12 +177,12 @@ class ADC:
         self.mask[np.sum(pixel_array <= 0, axis=-1, dtype=bool)] = False
         self.pixel_array = np.nan_to_num(self.pixel_array)
 
-        self.pixel_array_mean = self.__mean_over_directions__()
+        self.pixel_array_mean = self._mean_over_directions()
 
         self.adc, self.s0, self.adc_err, self.s0_err, self.r2 = \
-            self.__fit__()
+            self._fit()
 
-    def __mean_over_directions__(self):
+    def _mean_over_directions(self):
         """
         Calculates the mean signal across different directions at each unique
         b-value e.g. if `pixel_array` contains six volumes acquired with
@@ -200,7 +200,7 @@ class ADC:
                 = np.mean(self.pixel_array[..., self.bvals == bval], axis=-1)
         return pixel_array_mean
 
-    def __fit__(self):
+    def _fit(self):
         # Initialise maps
         adc_map = np.zeros(self.n_vox)
         s0_map = np.zeros(self.n_vox)
@@ -216,7 +216,7 @@ class ADC:
                 sig = signal[ind, :]
                 adc_map[ind], s0_map[ind], adc_err[ind], s0_err[ind], \
                     r2[ind] = \
-                    self.__fit_signal__(sig, self.u_bvals)
+                    self._fit_signal(sig, self.u_bvals)
                 progress.update(1)
         adc_map[adc_map < 0] = 0
         s0_map[adc_map < 0] = 0
@@ -234,7 +234,7 @@ class ADC:
         return adc_map, s0_map, adc_err, s0_err, r2
 
     @staticmethod
-    def __fit_signal__(sig, bvals):
+    def _fit_signal(sig, bvals):
         try:
             popt, pvar = np.polyfit(bvals[sig > 0], np.log(sig[sig > 0]), 1,
                                     cov=True)
