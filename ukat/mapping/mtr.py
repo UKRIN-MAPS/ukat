@@ -134,6 +134,7 @@ class MTR:
         else:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
-                             '"["mtr_map", "mt_on", "mt_off", "mask"]".')
+                             '"["mtr_map", "mt_on", "mt_off", "mask", '
+                             '"deformation_field"]".')
 
         return
