@@ -113,9 +113,9 @@ class TestMTR:
         images, affine = fetch.mtr_philips()
 
         # Gold standard statistics
-        gold_standard_mtr_real = [0.1845690591, 0.6237606679, -73.0, 1.0]
+        gold_standard_mtr_real = [0.214016,  0.289071, -1.0, 1.0]
         gold_standard_mtr_real_moco = [0.13357225589671437, 0.17257750673257655,
-                                       -1.7306390127939757, 1.0]
+                                       -1.0, 1.0]
         # The minimum should be 0, but the MT_ON and MT_OFF of real data
         # isn't perfectly aligned, which will result in outliers.
 
@@ -126,7 +126,7 @@ class TestMTR:
         mtrmap_stats = arraystats.ArrayStats(mapper.mtr_map).calculate()
         npt.assert_allclose([mtrmap_stats["mean"], mtrmap_stats["std"],
                             mtrmap_stats["min"], mtrmap_stats["max"]],
-                            gold_standard_mtr_real, rtol=0.01, atol=0)
+                            gold_standard_mtr_real, rtol=0.01, atol=1E-3)
 
         # Test with moco
         mask = images[..., 0] > 10000
@@ -136,7 +136,7 @@ class TestMTR:
                              mtrmap_moco_stats["std"],
                              mtrmap_moco_stats["min"],
                              mtrmap_moco_stats["max"]],
-                            gold_standard_mtr_real_moco, rtol=0.1, atol=5)
+                            gold_standard_mtr_real_moco, rtol=0.1, atol=1E-3)
 
 
 

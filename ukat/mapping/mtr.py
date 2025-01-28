@@ -81,9 +81,9 @@ class MTR:
         # The assumption is that MT_ON comes second in `pixel_array`
         self.mt_on = np.squeeze(self.pixel_array[..., 1] * self.mask)
         # Magnetisation Transfer Ratio calculation
-        self.mtr_map = np.squeeze(np.nan_to_num(((self.mt_off - self.mt_on) /
-                                                 self.mt_off),
-                                                posinf=0, neginf=0))
+        self.mtr_map = np.squeeze(((self.mt_off - self.mt_on) /self.mt_off))
+        self.mtr_map = np.clip(np.nan_to_num(self.mtr_map, posinf=0,
+                                             neginf=0), -1, 1)
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
