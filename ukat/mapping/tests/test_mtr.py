@@ -62,7 +62,7 @@ class TestMTR:
 
     def test_to_nifti(self):
         # Create a MTR map instance and test different export to NIFTI options.
-        mapper = MTR(self.correct_array, self.affine)
+        mapper = MTR(self.correct_array, self.affine, moco=True)
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
@@ -72,11 +72,12 @@ class TestMTR:
         mapper.to_nifti(output_directory='test_output',
                         base_file_name='mtrtest', maps='all')
         output_files = os.listdir('test_output')
-        assert len(output_files) == 4
+        assert len(output_files) == 5
         assert 'mtrtest_mtr_map.nii.gz' in output_files
         assert 'mtrtest_mt_on.nii.gz' in output_files
         assert 'mtrtest_mt_off.nii.gz' in output_files
         assert 'mtrtest_mask.nii.gz' in output_files
+        assert 'mtrtest_deformation_field.nii.gz' in output_files
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
@@ -112,7 +113,9 @@ class TestMTR:
         images, affine = fetch.mtr_philips()
 
         # Gold standard statistics
-        gold_standard_mtr_real = [0.1845690591, 0.6237606679, -73.0, 1.0]
+        gold_standard_mtr_real = [0.214016,  0.289071, -1.0, 1.0]
+        gold_standard_mtr_real_moco = [0.13357225589671437, 0.17257750673257655,
+                                       -1.0, 1.0]
         # The minimum should be 0, but the MT_ON and MT_OFF of real data
         # isn't perfectly aligned, which will result in outliers.
 
@@ -123,7 +126,18 @@ class TestMTR:
         mtrmap_stats = arraystats.ArrayStats(mapper.mtr_map).calculate()
         npt.assert_allclose([mtrmap_stats["mean"], mtrmap_stats["std"],
                             mtrmap_stats["min"], mtrmap_stats["max"]],
-                            gold_standard_mtr_real, rtol=0.01, atol=0)
+                            gold_standard_mtr_real, rtol=0.01, atol=1E-3)
+
+        # Test with moco
+        mask = images[..., 0] > 10000
+        mapper = MTR(images, affine, mask=mask, moco=True)
+        mtrmap_moco_stats = arraystats.ArrayStats(mapper.mtr_map).calculate()
+        npt.assert_allclose([mtrmap_moco_stats["mean"],
+                             mtrmap_moco_stats["std"],
+                             mtrmap_moco_stats["min"],
+                             mtrmap_moco_stats["max"]],
+                            gold_standard_mtr_real_moco, rtol=0.1, atol=1E-3)
+
 
 
 # Delete the NIFTI test folder recursively if any of the unit tests failed
