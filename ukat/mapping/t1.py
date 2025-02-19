@@ -10,7 +10,8 @@ from . import fitting
 
 class T1Model(fitting.Model):
     def __init__(self, pixel_array, ti, parameters=2, mask=None, tss=0,
-                 tss_axis=-2, molli=False, mag_corr=False, multithread=True):
+                 tss_axis=-2, acq_order='ascend', molli=False, mag_corr=False,
+                 multithread=True):
         """
         A class containing the T1 fitting model
 
@@ -60,6 +61,7 @@ class T1Model(fitting.Model):
         self.parameters = parameters
         self.tss = tss
         self.tss_axis = tss_axis
+        self.acq_order = acq_order
         self.molli = molli
 
         if (mag_corr is False) & (np.nanmin(pixel_array) < 0):
@@ -107,7 +109,24 @@ class T1Model(fitting.Model):
             self._tss_correct_ti()
 
     def _tss_correct_ti(self):
-        slices = np.indices(self.map_shape)[self.tss_axis].ravel()
+        slices = np.indices(self.map_shape)[self.tss_axis]
+        if self.acq_order == 'ascend':
+            slices = slices.ravel()
+        elif self.acq_order == 'descend':
+            slices = np.flip(slices, axis=self.tss_axis).ravel()
+        elif self.acq_order == 'centric':
+            ns = self.map_shape[self.tss_axis]
+            # Generate the acquisition order for centric ordering. The first
+            # acquisition is the central slice, second is the slice above
+            # centre, third is the slice below centre etc. e.g. for a five
+            # slice acquisition, the order would be [2, 3, 1, 4, 0].
+            acq_ind = (((np.arange(1, ns +1) // 2) *
+                       ((np.arange(ns) % 2 * 2) - 1))
+                       + (np.ceil(ns / 2) -1))
+            slices = np.take(slices, acq_ind.astype(int), axis=self.tss_axis).ravel()
+        else:
+            slices = np.take(slices, self.acq_order, axis=self.tss_axis).ravel()
+
         for ind, (ti, slice) in enumerate(zip(self.x_list, slices)):
             self.x_list[ind] = np.array(ti) + self.tss * slice
 
@@ -144,9 +163,9 @@ class T1:
         apart from TI
     """
 
-    def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, mag_corr=False, molli=False,
-                 multithread=True, mdr=False):
+    def __init__(self, pixel_array, inversion_list, affine, tss=0,
+                 tss_axis=-2, acq_order='ascend', mask=None, parameters=2,
+                 mag_corr=False, molli=False, multithread=True, mdr=False):
         """Initialise a T1 class instance.
 
         Parameters
@@ -171,6 +190,19 @@ class T1:
             would be along the TI axis and would be meaningless.
             If `pixel_array` is single slice (dimensions [x, y, TI]),
             then this should be set to None.
+        acq_order : str or list, optional
+            Default 'ascend'
+            The order in which the slices were acquired. 'ascend' assumes
+            the zeroth slice (in the tss_axis) was acquired first, 'descend'
+            assumes the -1 slice was acquired first and the zeroth
+            slice was acquired last. 'centric' assumes the centre slice was
+            acquired first, then the slice above the centre, then the slice
+            below the centre etc. In the case of an even number of slices,
+            the centre slice is taken as the lower of the two central slices.
+            Alternatively, a list of integers can be used to specify the
+            acquisition order. Specifying `acq_order='centric'` and
+            `acq_order=[2, 3, 1, 4, 0, 5]` would be equivalent for a six
+            slice acquisition.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -272,6 +304,15 @@ class T1:
                 raise ValueError('Temporal slice spacing only supported '
                                  'along the z direction when using '
                                  'model-driven registration.')
+            if type(acq_order) == list:
+                assert len(acq_order) == self.shape[self.tss_axis], \
+                    'acq_order must have the same length as the number of ' \
+                    'slices in the tss_axis.'
+                assert type(acq_order[0]) == int, \
+                    'acq_order must be a list of integers.'
+            elif acq_order not in ['ascend', 'descend', 'centric']:
+                raise ValueError('acq_order must be a list of integers or '
+                                 'one of "ascend", "descend" or "centric".')
 
         if self.molli:
             if self.parameters == 2:
@@ -357,8 +398,8 @@ class T1:
         # Fit Data
         self.fitting_model = T1Model(self.pixel_array, self.inversion_list,
                                      self.parameters, self.mask, self.tss,
-                                     self.tss_axis, self.molli, self.mag_corr,
-                                     self.multithread)
+                                     self.tss_axis, acq_order, self.molli,
+                                     self.mag_corr, self.multithread)
         self.mag_corr = self.fitting_model.mag_corr
         popt, error, r2 = fitting.fit_image(self.fitting_model)
         self.t1_map = popt[0]
