@@ -159,6 +159,46 @@ class TestT1:
         npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
         npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+    def test_acq_order(self):
+        # Descending order
+        signal_array = np.tile(self.correct_signal_two_param_tss, (10, 10, 1, 1))
+        signal_array = signal_array[:, :, ::-1, :]
+        mapper = T1(signal_array, self.t, self.affine, tss=100,
+                    acq_order='descend', mag_corr=True)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1, 4)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+        # Centric order
+        signal_array_asc = np.tile(self.correct_signal_two_param_tss,
+                                   (10, 10, 1, 1))
+        signal_array = np.zeros(signal_array_asc.shape)
+        signal_array[:, :, 0, :] = signal_array_asc[:, :, 2, :]
+        signal_array[:, :, 1, :] = signal_array_asc[:, :, 0, :]
+        signal_array[:, :, 2, :] = signal_array_asc[:, :, 1, :]
+
+        mapper = T1(signal_array, self.t, self.affine, tss=100, tss_axis=2,
+                    acq_order='centric', mag_corr=True)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1, 4)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
+
+        # Custom order
+        signal_array_asc = np.tile(self.correct_signal_two_param_tss,
+                                   (10, 10, 1, 1))
+        signal_array = np.zeros(signal_array_asc.shape)
+        signal_array[:, :, 1, :] = signal_array_asc[:, :, 0, :]
+        signal_array[:, :, 0, :] = signal_array_asc[:, :, 1, :]
+        signal_array[:, :, 2, :] = signal_array_asc[:, :, 2, :]
+        acq_order = [1, 0, 2]
+        mapper = T1(signal_array, self.t, self.affine, tss=100, tss_axis=2,
+                    acq_order=acq_order, mag_corr=True)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1, 4)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_failed_fit(self):
@@ -265,6 +305,28 @@ class TestT1:
             mapper = T1(pixel_array=np.zeros((5, 5, 10)),
                         inversion_list=np.linspace(0, 2000, 10),
                         affine=self.affine, tss=1, tss_axis=2)
+
+    def test_acq_order_options(self):
+        # Invalid string
+        with pytest.raises(ValueError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 10)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        affine=self.affine, tss=1, tss_axis=2,
+                        acq_order='invalid')
+
+        # List length doesn't match number of slices
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 4)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        affine=self.affine, tss=1, tss_axis=2,
+                        acq_order=[0, 1, 2])
+
+        # List type not int
+        with pytest.raises(AssertionError):
+            mapper = T1(pixel_array=np.zeros((5, 5, 5, 4)),
+                        inversion_list=np.linspace(0, 2000, 10),
+                        affine=self.affine, tss=1, tss_axis=2,
+                        acq_order=[0.0, 1.0, 2.0, 3.0])
 
     def test_mag_corr_options(self):
         # Test that the mag_corr option can be set to True, False, auto is
