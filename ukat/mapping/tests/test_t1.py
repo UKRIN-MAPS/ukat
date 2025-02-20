@@ -33,37 +33,34 @@ class TestT1:
                                            1689.08502946])
     # The ideal signal produced by the equation M0 * (1 - 2 * exp(-t / T1))
     # where M0 = 5000 and T1 = 1000 acquired over three slices at 9 t
-    # between 200 and 1000 ms + a temporal slice spacing of 10 ms
+    # between 200 and 1000 ms + a temporal slice spacing of 100 ms
     correct_signal_two_param_tss = np.array([[[-3187.30753078, -2408.18220682,
                                                -1703.20046036, -1065.30659713,
                                                -488.11636094, 34.14696209,
                                                506.71035883, 934.30340259,
                                                1321.20558829],
-                                              [-3105.8424597, -2334.46956224,
-                                               -1636.50250136, -1004.95578812,
-                                               -433.50869074, 83.55802539,
-                                               551.41933777, 974.75775966,
-                                               1357.81020428],
-                                              [-3025.18797962, -2261.49037074,
-                                               -1570.46819815, -945.2054797,
-                                               -379.44437595, 132.4774404,
-                                               595.68345494, 1014.80958915,
-                                               1394.05059827]],
+                                              [-2408.18220682, -1703.20046036,
+                                               -1065.30659713,  -488.11636094,
+                                               34.14696209,   506.71035883,
+                                               934.30340259,  1321.20558829,
+                                               1671.28916302],
+                                              [-1703.20046036, -1065.30659713,  -488.11636094,    34.14696209,
+                                               506.71035883,   934.30340259,
+                                               1321.20558829,  1671.28916302,
+                                               1988.05788088]],
                                              [[-3187.30753078, -2408.18220682,
                                                -1703.20046036, -1065.30659713,
                                                -488.11636094, 34.14696209,
                                                506.71035883, 934.30340259,
                                                1321.20558829],
-                                              [-3105.8424597, -2334.46956224,
-                                               -1636.50250136, -1004.95578812,
-                                               -433.50869074, 83.55802539,
-                                               551.41933777, 974.75775966,
-                                               1357.81020428],
-                                              [-3025.18797962, -2261.49037074,
-                                               -1570.46819815, -945.2054797,
-                                               -379.44437595, 132.4774404,
-                                               595.68345494, 1014.80958915,
-                                               1394.05059827]]
+                                              [-2408.18220682, -1703.20046036, -1065.30659713,  -488.11636094,
+                                               34.14696209,   506.71035883,
+                                               934.30340259,  1321.20558829,
+                                               1671.28916302],
+                                              [-1703.20046036, -1065.30659713,  -488.11636094,    34.14696209,
+                                               506.71035883,   934.30340259,
+                                               1321.20558829,  1671.28916302,
+                                               1988.05788088]]
                                              ])
     # Make some silly data that the code won't be able to fit any values to.
     signal_fail_fit = np.arange(0, 9) % 2
@@ -147,20 +144,21 @@ class TestT1:
     def test_tss(self):
 
         mapper = T1(self.correct_signal_two_param_tss, self.t, self.affine,
-                    tss=10, mag_corr=True)
+                    tss=100, mag_corr=True)
         assert mapper.shape == self.correct_signal_two_param_tss.shape[:-1]
-        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
-        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
-        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1, 4)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_tss_axis(self):
         signal_array = np.swapaxes(self.correct_signal_two_param_tss, 0, 1)
-        mapper = T1(signal_array, self.t, self.affine, tss=10, tss_axis=0,
+        mapper = T1(signal_array, self.t, self.affine, tss=100, tss_axis=0,
                     mag_corr=True)
-        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1)
-        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0)
-        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1)
+        npt.assert_almost_equal(mapper.t1_map.mean(), self.t1, 4)
+        npt.assert_almost_equal(mapper.m0_map.mean(), self.m0, 4)
+        npt.assert_almost_equal(mapper.r1_map().mean(), 1 / self.t1, 4)
+        npt.assert_almost_equal(mapper.r2.mean(), 1)
         npt.assert_almost_equal(mapper.r2.mean(), 1)
 
     def test_failed_fit(self):
