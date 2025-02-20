@@ -150,8 +150,12 @@ class ADC:
             doi: 10.1007/s10334-019-00790-y.
             If False, all b-values supplied will be used to fit ADC.
         moco : bool, optional
-            If True, all volumes at each unique b-value will be regestered,
-            then the average at each
+            Default `False`
+            If True, this performs a motion correction by first
+            registering all volumes at each unique b-value (usually
+            registering different b-vecs), then regitering the average at
+            each b-value with model-driven registration to a standard ADC fit
+            before performing the final fit to the model function.
         """
         ukrin_b_test = np.array([0, 100, 200, 800])
         # Sanity checks
@@ -178,6 +182,9 @@ class ADC:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
             self.mask = mask
+            if moco is True:
+                raise ValueError('Masking is not supported when using '
+                                 'motion correction.')
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.mask[np.sum(pixel_array <= 0, axis=-1, dtype=bool)] = False
