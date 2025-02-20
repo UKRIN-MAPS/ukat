@@ -338,7 +338,7 @@ class T1:
             # are the same.
             if self.tss == 0:
                 pixel_array, deform, _, _ = mdreg.fit(
-                    self.pixel_array,
+                    np.nan_to_num(self.pixel_array),
                     force_2d=True,
                     verbose=1,
                     fit_image={
@@ -378,7 +378,7 @@ class T1:
                                       + self.tss * slice)
                     (pixel_array[..., slice, :], deform[..., slice, :, :], _,
                      _) = mdreg.fit(
-                        self.pixel_array[..., slice, :],
+                        np.nan_to_num(self.pixel_array[..., slice, :]),
                         force_2d=True,
                         verbose=1,
                         fit_image={
