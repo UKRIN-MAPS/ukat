@@ -46,6 +46,19 @@ class T1Model(fitting.Model):
             would be along the TI axis and would be meaningless.
             If `pixel_array` is single slice (dimensions [x, y, TI]),
             then this should be set to None.
+        acq_order : str or list, optional
+            Default 'ascend'
+            The order in which the slices were acquired. 'ascend' assumes
+            the zeroth slice (in the tss_axis) was acquired first, 'descend'
+            assumes the -1 slice was acquired first and the zeroth
+            slice was acquired last. 'centric' assumes the centre slice was
+            acquired first, then the slice above the centre, then the slice
+            below the centre etc. In the case of an even number of slices,
+            the centre slice is taken as the lower of the two central slices.
+            Alternatively, a list of integers can be used to specify the
+            acquisition order. Specifying `acq_order='centric'` and
+            `acq_order=[2, 3, 1, 4, 0, 5]` would be equivalent for a six
+            slice acquisition.
         mag_corr : bool, optional
             Default False
             If True, the data is assumed to have been magnitude corrected
@@ -116,14 +129,13 @@ class T1Model(fitting.Model):
             slices = np.flip(slices, axis=self.tss_axis).ravel()
         elif self.acq_order == 'centric':
             ns = self.map_shape[self.tss_axis]
-            # Generate the acquisition order for centric ordering. The first
-            # acquisition is the central slice, second is the slice above
-            # centre, third is the slice below centre etc. e.g. for a five
-            # slice acquisition, the order would be [2, 3, 1, 4, 0].
-            acq_ind = (((np.arange(1, ns +1) // 2) *
-                       ((np.arange(ns) % 2 * 2) - 1))
-                       + (np.ceil(ns / 2) -1))
-            slices = np.take(slices, acq_ind.astype(int), axis=self.tss_axis).ravel()
+            # Generate the acquisition order for centric ordering. e.g. for
+            # a five slice acquisition, the order would be [4, 2, 0, 1, 3].
+            start = ns - 2 if ns % 2 == 0 else ns - 1
+            evens_desc = np.arange(start, -1, -2)
+            odds_asc = np.arange(1, ns, 2)
+            acq_ind = np.concatenate([evens_desc, odds_asc])
+            slices = np.take(slices, acq_ind, axis=self.tss_axis).ravel()
         else:
             slices = np.take(slices, self.acq_order, axis=self.tss_axis).ravel()
 
