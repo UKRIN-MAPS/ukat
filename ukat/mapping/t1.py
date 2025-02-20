@@ -57,7 +57,7 @@ class T1Model(fitting.Model):
             the centre slice is taken as the lower of the two central slices.
             Alternatively, a list of integers can be used to specify the
             acquisition order. Specifying `acq_order='centric'` and
-            `acq_order=[2, 3, 1, 4, 0, 5]` would be equivalent for a six
+            `acq_order=[4, 2, 0, 1, 3, 5]` would be equivalent for a six
             slice acquisition.
         mag_corr : bool, optional
             Default False
@@ -213,7 +213,7 @@ class T1:
             the centre slice is taken as the lower of the two central slices.
             Alternatively, a list of integers can be used to specify the
             acquisition order. Specifying `acq_order='centric'` and
-            `acq_order=[2, 3, 1, 4, 0, 5]` would be equivalent for a six
+            `acq_order=[4, 2, 0, 1, 3, 5]` would be equivalent for a six
             slice acquisition.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
