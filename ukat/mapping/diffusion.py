@@ -173,7 +173,7 @@ class ADC:
         self.n_vox = np.prod(self.shape)
         self.bvals = bvals[self.b_mask]
         self.n_grad = len(self.bvals)
-        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, tol=1)
         self.n_bvals = len(self.u_bvals)
         self.affine = affine
         self.moco = moco
@@ -529,13 +529,14 @@ class DTI:
         self.bvals = bvals[self.b_mask]
         self.bvecs = bvecs[self.b_mask, :]
         self.n_grad = len(self.bvals)
-        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, tol=1)
         self.n_bvals = len(self.u_bvals)
         self.u_bvecs = np.unique(self.bvecs, axis=0)
         self.n_bvecs = len(self.u_bvecs)
         self.affine = affine
         self.mask = mask
-        self.gtab = gradient_table(self.bvals, self.bvecs, b0_threshold=0)
+        self.gtab = gradient_table(self.bvals, bvecs=self.bvecs,
+                                   b0_threshold=0)
         tensor_model = TensorModel(self.gtab)
         self.tensor_fit = tensor_model.fit(self.pixel_array, mask=self.mask)
         self.md = self.tensor_fit.md
