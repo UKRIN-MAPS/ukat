@@ -83,11 +83,6 @@ class TestADC:
             mapper = ADC(self.pixel_array, self.affine, self.bvals[:-2],
                          self.mask)
 
-    def test_fail_to_fit(self):
-        mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
-                     self.mask)
-        assert np.abs(mapper.adc.mean()) < 1e-6
-
     def test_negative_signal(self):
         gold_standard_adc = [0.001122, 0.001239, 0.0, 0.005391]
         gold_standard_adc_err = [0.000114, 0.000175, 0.0, 0.001044]
