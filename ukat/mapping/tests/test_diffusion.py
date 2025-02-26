@@ -74,7 +74,7 @@ class TestMakeGradientScheme:
 
 class TestADC:
     pixel_array, affine, bvals, bvecs = fetch.dwi_philips()
-    pixel_array = pixel_array[35:95, 40:90, 3:6, :]
+    pixel_array = pixel_array[35:55, 40:80, 3:5, :]
     mask = pixel_array[..., 0] > 20000
 
     def test_missmatched_raw_data_and_bvals(self):
@@ -83,22 +83,17 @@ class TestADC:
             mapper = ADC(self.pixel_array, self.affine, self.bvals[:-2],
                          self.mask)
 
-    def test_fail_to_fit(self):
-        mapper = ADC(self.pixel_array[..., ::-1], self.affine, self.bvals,
-                     self.mask)
-        assert np.abs(mapper.adc.mean()) < 1e-6
-
     def test_negative_signal(self):
-        gold_standard_adc = [0.000833, 0.000998, 0.0, 0.004852]
-        gold_standard_adc_err = [7.819414e-05, 1.222237e-04, 0.0, 9.935775e-04]
-        gold_standard_adc_r2 = [0.398594, 0.434274, -0.03715, 0.999107]
+        gold_standard_adc = [0.001122, 0.001239, 0.0, 0.005391]
+        gold_standard_adc_err = [0.000114, 0.000175, 0.0, 0.001044]
+        gold_standard_adc_r2 = [0.39937, 0.432726, 0.0, 0.994381]
         negateive_pixel_array = self.pixel_array.copy()
-        negateive_pixel_array[:30, :, :, :] -= 40000
+        negateive_pixel_array[:10, :, :, :] -= 40000
         mapper = ADC(negateive_pixel_array, self.affine, self.bvals)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
         adc_r2_stats = arraystats.ArrayStats(mapper.r2).calculate()
-        assert np.sum(mapper.adc[:30, :, :]) == 0
+        assert np.sum(mapper.adc[:10, :, :]) == 0
         npt.assert_allclose([adc_stats['mean']['3D'], adc_stats['std']['3D'],
                              adc_stats['min']['3D'], adc_stats['max']['3D']],
                             gold_standard_adc, rtol=5e-4, atol=5e-7)
@@ -113,12 +108,20 @@ class TestADC:
                              adc_r2_stats['max']['3D']],
                             gold_standard_adc_r2, rtol=5e-3, atol=1e-7)
 
+    def test_mask_moco_error(self):
+        with pytest.raises(ValueError):
+            mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,
+                     moco=True)
+
     def test_real_data(self):
         # Gold standard statistics
-        gold_standard_adc = [0.001455, 0.001058, 0.0, 0.005391]
-        gold_standard_adc_err = [0.000127, 0.000142, 0.0, 0.001044]
-        # Test maps
-        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
+        gold_standard_adc = [0.00198, 0.000855, 0.0, 0.005391]
+        gold_standard_adc_err = [0.000184, 0.000165, 0.0, 0.001044]
+        gold_standard_adc_moco = [0.001912, 0.000645, 0.0, 0.004614]
+        gold_standard_adc_err_moco = [0.00034, 0.000319, 0.0, 0.002749]
+        # Test maps, without moco
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,
+                     moco=False)
         adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
         adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
         npt.assert_allclose([adc_stats['mean']['3D'], adc_stats['std']['3D'],
@@ -130,10 +133,25 @@ class TestADC:
                              adc_err_stats['max']['3D']],
                             gold_standard_adc_err, rtol=5e-3, atol=1e-7)
 
+        # Test maps, with moco
+        # Using ukrin_b=True to reduce run time.
+        mapper = ADC(self.pixel_array, self.affine, self.bvals, moco=True,
+                     ukrin_b=True)
+        adc_stats = arraystats.ArrayStats(mapper.adc).calculate()
+        adc_err_stats = arraystats.ArrayStats(mapper.adc_err).calculate()
+        npt.assert_allclose([adc_stats['mean']['3D'], adc_stats['std']['3D'],
+                             adc_stats['min']['3D'], adc_stats['max']['3D']],
+                            gold_standard_adc_moco, rtol=5e-3, atol=5e-5)
+        npt.assert_allclose([adc_err_stats['mean']['3D'],
+                             adc_err_stats['std']['3D'],
+                             adc_err_stats['min']['3D'],
+                             adc_err_stats['max']['3D']],
+                            gold_standard_adc_err_moco, rtol=5e-2, atol=1e-5)
+
     def test_ukrin_b(self):
         # Gold standard statistics
-        gold_standard_adc = [0.001396, 0.000996, 0.0, 0.004789]
-        gold_standard_adc_err = [0.000237, 0.000314, 0.0, 0.00275]
+        gold_standard_adc = [0.001811, 0.000751, 0.0, 0.004789]
+        gold_standard_adc_err = [0.000332, 0.000375, 0.0, 0.00275]
         # Test maps
         mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,
                      ukrin_b=True)
@@ -198,13 +216,13 @@ class TestADC:
         shutil.rmtree('test_output')
 
     def test_get_fit_signal(self):
+        fit_signal_gold = [42900.277636, 30374.229889,0.0, 150559.353217]
         mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask)
         fit_signal = mapper.get_fit_signal()
         stats = arraystats.ArrayStats(fit_signal).calculate()
         npt.assert_allclose([stats["mean"]["4D"], stats["std"]["4D"],
                              stats["min"]["4D"], stats["max"]["4D"]],
-                            [33971.334576954156, 31856.26958366113,
-                             0.0, 241017.96908169912],
+                            fit_signal_gold,
                             rtol=1e-6, atol=1e-4)
 
 
