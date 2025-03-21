@@ -1,7 +1,8 @@
-import nibabel as nib
-import mdreg
 import os
 import warnings
+
+import mdreg
+import nibabel as nib
 
 
 class Perfusion:
@@ -12,7 +13,8 @@ class Perfusion:
     Attributes
     ----------
     pixel_array : np.ndarray
-        The original input pixel array containing interleaved label and control images.
+        The original input pixel array containing interleaved label and control
+        images.
     affine : np.ndarray
         A matrix giving the relationship between voxel coordinates and
         world coordinates.
@@ -39,9 +41,9 @@ class Perfusion:
         Parameters
         ----------
         pixel_array : np.ndarray
-            A multidimensional array containing interleaved label and control images,
-            where even indices (0, 2, 4...) correspond to label images and
-            odd indices (1, 3, 5...) correspond to control images.
+            A multidimensional array containing interleaved label and control
+            images, where even indices (0, 2, 4...) correspond to label images
+            and odd indices (1, 3, 5...) correspond to control images.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -71,7 +73,7 @@ class Perfusion:
 
     def to_nifti(self, output_directory=os.getcwd(), base_file_name='Output',
                  maps='all'):
-        """Exports some of the Perfusion class attributes to NIFTI.
+        """Export some of the Perfusion class attributes to NIFTI.
 
         Parameters
         ----------
@@ -81,15 +83,19 @@ class Perfusion:
             Filename of the resulting NIFTI. This code appends the extension.
             Eg., base_file_name = 'Output' will result in 'Output_*.nii.gz'.
         maps : list or 'all', optional
-            List of maps to save to NIFTI. This should either be the string "all"
-            or a list of maps from ["mean_label", "mean_control", "perfusion_weighted",
-            "deformation_field"].
+            List of maps to save to NIFTI. This should either be the string
+            "all" or a list of maps from ["mean_label", "mean_control",
+            "perfusion_weighted", "deformation_field"].
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
+        
         if maps == 'all' or maps == ['all']:
-            maps = ['mean_label', 'mean_control', 'perfusion_weighted',
-                    'deformation_field']
+            maps = [
+                'mean_label', 'mean_control', 
+                'perfusion_weighted', 'deformation_field'
+            ]
+            
         if isinstance(maps, list):
             for result in maps:
                 if result == 'mean_label':
@@ -99,8 +105,10 @@ class Perfusion:
                     nifti = nib.Nifti1Image(self.mean_control, self.affine)
                     nib.save(nifti, f"{base_path}_mean_control.nii.gz")
                 elif result == 'perfusion_weighted':
-                    nifti = nib.Nifti1Image(self.perfusion_weighted, self.affine)
+                    nifti = nib.Nifti1Image(
+                        self.perfusion_weighted, self.affine)
                     nib.save(nifti, f"{base_path}_perfusion_weighted.nii.gz")
                 elif self.moco is True and result == 'deformation_field':
-                    nifti = nib.Nifti1Image(self.deformation_field, self.affine)
+                    nifti = nib.Nifti1Image(
+                        self.deformation_field, self.affine)
                     nib.save(nifti, f"{base_path}_deformation_field.nii.gz")

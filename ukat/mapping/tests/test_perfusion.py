@@ -29,7 +29,7 @@ class TestPerfusion:
 
     # Setup identity affine
     test_affine = np.eye(4)
-        
+    
     def test_perfusion_initialization(self):
         """Test that the Perfusion class initializes correctly."""
         # Initialize without motion correction
@@ -50,7 +50,8 @@ class TestPerfusion:
         
         # Check perfusion-weighted image
         assert perf.perfusion_weighted.shape == perf.mean_label.shape
-        assert np.any(perf.perfusion_weighted != 0)  # Should have some non-zero values
+        # Should have some non-zero values
+        assert np.any(perf.perfusion_weighted != 0)
 
     def test_perfusion_calculation(self):
         """Test that perfusion-weighted images are calculated correctly."""
@@ -60,31 +61,37 @@ class TestPerfusion:
         # Check perfusion weighted image calculation
         npt.assert_array_almost_equal(
             perf.perfusion_weighted, self.expected_pwi,
-            decimal=6, err_msg="Perfusion calculation doesn't match expected result"
+            decimal=6, err_msg="Perfusion calculation doesn't match expected"
         )
         
         # Test with the real data
-        gold_standard_pwi = [527.179216, 1866.570273, -7242.041576,
-                             43664.132142]
+        gold_standard_pwi = [
+            527.179216, 1866.570273, -7242.041576, 43664.132142
+        ]
         perf_real = Perfusion(self.data, self.affine)
 
-        pwi_stats = arraystats.ArrayStats(perf_real.perfusion_weighted).calculate()
-        npt.assert_allclose([pwi_stats["mean"]["3D"],
-                             pwi_stats["std"]["3D"],
-                             pwi_stats["min"]["3D"],
-                             pwi_stats["max"]["3D"]],
-                            gold_standard_pwi, rtol=0.1, atol=1E-3)
-
+        pwi_stats = arraystats.ArrayStats(
+            perf_real.perfusion_weighted).calculate()
+        npt.assert_allclose(
+            [
+                pwi_stats["mean"]["3D"],
+                pwi_stats["std"]["3D"],
+                pwi_stats["min"]["3D"],
+                pwi_stats["max"]["3D"]
+            ],
+            gold_standard_pwi, rtol=0.1, atol=1E-3
+        )
 
     def test_perfusion_with_moco(self):
         """Test perfusion calculation with motion correction."""
-
-        gold_standard_pwi_moco = [646.875117, 2613.3713, -17243.585938,
-                                  28897.138672]
+        gold_standard_pwi_moco = [
+            646.875117, 2613.3713, -17243.585938, 28897.138672
+        ]
 
         # Test with real data
-        perf_real = Perfusion(self.data[::4, ::4, :, :4], self.affine,
-                              moco=True)
+        perf_real = Perfusion(
+            self.data[::4, ::4, :, :4], self.affine, moco=True
+        )
 
         # Check that deformation field was calculated
         assert hasattr(perf_real, 'deformation_field')
@@ -92,11 +99,15 @@ class TestPerfusion:
 
         pwi_stats = arraystats.ArrayStats(
             perf_real.perfusion_weighted).calculate()
-        npt.assert_allclose([pwi_stats["mean"]["3D"],
-                             pwi_stats["std"]["3D"],
-                             pwi_stats["min"]["3D"],
-                             pwi_stats["max"]["3D"]],
-                            gold_standard_pwi_moco, rtol=0.1, atol=1E-3)
+        npt.assert_allclose(
+            [
+                pwi_stats["mean"]["3D"],
+                pwi_stats["std"]["3D"],
+                pwi_stats["min"]["3D"],
+                pwi_stats["max"]["3D"]
+            ],
+            gold_standard_pwi_moco, rtol=0.1, atol=1E-3
+        )
 
     def test_to_nifti(self):
         """Test the to_nifti method creates expected files."""
@@ -154,8 +165,9 @@ class TestPerfusion:
         assert len(os.listdir('test_output')) == 0
         
         # Test with motion correction and check deformation field
-        perf_moco = Perfusion(self.data[::8, ::8, :, :2], self.affine,
-                              moco=True)
+        perf_moco = Perfusion(
+            self.data[::8, ::8, :, :2], self.affine, moco=True
+        )
         perf_moco.to_nifti(
             output_directory='test_output',
             base_file_name=base_name,
@@ -178,14 +190,17 @@ class TestPerfusion:
             )
             
             # Load the saved file
-            saved_file_path = os.path.join(tmpdirname, "Output_perfusion_weighted.nii.gz")
+            saved_file_path = os.path.join(
+                tmpdirname, "Output_perfusion_weighted.nii.gz"
+            )
             saved_nifti = nib.load(saved_file_path)
             saved_data = saved_nifti.get_fdata()
             
             # Check that the data matches
             npt.assert_array_almost_equal(
                 saved_data, perf.perfusion_weighted,
-                decimal=6, err_msg="Saved NIFTI data doesn't match the source data"
+                decimal=6, 
+                err_msg="Saved NIFTI data doesn't match the source data"
             )
             
             # Check that the affine matrix is preserved
@@ -204,8 +219,10 @@ class TestPerfusion:
         # Test with reversed control/label (should trigger warning)
         # Create data where label > control
         reversed_data = self.test_array.copy()
-        reversed_data[..., 0::2] = self.control_data[..., np.newaxis]  # Control becomes label
-        reversed_data[..., 1::2] = self.label_data[..., np.newaxis]  # Label becomes control
+        # Control becomes label
+        reversed_data[..., 0::2] = self.control_data[..., np.newaxis]
+        # Label becomes control
+        reversed_data[..., 1::2] = self.label_data[..., np.newaxis]
         
         with pytest.warns(UserWarning):
             perf_reversed = Perfusion(reversed_data, self.test_affine)
