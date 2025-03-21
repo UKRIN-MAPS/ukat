@@ -519,7 +519,7 @@ def asl_philips_fair_1500():
         """
     fnames = get_fnames('asl_philips_fair_1500')
 
-    data = nib.load(fnames[0])
+    data = nib.load(fnames[1])
     image = data.get_fdata()
     affine = data.affine
     return image, affine
