@@ -6,6 +6,16 @@ from ukat.data import fetch
 
 class TestFetch:
 
+    def test_asl_philips_fair_1500(self):
+        # Test if the fetch function works
+        image, affine = fetch.asl_philips_fair_1500()
+        assert isinstance(image, np.ndarray)
+        assert np.unique(np.isnan(image)) != [True]
+        assert isinstance(affine, np.ndarray)
+        assert len(np.shape(image)) == 4
+        assert np.shape(image) == (128, 128, 5, 50)
+        assert np.shape(affine) == (4, 4)
+
     def test_ge_b0(self):
         # Test if the fetch function works
         magnitude, phase, affine, echo_times = fetch.b0_ge()
