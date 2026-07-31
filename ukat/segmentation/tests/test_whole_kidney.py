@@ -14,7 +14,7 @@ class TestSegmentation:
     segmentation = Segmentation(image, affine)
 
     def test_get_mask(self):
-        expected = [0.022764, 0.14915, 0.0, 1.0]
+        expected = [0.021034, 0.143496, 0.0, 1.0]
         mask = self.segmentation.get_mask()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -22,7 +22,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_kidneys(self):
-        expected = [0.034317, 0.237162, 0.0, 2.0]
+        expected = [0.031862, 0.229133, 0.0, 2.0]
         mask = self.segmentation.get_kidneys()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -30,7 +30,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_left_kidney(self):
-        expected = [0.011211, 0.105285, 0.0, 1.0]
+        expected = [0.010206, 0.100507, 0.0, 1.0]
         mask = self.segmentation.get_left_kidney()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -38,7 +38,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_right_kidney(self):
-        expected = [0.011553, 0.106863, 0.0, 1.0]
+        expected = [0.010828, 0.103492, 0.0, 1.0]
         mask = self.segmentation.get_right_kidney()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -46,29 +46,29 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_volumes(self):
-        expected = {'total': 240.00054654884337,
-                    'left': 118.19352480602264,
-                    'right': 121.80702174282074}
+        expected = {'total': 221.75981201171874,
+                    'left': 107.60053378582,
+                    'right': 114.15927822589875}
         volumes = self.segmentation.get_volumes()
         assert volumes == expected
 
     def test_get_tkv(self):
-        expected = 240.00054654884337
+        expected = 221.75981201171874
         assert self.segmentation.get_tkv() == expected
 
     def test_get_lkv(self):
-        expected = 118.19352480602264
+        expected = 107.60053378582
         assert self.segmentation.get_lkv() == expected
 
     def test_get_rkv(self):
-        expected = 121.80702174282074
+        expected = 114.15927822589875
         assert self.segmentation.get_rkv() == expected
 
     def test_save_volumes_csv(self):
         expected = [['total', 'left', 'right'],
-                    ['240.00054654884337',
-                     '118.19352480602264',
-                     '121.80702174282074']]
+                    ['221.75981201171874',
+                     '107.60053378582',
+                     '114.15927822589875']]
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
