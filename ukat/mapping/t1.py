@@ -3,12 +3,15 @@ import numpy as np
 import os
 import warnings
 
+import mdreg
+
 from . import fitting
 
 
 class T1Model(fitting.Model):
     def __init__(self, pixel_array, ti, parameters=2, mask=None, tss=0,
-                 tss_axis=-2, molli=False, multithread=True):
+                 tss_axis=-2, acq_order='ascend', molli=False, mag_corr=False,
+                 multithread=True):
         """
         A class containing the T1 fitting model
 
@@ -43,6 +46,26 @@ class T1Model(fitting.Model):
             would be along the TI axis and would be meaningless.
             If `pixel_array` is single slice (dimensions [x, y, TI]),
             then this should be set to None.
+        acq_order : str or list, optional
+            Default 'ascend'
+            The order in which the slices were acquired. 'ascend' assumes
+            the zeroth slice (in the tss_axis) was acquired first, 'descend'
+            assumes the -1 slice was acquired first and the zeroth
+            slice was acquired last. 'centric' assumes the centre slice was
+            acquired first, then the slice above the centre, then the slice
+            below the centre etc. In the case of an even number of slices,
+            the centre slice is taken as the lower of the two central slices.
+            Alternatively, a list of integers can be used to specify the
+            acquisition order. Specifying `acq_order='centric'` and
+            `acq_order=[4, 2, 0, 1, 3, 5]` would be equivalent for a six
+            slice acquisition.
+        mag_corr : bool, optional
+            Default False
+            If True, the data is assumed to have been magnitude corrected
+            using the complex component of the signal and thus negative
+            values represent inverted signal. If False, the data will be
+            fit to the modulus of the expected signal, negative values are
+            simply considered part of the noise in the data.
         multithread : bool, optional
             Default True
             If True, the fitting will be performed in parallel using all
@@ -51,38 +74,18 @@ class T1Model(fitting.Model):
         self.parameters = parameters
         self.tss = tss
         self.tss_axis = tss_axis
+        self.acq_order = acq_order
         self.molli = molli
 
-        # Assume the data has been magnitude corrected if the first
-        # percentile of the first inversion time is negative.
-        if np.percentile(pixel_array[..., 0], 1) < 0:
-            self.mag_corr = True
-            neg_percent = (np.sum(pixel_array[..., 0] < 0)
-                           / pixel_array[..., 0].size)
-            if neg_percent < 0.05:
-                warnings.warn('Fitting data to a magnitude corrected '
-                              'inversion recovery curve however, less than 5% '
-                              'of the data from the first inversion is '
-                              'negative. If you have performed magnitude '
-                              'correction ignore this warning, otherwise the '
-                              'negative values could be due to noise or '
-                              'preprocessing steps  such as EPI distortion '
-                              'correction and  registration.\n'
-                              f'Percentage of first inversion data that is '
-                              f'negative = {neg_percent:.2%}')
-        else:
-            self.mag_corr = False
-            if np.nanmin(pixel_array) < 0:
-                warnings.warn('Negative values found in data from the first '
-                              'inversion but as the first percentile is not '
-                              'negative, it is assumed these are negative '
-                              'due to noise or preprocessing steps such as '
-                              'EPI distortion correction and registration. '
-                              'As such the data will be fit to the modulus of '
-                              'the recovery curve.\n'
-                              f'Min value = {np.nanmin(pixel_array[..., 0])}\n'
-                              '1st percentile = '
-                              f'{np.percentile(pixel_array[..., 0], 1)}')
+        if (mag_corr is False) & (np.nanmin(pixel_array) < 0):
+            warnings.warn('Negative values found in data, this could be due '
+                          'to noise or preprocessing steps, however if you '
+                          'have magnitude corrected your data, remember to '
+                          'set mag_corr=True\n'
+                          f'Min value = '
+                          f'{np.nanmin(pixel_array[..., 0])}\n')
+
+        self.mag_corr = mag_corr
 
         if self.parameters == 2:
             if self.mag_corr:
@@ -119,7 +122,23 @@ class T1Model(fitting.Model):
             self._tss_correct_ti()
 
     def _tss_correct_ti(self):
-        slices = np.indices(self.map_shape)[self.tss_axis].ravel()
+        slices = np.indices(self.map_shape)[self.tss_axis]
+        if self.acq_order == 'ascend':
+            slices = slices.ravel()
+        elif self.acq_order == 'descend':
+            slices = np.flip(slices, axis=self.tss_axis).ravel()
+        elif self.acq_order == 'centric':
+            ns = self.map_shape[self.tss_axis]
+            # Generate the acquisition order for centric ordering. e.g. for
+            # a five slice acquisition, the order would be [4, 2, 0, 1, 3].
+            start = ns - 2 if ns % 2 == 0 else ns - 1
+            evens_desc = np.arange(start, -1, -2)
+            odds_asc = np.arange(1, ns, 2)
+            acq_ind = np.concatenate([evens_desc, odds_asc])
+            slices = np.take(slices, acq_ind, axis=self.tss_axis).ravel()
+        else:
+            slices = np.take(slices, self.acq_order, axis=self.tss_axis).ravel()
+
         for ind, (ti, slice) in enumerate(zip(self.x_list, slices)):
             self.x_list[ind] = np.array(ti) + self.tss * slice
 
@@ -144,6 +163,9 @@ class T1:
     r2 : np.ndarray
         The R-Squared value of the fit, values close to 1 indicate a good
         fit, lower values indicate a poorer fit
+    deformation_field : np.ndarray
+        The deformation field generated by the model-driven registration
+        process.
     shape : tuple
         The shape of the T1 map
     n_ti : int
@@ -153,8 +175,9 @@ class T1:
         apart from TI
     """
 
-    def __init__(self, pixel_array, inversion_list, affine, tss=0, tss_axis=-2,
-                 mask=None, parameters=2, molli=False, multithread=True):
+    def __init__(self, pixel_array, inversion_list, affine, tss=0,
+                 tss_axis=-2, acq_order='ascend', mask=None, parameters=2,
+                 mag_corr=False, molli=False, multithread=True, mdr=False):
         """Initialise a T1 class instance.
 
         Parameters
@@ -179,6 +202,19 @@ class T1:
             would be along the TI axis and would be meaningless.
             If `pixel_array` is single slice (dimensions [x, y, TI]),
             then this should be set to None.
+        acq_order : str or list, optional
+            Default 'ascend'
+            The order in which the slices were acquired. 'ascend' assumes
+            the zeroth slice (in the tss_axis) was acquired first, 'descend'
+            assumes the -1 slice was acquired first and the zeroth
+            slice was acquired last. 'centric' assumes the centre slice was
+            acquired first, then the slice above the centre, then the slice
+            below the centre etc. In the case of an even number of slices,
+            the centre slice is taken as the lower of the two central slices.
+            Alternatively, a list of integers can be used to specify the
+            acquisition order. Specifying `acq_order='centric'` and
+            `acq_order=[4, 2, 0, 1, 3, 5]` would be equivalent for a six
+            slice acquisition.
         affine : np.ndarray
             A matrix giving the relationship between voxel coordinates and
             world coordinates.
@@ -191,6 +227,13 @@ class T1:
             The number of parameters to fit the data to. A two parameter fit
             will estimate S0 and T1 while a three parameter fit will also
             estimate the inversion efficiency.
+        mag_corr : bool, optional
+            Default False
+            If True, the data is assumed to have been magnitude corrected
+            using the complex component of the signal and thus negative
+            values represent inverted signal. If False, the data will be
+            fit to the modulus of the expected signal, negative values are
+            simply considered part of the noise in the data.
         molli : bool, optional
             Default False.
             Apply MOLLI corrections to T1.
@@ -206,12 +249,11 @@ class T1:
             increase in speed distributing the calculation would generate.
             'auto' attempts to apply multithreading where appropriate based
             on the number of voxels being fit.
+        mdr : bool, optional
+            Default 'False`
+            If True, this performs a motion correction with model-driven
+            registration before performing the final fit to the model function.
         """
-        assert multithread is True \
-               or multithread is False \
-               or multithread == 'auto', f'multithreaded must be True,' \
-                                         f'False or auto. You entered ' \
-                                         f'{multithread}'
         # Normalise the data so its roughly in the same range across vendors
         self.scale = np.nanmax(pixel_array)
         self.pixel_array = pixel_array / self.scale
@@ -225,6 +267,9 @@ class T1:
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
+            if mdr is True:
+                raise ValueError('Masking is not supported when using '
+                                 'model-driven registration.')
             self.mask = mask.astype(bool)
         # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
@@ -236,6 +281,7 @@ class T1:
             self.tss_axis = None
             self.tss = 0
         self.parameters = parameters
+        self.mag_corr = mag_corr
         self.molli = molli
         if multithread == 'auto':
             if self.n_vox > 20:
@@ -243,8 +289,20 @@ class T1:
             else:
                 multithread = False
         self.multithread = multithread
+        self.mdr = mdr
 
         # Some sanity checks
+        assert multithread in [True,
+                               False,
+                               'auto'], (f'multithreaded must '
+                                         f'be True, False or auto. You '
+                                         f'entered {multithread}.')
+        assert mag_corr in [True,
+                            False], (f'mag_corr must be True or False. '
+                                     f'You entered {mag_corr}.')
+
+        assert mdr in [True, False], (f'mdr must be True or False. '
+                                      f'You entered {mdr}.')
         assert (pixel_array.shape[-1]
                 == len(inversion_list)), 'Number of inversions does not ' \
                                          'match the number of time frames ' \
@@ -254,17 +312,107 @@ class T1:
                 'Temporal slice spacing can\'t be applied to the TI axis.'
             assert (tss_axis < self.dimensions), \
                 'tss_axis must be less than the number of spatial dimensions'
+            if (self.tss_axis != 2) & (self.mdr is True):
+                raise ValueError('Temporal slice spacing only supported '
+                                 'along the z direction when using '
+                                 'model-driven registration.')
+            if type(acq_order) == list:
+                assert len(acq_order) == self.shape[self.tss_axis], \
+                    'acq_order must have the same length as the number of ' \
+                    'slices in the tss_axis.'
+                assert type(acq_order[0]) == int, \
+                    'acq_order must be a list of integers.'
+            elif acq_order not in ['ascend', 'descend', 'centric']:
+                raise ValueError('acq_order must be a list of integers or '
+                                 'one of "ascend", "descend" or "centric".')
+
         if self.molli:
             if self.parameters == 2:
                 self.parameters = 3
                 warnings.warn('MOLLI requires a three parameter fit, '
                               'using parameters=3.')
 
+        if mdr:
+            # The mdreg package can handle register each slice of an M2D
+            # image separately provided the inversion times of each slice
+            # are the same.
+            if self.tss == 0:
+                pixel_array, deform, _, _ = mdreg.fit(
+                    np.nan_to_num(self.pixel_array),
+                    force_2d=True,
+                    verbose=1,
+                    fit_image={
+                        'func': _t1_fit,
+                        'inversion_list': self.inversion_list,
+                        'affine': self.affine,
+                        'tss': self.tss,
+                        'tss_axis': self.tss_axis,
+                        'mask': self.mask,
+                        'parameters': self.parameters,
+                        'mag_corr': self.mag_corr,
+                        # MOLLI-correction is not relevant for MDR
+                        'molli': False,
+                        'multithread': self.multithread,
+                    },
+                    # All default settings but kept here as a template for if
+                    # we decide to expose coreg options to ukat users in the
+                    # future.
+                    fit_coreg={
+                        'package': 'elastix',
+                        'parallel': False,  # elastix is not parallelizable
+                    }
+                )
+            else:
+                pixel_array = np.zeros(self.pixel_array.shape)
+                deform = np.zeros((*self.pixel_array.shape[:3], 2,
+                                   self.pixel_array.shape[3]))
+
+                # The following for loop is a workaround to allow a
+                # different inversion list for each slice of data. Most of
+                # the code comes from the mdreg.fit() function.
+                for slice in range(self.shape[-1]):
+                    print('-----------------')
+                    print('Fitting slice ' + str(slice).zfill(3))
+                    print('-----------------')
+                    inversion_list = (np.array(self.inversion_list)
+                                      + self.tss * slice)
+                    (pixel_array[..., slice, :], deform[..., slice, :, :], _,
+                     _) = mdreg.fit(
+                        np.nan_to_num(self.pixel_array[..., slice, :]),
+                        force_2d=True,
+                        verbose=1,
+                        fit_image={
+                            'func': _t1_fit,
+                            'inversion_list': inversion_list,
+                            'affine': self.affine,
+                            'tss': 0,
+                            'tss_axis': None,
+                            'mask': self.mask[..., slice],
+                            'parameters': self.parameters,
+                            'mag_corr': self.mag_corr,
+                            # MOLLI-correction is not relevant for MDR
+                            'molli': False,
+                            'multithread': self.multithread,
+                        },
+                        # All default settings but kept here as a template for
+                        # if we decide to expose coreg options to ukat users
+                        # in the future.
+                        fit_coreg={
+                            'package': 'elastix',
+                            'parallel': False,  # elastix is not parallelizable
+                        }
+                    )
+            # Changing the dimensions of the deformation field to a more
+            # intuitive order.
+            self.deformation_field = np.swapaxes(deform, -2, -1)
+            self.pixel_array = pixel_array
+
         # Fit Data
         self.fitting_model = T1Model(self.pixel_array, self.inversion_list,
                                      self.parameters, self.mask, self.tss,
-                                     self.tss_axis, self.molli,
-                                     self.multithread)
+                                     self.tss_axis, acq_order, self.molli,
+                                     self.mag_corr, self.multithread)
+        self.mag_corr = self.fitting_model.mag_corr
         popt, error, r2 = fitting.fit_image(self.fitting_model)
         self.t1_map = popt[0]
         self.m0_map = popt[1]
@@ -295,8 +443,7 @@ class T1:
 
         # Do MOLLI correction
         if self.molli:
-            correction_factor = (((self.m0_map * self.eff_map) / self.m0_map)
-                                 - 1)
+            correction_factor = -(1 - self.eff_map)
             percentage_error = self.t1_err / self.t1_map
             self.t1_map = np.nan_to_num(self.t1_map * correction_factor)
             self.t1_err = np.nan_to_num(self.t1_map * percentage_error)
@@ -339,13 +486,13 @@ class T1:
         maps : list or 'all', optional
             List of maps to save to NIFTI. This should either the string "all"
             or a list of maps from ["t1", "t1_err", "m0", "m0_err", "eff",
-            "eff_err", "r1", "r2", "mask"]
+            "eff_err", "deformation_field", "r1", "r2", "mask"]
         """
         os.makedirs(output_directory, exist_ok=True)
         base_path = os.path.join(output_directory, base_file_name)
         if maps == 'all' or maps == ['all']:
-            maps = ['t1', 't1_err', 'm0', 'm0_err', 'eff', 'eff_err', 'r1_map',
-                    'r2', 'mask']
+            maps = ['t1', 't1_err', 'm0', 'm0_err', 'eff', 'eff_err',
+                    'deformation_field', 'r1_map', 'r2', 'mask']
         if isinstance(maps, list):
             for result in maps:
                 if result == 't1' or result == 't1_map':
@@ -371,6 +518,11 @@ class T1:
                     eff_err_nifti = nib.Nifti1Image(self.eff_err,
                                                     affine=self.affine)
                     nib.save(eff_err_nifti, base_path + '_eff_err.nii.gz')
+                elif self.mdr is True and result == 'deformation_field':
+                    deformation_nifti = nib.Nifti1Image(self.deformation_field,
+                                                        affine=self.affine)
+                    nib.save(deformation_nifti,
+                             base_path + '_deformation_field.nii.gz')
                 elif result == 'r1' or result == 'r1_map':
                     r1_nifti = nib.Nifti1Image(T1.r1_map(self),
                                                affine=self.affine)
@@ -387,7 +539,7 @@ class T1:
             raise ValueError('No NIFTI file saved. The variable "maps" '
                              'should be "all" or a list of maps from '
                              '"["t1", "t1_err", "m0", "m0_err", "eff", '
-                             '"eff_err", "r1", "mask"]".')
+                             '"eff_err", "deformation_field", "r1", "mask"]".')
 
         return
 
@@ -428,6 +580,19 @@ class T1:
 
         fit_signal = fit_signal.reshape((*self.shape, self.n_ti))
         return fit_signal
+
+    def get_pixel_array(self):
+        """
+        Get the pixel array from the T1 class. This method should be used
+        rather than T1.pixel_array as it will return the data in the
+        original scale.
+
+        Returns
+        -------
+        pixel_array : np.ndarray
+            An array containing the pixel data in the original scale.
+        """
+        return self.pixel_array * self.scale
 
 
 def two_param_abs_eq(t, t1, m0):
@@ -562,10 +727,24 @@ def magnitude_correct(pixel_array):
     for ti in range(pixel_array.shape[-1]):
         pixel_array_prime[..., ti] = (pixel_array[..., ti] *
                                       pixel_array[..., -1].conjugate()) \
-                                     / np.abs(pixel_array[..., -1])
+            / np.abs(pixel_array[..., -1])
 
     phase_factor = np.imag(np.log(pixel_array_prime / np.abs(pixel_array)))
     phase_offset = np.abs(phase_factor) - (np.pi / 2)
     sign = -(phase_offset / np.abs(phase_offset))
     corrected_array = sign * np.abs(pixel_array)
+    corrected_array = np.nan_to_num(corrected_array)
     return corrected_array
+
+
+# Private wrapper for use by mdreg
+def _t1_fit(pixel_array, inversion_list=None, affine=None, **kwargs):
+    """
+    Private wrapper for use by mdreg
+    """
+    map = T1(pixel_array, inversion_list, affine, **kwargs)
+    if map.parameters == 2:
+        pars = np.stack((map.t1_map, map.m0_map), axis=-1)
+    else:
+        pars = np.stack((map.t1_map, map.m0_map, map.eff_map), axis=-1)
+    return map.get_fit_signal(), pars

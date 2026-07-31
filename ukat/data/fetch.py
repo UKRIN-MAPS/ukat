@@ -17,6 +17,16 @@ else:
 # Create a series of fetcher functions. These will either download or locate
 # the desired files.
 
+fetch_asl_philips_fair_1500 = _make_fetcher('asl_philips_fair_1500', pjoin(ukat_home, 'asl_philips_fair_1500'),
+                                            'https://zenodo.org/records/15025420/files/',
+                                            ['Philips_FAIR_1500.nii.gz',
+                                             'Philips_FAIR_1500.json'],
+                                            ['Philips_FAIR_1500.nii.gz',
+                                             'Philips_FAIR_1500.json'],
+                                            md5_list=['b36d78c62476bba225785645ca29f052',
+                                                      'e2865ae1fe7ca8a3881483862eb3e20b'],
+                                            doc='Downloading Philips ASL FAIR 1500 data')
+
 fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
                             'https://zenodo.org/record/4758189/files/',
                             ['00009__3D_B0_map_VOL_e1.json',
@@ -27,7 +37,7 @@ fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
                              '00009__3D_B0_map_VOL_e1.nii.gz',
                              '00009__3D_B0_map_VOL_e2.json',
                              '00009__3D_B0_map_VOL_e2.nii.gz'],
-                            ['68496d356804e09ab36836a9f6a5c717',
+                            md5_list=['68496d356804e09ab36836a9f6a5c717',
                              'b8bd073521436c2abaef88c58c04d048',
                              '193bf6964aeb29b438ea7945b071900a',
                              '81efa61e7e0d47f897c054f80da9dfd1'],
@@ -68,7 +78,7 @@ fetch_b0_philips = _make_fetcher('fetch_b0_philips',
                                   'product_e2_ph.json',
                                   '01401__B0_map_expiration_volume_2DMS_'
                                   'product_e2_ph.nii.gz'],
-                                 ['d8bec9a5768144bf05b840e30d6b1892',
+                                 md5_list=['d8bec9a5768144bf05b840e30d6b1892',
                                   '55e9337424fef25626feedc4875425c1',
                                   '7b206cbbc80f34ab84f49cf5076eb6f3',
                                   '5a4a24dd71164808c81798f6ab02ca3d',
@@ -97,7 +107,7 @@ fetch_b0_siemens_1 = _make_fetcher('fetch_b0_siemens_1',
                                     '00011__bh_b0map_3D_default_e1.nii.gz',
                                     '00011__bh_b0map_3D_default_e2.json',
                                     '00011__bh_b0map_3D_default_e2.nii.gz'],
-                                   ['2050298aa605f9d3e4f5ee9c3bf528ac',
+                                   md5_list=['2050298aa605f9d3e4f5ee9c3bf528ac',
                                     'e1ef327345b6db34324c22bb04575b2e',
                                     '721e6a27ee5452be5f4e21879a2a4d96',
                                     '79a0ad622fbffcb880c78b2bcffaed5f',
@@ -126,7 +136,7 @@ fetch_b0_siemens_2 = _make_fetcher('fetch_b0_siemens_2',
                                     '00045__bh_b0map_fa3_default_e1.nii.gz',
                                     '00045__bh_b0map_fa3_default_e2.json',
                                     '00045__bh_b0map_fa3_default_e2.nii.gz'],
-                                   ['9df7d245866251ed9793a44b85a9e37c',
+                                   md5_list=['9df7d245866251ed9793a44b85a9e37c',
                                     'a33342821059cd4556e4c839834bc184',
                                     '1224cb202da05ce07c4a7293e20b6de7',
                                     '4cd9c5e7b7f3a136a99cd1bd42594f31',
@@ -146,7 +156,7 @@ fetch_dwi_ge = _make_fetcher('fetch_dwi_ge', pjoin(ukat_home, 'dwi_ge'),
                               '00014__Cor_DWI_RT.json',
                               '00014__Cor_DWI_RT.bval',
                               '00014__Cor_DWI_RT.bvec'],
-                             ['c76cdc72e32ad41cb5c469a9ada5cb83',
+                             md5_list=['c76cdc72e32ad41cb5c469a9ada5cb83',
                               'fb9943f4a905c28a098b15194ffe2e61',
                               '3890e970e58825983acdbfd8f07fa55d',
                               'a536341625a299743557e467772a3e46'],
@@ -163,7 +173,7 @@ fetch_dwi_philips = _make_fetcher('fetch_dwi_philips',
                                    '03901__DWI_5slices.json',
                                    '03901__DWI_5slices.bval',
                                    '03901__DWI_5slices.bvec'],
-                                  ['da96320b38c6b201cb858057b4b534b3',
+                                  md5_list=['da96320b38c6b201cb858057b4b534b3',
                                    '229e04a00fb4336a47af603ff565dea9',
                                    '6816ed33bd087ef465bfde5a75c0c11b',
                                    'c70d2a49c003dd53d63b9d4cb9388cdb'],
@@ -180,7 +190,7 @@ fetch_dwi_siemens = _make_fetcher('fetch_dwi_siemens',
                                    '00042__trig_dwi_13b_06dir.json',
                                    '00042__trig_dwi_13b_06dir.bval',
                                    '00042__trig_dwi_13b_06dir.bvec'],
-                                  ['1836b56ba028b5d5d41ae5f35313889a',
+                                  md5_list=['1836b56ba028b5d5d41ae5f35313889a',
                                    'a043b4fb0721d3c38db462d433975d31',
                                    'a57ce54e88c154d06a34722eaabb60fb',
                                    '32d551e73ab6481972a6c8eab44f556d'],
@@ -192,7 +202,7 @@ fetch_mtr_philips = _make_fetcher('fetch_mtr_philips',
                                   'files/',
                                   ['Cor_2D_MTR_BH_3201.nii.gz'],
                                   ['Cor_2D_MTR_BH_3201.nii.gz'],
-                                  ['252fcc0d67feb6ea3a55b850eb1f4477'],
+                                  md5_list=['252fcc0d67feb6ea3a55b850eb1f4477'],
                                   doc='Downloading Philips MT data')
 
 fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
@@ -201,7 +211,7 @@ fetch_pc_left_philips = _make_fetcher('fetch_pc_left_philips',
                                       '/files/',
                                       ['philips_pc_left.zip'],
                                       ['philips_pc_left.zip'],
-                                      ['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
+                                      md5_list=['97550f62e0a6c9cc0bc4ac2f1c52a7ea'],
                                       unzip=True,
                                       doc='Downloading Philips PC Left data')
 
@@ -211,7 +221,7 @@ fetch_pc_right_philips = _make_fetcher('fetch_pc_right_philips',
                                        '/files/',
                                        ['philips_pc_right.zip'],
                                        ['philips_pc_right.zip'],
-                                       ['d5bcc1d70ff43ecec4f77889099d7055'],
+                                       md5_list=['d5bcc1d70ff43ecec4f77889099d7055'],
                                        unzip=True,
                                        doc='Downloading Philips PC Right data')
 
@@ -220,7 +230,7 @@ fetch_t1_philips_1 = _make_fetcher('fetch_t1_philips_1',
                                    'https://zenodo.org/record/4762285/files/',
                                    ['philips_1.zip'],
                                    ['philips_1.zip'],
-                                   ['3928d498b30d811910856e82ac4d406f'],
+                                   md5_list=['3928d498b30d811910856e82ac4d406f'],
                                    unzip=True,
                                    doc='Downloading Philips T1 dataset 1')
 
@@ -235,7 +245,7 @@ fetch_t1_philips_2 = _make_fetcher('fetch_t1_philips_2',
                                     '00901__.nii.gz',
                                     '00901___ph.json',
                                     '00901___ph.nii.gz'],
-                                   ['4ee96f6521fee6ceec9192c1c38abf68',
+                                   md5_list=['4ee96f6521fee6ceec9192c1c38abf68',
                                     'c324dd00cecc9d4b06944b92041ba717',
                                     '8b16dd5f00abde1aff6845ecd38f74f7',
                                     'b1bc6c2f6c43e26f4a1d27868eb93df3'],
@@ -251,7 +261,7 @@ fetch_t1_molli_philips = _make_fetcher('fetch_t1_molli_philips',
                                        ['01101_WIP_Cor_T1_MOLLI_e1.json',
                                         '01101_WIP_Cor_T1_MOLLI_e1.nii.gz',
                                         'ti.csv'],
-                                       ['31543856a34b1696b5b56af4fb2427c8',
+                                       md5_list=['31543856a34b1696b5b56af4fb2427c8',
                                         '42c1dc5c49326fdaeae97d0473b83984',
                                         '82bf71c1dab4a490f7cdc66d887afb94'],
                                        doc='Downloading Philips T1 MOLLI '
@@ -263,7 +273,7 @@ fetch_t1w_philips = _make_fetcher('fetch_t1w_philips',
                                   'https://zenodo.org/record/4897994/files/',
                                   ['03001__sT1W_FFE_IP_60.nii.gz'],
                                   ['03001__sT1W_FFE_IP_60.nii.gz'],
-                                  ['02f90f0fc8277e09144c21d3fc75a8b7'],
+                                  md5_list=['02f90f0fc8277e09144c21d3fc75a8b7'],
                                   doc='Downloading Philips T1W data')
 
 fetch_t2_ge_1 = _make_fetcher('fetch_t2_ge_1',
@@ -271,7 +281,7 @@ fetch_t2_ge_1 = _make_fetcher('fetch_t2_ge_1',
                               'https://zenodo.org/record/8160807/files/',
                               ['ge_t2.zip'],
                               ['ge_t2.zip'],
-                              ['164997465af0cb55c58022f8f8773b04'],
+                              md5_list=['164997465af0cb55c58022f8f8773b04'],
                               unzip=True,
                               doc='Downloading GE T2 data')
 
@@ -280,7 +290,7 @@ fetch_t2_philips_1 = _make_fetcher('fetch_t2_philips_1',
                                    'https://zenodo.org/record/4762380/files/',
                                    ['philips_1.zip'],
                                    ['philips_1.zip'],
-                                   ['a8adc351219339737b3f0a50404e2c54'],
+                                   md5_list=['a8adc351219339737b3f0a50404e2c54'],
                                    unzip=True,
                                    doc='Downloading Philips T2 data')
 
@@ -289,7 +299,7 @@ fetch_t2_philips_2 = _make_fetcher('fetch_t2_philips_2',
                                    'https://zenodo.org/record/8160764/files/',
                                    ['philips_2.zip'],
                                    ['philips_2.zip'],
-                                   ['5ce51450e37da30d562443ed03c23274'],
+                                   md5_list=['5ce51450e37da30d562443ed03c23274'],
                                    unzip=True,
                                    doc='Downloading Philips T2 data')
 
@@ -298,7 +308,7 @@ fetch_t2_siemens_1 = _make_fetcher('fetch_t2_siemens_1',
                                    'https://zenodo.org/record/8160856/files/',
                                    ['siemens_t2.zip'],
                                    ['siemens_t2.zip'],
-                                   ['77b726b9b6c0ed61ffc5ff9f091d7de5'],
+                                   md5_list=['77b726b9b6c0ed61ffc5ff9f091d7de5'],
                                    unzip=True,
                                    doc='Downloading Siemens T2 data')
 
@@ -307,7 +317,7 @@ fetch_t2star_ge = _make_fetcher('fetch_t2star_ge',
                                 'https://zenodo.org/record/4762487/files/',
                                 ['ge.zip'],
                                 ['ge.zip'],
-                                ['7bc144c263444a3841e1c443444ccecb'],
+                                md5_list=['7bc144c263444a3841e1c443444ccecb'],
                                 unzip=True,
                                 doc='Downloading GE T2* data')
 
@@ -317,7 +327,7 @@ fetch_t2star_philips = _make_fetcher('fetch_t2star_philips',
                                      'files/',
                                      ['philips.zip'],
                                      ['philips.zip'],
-                                     ['396a61bed653dd43d56241ad5b7a9765'],
+                                     md5_list=['396a61bed653dd43d56241ad5b7a9765'],
                                      unzip=True,
                                      doc='Downloading Philips T2* data')
 
@@ -327,7 +337,7 @@ fetch_t2star_siemens = _make_fetcher('fetch_t2star_siemens',
                                      'files/',
                                      ['siemens.zip'],
                                      ['siemens.zip'],
-                                     ['f3378e0f1b93e302b6d6fba29bdb7e73'],
+                                     md5_list=['f3378e0f1b93e302b6d6fba29bdb7e73'],
                                      unzip=True,
                                      doc='Downloading Siemens T2* data')
 
@@ -338,7 +348,7 @@ fetch_t2w_philips = _make_fetcher('fetch_t2w_philips',
                                    '.nii.gz'],
                                   ['03301__T2W_TSE_Cor_BH_SENSE2_SPAIR'
                                    '.nii.gz'],
-                                  ['276b904142677026a04659505d923134'],
+                                  md5_list=['276b904142677026a04659505d923134'],
                                   doc='Downloading Philips T2W data')
 
 fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
@@ -347,7 +357,7 @@ fetch_tsnr_high_philips = _make_fetcher('fetch_tsnr_high_philips',
                                         '/files/',
                                         ['high_tsnr.nii.gz'],
                                         ['high_tsnr.nii.gz'],
-                                        ['382bc6850f9462994c723103d3d92ee0'],
+                                        md5_list=['382bc6850f9462994c723103d3d92ee0'],
                                         doc='Downloading Philips tSNR data')
 
 fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
@@ -356,7 +366,7 @@ fetch_tsnr_low_philips = _make_fetcher('fetch_tsnr_low_philips',
                                        '/files/',
                                        ['low_tsnr.nii.gz'],
                                        ['low_tsnr.nii.gz'],
-                                       ['050c7ef07574d893b3511796050748fe'],
+                                       md5_list=['050c7ef07574d893b3511796050748fe'],
                                        doc='Downloading Philips tSNR data')
 
 
@@ -372,7 +382,12 @@ def get_fnames(name):
         fnames : list
             filenames for dataset
     """
-    if name == 'b0_ge':
+    if name == 'asl_philips_fair_1500':
+        files, folder = fetch_asl_philips_fair_1500()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'b0_ge':
         files, folder = fetch_b0_ge()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
@@ -491,6 +506,23 @@ def get_fnames(name):
         files, folder = fetch_tsnr_low_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
+
+
+def asl_philips_fair_1500():
+    """Fetches perfusion/asl_philips_fair_1500 dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        """
+    fnames = get_fnames('asl_philips_fair_1500')
+
+    data = nib.load(fnames[1])
+    image = data.get_fdata()
+    affine = data.affine
+    return image, affine
 
 
 def b0_ge():

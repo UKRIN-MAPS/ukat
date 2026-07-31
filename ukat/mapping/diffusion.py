@@ -3,6 +3,7 @@ Diffusion imaging module
 
 """
 import os
+import mdreg
 import nibabel as nib
 import numpy as np
 import warnings
@@ -121,7 +122,8 @@ class ADC:
         directions, these six volumes will be averaged together.
     """
 
-    def __init__(self, pixel_array, affine, bvals, mask=None, ukrin_b=False):
+    def __init__(self, pixel_array, affine, bvals, mask=None, ukrin_b=False,
+                 moco=False):
         """Initialise a ADC class instance.
 
         Parameters
@@ -147,6 +149,13 @@ class ADC:
             Magn Reson Mater Phy 2020;33:177–195
             doi: 10.1007/s10334-019-00790-y.
             If False, all b-values supplied will be used to fit ADC.
+        moco : bool, optional
+            Default `False`
+            If True, this performs a motion correction by first
+            registering all volumes at each unique b-value (usually
+            registering different b-vecs), then regitering the average at
+            each b-value with model-driven registration to a standard ADC fit
+            before performing the final fit to the model function.
         """
         ukrin_b_test = np.array([0, 100, 200, 800])
         # Sanity checks
@@ -157,32 +166,92 @@ class ADC:
         if ukrin_b:
             self.b_mask = np.isin(bvals, ukrin_b_test)
         else:
-            self.b_mask = np.full(len(bvals), True, dtype=bool)
+            self.b_mask = np.ones(len(bvals), dtype=bool)
 
         self.pixel_array = pixel_array[..., self.b_mask]
         self.shape = pixel_array.shape[:-1]
         self.n_vox = np.prod(self.shape)
         self.bvals = bvals[self.b_mask]
         self.n_grad = len(self.bvals)
-        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, tol=1)
         self.n_bvals = len(self.u_bvals)
         self.affine = affine
+        self.moco = moco
         # Generate a mask if there isn't one specified
         if mask is None:
             self.mask = np.ones(self.shape, dtype=bool)
         else:
             self.mask = mask
+            if moco is True:
+                raise ValueError('Masking is not supported when using '
+                                 'motion correction.')
             # Don't process any nan values
         self.mask[np.isnan(np.sum(pixel_array, axis=-1))] = False
         self.mask[np.sum(pixel_array <= 0, axis=-1, dtype=bool)] = False
         self.pixel_array = np.nan_to_num(self.pixel_array)
 
-        self.pixel_array_mean = self.__mean_over_directions__()
+        if self.moco:
+            self.pixel_array, within_b_deform = self._register_within_bval()
+
+        self.pixel_array_mean = self._mean_over_directions()
+
+        if self.moco:
+            print('Registering across b-values')
+            self.pixel_array_mean, across_b_deform, _, _ = mdreg.fit(
+                self.pixel_array_mean,
+                force_2d=True,
+                verbose=0,
+                fit_image={
+                    'func': _adc_fit,
+                    'affine': self.affine,
+                    'bvals': self.u_bvals,
+                },
+                fit_coreg={
+                    'package' : 'elastix',
+                    'parallel': False,  # elastix is not parallelizable
+                }
+            )
+            
 
         self.adc, self.s0, self.adc_err, self.s0_err, self.r2 = \
-            self.__fit__()
+            self._fit()
 
-    def __mean_over_directions__(self):
+    def _register_within_bval(self):
+        """
+        Register all volumes of a given b-value to the average of all images
+        with that b-value.
+        This is useful for data that has been acquired with multiple
+        directions at each b-value.
+
+        Returns
+        -------
+        pixel_array_registered : np.ndarray
+            The `pixel_array` with the signal at each unique b-value
+            registered to the first volume acquired at that b-value.
+        deform : np.ndarray
+            The deformation field used to register the data.
+        """
+        pixel_array_registered = np.zeros_like(self.pixel_array)
+        deform = np.zeros(self.pixel_array.shape[:3] + (2, len(self.bvals)))
+        for ind, bval in enumerate(tqdm(self.u_bvals,
+                                        desc='Registering b-values',
+                                        unit='b-value')):
+            pixel_array_bval = self.pixel_array[..., self.bvals == bval]
+            if pixel_array_bval.shape[-1] > 1:
+                print(f"Registering {bval}")
+                pixel_array_bval_reg, deform_bval, _, _ = mdreg.fit(
+                    pixel_array_bval,
+                    verbose=0,
+                    force_2d=True)
+            else:
+                print(f"Registering {bval}")
+                pixel_array_bval_reg = pixel_array_bval
+                deform_bval = np.zeros(pixel_array_bval.shape[:3] + (2, pixel_array_bval.shape[-1],))
+            pixel_array_registered[..., self.bvals == bval] = pixel_array_bval_reg
+            deform[..., self.bvals == bval] = deform_bval
+        return pixel_array_registered, deform
+
+    def _mean_over_directions(self):
         """
         Calculates the mean signal across different directions at each unique
         b-value e.g. if `pixel_array` contains six volumes acquired with
@@ -200,7 +269,7 @@ class ADC:
                 = np.mean(self.pixel_array[..., self.bvals == bval], axis=-1)
         return pixel_array_mean
 
-    def __fit__(self):
+    def _fit(self):
         # Initialise maps
         adc_map = np.zeros(self.n_vox)
         s0_map = np.zeros(self.n_vox)
@@ -211,12 +280,14 @@ class ADC:
         mask = self.mask.flatten()
         signal = self.pixel_array_mean.reshape(-1, self.n_bvals)
         idx = np.argwhere(mask).squeeze()
-        with tqdm(total=idx.size) as progress:
+        with tqdm(total=idx.size, 
+                  desc='Calculating ADC Map', 
+                  unit='voxels') as progress:
             for ind in idx:
                 sig = signal[ind, :]
                 adc_map[ind], s0_map[ind], adc_err[ind], s0_err[ind], \
                     r2[ind] = \
-                    self.__fit_signal__(sig, self.u_bvals)
+                    self._fit_signal(sig, self.u_bvals)
                 progress.update(1)
         adc_map[adc_map < 0] = 0
         s0_map[adc_map < 0] = 0
@@ -234,19 +305,25 @@ class ADC:
         return adc_map, s0_map, adc_err, s0_err, r2
 
     @staticmethod
-    def __fit_signal__(sig, bvals):
-        try:
-            popt, pvar = np.polyfit(bvals[sig > 0], np.log(sig[sig > 0]), 1,
-                                    cov=True)
-            adc = -popt[0]
-            s0 = np.exp(popt[1])
-            adc_err = np.sqrt(pvar[0, 0])
-            s0_err = np.exp(np.sqrt(pvar[1, 1]))
-        except np.linalg.LinAlgError:
+    def _fit_signal(sig, bvals):
+        if np.sum(sig > 0) < 3:
             adc = 0
             s0 = 0
             adc_err = 0
             s0_err = 0
+        else:
+            try:
+                popt, pvar = np.polyfit(bvals[sig > 0], np.log(sig[sig > 0]), 1,
+                                        cov=True)
+                adc = -popt[0]
+                s0 = np.exp(popt[1])
+                adc_err = np.sqrt(pvar[0, 0])
+                s0_err = np.exp(np.sqrt(pvar[1, 1]))
+            except np.linalg.LinAlgError:
+                adc = 0
+                s0 = 0
+                adc_err = 0
+                s0_err = 0
 
         fit_sig = adc_eq(bvals, adc, s0)
         r2 = r2_score(sig, fit_sig)
@@ -346,6 +423,14 @@ def adc_eq(bvals, adc, s0):
         signal = s0 * np.exp(-bvals * adc)
     return signal
 
+def _adc_fit(pixel_array, affine, bvals, **kwargs):
+    """
+    Private wrapper for use by mdreg
+    """
+    mapper = ADC(pixel_array, affine, bvals, **kwargs)
+    pars = np.stack((mapper.adc, mapper.s0), axis=-1)
+    return mapper.get_fit_signal(), pars
+
 
 class DTI:
     """
@@ -444,13 +529,14 @@ class DTI:
         self.bvals = bvals[self.b_mask]
         self.bvecs = bvecs[self.b_mask, :]
         self.n_grad = len(self.bvals)
-        self.u_bvals = unique_bvals_tolerance(self.bvals, 1)
+        self.u_bvals = unique_bvals_tolerance(self.bvals, tol=1)
         self.n_bvals = len(self.u_bvals)
         self.u_bvecs = np.unique(self.bvecs, axis=0)
         self.n_bvecs = len(self.u_bvecs)
         self.affine = affine
         self.mask = mask
-        self.gtab = gradient_table(self.bvals, self.bvecs, b0_threshold=0)
+        self.gtab = gradient_table(self.bvals, bvecs=self.bvecs,
+                                   b0_threshold=0)
         tensor_model = TensorModel(self.gtab)
         self.tensor_fit = tensor_model.fit(self.pixel_array, mask=self.mask)
         self.md = self.tensor_fit.md
