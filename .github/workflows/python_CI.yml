@@ -24,26 +24,43 @@ jobs:
         python-version: [3.9, "3.10", "3.11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
+
+    - name: Install Microsoft Visual C++ Redistributable (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        choco install vcredist140 -y --no-progress
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest codecov pytest-cov wheel
         pip install -r requirements.txt
+
+    - name: Verify TensorFlow import (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        python -c "import tensorflow as tf; print(tf.__version__)"
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings.
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80 --statistics
+
     - name: Test with pytest
       run: |
         pytest --cov-report=xml --cov=ukat
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
@@ -51,3 +68,4 @@ jobs:
         fail_ci_if_error: true
         verbose: true
         token: ${{ secrets.CODECOV_TOKEN }}
+          
