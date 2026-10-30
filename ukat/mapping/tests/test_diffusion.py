@@ -117,7 +117,7 @@ class TestADC:
         # Gold standard statistics
         gold_standard_adc = [0.00198, 0.000855, 0.0, 0.005391]
         gold_standard_adc_err = [0.000184, 0.000165, 0.0, 0.001044]
-        gold_standard_adc_moco = [0.001912, 0.000645, 0.0, 0.004614]
+        gold_standard_adc_moco = [0.00188, 0.000775, 0.0, 0.008951]
         gold_standard_adc_err_moco = [0.00034, 0.000319, 0.0, 0.002749]
         # Test maps, without moco
         mapper = ADC(self.pixel_array, self.affine, self.bvals, self.mask,

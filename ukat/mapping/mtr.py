@@ -79,7 +79,7 @@ class MTR:
                 fit_coreg = {
                     'package'      : 'elastix',
                     'parallel'     : True,
-                    'return_deform': True,
+                    'return_deformation': True,
                 }
             )
 

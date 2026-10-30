@@ -360,13 +360,13 @@ class T1:
                     fit_coreg={
                         'package': 'elastix',
                         'parallel': True,
-                        'return_deform': True,
+                        'return_deformation': True,
                     }
                 )
             else:
                 pixel_array = np.zeros(self.pixel_array.shape)
-                deform = np.zeros((*self.pixel_array.shape[:3], 2,
-                                   self.pixel_array.shape[3]))
+                deform = np.zeros((*self.pixel_array.shape[:3],
+                                   self.pixel_array.shape[3], 2))
 
                 # The following for loop is a workaround to allow a
                 # different inversion list for each slice of data. Most of
@@ -401,7 +401,7 @@ class T1:
                         fit_coreg={
                             'package': 'elastix',
                             'parallel': True,
-                            'return_deform': True,
+                            'return_deformation': True,
                         }
                     )
             # Changing the dimensions of the deformation field to a more
