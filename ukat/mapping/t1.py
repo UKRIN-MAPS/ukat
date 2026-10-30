@@ -367,8 +367,6 @@ class T1:
                 pixel_array = np.zeros(self.pixel_array.shape)
                 deform = np.zeros((*self.pixel_array.shape[:3],
                                    self.pixel_array.shape[3], 2))
-                deform = np.zeros((*self.pixel_array.shape[:3],
-                                   self.pixel_array.shape[3], 2))
 
                 # The following for loop is a workaround to allow a
                 # different inversion list for each slice of data. Most of

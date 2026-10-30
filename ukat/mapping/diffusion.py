@@ -234,7 +234,6 @@ class ADC:
         """
         pixel_array_registered = np.zeros_like(self.pixel_array)
         deform = np.zeros(self.pixel_array.shape[:3] + (len(self.bvals), 2))
-        deform = np.zeros(self.pixel_array.shape[:3] + (len(self.bvals), 2))
         for ind, bval in enumerate(tqdm(self.u_bvals,
                                         desc='Registering b-values',
                                         unit='b-value')):
@@ -256,7 +255,6 @@ class ADC:
                 pixel_array_bval_reg = pixel_array_bval
                 deform_bval = np.zeros(pixel_array_bval.shape[:3] + (pixel_array_bval.shape[-1], 2,))
             pixel_array_registered[..., self.bvals == bval] = pixel_array_bval_reg
-            deform[..., self.bvals == bval, :] = deform_bval
             deform[..., self.bvals == bval, :] = deform_bval
         return pixel_array_registered, deform
 
