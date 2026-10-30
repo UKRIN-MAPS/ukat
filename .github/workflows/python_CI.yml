@@ -42,8 +42,14 @@ jobs:
         # exit-zero treats all errors as warnings.
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80 --statistics
     - name: Test with pytest
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       run: |
         pytest --cov-report=xml --cov=ukat
+    - name: Test with pytest (skipping ukat.data tests)
+      # Avoids downloading every copy of the example data and being rate limited
+      if: matrix.os != 'ubuntu-latest' || matrix.python-version != '3.11'
+      run: |
+        pytest --cov-report=xml --cov=ukat --ignore=ukat/data/tests
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
