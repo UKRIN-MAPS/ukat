@@ -441,7 +441,7 @@ class TestT1:
 
         # MDR TSS == 0
         mapper = T1(image_molli[:, :, :2, :], ti_molli, affine_molli,
-                    parameters=3, molli=True, mdr=True)
+                    parameters=3, molli=True, mdr=True, multithread=False)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         # Large tolerance as ITK performs differently on MacOS, Linux and
         # Windows
@@ -451,7 +451,7 @@ class TestT1:
 
         # MDR TSS != 0
         mapper = T1(magnitude[:, :, :2, :], ti, affine,
-                    parameters=2, tss=tss, mdr=True)
+                    parameters=2, tss=tss, mdr=True, multithread=False)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         # Large tolerance as ITK performs differently on MacOS, Linux and
         # Windows
