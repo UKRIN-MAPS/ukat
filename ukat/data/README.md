@@ -11,6 +11,10 @@ Specific information for each type of MR data lives on the README.md files in ea
 
 With the exception of datasets marked with :star:, all test data is from the travelling kidney pilot study 2019.
 
+### ASL
+
+* :star: `perfuction/asl_philips_fair_1500` : subject SPMIC 07 (Philips) from TK 2021
+
 ### BOLD R2*
 
 * `t2star/ge`: subject 02, session 010, series 16

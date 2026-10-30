@@ -17,6 +17,16 @@ else:
 # Create a series of fetcher functions. These will either download or locate
 # the desired files.
 
+fetch_asl_philips_fair_1500 = _make_fetcher('asl_philips_fair_1500', pjoin(ukat_home, 'asl_philips_fair_1500'),
+                                            'https://zenodo.org/records/15025420/files/',
+                                            ['Philips_FAIR_1500.nii.gz',
+                                             'Philips_FAIR_1500.json'],
+                                            ['Philips_FAIR_1500.nii.gz',
+                                             'Philips_FAIR_1500.json'],
+                                            md5_list=['b36d78c62476bba225785645ca29f052',
+                                                      'e2865ae1fe7ca8a3881483862eb3e20b'],
+                                            doc='Downloading Philips ASL FAIR 1500 data')
+
 fetch_b0_ge = _make_fetcher('fetch_b0_ge', pjoin(ukat_home, 'b0_ge'),
                             'https://zenodo.org/record/4758189/files/',
                             ['00009__3D_B0_map_VOL_e1.json',
@@ -372,7 +382,12 @@ def get_fnames(name):
         fnames : list
             filenames for dataset
     """
-    if name == 'b0_ge':
+    if name == 'asl_philips_fair_1500':
+        files, folder = fetch_asl_philips_fair_1500()
+        fnames = sorted(glob.glob(pjoin(folder, '*')))
+        return fnames
+
+    elif name == 'b0_ge':
         files, folder = fetch_b0_ge()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
@@ -491,6 +506,23 @@ def get_fnames(name):
         files, folder = fetch_tsnr_low_philips()
         fnames = sorted(glob.glob(pjoin(folder, '*')))
         return fnames
+
+
+def asl_philips_fair_1500():
+    """Fetches perfusion/asl_philips_fair_1500 dataset
+        Returns
+        -------
+        numpy.ndarray
+            image data
+        numpy.ndarray
+            affine matrix for image data
+        """
+    fnames = get_fnames('asl_philips_fair_1500')
+
+    data = nib.load(fnames[1])
+    image = data.get_fdata()
+    affine = data.affine
+    return image, affine
 
 
 def b0_ge():
