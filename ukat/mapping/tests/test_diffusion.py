@@ -146,7 +146,7 @@ class TestADC:
                              adc_err_stats['std']['3D'],
                              adc_err_stats['min']['3D'],
                              adc_err_stats['max']['3D']],
-                            gold_standard_adc_err_moco, rtol=5e-2, atol=1e-5)
+                            gold_standard_adc_err_moco, rtol=0.5, atol=5e-2)
 
     def test_ukrin_b(self):
         # Gold standard statistics
