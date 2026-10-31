@@ -12,6 +12,7 @@ import requests
 
 from dipy.io import read_bvals_bvecs
 from os.path import join as pjoin
+from uuid import uuid4
 
 # Set up directory to cache data
 if 'UKAT_HOME' in os.environ:
@@ -60,7 +61,7 @@ def _download_file(record_id, remote_fname, fullpath):
     url = f'{ZENODO_API_URL}/{record_id}/files/{remote_fname}/content'
     token = _get_zenodo_token()
     headers = {'Authorization': f'Bearer {token}'} if token else {}
-    tmp_path = fullpath + '.part'
+    tmp_path = f'{fullpath}.{uuid4().hex}.part'
 
     for attempt in range(1, _MAX_ATTEMPTS + 1):
         try:
@@ -78,7 +79,8 @@ def _download_file(record_id, remote_fname, fullpath):
                             f.write(chunk)
                     os.replace(tmp_path, fullpath)
                     return
-        except (requests.ConnectionError, requests.Timeout) as e:
+        except (requests.ConnectionError, requests.Timeout,
+                requests.exceptions.ChunkedEncodingError) as e:
             wait = 2 ** attempt
             error = type(e).__name__
         except requests.HTTPError as e:
@@ -88,7 +90,7 @@ def _download_file(record_id, remote_fname, fullpath):
             raise FetcherError(
                 f'Could not download {url} after {_MAX_ATTEMPTS} attempts '
                 f'(last error: {error}).')
-        time.sleep(min(wait, 120))
+        time.sleep(wait)
 
 
 def _make_fetcher(name, folder, baseurl, remote_fnames, local_fnames, *,
