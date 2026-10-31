@@ -12,6 +12,7 @@ on:
 
 env:
   NUMBA_DISABLE_JIT: 1
+  ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
 jobs:
   lint:
