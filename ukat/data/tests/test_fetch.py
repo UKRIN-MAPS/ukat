@@ -456,6 +456,46 @@ class TestZenodoFetcher:
         assert get.call_args[1]['headers'] == {
             'Authorization': 'Bearer secret'}
 
+    def test_download_recovers_from_interrupted_stream(self, monkeypatch,
+                                                       tmp_path):
+        monkeypatch.delenv('ZENODO_TOKEN', raising=False)
+        target = tmp_path / 'f'
+
+        def broken_stream(chunk_size):
+            yield b'partial'
+            raise requests.exceptions.ChunkedEncodingError('interrupted')
+
+        interrupted = _fake_response()
+        interrupted.iter_content.side_effect = broken_stream
+        responses = [interrupted, _fake_response(content=b'complete')]
+        with mock.patch.object(fetch.requests, 'get',
+                               side_effect=responses) as get:
+            fetch._download_file('1', 'f', str(target))
+
+        assert get.call_count == 2
+        # Only the complete download is kept and no partial files remain
+        assert target.read_bytes() == b'complete'
+        assert list(tmp_path.iterdir()) == [target]
+
+    def test_download_interrupted_stream_leaves_no_partial_file(
+            self, monkeypatch, tmp_path):
+        monkeypatch.delenv('ZENODO_TOKEN', raising=False)
+
+        def broken_stream(chunk_size):
+            yield b'partial'
+            raise requests.exceptions.ChunkedEncodingError('interrupted')
+
+        def make_broken(*args, **kwargs):
+            response = _fake_response()
+            response.iter_content.side_effect = broken_stream
+            return response
+
+        with mock.patch.object(fetch.requests, 'get',
+                               side_effect=make_broken):
+            with pytest.raises(fetch.FetcherError):
+                fetch._download_file('1', 'f', str(tmp_path / 'f'))
+        assert list(tmp_path.iterdir()) == []
+
     def test_download_retries_then_succeeds(self, monkeypatch, tmp_path):
         monkeypatch.delenv('ZENODO_TOKEN', raising=False)
         responses = [_fake_response(503),

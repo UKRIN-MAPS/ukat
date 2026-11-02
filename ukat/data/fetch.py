@@ -74,10 +74,18 @@ def _download_file(record_id, remote_fname, fullpath):
                     error = f'HTTP {response.status_code}'
                 else:
                     response.raise_for_status()
-                    with open(tmp_path, 'wb') as f:
-                        for chunk in response.iter_content(1024 * 1024):
-                            f.write(chunk)
-                    os.replace(tmp_path, fullpath)
+                    # with open(tmp_path, 'wb') as f:
+                    #     for chunk in response.iter_content(1024 * 1024):
+                    #         f.write(chunk)
+                    # os.replace(tmp_path, fullpath)
+                    try:
+                        with open(tmp_path, 'wb') as f:
+                            for chunk in response.iter_content(1024 * 1024):
+                                f.write(chunk)
+                        os.replace(tmp_path, fullpath)
+                    finally:
+                        if os.path.exists(tmp_path):
+                            os.remove(tmp_path)
                     return
         except (requests.ConnectionError, requests.Timeout,
                 requests.exceptions.ChunkedEncodingError) as e:
