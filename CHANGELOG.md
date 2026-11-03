@@ -1,3 +1,8 @@
+## [Unreleased]
+
+### Changed
+* Documentation is now built with Sphinx (Read the Docs theme) and hosted on Read the Docs instead of being generated with pdoc and published to GitHub Pages.
+
 ## [0.7.3] - 2024-10-30
 
 ### Changed
