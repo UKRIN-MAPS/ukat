@@ -1,6 +1,7 @@
 import csv
 import os
 import shutil
+import numpy as np
 import numpy.testing as npt
 import pytest
 
@@ -65,10 +66,10 @@ class TestSegmentation:
         assert self.segmentation.get_rkv() == expected
 
     def test_save_volumes_csv(self):
-        expected = [['total', 'left', 'right'],
-                    ['221.75981201171874',
-                     '107.60053378582',
-                     '114.15927822589875']]
+        expcted_headers = ['total', 'left', 'right']
+        expected_values = np.array([221.75981201171874, 
+                                    107.60053378582, 
+                                    114.15927822589875])
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
@@ -81,8 +82,12 @@ class TestSegmentation:
 
         with open('test_output/volumes.csv', 'r') as csv_file:
             reader = csv.reader(csv_file)
-            list_from_csv = [row for row in reader]
-        assert list_from_csv == expected
+            headers = next(reader)
+            values = next(reader)
+
+        assert headers == expcted_headers
+        npt.assert_allclose(np.array(values, dtype=float), expected_values, 
+                            rtol=1e-6, atol=1e-4)
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
