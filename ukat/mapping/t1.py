@@ -337,7 +337,7 @@ class T1:
             # image separately provided the inversion times of each slice
             # are the same.
             if self.tss == 0:
-                pixel_array, deform, _, _ = mdreg.fit(
+                pixel_array, _, _, _, deform = mdreg.fit(
                     np.nan_to_num(self.pixel_array),
                     force_2d=True,
                     verbose=1,
@@ -359,13 +359,14 @@ class T1:
                     # future.
                     fit_coreg={
                         'package': 'elastix',
-                        'parallel': False,  # elastix is not parallelizable
+                        'parallel': True,
+                        'return_deformation': True,
                     }
                 )
             else:
                 pixel_array = np.zeros(self.pixel_array.shape)
-                deform = np.zeros((*self.pixel_array.shape[:3], 2,
-                                   self.pixel_array.shape[3]))
+                deform = np.zeros((*self.pixel_array.shape[:3],
+                                   self.pixel_array.shape[3], 2))
 
                 # The following for loop is a workaround to allow a
                 # different inversion list for each slice of data. Most of
@@ -376,8 +377,8 @@ class T1:
                     print('-----------------')
                     inversion_list = (np.array(self.inversion_list)
                                       + self.tss * slice)
-                    (pixel_array[..., slice, :], deform[..., slice, :, :], _,
-                     _) = mdreg.fit(
+                    (pixel_array[..., slice, :], _, _, _,
+                     deform[..., slice, :, :]) = mdreg.fit(
                         np.nan_to_num(self.pixel_array[..., slice, :]),
                         force_2d=True,
                         verbose=1,
@@ -399,12 +400,13 @@ class T1:
                         # in the future.
                         fit_coreg={
                             'package': 'elastix',
-                            'parallel': False,  # elastix is not parallelizable
+                            'parallel': True,
+                            'return_deformation': True,
                         }
                     )
             # Changing the dimensions of the deformation field to a more
             # intuitive order.
-            self.deformation_field = np.swapaxes(deform, -2, -1)
+            self.deformation_field = deform
             self.pixel_array = pixel_array
 
         # Fit Data

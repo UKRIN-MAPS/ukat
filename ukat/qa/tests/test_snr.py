@@ -18,7 +18,7 @@ class TestIsnr:
         assert isnr_obj.noise_mask.shape == data.shape
         assert isnr_obj.isnr_map.shape == data.shape
         noise_mask_stats = arraystats.ArrayStats(
-            isnr_obj.noise_mask).calculate()
+            isnr_obj.noise_mask.astype(np.int16)).calculate()
         isnr_map_stats = arraystats.ArrayStats(isnr_obj.isnr_map).calculate()
         npt.assert_allclose([noise_mask_stats['mean']['3D'],
                              noise_mask_stats['std']['3D'],
@@ -40,7 +40,7 @@ class TestIsnr:
         assert isnr_obj.noise_mask.shape == data.shape
         assert isnr_obj.isnr_map.shape == data.shape
         noise_mask_stats = arraystats.ArrayStats(
-            isnr_obj.noise_mask).calculate()
+            isnr_obj.noise_mask.astype(np.int16)).calculate()
         isnr_map_stats = arraystats.ArrayStats(isnr_obj.isnr_map).calculate()
         npt.assert_allclose([noise_mask_stats['mean']['3D'],
                              noise_mask_stats['std']['3D'],
@@ -62,7 +62,7 @@ class TestIsnr:
         assert isnr_obj.noise_mask.shape == data.shape
         assert isnr_obj.isnr_map.shape == data.shape
         noise_mask_stats = arraystats.ArrayStats(
-            isnr_obj.noise_mask).calculate()
+            isnr_obj.noise_mask.astype(np.int16)).calculate()
         isnr_map_stats = arraystats.ArrayStats(isnr_obj.isnr_map).calculate()
         npt.assert_allclose([noise_mask_stats['mean']['4D'],
                              noise_mask_stats['std']['4D'],
@@ -98,7 +98,7 @@ class TestIsnr:
         gold_standard_clusters = [0.936891, 0.636081, 0.0, 2.0]
         isnr_obj = snr.Isnr(data, affine)
         assert isnr_obj.noise_mask.shape == data.shape
-        isnr_stats_bg = arraystats.ArrayStats(isnr_obj.noise_mask).calculate()
+        isnr_stats_bg = arraystats.ArrayStats(isnr_obj.noise_mask.astype(np.int16)).calculate()
         npt.assert_allclose([isnr_stats_bg['mean']['3D'],
                              isnr_stats_bg['std']['3D'],
                              isnr_stats_bg['min']['3D'],
@@ -118,7 +118,7 @@ class TestIsnr:
         gold_standard_clusters = [1.164344, 0.994117, 0.0, 3.0]
         isnr_obj = snr.Isnr(data, affine, n_clusters=4)
         assert isnr_obj.noise_mask.shape == data.shape
-        isnr_stats_bg = arraystats.ArrayStats(isnr_obj.noise_mask).calculate()
+        isnr_stats_bg = arraystats.ArrayStats(isnr_obj.noise_mask.astype(np.int16)).calculate()
         npt.assert_allclose([isnr_stats_bg['mean']['3D'],
                              isnr_stats_bg['std']['3D'],
                              isnr_stats_bg['min']['3D'],

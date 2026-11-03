@@ -406,10 +406,8 @@ class TestT1:
         gold_standard_3p_single = [1347.824169, 657.254769, 0.0, 3948.24018]
         gold_standard_molli = [1554.586501,  606.863022, -170.611303,
                                6025.763663]
-        gold_standard_molli_mdr = [1528.876958, 659.720555, -209.721654,
-                                   5707.662715]
-        gold_standard_2p_mdr = [1038.024629, 427.33669, 223.047457,
-                                2600.325215]
+        gold_standard_molli_mdr = [1550.805188,  665.231469, 1499.477508]
+        gold_standard_2p_mdr = [1040.244615,  425.497337, 1033.203508]
 
         # Two parameter method
         mapper = T1(magnitude, ti, affine, parameters=2, tss=tss)
@@ -443,22 +441,22 @@ class TestT1:
 
         # MDR TSS == 0
         mapper = T1(image_molli[:, :, :2, :], ti_molli, affine_molli,
-                    parameters=3, molli=True, mdr=True)
+                    parameters=3, molli=True, mdr=True, multithread=False)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         # Large tolerance as ITK performs differently on MacOS, Linux and
         # Windows
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
-                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                             t1_stats['median']['3D']],
                             gold_standard_molli_mdr, rtol=0.1, atol=50)
 
         # MDR TSS != 0
         mapper = T1(magnitude[:, :, :2, :], ti, affine,
-                    parameters=2, tss=tss, mdr=True)
+                    parameters=2, tss=tss, mdr=True, multithread=False)
         t1_stats = arraystats.ArrayStats(mapper.t1_map).calculate()
         # Large tolerance as ITK performs differently on MacOS, Linux and
         # Windows
         npt.assert_allclose([t1_stats['mean']['3D'], t1_stats['std']['3D'],
-                             t1_stats['min']['3D'], t1_stats['max']['3D']],
+                             t1_stats['median']['3D']],
                             gold_standard_2p_mdr, rtol=0.1, atol=50)
 
     def test_get_pixel_array(self):

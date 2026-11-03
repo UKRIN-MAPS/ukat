@@ -1,18 +1,177 @@
 import glob
+import hashlib
 import json
 import os
+import re
+import tarfile
+import time
+import zipfile
 import nibabel as nib
 import numpy as np
+import requests
 
-from dipy.data.fetcher import _make_fetcher
 from dipy.io import read_bvals_bvecs
 from os.path import join as pjoin
+from uuid import uuid4
 
 # Set up directory to cache data
 if 'UKAT_HOME' in os.environ:
     ukat_home = os.environ['UKAT_HOME']
 else:
     ukat_home = pjoin(os.path.expanduser('~'), '.ukat')
+
+ZENODO_API_URL = 'https://zenodo.org/api/records'
+ZENODO_TOKEN_ENV_VAR = 'ZENODO_TOKEN'
+_RETRY_STATUS_CODES = (429, 500, 502, 503, 504)
+_MAX_ATTEMPTS = 5
+
+
+class FetcherError(Exception):
+    """Raised when a file cannot be downloaded or fails its checksum."""
+
+
+def _get_zenodo_token():
+    """Return the Zenodo access token from the environment, or None."""
+    token = os.environ.get(ZENODO_TOKEN_ENV_VAR, '').strip()
+    return token or None
+
+
+def _get_file_md5(filename, chunk_size=1024 * 1024):
+    md5 = hashlib.md5()
+    with open(filename, 'rb') as f:
+        for chunk in iter(lambda: f.read(chunk_size), b''):
+            md5.update(chunk)
+    return md5.hexdigest()
+
+
+def _record_id_from_url(baseurl):
+    match = re.search(r'zenodo\.org/records?/(\d+)', baseurl)
+    if match is None:
+        raise ValueError(f'Could not find a Zenodo record ID in {baseurl}')
+    return match.group(1)
+
+
+def _download_file(record_id, remote_fname, fullpath):
+    """Download a file from a Zenodo record using the REST API.
+
+    If the ZENODO_TOKEN environment variable is set the request is
+    authenticated, otherwise it is anonymous. Transient errors (including rate
+    limiting) are retried with a back off, honouring any Retry-After header.
+    """
+    url = f'{ZENODO_API_URL}/{record_id}/files/{remote_fname}/content'
+    token = _get_zenodo_token()
+    headers = {'Authorization': f'Bearer {token}'} if token else {}
+    tmp_path = f'{fullpath}.{uuid4().hex}.part'
+
+    for attempt in range(1, _MAX_ATTEMPTS + 1):
+        try:
+            with requests.get(url, headers=headers, stream=True,
+                              timeout=60) as response:
+                if response.status_code in _RETRY_STATUS_CODES:
+                    retry_after = response.headers.get('Retry-After', '')
+                    wait = (int(retry_after) if retry_after.isdigit()
+                            else 2 ** attempt)
+                    error = f'HTTP {response.status_code}'
+                else:
+                    response.raise_for_status()
+                    # with open(tmp_path, 'wb') as f:
+                    #     for chunk in response.iter_content(1024 * 1024):
+                    #         f.write(chunk)
+                    # os.replace(tmp_path, fullpath)
+                    try:
+                        with open(tmp_path, 'wb') as f:
+                            for chunk in response.iter_content(1024 * 1024):
+                                f.write(chunk)
+                        os.replace(tmp_path, fullpath)
+                    finally:
+                        if os.path.exists(tmp_path):
+                            os.remove(tmp_path)
+                    return
+        except (requests.ConnectionError, requests.Timeout,
+                requests.exceptions.ChunkedEncodingError) as e:
+            wait = 2 ** attempt
+            error = type(e).__name__
+        except requests.HTTPError as e:
+            raise FetcherError(f'Could not download {url}: {e}') from e
+
+        if attempt == _MAX_ATTEMPTS:
+            raise FetcherError(
+                f'Could not download {url} after {_MAX_ATTEMPTS} attempts '
+                f'(last error: {error}).')
+        time.sleep(wait)
+
+
+def _make_fetcher(name, folder, baseurl, remote_fnames, local_fnames, *,
+                  md5_list=None, doc='', unzip=False):
+    """Create a function that downloads a dataset from Zenodo.
+
+    Files are downloaded through the Zenodo REST API. If the ZENODO_TOKEN
+    environment variable is set, requests are authenticated, which gives a
+    higher rate limit.
+
+    Parameters
+    ----------
+    name : str
+        The name of the fetcher function.
+    folder : str
+        Local folder in which the files are placed.
+    baseurl : str
+        A Zenodo record URL, used to identify the record ID.
+    remote_fnames : list of str
+        Names of the files in the Zenodo record.
+    local_fnames : list of str
+        Names of the files to be saved locally.
+    md5_list : list of str, optional
+        md5 checksums used to verify the files.
+    doc : str, optional
+        Documentation of the fetcher.
+    unzip : bool, optional
+        Whether to extract downloaded zip files.
+
+    Returns
+    -------
+    fetcher : function
+        A function returning a dictionary of {local filename: (url, md5)}
+        (plus the archive contents for zip files) and the local folder.
+    """
+    record_id = _record_id_from_url(baseurl)
+
+    def fetcher():
+        os.makedirs(folder, exist_ok=True)
+        files = {}
+        for i, (remote, local) in enumerate(zip(remote_fnames,
+                                                local_fnames)):
+            md5 = md5_list[i] if md5_list is not None else None
+            files[local] = (f'{ZENODO_API_URL}/{record_id}/files/{remote}'
+                            f'/content', md5)
+            fullpath = pjoin(folder, local)
+            if os.path.exists(fullpath) and (
+                    md5 is None or _get_file_md5(fullpath) == md5):
+                continue
+            _download_file(record_id, remote, fullpath)
+            if md5 is not None and _get_file_md5(fullpath) != md5:
+                raise FetcherError(
+                    f'{fullpath} does not have the expected md5 checksum '
+                    f'{md5}.')
+
+        if unzip:
+            for local in local_fnames:
+                ext = os.path.splitext(local)[-1]
+                if ext == '.zip':
+                    with zipfile.ZipFile(pjoin(folder, local), 'r') as z:
+                        files[local] += (tuple(z.namelist()),)
+                        z.extractall(folder)
+                elif local.endswith(('.tar.gz', '.tar.bz2')):
+                    with tarfile.open(pjoin(folder, local)) as ar:
+                        ar.extractall(path=folder)
+                else:
+                    raise ValueError('File extension is not recognized')
+
+        return files, folder
+
+    fetcher.__name__ = name
+    fetcher.__doc__ = doc
+    return fetcher
 
 # Create a series of fetcher functions. These will either download or locate
 # the desired files.

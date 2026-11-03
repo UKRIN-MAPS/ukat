@@ -197,7 +197,7 @@ class ADC:
 
         if self.moco:
             print('Registering across b-values')
-            self.pixel_array_mean, across_b_deform, _, _ = mdreg.fit(
+            self.pixel_array_mean, _, _, _, across_b_deform = mdreg.fit(
                 self.pixel_array_mean,
                 force_2d=True,
                 verbose=0,
@@ -208,7 +208,8 @@ class ADC:
                 },
                 fit_coreg={
                     'package' : 'elastix',
-                    'parallel': False,  # elastix is not parallelizable
+                    'parallel': True,
+                    'return_deformation': True,
                 }
             )
             
@@ -232,23 +233,29 @@ class ADC:
             The deformation field used to register the data.
         """
         pixel_array_registered = np.zeros_like(self.pixel_array)
-        deform = np.zeros(self.pixel_array.shape[:3] + (2, len(self.bvals)))
+        deform = np.zeros(self.pixel_array.shape[:3] + (len(self.bvals), 2))
         for ind, bval in enumerate(tqdm(self.u_bvals,
                                         desc='Registering b-values',
                                         unit='b-value')):
             pixel_array_bval = self.pixel_array[..., self.bvals == bval]
             if pixel_array_bval.shape[-1] > 1:
                 print(f"Registering {bval}")
-                pixel_array_bval_reg, deform_bval, _, _ = mdreg.fit(
+                pixel_array_bval_reg, _, _, _, deform_bval = mdreg.fit(
                     pixel_array_bval,
                     verbose=0,
-                    force_2d=True)
+                    force_2d=True,
+                    fit_coreg={
+                        'package'      : 'elastix',
+                        'parallel'     : True,
+                        'return_deformation': True,
+                    }
+                )
             else:
                 print(f"Registering {bval}")
                 pixel_array_bval_reg = pixel_array_bval
-                deform_bval = np.zeros(pixel_array_bval.shape[:3] + (2, pixel_array_bval.shape[-1],))
+                deform_bval = np.zeros(pixel_array_bval.shape[:3] + (pixel_array_bval.shape[-1], 2,))
             pixel_array_registered[..., self.bvals == bval] = pixel_array_bval_reg
-            deform[..., self.bvals == bval] = deform_bval
+            deform[..., self.bvals == bval, :] = deform_bval
         return pixel_array_registered, deform
 
     def _mean_over_directions(self):

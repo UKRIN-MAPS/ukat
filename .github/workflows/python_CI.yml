@@ -12,44 +12,22 @@ on:
 
 env:
   NUMBA_DISABLE_JIT: 1
+  ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
 
 jobs:
-  build:
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: [3.9, "3.10", "3.11"]
-
+  lint:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
+    - uses: actions/checkout@v4
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.12"
         cache: 'pip'
-
-    - name: Install Microsoft Visual C++ Redistributable (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        choco install vcredist140 -y --no-progress
-        
-    - name: Install dependencies
+    - name: Install flake8
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest codecov pytest-cov wheel
-        pip install -r requirements.txt
-
-    - name: Verify TensorFlow import (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        python -c "import tensorflow as tf; print(tf.__version__)"
-
+        pip install flake8
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -57,11 +35,42 @@ jobs:
         # exit-zero treats all errors as warnings.
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80 --statistics
 
+  build:
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    - name: Install Visual C++ redistributable (Windows) 
+      if:  matrix.os == 'windows-latest' 
+      run: choco install -y vcredist-all
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install scikit-build cmake ninja pybind11 setuptools wheel # Build tools
+        pip install pytest codecov pytest-cov # Testing tools
+        pip install --no-cache-dir --upgrade --force-reinstall -r requirements.txt 
     - name: Test with pytest
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       run: |
         pytest --cov-report=xml --cov=ukat
-
+    - name: Test with pytest (skipping ukat.data tests)
+      # Avoids downloading every copy of the example data and being rate limited
+      if: matrix.os != 'ubuntu-latest' || matrix.python-version != '3.11'
+      run: |
+        pytest --cov-report=xml --cov=ukat --ignore=ukat/data/tests
     - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
       uses: codecov/codecov-action@v4
       with:
         env_vars: OS,PYTHON
