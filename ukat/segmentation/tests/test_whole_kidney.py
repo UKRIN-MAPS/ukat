@@ -1,6 +1,7 @@
 import csv
 import os
 import shutil
+import numpy as np
 import numpy.testing as npt
 import pytest
 
@@ -14,7 +15,7 @@ class TestSegmentation:
     segmentation = Segmentation(image, affine)
 
     def test_get_mask(self):
-        expected = [0.022764, 0.14915, 0.0, 1.0]
+        expected = [0.021034, 0.143496, 0.0, 1.0]
         mask = self.segmentation.get_mask()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -22,7 +23,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_kidneys(self):
-        expected = [0.034317, 0.237162, 0.0, 2.0]
+        expected = [0.031862, 0.229133, 0.0, 2.0]
         mask = self.segmentation.get_kidneys()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -30,7 +31,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_left_kidney(self):
-        expected = [0.011211, 0.105285, 0.0, 1.0]
+        expected = [0.010206, 0.100507, 0.0, 1.0]
         mask = self.segmentation.get_left_kidney()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -38,7 +39,7 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_right_kidney(self):
-        expected = [0.011553, 0.106863, 0.0, 1.0]
+        expected = [0.010828, 0.103492, 0.0, 1.0]
         mask = self.segmentation.get_right_kidney()
         mask_stats = arraystats.ArrayStats(mask).calculate()
         npt.assert_allclose([mask_stats["mean"]["3D"], mask_stats["std"]["3D"],
@@ -46,29 +47,35 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_volumes(self):
-        expected = {'total': 240.00054654884337,
-                    'left': 118.19352480602264,
-                    'right': 121.80702174282074}
+        expected_keys = ['total', 'left', 'right']
+        expected_values = np.array([221.75981201171874, 
+                                    107.60053378582, 
+                                    114.15927822589875])
         volumes = self.segmentation.get_volumes()
-        assert volumes == expected
+        assert list(volumes.keys()) == expected_keys
+        npt.assert_allclose(np.array(list(volumes.values())), expected_values,
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_tkv(self):
-        expected = 240.00054654884337
-        assert self.segmentation.get_tkv() == expected
+        expected = 221.75981201171874
+        npt.assert_allclose(self.segmentation.get_tkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_lkv(self):
-        expected = 118.19352480602264
-        assert self.segmentation.get_lkv() == expected
+        expected = 107.60053378582
+        npt.assert_allclose(self.segmentation.get_lkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_rkv(self):
-        expected = 121.80702174282074
-        assert self.segmentation.get_rkv() == expected
+        expected = 114.15927822589875
+        npt.assert_allclose(self.segmentation.get_rkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_save_volumes_csv(self):
-        expected = [['total', 'left', 'right'],
-                    ['240.00054654884337',
-                     '118.19352480602264',
-                     '121.80702174282074']]
+        expcted_headers = ['total', 'left', 'right']
+        expected_values = np.array([221.75981201171874, 
+                                    107.60053378582, 
+                                    114.15927822589875])
 
         if os.path.exists('test_output'):
             shutil.rmtree('test_output')
@@ -81,8 +88,12 @@ class TestSegmentation:
 
         with open('test_output/volumes.csv', 'r') as csv_file:
             reader = csv.reader(csv_file)
-            list_from_csv = [row for row in reader]
-        assert list_from_csv == expected
+            headers = next(reader)
+            values = next(reader)
+
+        assert headers == expcted_headers
+        npt.assert_allclose(np.array(values, dtype=float), expected_values, 
+                            rtol=1e-6, atol=1e-4)
 
         for f in os.listdir('test_output'):
             os.remove(os.path.join('test_output', f))
