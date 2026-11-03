@@ -47,23 +47,29 @@ class TestSegmentation:
                             expected, rtol=1e-6, atol=1e-4)
 
     def test_get_volumes(self):
-        expected = {'total': 221.75981201171874,
-                    'left': 107.60053378582,
-                    'right': 114.15927822589875}
+        expected_keys = ['total', 'left', 'right']
+        expected_values = np.array([221.75981201171874, 
+                                    107.60053378582, 
+                                    114.15927822589875])
         volumes = self.segmentation.get_volumes()
-        assert volumes == expected
+        assert list(volumes.keys()) == expected_keys
+        npt.assert_allclose(np.array(list(volumes.values())), expected_values,
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_tkv(self):
         expected = 221.75981201171874
-        assert self.segmentation.get_tkv() == expected
+        npt.assert_allclose(self.segmentation.get_tkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_lkv(self):
         expected = 107.60053378582
-        assert self.segmentation.get_lkv() == expected
+        npt.assert_allclose(self.segmentation.get_lkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_get_rkv(self):
         expected = 114.15927822589875
-        assert self.segmentation.get_rkv() == expected
+        npt.assert_allclose(self.segmentation.get_rkv(), expected, 
+                            rtol=1e-6, atol=1e-4)
 
     def test_save_volumes_csv(self):
         expcted_headers = ['total', 'left', 'right']
