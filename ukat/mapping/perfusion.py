@@ -59,8 +59,14 @@ class Perfusion:
         self.moco = moco
 
         if self.moco:
-            self.pixel_array, self.deformation_field, _, _ = mdreg.fit(
-                self.pixel_array, force_2d=True)
+            self.pixel_array, _, _, _, self.deformation_field = mdreg.fit(
+                self.pixel_array, 
+                force_2d=True,
+                fit_coreg={
+                    'package'      : 'elastix',
+                    'parallel'     : True,
+                    'return_deformation': True,
+                })
         self.label = self.pixel_array[..., 0::2]
         self.control = self.pixel_array[..., 1::2]
         if self.label.mean() < self.control.mean():
