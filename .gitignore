@@ -25,3 +25,5 @@ ukat.egg-info/
 
 # Tutorial Outputs
 /tutorials/*output
+# Sphinx
+docs/_build/

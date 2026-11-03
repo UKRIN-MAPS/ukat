@@ -3,6 +3,7 @@
 
 ![Build and Test](https://github.com/UKRIN-MAPS/ukat/workflows/Build%20and%20Test/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/UKRIN-MAPS/ukat/branch/master/graph/badge.svg?token=QJ9DQONJBP)](https://codecov.io/gh/UKRIN-MAPS/ukat)
+[![Documentation Status](https://readthedocs.org/projects/ukat/badge/?version=latest)](https://ukat.readthedocs.io/en/latest/)
 [![PyPI version](https://badge.fury.io/py/ukat.svg)](https://badge.fury.io/py/ukat)
 [![Downloads](https://static.pepy.tech/badge/ukat)](https://pepy.tech/project/ukat)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -23,7 +24,7 @@ More information can be found in [this ISMRM abstract](https://www.researchgate.
 # Installing `ukat`
 There are a few different ways you can install `ukat` based on what you want to do with it
 ### "I just want to process my data with this package"
-1. Make sure you're running Python >=3.8
+1. Make sure you're running Python >=3.10
 2. Install `ukat` with `pip install ukat`
 
 ### "I want to modify this code to do something a bit different but don't want my modifications to go back into `ukat`"
@@ -63,4 +64,4 @@ You'll probably also want to follow the instructions in the section above so you
 If you run into any problems or find any issues with the installation process please raise an [issue](https://github.com/UKRIN-MAPS/ukat/issues).
 
 # Contributing guidelines
-Please read our [contributing guidelines (*work-in-progress*)](.github/CONTRIBUTING.md).
+Please read our [contributing guidelines (*work-in-progress*)](https://github.com/UKRIN-MAPS/ukat/blob/master/.github/CONTRIBUTING.md).

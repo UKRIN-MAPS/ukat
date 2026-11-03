@@ -1,0 +1,6 @@
+myst-parser
+nbsphinx
+nbsphinx-link
+sphinx
+sphinx_rtd_theme
+ipython
